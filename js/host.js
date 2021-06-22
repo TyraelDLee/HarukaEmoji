@@ -75,26 +75,7 @@ function clickHandler(e){
 
 }
 
-var emojiText = "";
-for (let i = 0; i < emojiTable.rows.length; i++) {
-    var cell = emojiTable.rows[i].cells;
-    for (let j = 0; j < cell.length; j++) {
-        cell[j].onclick = function (){
-            addText(this.innerHTML);
-        }
-    }
-}
-
-function addText(text){
-    emojiText += text;
-    sideBar.getElementsByTagName("textarea")[0].value += text;
-}
-
 var button;
-
-function input(){
-    console.log(document.getElementsByTagName("textarea")[0].value)
-}
 
 setTimeout(delay,5000);
 function delay(){
@@ -122,4 +103,19 @@ function delay(){
         "<tr><td>(玩手机)</td><td>(豹豹！)</td></tr>"+
         "<tr><td>(横豹)</td></tr>"+
         "<tr><td>(1)</td><td>(2)</td><td>(3)</td></tr></tbody>";
+
+    var emojiText = "";
+    for (let i = 0; i < emojiTable.rows.length; i++) {
+        var cell = emojiTable.rows[i].cells;
+        for (let j = 0; j < cell.length; j++) {
+            cell[j].onclick = function (){
+                addText(this.innerHTML);
+            }
+        }
+    }
+
+    function addText(text){
+        emojiText += text;
+        sideBar.getElementsByTagName("textarea")[0].value += text;
+    }
 }
