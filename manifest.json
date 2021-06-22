@@ -1,20 +1,21 @@
 {
-  "name": "Page Redder",
-  "action": {},
-  "manifest_version": 3,
+  "name": "Haruka Emoji",
+  "manifest_version": 2,
   "version": "0.1",
-  "description": "Turns the page red when you click the icon",
-  "permissions": [
-    "activeTab", "scripting"
-  ],
-  "background": {
-    "service_worker": "background.js"
+  "description": "Emoji!",
+  "permissions": ["activeTab"],
+  "icons": {
+    "16": "images/haruka16.png",
+    "32": "images/haruka32.png",
+    "48": "images/haruka48.png",
+    "128": "images/haruka128.png"
   },
   "content_scripts": [ {
     "all_frames": true,
-    "js": [ "js/host.js" ],
     "css": ["css/host.css"],
+    "js": ["js/host.js"],
     "matches": [ "*://live.bilibili.com/21652717", "*://live.bilibili.com/record/*", "*://live.bilibili.com/blanc/*", "*://*.bilibili.com/blackboard/live/activity-*" ],
     "run_at": "document_end"
-  } ]
+  } ],
+  "web_accessible_resources": ["images/*", "css/*", "js/*"]
 }
