@@ -10,6 +10,7 @@ var selec = document.createElement("div");
 var emojiTable = document.createElement("table");
 var sideBar = document.getElementById("aside-area-vm");
 var commentsTextArea;
+let init = 1;
 
 popup.setAttribute("id", "emoji-popup");
 popup.style.background = "url("+link+") no-repeat center";
@@ -55,24 +56,28 @@ window.onload=function(){
 
 window.addEventListener("resize", function(){
     popup.style.left = document.body.clientWidth - absLocHor + 'px';
-    popup.style.top = popupLocHor+"px";
+    // popup.style.top = popupLocHor+"px";
 
     selec.style.left = document.body.clientWidth - absLocHor - 160 + "px";
-    selec.style.top = popupLocVac - 5 + "px";
+    // selec.style.top = popupLocVac - 5 + "px";
 });
 
 document.getElementById("emoji-popup").addEventListener("click", clickHandler);
 
 function clickHandler(e){
-    if(isDrag === 0){
-        if(selec.style.display === "none"){
-            selec.style.display = "block";
-        }else{
-            selec.style.display = "none";
-        }
-    }else
-        isDrag = 0;
-
+    if(init === 1){
+        selec.style.display = "block";
+        init = 0;
+    }else{
+        if(isDrag === 0){
+            if(selec.style.display === "none"){
+                selec.style.display = "block";
+            }else{
+                selec.style.display = "none";
+            }
+        }else
+            isDrag = 0;
+    }
 }
 
 var button;
@@ -88,8 +93,15 @@ function delay(){
 
     commentsTextArea = sideBar.getElementsByTagName("textarea")[0];
     commentsTextArea.addEventListener("focus", textareaHandler);
+    commentsTextArea.addEventListener("blur", textareaHandler);
     function textareaHandler(){
         commentsTextArea.value = emojiText;
+    }
+
+    commentsTextArea.onkeyup = function (ev){
+
+        console.log(commentsTextArea.value)
+        emojiText = commentsTextArea.value;
     }
 
     emojiTable.innerHTML = "<tbody><tr><td>(傻豹)</td><td>(吃桃)</td></tr>" +
