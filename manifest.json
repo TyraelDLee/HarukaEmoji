@@ -1,0 +1,20 @@
+{
+  "name": "Page Redder",
+  "action": {},
+  "manifest_version": 3,
+  "version": "0.1",
+  "description": "Turns the page red when you click the icon",
+  "permissions": [
+    "activeTab", "scripting"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [ {
+    "all_frames": true,
+    "js": [ "js/host.js" ],
+    "css": ["css/host.css"],
+    "matches": [ "*://live.bilibili.com/21652717", "*://live.bilibili.com/record/*", "*://live.bilibili.com/blanc/*", "*://*.bilibili.com/blackboard/live/activity-*" ],
+    "run_at": "document_end"
+  } ]
+}
