@@ -14,7 +14,7 @@
     "all_frames": true,
     "css": ["css/host.css"],
     "js": ["js/host.js"],
-    "matches": [ "*://live.bilibili.com/21652717*", "*://live.bilibili.com/record/*", "*://live.bilibili.com/blanc/*", "*://*.bilibili.com/blackboard/live/activity-*" ],
+    "matches": [ "*://live.bilibili.com/21652717*", "*://live.bilibili.com/record/21652717*"],
     "run_at": "document_end"
   } ],
   "web_accessible_resources": ["images/*", "css/*", "js/*"]

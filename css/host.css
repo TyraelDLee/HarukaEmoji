@@ -16,12 +16,27 @@
     display: none;
     z-index: 999999;
     border-radius:5px;
+    overflow-y: scroll;
+    text-align: center;
 }
 
-table{
-    margin: auto;
+#emoji-selection::-webkit-scrollbar{
+    width: 10px;
+    height: 10px;
 }
 
+#emoji-selection::-webkit-scrollbar-thumb{
+    border-radius:5px;
+}
+
+#emoji-selection table{
+    margin: 0 auto;
+}
+
+#emoji-selection td{
+    width: 60px;
+    height: 60px;
+}
 #load{
     margin: auto;
     text-align: center;
