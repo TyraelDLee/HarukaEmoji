@@ -1,19 +1,19 @@
 const link = chrome.extension.getURL("../images/abaaba.png");
 // add new emoji images here.
 const img0 = chrome.extension.getURL("../images/傻豹.gif");
-var img1;
+const img1 = chrome.extension.getURL("../images/吃桃.gif");
 const img2 = chrome.extension.getURL("../images/rua豹.gif");
-var img3;
+const img3 = chrome.extension.getURL("../images/问号豹.gif");
 const img4 = chrome.extension.getURL("../images/打滚.gif");
-var img5;
+const img5 = chrome.extension.getURL("../images/跳脸豹.gif");
 const img6 = chrome.extension.getURL("../images/打call.gif");
 const img7 = chrome.extension.getURL("../images/打豹.gif");
 const img8 = chrome.extension.getURL("../images/猜拳.gif");
-var img9;
+const img9 = chrome.extension.getURL("../images/困.gif");
 const img10 = chrome.extension.getURL("../images/摇摆.gif");
-var img11;
+const img11 = chrome.extension.getURL("../images/耶.gif");
 const img12 = chrome.extension.getURL("../images/豹睡.gif");
-var img13;
+const img13 = chrome.extension.getURL("../images/我不玩了.gif");
 const img14 = chrome.extension.getURL("../images/阿巴.png");
 const img15 = chrome.extension.getURL("../images/玩手机.gif");
 const img16 = chrome.extension.getURL("../images/豹豹.png");
@@ -134,13 +134,13 @@ function delay(){
     }
     // add new emoji here to show in web.
     emojiTable.innerHTML =
-        "<tbody><tr><td style=\" background:url("+ img0 +") no-repeat bottom center; background-size: contain\"></td><td>(吃桃)</td></tr>" +
-        "<tr><td style=\" background:url("+ img2 +") no-repeat bottom center; background-size: contain\"></td><td>(问号豹)</td></tr>"+
-        "<tr><td style=\" background:url("+ img4 +") no-repeat bottom center; background-size: contain\"></td><td>(跳脸豹)</td></tr>"+
+        "<tbody><tr><td style=\" background:url("+ img0 +") no-repeat bottom center; background-size: contain\"></td><td style=\" background:url("+ img1 +") no-repeat bottom center; background-size: contain\"></td></tr>" +
+        "<tr><td style=\" background:url("+ img2 +") no-repeat bottom center; background-size: contain\"></td><td style=\" background:url("+ img3 +") no-repeat bottom center; background-size: contain\"></td></tr>"+
+        "<tr><td style=\" background:url("+ img4 +") no-repeat bottom center; background-size: contain\"></td><td style=\" background:url("+ img5 +") no-repeat bottom center; background-size: contain\"></td></tr>"+
         "<tr><td style=\" background:url("+ img6 +") no-repeat bottom center; background-size: contain\"></td><td style=\" background:url("+ img7 +") no-repeat bottom center; background-size: contain\"></td></tr>" +
-        "<tr><td style=\" background:url("+ img8 +") no-repeat bottom center; background-size: contain\"></td><td>(困)</td></tr>"+
-        "<tr><td style=\" background:url("+ img10 +") no-repeat bottom center; background-size: contain\"></td><td>(耶)</td></tr>"+
-        "<tr><td style=\" background:url("+ img12 +") no-repeat bottom center; background-size: contain\"></td><td>(我不玩了)</td></tr>" +
+        "<tr><td style=\" background:url("+ img8 +") no-repeat bottom center; background-size: contain\"></td><td style=\" background:url("+ img9 +") no-repeat bottom center; background-size: contain\"></td></tr>"+
+        "<tr><td style=\" background:url("+ img10 +") no-repeat bottom center; background-size: contain\"></td><td style=\" background:url("+ img11 +") no-repeat bottom center; background-size: contain\"></td></tr>"+
+        "<tr><td style=\" background:url("+ img12 +") no-repeat bottom center; background-size: contain\"></td><td style=\" background:url("+ img13 +") no-repeat bottom center; background-size: contain\"></td></tr>" +
         "<tr><td style=\" background:url("+ img14 +") no-repeat bottom center; background-size: contain\"></td><td style=\" background:url("+ img15 +") no-repeat bottom center; background-size: contain\"></td></tr>"+
         "<tr><td style=\" background:url("+ img16 +") no-repeat bottom center; background-size: contain\"></td></tr>"+
         "<tr><td colspan=\"2\" style=\" background:url("+ img17 +") no-repeat bottom center; background-size: contain\"></td></tr></tbody>";
