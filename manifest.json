@@ -1,8 +1,8 @@
 {
-  "name": "Haruka Emoji",
+  "name": "rua豹器",
   "manifest_version": 2,
   "version": "0.1",
-  "description": "Emoji!",
+  "description": "rua!",
   "permissions": ["activeTab"],
   "icons": {
     "16": "images/haruka16.png",
@@ -14,7 +14,7 @@
     "all_frames": true,
     "css": ["css/host.css"],
     "js": ["js/host.js"],
-    "matches": [ "*://live.bilibili.com/21652717*", "*://live.bilibili.com/record/21652717*"],
+    "matches": [ "*://live.bilibili.com/21652717*", "*://live.bilibili.com/21652717?*", "*://live.bilibili.com/record/21652717*"],
     "run_at": "document_end"
   } ],
   "web_accessible_resources": ["images/*", "css/*", "js/*"]

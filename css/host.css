@@ -1,3 +1,73 @@
+@keyframes fade-in {
+    0% {opacity: 0.0}
+    50% {opacity: 0.5}
+    100% {opacity: 1.0}
+}
+
+@keyframes fade-out {
+    0% {opacity: 1.0}
+    50% {opacity: 0.5}
+    100% {opacity: 0.0}
+}
+
+@keyframes click-in {
+    0% {width: 52px; height: 52px; transform: translate(-1px, -1px);}
+    50% {width: 50px; height: 50px;transform: translate(0px, 0px);}
+    100% {width: 46px; height: 46px;transform: translate(2px, 2px);}
+}
+
+@keyframes click-out {
+    0% {width: 46px; height: 46px;transform: translate(2px, 2px);}
+    50% {width: 50px; height: 50px;transform: translate(0px, 0px);}
+    100% {width: 52px; height: 52px; transform: translate(-1px, -1px);}
+}
+
+@keyframes hover-in {
+    0% {width: 50px; height: 50px;transform: translate(0px, 0px);}
+    100% {width: 52px; height: 52px; transform: translate(-1px, -1px);}
+}
+
+@keyframes hover-out {
+    0% {width: 52px; height: 52px; transform: translate(-1px, -1px);}
+    100% {width: 50px; height: 50px;transform: translate(0px, 0px);}
+}
+
+.selection-fade-in{
+    animation-name: fade-in;
+    animation-duration: 0.15s;
+}
+
+.selection-fade-out{
+    animation-name: fade-out;
+    animation-duration: 0.15s;
+}
+
+.popup-click-hoverin{
+    animation-name: hover-in;
+    animation-duration: 0.1s;
+    animation-fill-mode: forwards;
+}
+
+.popup-click-hoverout{
+    animation-name: hover-out;
+    animation-duration: 0.1s;
+    animation-fill-mode: forwards;
+}
+
+.popup-click-in{
+    animation-name: click-in;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
+}
+
+.popup-click-out{
+    animation-name: click-out;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
+
+}
+
+
 #emoji-popup {
     width: 50px;
     height: 50px;
@@ -5,7 +75,7 @@
     background-position:center;
     background-size: 100% 100%;
     position: absolute;
-    z-index: 999999;
+    z-index: 9999999;
 }
 
 #emoji-selection{
@@ -14,7 +84,7 @@
     background-color: #fff;
     position: absolute;
     display: none;
-    z-index: 999999;
+    z-index: 9999999;
     border-radius:5px;
     overflow-y: scroll;
     text-align: center;
@@ -37,6 +107,7 @@
     width: 60px;
     height: 60px;
 }
+
 #load{
     margin: auto;
     text-align: center;

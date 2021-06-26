@@ -1,4 +1,4 @@
-const link = chrome.extension.getURL("../images/abaaba.png");
+const link = chrome.extension.getURL("../images/abaaba.svg");
 // add new emoji images here.
 const img0 = chrome.extension.getURL("../images/傻豹.gif");
 const img1 = chrome.extension.getURL("../images/吃桃.gif");
@@ -22,13 +22,12 @@ var popupLocHor = 100;
 var popupLocVac = 100;
 var absLocHor = 100;
 var isDrag = 0;
-var parent = document.body
-var popup = document.createElement("div");
-var selec = document.createElement("div");
+const parent = document.body;
+const popup = document.createElement("div");
+const selec = document.createElement("div");
 var emojiTable = document.createElement("table");
 var sideBar = document.getElementById("aside-area-vm");
 var commentsTextArea;
-let init = 1;
 // add new emoji text here.
 const emoji = [["(傻豹)","(吃桃)"],
     ["(rua豹)","(问号豹)"],
@@ -47,31 +46,31 @@ popup.style.backgroundSize = "contain";
 popup.innerHTML = "<!---->";
 
 selec.setAttribute("id", "emoji-selection");
-selec.innerHTML = ""
+selec.innerHTML = "";
 emojiTable.setAttribute("class", "emoji-table");
-emojiTable.innerHTML = "<div id='load'>loading...</div>";
+emojiTable.innerHTML = "<div id='load'>加载弹幕中...</div>";
 selec.appendChild(emojiTable)
 parent.appendChild(selec);
 parent.appendChild(popup);
 popup.style.left = document.body.clientWidth - absLocHor + 'px';
 popup.style.top = "100px";
 selec.style.left = document.body.clientWidth - absLocHor - 160 +"px";
-selec.style.top = "95px"
+selec.style.top = "95px";
 window.onload=function(){
-    var popupLoc = document.getElementById("emoji-popup");
-    popupLoc.onmousedown = function (ev) {
+    popup.onmousedown = function (ev) {
+        popup.className = "popup-click-in";
         var oevent = ev || event;
 
-        var distanceX = oevent.clientX - popupLoc.offsetLeft;
-        var distanceY = oevent.clientY - popupLoc.offsetTop;
+        var distanceX = oevent.clientX - popup.offsetLeft;
+        var distanceY = oevent.clientY - popup.offsetTop;
 
         document.onmousemove = function (ev) {
             isDrag = 1;
             var oevent = ev || event;
             popupLocHor = oevent.clientX - distanceX
             popupLocVac = oevent.clientY - distanceY
-            popupLoc.style.left = popupLocHor + 'px';
-            popupLoc.style.top = popupLocVac + 'px';
+            popup.style.left = popupLocHor + 'px';
+            popup.style.top = popupLocVac + 'px';
             selec.style.left = popupLocHor - 160 + "px";
             selec.style.top = popupLocVac - 5 + "px";
             absLocHor = document.body.clientWidth - popupLocHor;
@@ -81,40 +80,47 @@ window.onload=function(){
             document.onmouseup = null;
         };
     };
+
+    popup.onmouseup = function (ev){
+        popup.className = "popup-click-out";
+    };
+
+    popup.onmouseenter = function (){
+        popup.className = "popup-click-hoverin";
+    }
+
+    popup.onmouseleave = function (){
+        popup.className = "popup-click-hoverout";
+    }
+
+    popup.onclick = function (e){
+        if (isDrag === 0) {
+            if (selec.style.display === "none") {
+                selec.style.display = "block";
+                selec.className = "selection-fade-in";
+            } else {
+                selec.className = "selection-fade-out";
+                setTimeout(hide, 150);
+            }
+        } else {
+            isDrag = 0;
+        }
+    };
+}
+
+function hide(){
+    selec.style.display = "none";
 }
 
 window.addEventListener("resize", function(){
     popup.style.left = document.body.clientWidth - absLocHor + 'px';
-    // popup.style.top = popupLocHor+"px";
-
     selec.style.left = document.body.clientWidth - absLocHor - 160 + "px";
-    // selec.style.top = popupLocVac - 5 + "px";
 });
-
-document.getElementById("emoji-popup").addEventListener("click", clickHandler);
-
-function clickHandler(e){
-    if(init === 1){
-        selec.style.display = "block";
-        init = 0;
-    }else{
-        if(isDrag === 0){
-            if(selec.style.display === "none"){
-                selec.style.display = "block";
-            }else{
-                selec.style.display = "none";
-            }
-        }else
-            isDrag = 0;
-    }
-}
-
-var button;
 
 setTimeout(delay,5000);
 function delay(){
     console.log("load complete")
-    button = sideBar.getElementsByTagName("button")[sideBar.getElementsByTagName("button").length-1];
+    var button = sideBar.getElementsByTagName("button")[sideBar.getElementsByTagName("button").length-1];
     button.addEventListener("click", buttonHandler);
     function buttonHandler(){
         emojiText = "";
