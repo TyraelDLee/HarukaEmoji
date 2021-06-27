@@ -18,16 +18,17 @@ const img14 = chrome.extension.getURL("../images/阿巴.png");
 const img15 = chrome.extension.getURL("../images/玩手机.gif");
 const img16 = chrome.extension.getURL("../images/豹豹.png");
 const img17 = chrome.extension.getURL("../images/豹条h.gif");
-var popupLocHor = 100;
-var popupLocVac = 100;
-var absLocHor = 100;
+var WINDOW_HEIGHT = window.outerHeight;
+var WINDOW_WIDTH = window.outerWidth;
+
+var absoluteLoc = [100, 100, WINDOW_WIDTH - 100];
 var isDrag = 0;
 const parent = document.body;
 const popup = document.createElement("div");
 const selec = document.createElement("div");
-var emojiTable = document.createElement("table");
-var sideBar = document.getElementById("aside-area-vm");
-var commentsTextArea = null;
+const emojiTable = document.createElement("table");
+const sideBar = document.getElementById("aside-area-vm");
+let commentsTextArea = null;
 // add new emoji text here.
 const emoji = [["(傻豹)","(吃桃)"],
     ["(rua豹)","(问号豹)"],
@@ -52,33 +53,38 @@ emojiTable.innerHTML = "<div id='load'>加载弹幕中...</div>";
 selec.appendChild(emojiTable)
 parent.appendChild(selec);
 parent.appendChild(popup);
-popup.style.left = document.body.clientWidth - absLocHor + 'px';
+popup.style.left = WINDOW_WIDTH - 100 + 'px';
 popup.style.top = "100px";
-selec.style.left = document.body.clientWidth - absLocHor - 160 +"px";
+selec.style.left = WINDOW_WIDTH - 260 +"px";
 selec.style.top = "95px";
 var oLoc = [0,0];
 var cLoc = [0,0];
 window.onload=function(){
     popup.onmousedown = function (ev) {
+        let popupLocHor;
+        let popupLocVac;
         popup.className = "popup-click-in";
-        var oevent = ev || event;
-        var distanceX = oevent.clientX - popup.offsetLeft;
-        var distanceY = oevent.clientY - popup.offsetTop;
+        const oevent = ev || event;
+        const distanceX = oevent.clientX - popup.offsetLeft;
+        const distanceY = oevent.clientY - popup.offsetTop;
         oLoc = [popup.offsetLeft, popup.offsetTop];
         cLoc = [popup.offsetLeft, popup.offsetTop];
-        popup.onmousemove = function (ev) {
+        document.onmousemove = function (ev) {
             isDrag = 1;
-            var oevent = ev || event;
-            popupLocHor = oevent.clientX - distanceX;
-            popupLocVac = oevent.clientY - distanceY;
+            const oevent = ev || event;
+            if(oevent.clientX - distanceX >= 0 && oevent.clientX - distanceX <= WINDOW_WIDTH - 60)
+                popupLocHor = oevent.clientX - distanceX;
+            if(oevent.clientY - distanceY >= 0 && oevent.clientY - distanceY <= WINDOW_HEIGHT - 150)
+                popupLocVac = oevent.clientY - distanceY;
             cLoc = [popupLocHor, popupLocVac];
             popup.style.left = popupLocHor + 'px';
             popup.style.top = popupLocVac + 'px';
-            selec.style.left = popupLocHor - 160 + "px";
-            selec.style.top = popupLocVac - 5 + "px";
-            absLocHor = document.body.clientWidth - popupLocHor;
+            popupLocHor < 170?selec.style.left = popupLocHor + 60 + "px":selec.style.left = popupLocHor - 160 + "px";
+            popupLocVac > WINDOW_HEIGHT - 450?selec.style.top = WINDOW_HEIGHT - 450 + "px":selec.style.top = popupLocVac - 5 + "px";
+            if(popupLocHor > -1)
+                absoluteLoc = [WINDOW_WIDTH - popupLocHor, popupLocVac, popupLocHor];
         };
-        popup.onmouseup = function () {
+        document.onmouseup = function () {
             popup.className = "popup-click-out";
             if(isMoved(oLoc[0], oLoc[1], cLoc[0], cLoc[1])){
                 if (selec.style.display === "none") {
@@ -89,8 +95,8 @@ window.onload=function(){
                     setTimeout(hide, 150);
                 }
             }
-            popup.onmousemove = null;
-            popup.onmouseup = null;
+            document.onmousemove = null;
+            document.onmouseup = null;
         };
     };
 
@@ -110,10 +116,20 @@ function hide(){
 function isMoved(oX, oY, cX, cY){
     return Math.abs(oX - cX) === 0 && Math.abs(oY - cY) === 0;
 }
-
+/***
+ * Resize handler
+ * */
 window.addEventListener("resize", function(){
-    popup.style.left = document.body.clientWidth - absLocHor + 'px';
-    selec.style.left = document.body.clientWidth - absLocHor - 160 + "px";
+    let popleft;
+    WINDOW_HEIGHT = window.outerHeight;
+    WINDOW_WIDTH = window.outerWidth;
+    absoluteLoc[0] < absoluteLoc[2]?popleft = WINDOW_WIDTH - absoluteLoc[0]:popleft = absoluteLoc[2];
+    popup.style.left = popleft + 'px';
+    if(absoluteLoc[1] > WINDOW_HEIGHT){
+        popup.style.top = WINDOW_HEIGHT - 150 + "px";
+        selec.style.top = WINDOW_HEIGHT - 450 + "px";
+    }
+    popleft < 170?selec.style.left = popleft + 60 + "px":selec.style.left = popleft - 160 + "px";
 });
 
 setTimeout(delay,5000);
@@ -170,5 +186,4 @@ function delay(){
             sideBar.getElementsByTagName("textarea")[0].value += text;
         }
     }
-
 }

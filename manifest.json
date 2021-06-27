@@ -1,7 +1,7 @@
 {
   "name": "rua豹器",
   "manifest_version": 2,
-  "version": "0.1",
+  "version": "2.2",
   "description": "rua!",
   "permissions": ["activeTab"],
   "icons": {
