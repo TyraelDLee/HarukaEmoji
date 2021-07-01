@@ -18,9 +18,15 @@ const img14 = chrome.extension.getURL("../images/阿巴.png");
 const img15 = chrome.extension.getURL("../images/玩手机.gif");
 const img16 = chrome.extension.getURL("../images/豹豹.png");
 const img17 = chrome.extension.getURL("../images/豹条h.gif");
-var WINDOW_HEIGHT = window.outerHeight;
-var WINDOW_WIDTH = window.outerWidth;
+var WINDOW_HEIGHT;
+var WINDOW_WIDTH;
 
+function setSize(){
+    WINDOW_HEIGHT = window.outerHeight;
+    WINDOW_WIDTH = window.innerWidth;
+}
+
+setSize();
 var absoluteLoc = [100, 100, WINDOW_WIDTH - 100];
 var isDrag = 0;
 const parent = document.body;
@@ -121,8 +127,7 @@ function isMoved(oX, oY, cX, cY){
  * */
 window.addEventListener("resize", function(){
     let popleft;
-    WINDOW_HEIGHT = window.outerHeight;
-    WINDOW_WIDTH = window.outerWidth;
+    setSize();
     absoluteLoc[0] < absoluteLoc[2]?popleft = WINDOW_WIDTH - absoluteLoc[0]:popleft = absoluteLoc[2];
     popup.style.left = popleft + 'px';
     if(absoluteLoc[1] > WINDOW_HEIGHT){
