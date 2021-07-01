@@ -22,7 +22,7 @@ var WINDOW_HEIGHT;
 var WINDOW_WIDTH;
 
 function setSize(){
-    WINDOW_HEIGHT = window.outerHeight;
+    WINDOW_HEIGHT = window.innerHeight;
     WINDOW_WIDTH = window.innerWidth;
 }
 
@@ -53,6 +53,7 @@ popup.style.backgroundSize = "contain";
 popup.innerHTML = "<!---->";
 
 selec.setAttribute("id", "emoji-selection");
+selec.style.display = "none"
 selec.innerHTML = "";
 emojiTable.setAttribute("class", "emoji-table");
 emojiTable.innerHTML = "<div id='load'>加载弹幕中...</div>";
@@ -80,13 +81,13 @@ window.onload=function(){
             const oevent = ev || event;
             if(oevent.clientX - distanceX >= 0 && oevent.clientX - distanceX <= WINDOW_WIDTH - 60)
                 popupLocHor = oevent.clientX - distanceX;
-            if(oevent.clientY - distanceY >= 0 && oevent.clientY - distanceY <= WINDOW_HEIGHT - 150)
+            if(oevent.clientY - distanceY >= 0 && oevent.clientY - distanceY <= WINDOW_HEIGHT - 60)
                 popupLocVac = oevent.clientY - distanceY;
             cLoc = [popupLocHor, popupLocVac];
             popup.style.left = popupLocHor + 'px';
             popup.style.top = popupLocVac + 'px';
             popupLocHor < 170?selec.style.left = popupLocHor + 60 + "px":selec.style.left = popupLocHor - 160 + "px";
-            popupLocVac > WINDOW_HEIGHT - 450?selec.style.top = WINDOW_HEIGHT - 450 + "px":selec.style.top = popupLocVac - 5 + "px";
+            popupLocVac > WINDOW_HEIGHT - 360?selec.style.top = WINDOW_HEIGHT - 360 + "px":selec.style.top = popupLocVac - 5 + "px";
             if(popupLocHor > -1)
                 absoluteLoc = [WINDOW_WIDTH - popupLocHor, popupLocVac, popupLocHor];
         };
@@ -131,8 +132,8 @@ window.addEventListener("resize", function(){
     absoluteLoc[0] < absoluteLoc[2]?popleft = WINDOW_WIDTH - absoluteLoc[0]:popleft = absoluteLoc[2];
     popup.style.left = popleft + 'px';
     if(absoluteLoc[1] > WINDOW_HEIGHT){
-        popup.style.top = WINDOW_HEIGHT - 150 + "px";
-        selec.style.top = WINDOW_HEIGHT - 450 + "px";
+        popup.style.top = WINDOW_HEIGHT - 60 + "px";
+        selec.style.top = WINDOW_HEIGHT - 360 + "px";
     }
     popleft < 170?selec.style.left = popleft + 60 + "px":selec.style.left = popleft - 160 + "px";
 });
