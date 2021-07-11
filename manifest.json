@@ -5,7 +5,7 @@
   "description": "rua!",
   "permissions": ["notifications", "activeTab","https://api.live.bilibili.com/*"],
   "background": {
-    "scripts": ["js/Jquery-3.5.1.js","js/background.js"],
+    "scripts": ["js/background.js"],
     "persistent": false
   },
   "icons": {
@@ -17,7 +17,7 @@
   "content_scripts": [ {
     "all_frames": true,
     "css": ["css/host.css"],
-    "js": ["js/host.js", "js/Jquery-3.5.1.js"],
+    "js": ["js/host.js"],
     "matches": [ "*://live.bilibili.com/21652717*", "*://live.bilibili.com/21652717?*", "*://live.bilibili.com/record/21652717*"],
     "run_at": "document_end"
   } ],
