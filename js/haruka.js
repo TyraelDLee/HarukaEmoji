@@ -1,23 +1,28 @@
+/***
+ * Copyright (c) 2021 Tyrael, Y. LI
+ * */
+
+
 const link = chrome.extension.getURL("../images/abaaba.svg");
 // add new emoji images here.
-const img0 = chrome.extension.getURL("../images/傻豹.gif");
-const img1 = chrome.extension.getURL("../images/吃桃.gif");
-const img2 = chrome.extension.getURL("../images/rua豹.gif");
-const img3 = chrome.extension.getURL("../images/问号豹.gif");
-const img4 = chrome.extension.getURL("../images/打滚.gif");
-const img5 = chrome.extension.getURL("../images/跳脸豹.gif");
-const img6 = chrome.extension.getURL("../images/打call.gif");
-const img7 = chrome.extension.getURL("../images/打豹.gif");
-const img8 = chrome.extension.getURL("../images/猜拳.gif");
-const img9 = chrome.extension.getURL("../images/困.gif");
-const img10 = chrome.extension.getURL("../images/摇摆.gif");
-const img11 = chrome.extension.getURL("../images/耶.gif");
-const img12 = chrome.extension.getURL("../images/豹睡.gif");
-const img13 = chrome.extension.getURL("../images/我不玩了.gif");
-const img14 = chrome.extension.getURL("../images/阿巴.png");
-const img15 = chrome.extension.getURL("../images/玩手机.gif");
-const img16 = chrome.extension.getURL("../images/豹豹.png");
-const img17 = chrome.extension.getURL("../images/豹条h.gif");
+const img0 = chrome.extension.getURL("../images/haruka/傻豹.gif");
+const img1 = chrome.extension.getURL("../images/haruka/吃桃.gif");
+const img2 = chrome.extension.getURL("../images/haruka/rua豹.gif");
+const img3 = chrome.extension.getURL("../images/haruka/问号豹.gif");
+const img4 = chrome.extension.getURL("../images/haruka/打滚.gif");
+const img5 = chrome.extension.getURL("../images/haruka/跳脸豹.gif");
+const img6 = chrome.extension.getURL("../images/haruka/打call.gif");
+const img7 = chrome.extension.getURL("../images/haruka/打豹.gif");
+const img8 = chrome.extension.getURL("../images/haruka/猜拳.gif");
+const img9 = chrome.extension.getURL("../images/haruka/困.gif");
+const img10 = chrome.extension.getURL("../images/haruka/摇摆.gif");
+const img11 = chrome.extension.getURL("../images/haruka/耶.gif");
+const img12 = chrome.extension.getURL("../images/haruka/豹睡.gif");
+const img13 = chrome.extension.getURL("../images/haruka/我不玩了.gif");
+const img14 = chrome.extension.getURL("../images/haruka/阿巴.png");
+const img15 = chrome.extension.getURL("../images/haruka/玩手机.gif");
+const img16 = chrome.extension.getURL("../images/haruka/豹豹.png");
+const img17 = chrome.extension.getURL("../images/haruka/豹条h.gif");
 var WINDOW_HEIGHT;
 var WINDOW_WIDTH;
 

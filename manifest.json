@@ -1,12 +1,12 @@
 {
   "name": "rua豹器",
   "manifest_version": 2,
-  "version": "2.3",
+  "version": "3.1",
   "description": "rua!",
-  "permissions": ["notifications", "activeTab","https://api.live.bilibili.com/*"],
+  "permissions": ["cookies", "notifications","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://www.bilibili.com/", "http://i0.hdslb.com/*"],
   "background": {
-    "scripts": ["js/background.js"],
-    "persistent": false
+    "scripts": ["js/background.js","js/Jquery-3.5.1.js"],
+    "persistent": true
   },
   "icons": {
     "16": "images/haruka16.png",
@@ -17,7 +17,7 @@
   "content_scripts": [ {
     "all_frames": true,
     "css": ["css/host.css"],
-    "js": ["js/host.js"],
+    "js": ["js/haruka.js"],
     "matches": [ "*://live.bilibili.com/21652717*", "*://live.bilibili.com/21652717?*", "*://live.bilibili.com/record/21652717*"],
     "run_at": "document_end"
   } ],
