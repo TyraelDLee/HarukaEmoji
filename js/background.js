@@ -1,15 +1,17 @@
 /***
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
-const interval = 1; // the interval between each scan, unit: minute
+const interval = 1.5; // the interval between each scan, unit: minute
 const UID = 477332594; // guess what it is
 var UUID = -1;
 var SESSDATA = -1;
+var JCT = -1;
 var P_UID = UUID;
 var P_SESS = SESSDATA;
 var FOLLOWING_LIST_UID = [];
 var FOLLOWING_LIST_NAME = [];
 var NOTIFICATION_PUSHED = [];
+var INDEX = 0;
 var p = 0;
 
 function getFollowingList() {
@@ -40,9 +42,10 @@ function getFollowingList() {
                     FOLLOWING_LIST_NAME.push(data[i]["uname"]);
                     FOLLOWING_LIST_UID.push(data[i]["mid"]);
                     NOTIFICATION_PUSHED.push(false);
+                    // why this work? why it not continue add rather than keep the number of following
                 }
                 if (listLength === 0 && FOLLOWING_LIST_UID.length !== 0)
-                    console.log("Load following list complete. " + FOLLOWING_LIST_UID.length + " followings found.")
+                    console.log("Load following list complete. " + FOLLOWING_LIST_UID.length + " followings found.");
                 if (listLength !== 0)
                     getFollowingList();
             }
@@ -58,37 +61,37 @@ function getLiversInfo() {
      * members who followed by user.
      * */
     getFollowingList();
-    setTimeout(getLivesInfo, 10000);
+    INDEX = 0;
+    setTimeout(getLiveInfo, 10000);
 }
 
-function getLivesInfo() {
-    for (let i = 0; i < FOLLOWING_LIST_NAME.length; i++) {
-        getLiveInfo(i, FOLLOWING_LIST_UID[i], FOLLOWING_LIST_NAME[i]);
-    }
-}
 
-function getLiveInfo(i, uid, uname) {
+function getLiveInfo() {
     /***
      * If this room status is changed and current status
      * is 1 then push a notification to chrome.
      *
-     * Attention: asynchronous operations used here.
      * */
     $.ajax({
-        url: "https://api.live.bilibili.com/room/v1/Room/getRoomInfoOld?mid=" + uid,
+        url: "https://api.live.bilibili.com/room/v1/Room/getRoomInfoOld?mid=" + FOLLOWING_LIST_UID[INDEX],
         type: "GET",
         dataType: "json",
         json: "callback",
         success: function (json) {
             let data = json["data"];
             if (data["liveStatus"] === 0)
-                NOTIFICATION_PUSHED[i] = false;
-            if (data["liveStatus"] === 1 && !NOTIFICATION_PUSHED[i]) {
+                NOTIFICATION_PUSHED[INDEX] = false;
+            if (data["liveStatus"] === 1 && !NOTIFICATION_PUSHED[INDEX]) {
                 var coverURL = (data["cover"] === null || data["cover"].length < 1) ? "../images/abaaba.png" : data["cover"];
-                pushNotification(data["title"], uname, data["url"], coverURL, i);
-                NOTIFICATION_PUSHED[i] = true;
-                console.log(data["title"] + " " + FOLLOWING_LIST_NAME[i]);
+                pushNotification(data["title"], FOLLOWING_LIST_NAME[INDEX], data["url"], coverURL, INDEX);
+                NOTIFICATION_PUSHED[INDEX] = true;
+                console.log(data["title"] + " " + FOLLOWING_LIST_NAME[INDEX]);
             }
+            INDEX ++;
+            if(INDEX < FOLLOWING_LIST_NAME.length)
+                getLiveInfo();
+            if(INDEX === FOLLOWING_LIST_NAME.length)
+                getLiversInfo();
         }
     });
 }
@@ -134,10 +137,23 @@ function reloadCookies() {
                     if (UUID !== -1 && SESSDATA !== -1 && UUID !== P_UID && SESSDATA !== P_SESS) {
                         // log in info changed then load following list and start update liver stream info every 3 min.
                         console.log("Session info got.");
-                        setInterval(getLiversInfo, 60000 * interval); // should not below 3 min. Beware ERROR 412
+                        getLiversInfo();
+                        // setInterval(getLiversInfo, 60000 * interval); // should not below 3 min. Beware ERROR 412
                     }
                     P_UID = UUID;
                     P_SESS = SESSDATA;
                 });
         });
+
 }
+
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
+        if(request.msg === "get_JCT"){
+            chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
+                function (jct) {
+                    JCT = jct.value;
+                    sendResponse(jct.value);
+                });
+        }
+    }
+);
