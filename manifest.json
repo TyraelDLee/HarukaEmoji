@@ -1,11 +1,11 @@
 {
   "name": "rua豹器",
   "manifest_version": 2,
-  "version": "3.2",
+  "version": "4.0",
   "description": "rua!",
   "permissions": ["cookies", "notifications","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "http://i0.hdslb.com/*"],
   "background": {
-    "scripts": ["js/background.js","js/Jquery-3.5.1.js"],
+    "scripts": ["js/ADT.js","js/Jquery-3.5.1.js","js/background.js"],
     "persistent": true
   },
   "icons": {
@@ -16,9 +16,20 @@
   },
   "content_scripts": [ {
     "all_frames": true,
+    "js": ["js/ADT.js","js/Jquery-3.5.1.js","js/Madel.js"],
+    "matches": [ "*://live.bilibili.com/*"],
+    "run_at": "document_start"
+  },{
+    "all_frames": true,
     "css": ["css/host.css"],
-    "js": ["js/haruka.js","js/WebHost.js","js/Jquery-3.5.1.js"],
+    "js": ["js/haruka.js","js/WebHost.js"],
     "matches": [ "*://live.bilibili.com/21652717*", "*://live.bilibili.com/21652717?*", "*://live.bilibili.com/record/21652717*"],
+    "run_at": "document_end"
+  },{
+    "all_frames": true,
+    "css": ["css/host.css"],
+    "js": ["js/pudding.js","js/WebHost.js"],
+    "matches": [ "*://live.bilibili.com/21413565*", "*://live.bilibili.com/21413565?*", "*://live.bilibili.com/record/21413565*"],
     "run_at": "document_end"
   } ],
   "web_accessible_resources": ["images/*", "css/*", "js/*"],

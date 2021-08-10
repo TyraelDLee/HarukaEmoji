@@ -2,19 +2,64 @@
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
 const API = "https://api.live.bilibili.com/xlive/web-ucenter/v1/xfetter/GetWebList?page=";
-const NOTIFICATION_PUSH = true;
-
+const NOTIFICATION_PUSH = false;
 var UUID = -1;
 var SESSDATA = -1;
+var JCT = -1;
 var P_UID = UUID;
 var P_SESS = SESSDATA;
 var FOLLOWING_LIST = new FollowingMemberList();
 var FOLLOWING_LIST_TEMP = new FollowingMemberList();
 var INDEX = 0;
 var p = 0;
-var logout = false;
 
-
+var newlist = new FollowingMemberList();
+var newtemp = new FollowingMemberList();
+var c = 0;
+function getOnAirFollowing(){
+    c++;
+    $.ajax({
+        url: API+c,
+        //ps maximum is 50
+        type: "GET",
+        dataType: "json",
+        json: "callback",
+        xhrFields: {
+            withCredentials: true
+        },
+        success: function (json) {
+            var data = json["data"]["list"];
+            for (let i = 0; i < data.length; i++) {
+                let member = new FollowingMember(data[i]["uid"], data[i]["uname"], data[i]["face"], data[i]["cover_from_user"], data[i]["keyframe"],data[i]["link"], data[i]["title"]);
+                newtemp.push(member);
+            }
+            if (data.length === 0 && newtemp.length() !== 0){
+                c=0;
+                if(newlist.length() === 0)
+                    newlist.copy(newtemp);
+                newlist.update(newtemp);
+                newtemp.updateRemove(newlist)
+                console.log(newtemp.print());
+                for (let i = 0; i < newtemp.length(); i++) {
+                    newlist.maintainList(newtemp.get(i));
+                }
+                console.log(newtemp.length()+" "+newlist.length());
+                newtemp.clearAll();
+                setTimeout(getLiversInfo, 30000);
+            }
+            if (data.length !== 0)
+                getOnAirFollowing();
+        },
+        error: function (msg){
+            if(typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)
+                setTimeout(getOnAirFollowing, 900000);
+            // if blocked then retry after 15min.
+            else
+                setTimeout(getOnAirFollowing,1000);
+            // others error retry immediately.
+        }
+    });
+}
 
 /***
  * Load user following list from bilibili api.
@@ -23,6 +68,7 @@ var logout = false;
  *
  * Attention: asynchronous operations used here.
  * Recursion used here.
+ * @deprecated
  * */
 function getFollowingList() {
     p++;
@@ -74,7 +120,8 @@ function getFollowingList() {
 function getLiversInfo() {
     p = 0;
     INDEX = 0;
-    getFollowingList();
+    // getFollowingList();
+    getOnAirFollowing()
 }
 
 /***
@@ -90,25 +137,21 @@ function getLiveInfo() {
         dataType: "json",
         json: "callback",
         success: function (json) {
-            if(!logout){
-                let data = json["data"];
-                if (data["liveStatus"] === 0)
-                    FOLLOWING_LIST.updateStatus(INDEX, false);
-                if (data["liveStatus"] === 1 && !FOLLOWING_LIST.get(INDEX).PUSHED) {
-                    var coverURL = (data["cover"] === null || data["cover"].length < 1) ? "../images/abaaba.png" : data["cover"];
-                    if(NOTIFICATION_PUSH)
-                        pushNotification(data["title"], FOLLOWING_LIST.get(INDEX).NAME, data["url"], coverURL);
-                    FOLLOWING_LIST.updateStatus(INDEX, true);
-                    console.log(data["title"] + " " + FOLLOWING_LIST.get(INDEX).NAME + " latency:" + (Date.now() - latency));
-                }
-                INDEX ++;
-                if(INDEX < FOLLOWING_LIST.length())
-                    getLiveInfo();
-                if(INDEX === FOLLOWING_LIST.length()){
-                    if ((UUID !== -1 || SESSDATA !== -1))
-                        getLiversInfo();
-                }
+            let data = json["data"];
+            if (data["liveStatus"] === 0)
+                FOLLOWING_LIST.updateStatus(INDEX, false);
+            if (data["liveStatus"] === 1 && !FOLLOWING_LIST.get(INDEX).PUSHED) {
+                var coverURL = (data["cover"] === null || data["cover"].length < 1) ? "../images/abaaba.png" : data["cover"];
+                if(NOTIFICATION_PUSH)
+                    pushNotification(data["title"], FOLLOWING_LIST.get(INDEX).NAME, data["url"], coverURL);
+                FOLLOWING_LIST.updateStatus(INDEX, true);
+                console.log(data["title"] + " " + FOLLOWING_LIST.get(INDEX).NAME + " latency:" + (Date.now() - latency));
             }
+            INDEX ++;
+            if(INDEX < FOLLOWING_LIST.length())
+                getLiveInfo();
+            if(INDEX === FOLLOWING_LIST.length())
+                getLiversInfo();
         },
         error: function (msg){
             if(typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)
@@ -168,14 +211,12 @@ function reloadCookies() {
                     if ((UUID === -1 || SESSDATA === -1) && UUID !== P_UID && SESSDATA !== P_SESS) {
                         // if not log in then stop update liver stream info.
                         clearInterval(getLiversInfo);
-                        logout = true;
                         console.log("Session info does not exist, liver stream info listener cleared.");
                     }
                     if (UUID !== -1 && SESSDATA !== -1 && UUID !== P_UID && SESSDATA !== P_SESS) {
                         // log in info changed then load following list and start update liver stream info every 3 min.
                         console.log("Session info got.");
                         FOLLOWING_LIST.clearAll(); // initial following list.
-                        logout = false;
                         getLiversInfo();
                         // setInterval(getLiversInfo, 60000 * interval); // should not below 3 min. Beware ERROR 412
                     }
@@ -189,8 +230,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
         if(request.msg === "get_JCT"){
             chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
                 function (jct) {
-                    if(jct !== null)
-                        sendResponse(jct.value);
+                    JCT = jct.value;
+                    sendResponse(jct.value);
                 });
         }
     }
