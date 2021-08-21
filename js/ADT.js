@@ -101,6 +101,7 @@ FollowingMemberList.prototype.maintainList = function (member){
 function ImageButton(URL, span){
     this.URL = URL;
     this.span = span;
+    console.log(this.URL);
 }
 
 ImageButton.prototype.getURL = function (){
@@ -115,7 +116,6 @@ ImageButton.prototype.getSpan = function (){
     else
         return this.span;
 }
-
 
 function Madel(MID, RID, UID){
     this.MID = MID; // madel id

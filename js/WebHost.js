@@ -9,8 +9,6 @@ var JCT = -1;
 var WINDOW_HEIGHT;
 var WINDOW_WIDTH;
 
-var DanMuForm = new FormData();
-
 function setSize(){
     WINDOW_HEIGHT = window.innerHeight;
     WINDOW_WIDTH = window.innerWidth;
@@ -18,130 +16,162 @@ function setSize(){
 
 setSize();
 updateJCT();
+setInterval(updateJCT, 3000);
+
 var absoluteLoc = [100, 100, WINDOW_WIDTH - 100];
 var isDrag = 0;
 const parent = document.body;
+// popup button
 const popup = document.createElement("div");
+// popup window
 const selec = document.createElement("div");
+// emoji table
 const emojiPad = document.createElement("div");
 const emojiTable = document.createElement("table");
+// danmaku input window
 const DanMuInput = document.createElement("textarea");
+// send button
 const DanMuSub = document.createElement("button");
+// show the text length
 const textLength = document.createElement("span");
 
+// full screen function.
+const fullScreenText = document.createElement("span");
+const fullScreenSection = document.createElement("section");
+const fullScreenButton = document.createElement("div");
+const fullScreenInput = document.createElement("input");
 // let commentsTextArea = null;
 
+// check event
+if(document.getElementsByTagName("article").length === 0) renderExtension();
 
-popup.setAttribute("id", "emoji-popup");
-popup.style.background = "url("+link+") no-repeat center";
-popup.style.backgroundSize = "contain";
-popup.innerHTML = "<!---->";
+function renderExtension(){
+    popup.setAttribute("id", "emoji-popup");
+    popup.style.background = "url("+link+") no-repeat center";
+    popup.style.backgroundSize = "contain";
+    popup.innerHTML = "<!---->";
 
-selec.setAttribute("id", "emoji-selection");
-selec.classList.add("emoji_sec");
-selec.style.display = "none"
-selec.innerHTML = "";
+    selec.setAttribute("id", "emoji-selection");
+    selec.classList.add("emoji_sec");
+    selec.style.display = "none"
+    selec.innerHTML = "";
 
-emojiPad.setAttribute("id","emoji-tray");
-emojiPad.classList.add("emoji_sec");
-emojiPad.appendChild(emojiTable);
+    emojiPad.setAttribute("id","emoji-tray");
+    emojiPad.classList.add("emoji_sec");
+    emojiPad.appendChild(emojiTable);
 
-emojiTable.setAttribute("class", "emoji-table");
-emojiTable.innerHTML = "<div id='load'>加载弹幕中...</div>";
+    emojiTable.setAttribute("class", "emoji-table");
+    emojiTable.innerHTML = "<div id='load'>加载弹幕中...</div>";
 
-selec.appendChild(emojiPad);
-parent.appendChild(selec);
-parent.appendChild(popup);
+    selec.appendChild(emojiPad);
+    parent.appendChild(selec);
+    parent.appendChild(popup);
 
-popup.style.left = WINDOW_WIDTH - 100 + 'px';
-popup.style.top = "100px";
-selec.style.left = WINDOW_WIDTH - 410 +"px";
-selec.style.top = "95px";
+    popup.style.left = WINDOW_WIDTH - 100 + 'px';
+    popup.style.top = "100px";
+    selec.style.left = WINDOW_WIDTH - 410 +"px";
+    selec.style.top = "95px";
 
-DanMuSub.setAttribute("id", "input-button");
-DanMuSub.innerHTML = "<span>发送</span>";
-DanMuSub.style.display = "none";
+    DanMuSub.setAttribute("id", "input-button");
+    DanMuSub.innerHTML = "<span>发送</span>";
+    DanMuSub.style.display = "none";
 
-DanMuInput.setAttribute("id", "input-form");
-DanMuInput.placeholder = "这里也可以发弹幕~";
-DanMuInput.style.display = "none";
+    DanMuInput.setAttribute("id", "input-form");
+    DanMuInput.placeholder = "这里也可以发弹幕~";
+    DanMuInput.style.display = "none";
 
-textLength.setAttribute("id", "length-indicator");
-textLength.innerHTML = " 0/30";
-textLength.style.display = "none";
+    textLength.setAttribute("id", "length-indicator");
+    textLength.innerHTML = " 0/30";
+    textLength.style.display = "none";
 
-selec.appendChild(DanMuInput);
-selec.appendChild(DanMuSub);
-selec.appendChild(textLength);
-var oLoc = [0,0];
-var cLoc = [0,0];
-window.onload=function(){
-    popup.onmousedown = function (ev) {
-        let popupLocHor;
-        let popupLocVac;
-        popup.className = "popup-click-in";
-        const oevent = ev || event;
-        const distanceX = oevent.clientX - popup.offsetLeft;
-        const distanceY = oevent.clientY - popup.offsetTop;
-        oLoc = [popup.offsetLeft, popup.offsetTop];
-        cLoc = [popup.offsetLeft, popup.offsetTop];
-        document.onmousemove = function (ev) {
-            isDrag = 1;
+    fullScreenSection.classList.add("button");
+    fullScreenButton.classList.add("checkbox");
+    fullScreenInput.type = "checkbox";
+    fullScreenButton.appendChild(fullScreenInput);
+    fullScreenButton.appendChild(document.createElement("label"));
+    fullScreenSection.appendChild(fullScreenButton);
+    fullScreenSection.style.display = "none";
+    fullScreenText.setAttribute("id", "fullscreen-label");
+    fullScreenText.innerHTML = "全屏显示";
+    fullScreenText.style.display = "none";
+
+    selec.appendChild(DanMuInput);
+    selec.appendChild(DanMuSub);
+    selec.appendChild(fullScreenSection);
+    selec.appendChild(fullScreenText);
+    selec.appendChild(textLength);
+
+    var oLoc = [0,0];
+    var cLoc = [0,0];
+    window.onload=function(){
+        popup.onmousedown = function (ev) {
+            let popupLocHor;
+            let popupLocVac;
+            popup.className = "popup-click-in";
             const oevent = ev || event;
-            if(oevent.clientX - distanceX >= 0 && oevent.clientX - distanceX <= WINDOW_WIDTH - 60)
-                popupLocHor = oevent.clientX - distanceX;
-            if(oevent.clientY - distanceY >= 0 && oevent.clientY - distanceY <= WINDOW_HEIGHT - 60)
-                popupLocVac = oevent.clientY - distanceY;
-            cLoc = [popupLocHor, popupLocVac];
-            popup.style.left = popupLocHor + 'px';
-            popup.style.top = popupLocVac + 'px';
-            popupLocHor < 320?selec.style.left = popupLocHor + 60 + "px":selec.style.left = popupLocHor - 310 + "px";
-            popupLocVac > WINDOW_HEIGHT - 360?selec.style.top = WINDOW_HEIGHT - 360 + "px":selec.style.top = popupLocVac - 5 + "px";
-            if(popupLocHor > -1)
-                absoluteLoc = [WINDOW_WIDTH - popupLocHor, popupLocVac, popupLocHor];
-        };
-        document.onmouseup = function () {
-            popup.className = "popup-click-out";
-            if(isMoved(oLoc[0], oLoc[1], cLoc[0], cLoc[1])){
-                if (selec.style.display === "none") {
-                    selec.classList.remove("selection-fade-out");
-                    selec.style.display = "block";
-                    selec.classList.add("selection-fade-in");
-                } else {
-                    selec.classList.remove("selection-fade-in");
-                    selec.classList.add("selection-fade-out");
-                    setTimeout(hide, 150);
+            const distanceX = oevent.clientX - popup.offsetLeft;
+            const distanceY = oevent.clientY - popup.offsetTop;
+            oLoc = [popup.offsetLeft, popup.offsetTop];
+            cLoc = [popup.offsetLeft, popup.offsetTop];
+            document.onmousemove = function (ev) {
+                isDrag = 1;
+                const oevent = ev || event;
+                if(oevent.clientX - distanceX >= 0 && oevent.clientX - distanceX <= WINDOW_WIDTH - 60)
+                    popupLocHor = oevent.clientX - distanceX;
+                if(oevent.clientY - distanceY >= 0 && oevent.clientY - distanceY <= WINDOW_HEIGHT - 60)
+                    popupLocVac = oevent.clientY - distanceY;
+                cLoc = [popupLocHor, popupLocVac];
+                popup.style.left = popupLocHor + 'px';
+                popup.style.top = popupLocVac + 'px';
+                popupLocHor < 320?selec.style.left = popupLocHor + 60 + "px":selec.style.left = popupLocHor - 310 + "px";
+                popupLocVac > WINDOW_HEIGHT - 360?selec.style.top = WINDOW_HEIGHT - 360 + "px":selec.style.top = popupLocVac - 5 + "px";
+                if(popupLocHor > -1)
+                    absoluteLoc = [WINDOW_WIDTH - popupLocHor, popupLocVac, popupLocHor];
+            };
+            document.onmouseup = function () {
+                popup.className = "popup-click-out";
+                if(isMoved(oLoc[0], oLoc[1], cLoc[0], cLoc[1])){
+                    if (selec.style.display === "none") {
+                        selec.classList.remove("selection-fade-out");
+                        selec.style.display = "block";
+                        selec.classList.add("selection-fade-in");
+                    } else {
+                        selec.classList.remove("selection-fade-in");
+                        selec.classList.add("selection-fade-out");
+                        setTimeout(hide, 150);
+                    }
                 }
-            }
-            document.onmousemove = null;
-            document.onmouseup = null;
+                document.onmousemove = null;
+                document.onmouseup = null;
+            };
         };
-    };
 
-    popup.onmouseenter = function (){popup.className = "popup-click-hoverin";};
+        popup.onmouseenter = function (){popup.className = "popup-click-hoverin";};
 
-    popup.onmouseleave = function (){popup.className = "popup-click-hoverout";};
+        popup.onmouseleave = function (){popup.className = "popup-click-hoverout";};
+    }
+
+    /***
+     * Resize handler
+     * */
+    window.addEventListener("resize", function(){
+        let popleft;
+        setSize();
+        absoluteLoc[0] < absoluteLoc[2]?popleft = WINDOW_WIDTH - absoluteLoc[0]:popleft = absoluteLoc[2];
+        popup.style.left = popleft + 'px';
+        if(absoluteLoc[1] > WINDOW_HEIGHT){
+            popup.style.top = WINDOW_HEIGHT - 60 + "px";
+            selec.style.top = WINDOW_HEIGHT - 360 + "px";
+        }
+        popleft < 320?selec.style.left = popleft + 60 + "px":selec.style.left = popleft - 310 + "px";
+    });
+    setTimeout(delay,5000);
 }
 
 function hide(){selec.style.display = "none";}
 
 function isMoved(oX, oY, cX, cY){return Math.abs(oX - cX) === 0 && Math.abs(oY - cY) === 0;}
-/***
- * Resize handler
- * */
-window.addEventListener("resize", function(){
-    let popleft;
-    setSize();
-    absoluteLoc[0] < absoluteLoc[2]?popleft = WINDOW_WIDTH - absoluteLoc[0]:popleft = absoluteLoc[2];
-    popup.style.left = popleft + 'px';
-    if(absoluteLoc[1] > WINDOW_HEIGHT){
-        popup.style.top = WINDOW_HEIGHT - 60 + "px";
-        selec.style.top = WINDOW_HEIGHT - 360 + "px";
-    }
-    popleft < 320?selec.style.left = popleft + 60 + "px":selec.style.left = popleft - 310 + "px";
-});
 
-setTimeout(delay,5000);
 function delay(){
     console.log("load complete");
     if(JCT === -1){
@@ -149,70 +179,126 @@ function delay(){
             "如未登录，请先登录</div>";
         document.getElementById("load").style.marginTop = "130px";
     }else{
-        var cursorSelectionStart = 0;
-        var cursorSelectionEnd = 0;
         DanMuInput.style.display = "block";
         DanMuSub.style.display = "block";
         textLength.style.display = "block";
-        DanMuInput.onkeyup = function (ev){
-            console.log(ev.keyCode);
-            if(ev.keyCode === 13){
-                ev.preventDefault();
-                packaging(DanMuInput.value);
-                send();
-                DanMuInput.value = "";
+        fullScreenSection.style.display = "block";
+        fullScreenText.style.display = "block";
 
-            }
-            calculateTextLength(DanMuInput.value.length);
-            cursorSelectionStart = DanMuInput.selectionStart;
-            cursorSelectionEnd = DanMuInput.selectionEnd;
-
-        }
-        DanMuInput.onkeydown = function (ev){
-            if(ev.code === "Enter") ev.preventDefault();
-        }
-        selec.addEventListener("mousemove", function (ev){
-            cursorSelectionStart = DanMuInput.selectionStart;
-            cursorSelectionEnd = DanMuInput.selectionEnd;
-        });
-
-        emojiTable.innerHTML = construcateHTMLTable();
-
-        for (let i = 0; i < emojiTable.rows.length; i++) {
-            var cell = emojiTable.rows[i].cells;
-            for (let j = 0; j < cell.length; j++) {
-                cell[j].onclick = function (){
-                    DanMuInput.value = DanMuInput.value.substr(0, cursorSelectionStart) + "(" +emoji[i][j]+ ")" + DanMuInput.value.substr(cursorSelectionEnd);
-                    cursorSelectionStart = DanMuInput.selectionStart;
-                    cursorSelectionEnd = DanMuInput.selectionEnd;
-                    calculateTextLength(DanMuInput.value.length);
-                }
-            }
-        }
+        constructHTMLTable(4, DanMuInput, emojiTable, selec, textLength);
 
         DanMuSub.onclick = function (){
-            if(DanMuInput.value !== ""){
-                packaging(DanMuInput.value);
-                send();
-                textLength.innerHTML = " 0/30";
-            }
+            packaging(DanMuInput.value);
+            textLength.innerHTML = " 0/30";
             DanMuInput.value = "";
         }
 
+        // full screen functions.
+        fullScreenInput.addEventListener('change', function() {
+            this.checked?displayFullScreenDanmaku():hideFullScreenDanmaku();
+        });
+        let timer = null;
+        let fullscreen_input_div = document.createElement("div");
+        let fullscreen_input_btn = document.createElement("div");
+        let fullscreen_emoji_pad = document.createElement("div");
+        let fullscreen_input = document.createElement("input");
+        let fullscreen_text_length = document.createElement("span");
+        let fullscreen_emoji_table = document.createElement("table");
+        let fullscreen_background = document.createElement("div");
+
+        let original_input = document.getElementsByClassName("fullscreen-danmaku")[0].getElementsByTagName("div")[0];
+        let original_button =document.getElementsByClassName("fullscreen-danmaku")[0].getElementsByTagName("div")[1];
+        renderFullScreenMode();
+        function renderFullScreenMode(){
+            document.getElementsByClassName("fullscreen-danmaku")[0].classList.add("emoji-fullscreen-danmaku");
+
+            fullscreen_input_div.style.display = "none";
+            fullscreen_input_btn.style.display = "none";
+            fullscreen_emoji_pad.style.display = "none";
+            fullscreen_background.style.display = "none";
+
+            fullscreen_emoji_pad.classList.add("emoji_sec");
+            fullscreen_emoji_pad.setAttribute("id", "fullscreen-table");
+            fullscreen_emoji_table.classList.add("emoji-table");
+            constructHTMLTable(8, fullscreen_input, fullscreen_emoji_table, fullscreen_emoji_pad, fullscreen_text_length);
+            fullscreen_emoji_pad.appendChild(fullscreen_emoji_table);
+            fullscreen_background.setAttribute("id", "fs-emoji-bg");
+
+            fullscreen_input.placeholder = "发个弹幕呗~";
+            fullscreen_input.setAttribute("id", "fullscreen-input");
+
+            fullscreen_text_length.setAttribute("id", "fullscreen-text-length");
+            fullscreen_text_length.innerHTML = " 0/30";
+
+            fullscreen_input_div.setAttribute("id", "first-child");
+            fullscreen_input_div.appendChild(fullscreen_input);
+            fullscreen_input_div.appendChild(fullscreen_text_length);
+
+            fullscreen_input_btn.innerHTML = "发送";
+            fullscreen_input_btn.classList.add("send-danmaku");
+            fullscreen_input_btn.setAttribute("id", "fullscreen-sub-btn");
+
+            document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreen_input_div);
+            document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreen_input_btn);
+            document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreen_background);
+            document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreen_emoji_pad);
+        }
+        function displayFullScreenDanmaku(){
+            original_input.style.display = "none";
+            original_button.style.display = "none";
+
+            fullscreen_input_div.style.display = "block";
+            fullscreen_input_btn.style.display = "block";
+            fullscreen_emoji_pad.style.display = "block";
+            fullscreen_background.style.display = "block";
+
+            document.getElementsByClassName("emoji-fullscreen-danmaku")[0].addEventListener("mouseenter", function (){
+                fullscreen_emoji_pad.classList.remove("fullscreen-hoverout");
+                fullscreen_emoji_pad.classList.add("fullscreen-hoverin");
+            });
+            document.getElementsByClassName("fullscreen-danmaku")[0].addEventListener("mouseleave", function (){
+                fullscreen_emoji_pad.classList.remove("fullscreen-hoverin");
+                fullscreen_emoji_pad.classList.add("fullscreen-hoverout");
+                console.log(fullscreen_input.value);
+            });
+            document.getElementById("live-player").addEventListener("mousemove",fs_move);
+            fullscreen_input_btn.addEventListener("click", function (){
+                packaging(fullscreen_input.value);
+                fullscreen_input.value = "";
+                fullscreen_text_length.innerHTML = " 0/30";
+            });
+        }
+
+        function hideFullScreenDanmaku(){
+            original_input.style.display = "block";
+            original_button.style.display = "block";
+
+            fullscreen_input_div.style.display = "none";
+            fullscreen_input_btn.style.display = "none";
+            fullscreen_emoji_pad.style.display = "none";
+            fullscreen_background.style.display = "none";
+
+            document.getElementById("live-player").removeEventListener("mousemove",fs_move);
+        }
+
+        function fs_move(){
+            clearTimeout(timer);
+            timer = setTimeout(function(){
+                fullscreen_emoji_pad.classList.remove("fullscreen-hoverout");
+            },2000);
+        }
     }
 }
 
-setInterval(updateJCT, 3000);
-
 function updateJCT(){
-    if(typeof chrome.app.isInstalled!=="undefined"){
+    if(typeof chrome.app.isInstalled!=="undefined")
         chrome.extension.sendRequest({ msg: "get_JCT" },function(jct){JCT = jct;});
-    }
 }
 
 function getTimeSnap(){return Date.now();}
 
 function packaging(msg){
+    let DanMuForm = new FormData();
     DanMuForm.append("bubble", "0");
     DanMuForm.append("msg", msg);
     DanMuForm.append("color", "16777215");
@@ -222,13 +308,15 @@ function packaging(msg){
     DanMuForm.append("roomid", ROOM_ID);
     DanMuForm.append("csrf", JCT);
     DanMuForm.append("csrf_token", JCT);
+    if(msg.length !== 0)
+        send(DanMuForm);
 }
 
-function send(){
+function send(form){
     $.ajax({
         url: API_LINK,
         type: "POST",
-        data: DanMuForm,
+        data: form,
         dataType: "JSON",
         processData: false,
         contentType: false,
@@ -238,23 +326,58 @@ function send(){
         },
         success: function (){
             console.log("sent");
-            DanMuForm = new FormData();
         }
     })
 }
 
-function construcateHTMLTable(){
+function constructHTMLTable(num_per_line, O, O1, sel, span){
+    // enter key shortcut listener
+    O.addEventListener("keyup", function (e){
+        console.log(e.keyCode);
+        if(e.keyCode === 13){
+            e.preventDefault();
+            packaging(O.value);
+            O.value = "";
+        }
+    });
+    O.addEventListener("keydown", function (e){
+        if(e.code === "Enter") e.preventDefault();
+    });
+
+    // update the current courser location.
+    let cursorSelection = [0,0];
+    O.onkeyup = function (){cursorSelection = inputListener(span, O);};
+    sel.addEventListener("mousemove", function (){cursorSelection = inputListener(span, O);});
+
+    // construct emoji table
     let html = "<tbody><tr>"
     for (let i = 0; i < imgs.length; i++) {
-        if(i % 4 === 0 && i !== 0)
+        if(i % num_per_line === 0 && i !== 0)
             html += "</tr><tr>";
         html += "<td colspan="+imgs[i].getSpan()+" style=\" background:url("+ imgs[i].getURL() +") no-repeat bottom center; background-size: contain\"></td>";
     }
     html += "</tr></tbody>"
-    return html;
+    O1.innerHTML = html;
+
+    // add listener for each emoji.
+    for (let i = 0; i < O1.rows.length; i++) {
+        var cell = O1.rows[i].cells;
+        for (let j = 0; j < cell.length; j++) {
+            cell[j].onclick = function (){
+                O.value = O.value.substr(0, cursorSelection[0]) + "(" +emoji[j+i*num_per_line]+ ")" + O.value.substr(cursorSelection[1]);
+                cursorSelection = inputListener(span, O);
+            }
+        }
+    }
 }
 
-function calculateTextLength(length){
-    textLength.innerHTML =  (length<10)?(" "+length+"/30"):(length+"/30");
+function calculateTextLength(span, length){
+    span.innerHTML = (length<10)?(" "+length+"/30"):(length+"/30");
 }
 
+function inputListener(span, O){
+    let Start = O.selectionStart;
+    let End = O.selectionEnd;
+    calculateTextLength(span, O.value.length);
+    return [Start, End];
+}
