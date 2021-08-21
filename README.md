@@ -16,3 +16,6 @@ ver 4.2
 ## 怎么用：
 把crx 文件装到chrome浏览器，打开豹豹直播间就能看到一个悬浮按钮，单击它打开选择框，就可以选择要发的表情。
 选中的表情对应的文字会自动出现在弹幕投射器。
+
+## 下载：
+https://chrome.google.com/webstore/detail/rua%E8%B1%B9%E5%99%A8/igapngheaefbfhikpbngjgakfnedkchb
