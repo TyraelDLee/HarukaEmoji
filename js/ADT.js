@@ -8,6 +8,7 @@ function FollowingMember(UID, NAME, FACE, COVER, KEYFRAME, ROOM_URL, TITLE){
     this.UID = UID;
     this.NAME = NAME;
     this.PUSHED = false;
+    this.ONAIR = false;
     this.FACE = FACE;
     this.COVER = COVER;
     this.KEYFRAME = KEYFRAME;
@@ -58,6 +59,11 @@ FollowingMemberList.prototype.updateRemove = function (members){
 
 FollowingMemberList.prototype.updateStatus = function (index, bool){
     this.list[index].PUSHED = bool;
+}
+
+FollowingMemberList.prototype.updateElementOnAirStatus = function (o, bool){
+    this.list[this.indexOf(o)] = o;
+    this.list[this.indexOf(o)].ONAIR = bool;
 }
 
 FollowingMemberList.prototype.length = function (){

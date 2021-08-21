@@ -1,29 +1,61 @@
 /***
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
-const API = "https://api.live.bilibili.com/xlive/web-ucenter/v1/xfetter/GetWebList?page=";
+const API = "https://api.live.bilibili.com/xlive/web-ucenter/v1/xfetter/GetWebList?";
 const NOTIFICATION_PUSH = true;
 
+var TIMESTAMP = Date.now();
 var UUID = -1;
 var SESSDATA = -1;
+var JCT = -1;
 var P_UID = UUID;
 var P_SESS = SESSDATA;
 var FOLLOWING_LIST = new FollowingMemberList();
-var FOLLOWING_LIST_TEMP = new FollowingMemberList();
+var FOLLOWING_LIST_TEMP = new FollowingMemberList();// for remove
 var INDEX = 0;
 var p = 0;
-var logout = false;
 
+var ON_AIR_LIST = new FollowingMemberList();
+var ON_AIR_LIST_TEMP = new FollowingMemberList();
+var c = 0;
 
+function getOnAirFollowing(){
+    c++;
+    $.ajax({
+        url: "https://api.live.bilibili.com/xlive/web-ucenter/v1/xfetter/GetWebList?_="+TIMESTAMP+"&page="+c,
+        //ps maximum is 50
+        type: "GET",
+        dataType: "json",
+        json: "callback",
+        xhrFields: {
+            withCredentials: true
+        },
+        success: function (json) {
+            var data = json["data"]["list"];
+            for (let i = 0; i < data.length; i++) {
+                let member = new FollowingMember(data[i]["uid"], data[i]["uname"], data[i]["face"], data[i]["cover_from_user"], data[i]["keyframe"],data[i]["link"], data[i]["title"]);
+                ON_AIR_LIST_TEMP.push(member);
+            }
+            if (data.length === 0 && ON_AIR_LIST_TEMP.length() !== 0){
+                // all elements enquired.
+                c=0;
+                ON_AIR_LIST.copy(ON_AIR_LIST_TEMP);
+                ON_AIR_LIST_TEMP.clearAll();
+                updateList();
 
-/***
- * Load user following list from bilibili api.
- * Ajax asynchronous method used. Thus, beware the code
- * is not execute in sequence.
- *
- * Attention: asynchronous operations used here.
- * Recursion used here.
- * */
+            }
+            if (data.length !== 0)
+                getOnAirFollowing();
+        },
+        error: function (msg){
+            if(typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412) setTimeout(getOnAirFollowing, 900000);
+            // if blocked then retry after 15min.
+            else setTimeout(getOnAirFollowing,1000);
+            // others error retry immediately.
+        }
+    });
+}
+
 function getFollowingList() {
     p++;
     let listLength = 0;
@@ -45,24 +77,56 @@ function getFollowingList() {
                 FOLLOWING_LIST_TEMP.push(member);
             }
             if (listLength === 0 && FOLLOWING_LIST.length() !== 0){
+                // all elements enquired.
                 p = 0;
                 FOLLOWING_LIST.update(FOLLOWING_LIST_TEMP);
                 FOLLOWING_LIST_TEMP.clearAll();
                 console.log("Load following list complete. " + FOLLOWING_LIST.length() + " followings found.");
-                getLiveInfo();
+                //getLiveInfo();
+                TIMESTAMP = Date.now();
+                getOnAirFollowing()
             }
             if (listLength !== 0)
                 getFollowingList();
         },
         error: function (msg){
-            if(typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)
-                setTimeout(getLiversInfo, 900000);
+            if(typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412) setTimeout(getLiversInfo, 900000);
             // if blocked then retry after 15min.
-            else
-                setTimeout(getLiversInfo,1000);
+            else setTimeout(getLiversInfo,1000);
             // others error retry immediately.
         }
     });
+}
+
+function updateList(){
+    console.log(FOLLOWING_LIST)
+    for (let i = 0; i < ON_AIR_LIST.length(); i++) {
+        ON_AIR_LIST.get(i).PUSHED = FOLLOWING_LIST.get(FOLLOWING_LIST.indexOf(ON_AIR_LIST.get(i))).PUSHED;
+        FOLLOWING_LIST.updateElementOnAirStatus(ON_AIR_LIST.get(i), true);
+    }
+    for (let i = 0; i < FOLLOWING_LIST.length(); i++) {
+        if(FOLLOWING_LIST.get(i).ONAIR){
+            if(ON_AIR_LIST.indexOf(FOLLOWING_LIST.get(i))===-1){
+                FOLLOWING_LIST.get(i).COVER = undefined;
+                FOLLOWING_LIST.get(i).FACE = undefined;
+                FOLLOWING_LIST.get(i).KEYFRAME = undefined;
+                FOLLOWING_LIST.get(i).ROOM_URL = undefined;
+                FOLLOWING_LIST.get(i).TITLE = undefined;
+                FOLLOWING_LIST.updateStatus(i, false);
+                FOLLOWING_LIST.updateElementOnAirStatus(FOLLOWING_LIST.get(i),false);
+            }else{
+                if (!FOLLOWING_LIST.get(i).PUSHED){
+                    FOLLOWING_LIST.updateStatus(i, true);
+                    if(NOTIFICATION_PUSH)
+                        pushNotification(FOLLOWING_LIST.get(i).TITLE,
+                            FOLLOWING_LIST.get(i).NAME,
+                            FOLLOWING_LIST.get(i).ROOM_URL,
+                            FOLLOWING_LIST.get(i).COVER);
+                }
+            }
+        }
+    }
+
 }
 
 /***
@@ -76,52 +140,10 @@ function getLiversInfo() {
     INDEX = 0;
     getFollowingList();
 }
-
-/***
- * If this room status is changed and current status
- * is 1 then push a notification to chrome.
- *
- * */
-function getLiveInfo() {
-    var latency = Date.now();
-    $.ajax({
-        url: "https://api.live.bilibili.com/room/v1/Room/getRoomInfoOld?mid=" + FOLLOWING_LIST.get(INDEX).UID,
-        type: "GET",
-        dataType: "json",
-        json: "callback",
-        success: function (json) {
-            if(!logout){
-                let data = json["data"];
-                if (data["liveStatus"] === 0)
-                    FOLLOWING_LIST.updateStatus(INDEX, false);
-                if (data["liveStatus"] === 1 && !FOLLOWING_LIST.get(INDEX).PUSHED) {
-                    var coverURL = (data["cover"] === null || data["cover"].length < 1) ? "../images/abaaba.png" : data["cover"];
-                    if(NOTIFICATION_PUSH)
-                        pushNotification(data["title"], FOLLOWING_LIST.get(INDEX).NAME, data["url"], coverURL);
-                    FOLLOWING_LIST.updateStatus(INDEX, true);
-                    console.log(data["title"] + " " + FOLLOWING_LIST.get(INDEX).NAME + " latency:" + (Date.now() - latency));
-                }
-                INDEX ++;
-                if(INDEX < FOLLOWING_LIST.length())
-                    getLiveInfo();
-                if(INDEX === FOLLOWING_LIST.length()){
-                    if ((UUID !== -1 || SESSDATA !== -1))
-                        getLiversInfo();
-                }
-            }
-        },
-        error: function (msg){
-            if(typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)
-                setTimeout(getLiversInfo, 900000);
-            // if blocked then retry after 15min.
-            else
-                setTimeout(getLiversInfo,1000);
-            // others error retry immediately.
-        }
-    });
-}
+setInterval(getLiversInfo, 10000);
 
 function pushNotification(roomTitle, liverName, roomUrl, cover) {
+    console.log(roomTitle + " " + liverName);
     var notification = new Notification(roomTitle, {
         icon: cover,
         body: liverName + " 开播啦!",
@@ -168,14 +190,12 @@ function reloadCookies() {
                     if ((UUID === -1 || SESSDATA === -1) && UUID !== P_UID && SESSDATA !== P_SESS) {
                         // if not log in then stop update liver stream info.
                         clearInterval(getLiversInfo);
-                        logout = true;
                         console.log("Session info does not exist, liver stream info listener cleared.");
                     }
                     if (UUID !== -1 && SESSDATA !== -1 && UUID !== P_UID && SESSDATA !== P_SESS) {
                         // log in info changed then load following list and start update liver stream info every 3 min.
                         console.log("Session info got.");
                         FOLLOWING_LIST.clearAll(); // initial following list.
-                        logout = false;
                         getLiversInfo();
                         // setInterval(getLiversInfo, 60000 * interval); // should not below 3 min. Beware ERROR 412
                     }
@@ -189,8 +209,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
         if(request.msg === "get_JCT"){
             chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
                 function (jct) {
-                    if(jct !== null)
-                        sendResponse(jct.value);
+                    JCT = jct.value;
+                    sendResponse(jct.value);
                 });
         }
     }

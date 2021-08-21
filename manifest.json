@@ -1,7 +1,7 @@
 {
   "name": "rua豹器",
   "manifest_version": 2,
-  "version": "4.3",
+  "version": "4.5",
   "description": "rua!",
   "permissions": ["cookies", "notifications","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "http://i0.hdslb.com/*"],
   "background": {
