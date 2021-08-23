@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://github.com/TyraelDLee/HarukaEmoji/blob/main/images/abaaba.png" height="80%" width="80%"/>
+    <img src="https://github.com/TyraelDLee/HarukaEmoji/blob/main/images/abaaba.png"/>
 </p>
 
 # HarukaEmoji
