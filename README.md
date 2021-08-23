@@ -23,4 +23,4 @@ ver 4.2
 ## 下载：
 [chrome插件商店](https://chrome.google.com/webstore/detail/rua%E8%B1%B9%E5%99%A8/igapngheaefbfhikpbngjgakfnedkchb)
 <br>
-[bilibili](https://t.bilibili.com/561690948190181609), 不过都来这儿了上面那个链接应该就够了吧<img src="https://github.com/TyraelDLee/HarukaEmoji/blob/main/images/haruka/5835.webp"/>。
+[bilibili](https://t.bilibili.com/561690948190181609), 不过都来这儿了上面那个链接应该就够了吧<img src="https://github.com/TyraelDLee/HarukaEmoji/blob/main/images/haruka/5835.webp" width="30" height="30"/>。
