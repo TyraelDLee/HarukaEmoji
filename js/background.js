@@ -1,9 +1,9 @@
 /***
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
-const API = "https://api.live.bilibili.com/xlive/web-ucenter/v1/xfetter/GetWebList?";
 const NOTIFICATION_PUSH = true;
 
+var api="https://api.live.bilibili.com/xlive/web-ucenter/v1/sign/DoSign"
 var TIMESTAMP = Date.now();
 var UUID = -1;
 var SESSDATA = -1;
@@ -15,46 +15,8 @@ var FOLLOWING_LIST_TEMP = new FollowingMemberList();// for remove
 var INDEX = 0;
 var p = 0;
 
-var ON_AIR_LIST = new FollowingMemberList();
-var ON_AIR_LIST_TEMP = new FollowingMemberList();
-var c = 0;
 
-function getOnAirFollowing(){
-    c++;
-    $.ajax({
-        url: "https://api.live.bilibili.com/xlive/web-ucenter/v1/xfetter/GetWebList?_="+TIMESTAMP+"&page="+c,
-        //ps maximum is 50
-        type: "GET",
-        dataType: "json",
-        json: "callback",
-        xhrFields: {
-            withCredentials: true
-        },
-        success: function (json) {
-            var data = json["data"]["list"];
-            for (let i = 0; i < data.length; i++) {
-                let member = new FollowingMember(data[i]["uid"], data[i]["uname"], data[i]["face"], data[i]["cover_from_user"], data[i]["keyframe"],data[i]["link"], data[i]["title"]);
-                ON_AIR_LIST_TEMP.push(member);
-            }
-            if (data.length === 0 && ON_AIR_LIST_TEMP.length() !== 0){
-                // all elements enquired.
-                c=0;
-                ON_AIR_LIST.copy(ON_AIR_LIST_TEMP);
-                ON_AIR_LIST_TEMP.clearAll();
-                updateList();
-
-            }
-            if (data.length !== 0)
-                getOnAirFollowing();
-        },
-        error: function (msg){
-            if(typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412) setTimeout(getOnAirFollowing, 900000);
-            // if blocked then retry after 15min.
-            else setTimeout(getOnAirFollowing,1000);
-            // others error retry immediately.
-        }
-    });
-}
+var latency = 0;
 
 function getFollowingList() {
     p++;
@@ -69,64 +31,76 @@ function getFollowingList() {
             withCredentials: true
         },
         success: function (json) {
-            var data = json["data"]["list"];
-            listLength = data.length;
-            for (let i = 0; i < data.length; i++) {
-                let member = new FollowingMember(data[i]["mid"], data[i]["uname"]);
-                FOLLOWING_LIST.push(member);
-                FOLLOWING_LIST_TEMP.push(member);
+            console.log(json)
+            if(typeof json["data"]!=="undefined") {
+                var data = json["data"]["list"];
+                listLength = data.length;
+                for (let i = 0; i < data.length; i++) {
+                    let member = new FollowingMember(data[i]["mid"], data[i]["uname"]);
+                    FOLLOWING_LIST.push(member);
+                    FOLLOWING_LIST_TEMP.push(member);
+                }
+                if (listLength === 0 && FOLLOWING_LIST.length() !== 0) {
+                    // all elements enquired.
+                    p = 0;
+                    FOLLOWING_LIST.update(FOLLOWING_LIST_TEMP);
+                    FOLLOWING_LIST_TEMP.clearAll();
+                    console.log("Load following list complete. " + FOLLOWING_LIST.length() + " followings found.");
+                    TIMESTAMP = Date.now();
+                    query()
+                }
+                if (listLength !== 0) getFollowingList();
             }
-            if (listLength === 0 && FOLLOWING_LIST.length() !== 0){
-                // all elements enquired.
-                p = 0;
-                FOLLOWING_LIST.update(FOLLOWING_LIST_TEMP);
-                FOLLOWING_LIST_TEMP.clearAll();
-                console.log("Load following list complete. " + FOLLOWING_LIST.length() + " followings found.");
-                //getLiveInfo();
-                TIMESTAMP = Date.now();
-                getOnAirFollowing()
-            }
-            if (listLength !== 0)
-                getFollowingList();
         },
         error: function (msg){
-            if(typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412) setTimeout(getLiversInfo, 900000);
+            console.log("ERROR found")
+            if(typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412) {
+                clearInterval(run);
+                setTimeout(grabData, 900000);
+            }
             // if blocked then retry after 15min.
-            else setTimeout(getLiversInfo,1000);
+            else {
+                clearInterval(run);
+                setTimeout(grabData,1000);
+            }
             // others error retry immediately.
         }
     });
 }
 
-function updateList(){
+function updateList(ON_AIR_LIST){
+    console.log(ON_AIR_LIST)
     console.log(FOLLOWING_LIST)
-    for (let i = 0; i < ON_AIR_LIST.length(); i++) {
-        ON_AIR_LIST.get(i).PUSHED = FOLLOWING_LIST.get(FOLLOWING_LIST.indexOf(ON_AIR_LIST.get(i))).PUSHED;
-        FOLLOWING_LIST.updateElementOnAirStatus(ON_AIR_LIST.get(i), true);
-    }
-    for (let i = 0; i < FOLLOWING_LIST.length(); i++) {
-        if(FOLLOWING_LIST.get(i).ONAIR){
-            if(ON_AIR_LIST.indexOf(FOLLOWING_LIST.get(i))===-1){
-                FOLLOWING_LIST.get(i).COVER = undefined;
-                FOLLOWING_LIST.get(i).FACE = undefined;
-                FOLLOWING_LIST.get(i).KEYFRAME = undefined;
-                FOLLOWING_LIST.get(i).ROOM_URL = undefined;
-                FOLLOWING_LIST.get(i).TITLE = undefined;
-                FOLLOWING_LIST.updateStatus(i, false);
-                FOLLOWING_LIST.updateElementOnAirStatus(FOLLOWING_LIST.get(i),false);
-            }else{
-                if (!FOLLOWING_LIST.get(i).PUSHED){
-                    FOLLOWING_LIST.updateStatus(i, true);
-                    if(NOTIFICATION_PUSH)
-                        pushNotification(FOLLOWING_LIST.get(i).TITLE,
-                            FOLLOWING_LIST.get(i).NAME,
-                            FOLLOWING_LIST.get(i).ROOM_URL,
-                            FOLLOWING_LIST.get(i).COVER);
+    if(FOLLOWING_LIST.length() > 0){
+        for (let i = 0; i < ON_AIR_LIST.length(); i++) {
+            ON_AIR_LIST.updateStatus(i, FOLLOWING_LIST.get(FOLLOWING_LIST.indexOf(ON_AIR_LIST.get(i))).PUSHED);
+            FOLLOWING_LIST.updateElementOnAirStatus(ON_AIR_LIST.get(i), true);
+        }
+        for (let i = 0; i < FOLLOWING_LIST.length(); i++) {
+            if(FOLLOWING_LIST.get(i).ONAIR){
+                if(ON_AIR_LIST.indexOf(FOLLOWING_LIST.get(i))===-1){
+                    FOLLOWING_LIST.get(i).COVER = undefined;
+                    FOLLOWING_LIST.get(i).FACE = undefined;
+                    FOLLOWING_LIST.get(i).KEYFRAME = undefined;
+                    FOLLOWING_LIST.get(i).ROOM_URL = undefined;
+                    FOLLOWING_LIST.get(i).TITLE = undefined;
+                    FOLLOWING_LIST.updateStatus(i, false);
+                    FOLLOWING_LIST.updateElementOnAirStatus(FOLLOWING_LIST.get(i),false);
+                }else{
+                    if (!FOLLOWING_LIST.get(i).PUSHED){
+                        FOLLOWING_LIST.updateStatus(i, true);
+                        console.log(FOLLOWING_LIST.get(i).TITLE + " " + FOLLOWING_LIST.get(i).NAME);
+                        if(NOTIFICATION_PUSH)
+                            pushNotification(FOLLOWING_LIST.get(i).TITLE,
+                                FOLLOWING_LIST.get(i).NAME,
+                                FOLLOWING_LIST.get(i).ROOM_URL,
+                                (FOLLOWING_LIST.get(i).COVER.length===0?FOLLOWING_LIST.get(i).FACE:FOLLOWING_LIST.get(i).COVER));
+                    }
                 }
             }
         }
     }
-
+    console.log("latency: " + (Date.now() - latency));
 }
 
 /***
@@ -136,20 +110,21 @@ function updateList(){
  * members who followed by user.
  * */
 function getLiversInfo() {
+    latency = Date.now();
     p = 0;
     INDEX = 0;
     getFollowingList();
 }
-setInterval(getLiversInfo, 10000);
+
 
 function pushNotification(roomTitle, liverName, roomUrl, cover) {
-    console.log(roomTitle + " " + liverName);
+    //console.log(roomTitle + " " + liverName);
     var notification = new Notification(roomTitle, {
         icon: cover,
         body: liverName + " 开播啦!",
     });
     notification.onclick = function (){
-        chrome.tabs.create({url: roomUrl});
+        chrome.tabs.create({url: "https://live.bilibili.com/"+roomUrl});
         notification.close();
     }
 }
@@ -178,7 +153,13 @@ function pushNotificationChrome(roomTitle, liverName, roomUrl, cover){
     );
 }
 // Check cookies info every 5 seconds.
+
 setInterval(reloadCookies, 5000);
+var run;
+
+function grabData(){
+    run = setInterval(getLiversInfo, 10000);
+}
 
 function reloadCookies() {
     chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'DedeUserID'},
@@ -189,19 +170,22 @@ function reloadCookies() {
                     (SD === null) ? SESSDATA = -1 : SESSDATA = SD.value;
                     if ((UUID === -1 || SESSDATA === -1) && UUID !== P_UID && SESSDATA !== P_SESS) {
                         // if not log in then stop update liver stream info.
-                        clearInterval(getLiversInfo);
+                        clearInterval(run);
                         console.log("Session info does not exist, liver stream info listener cleared.");
                     }
                     if (UUID !== -1 && SESSDATA !== -1 && UUID !== P_UID && SESSDATA !== P_SESS) {
                         // log in info changed then load following list and start update liver stream info every 3 min.
                         console.log("Session info got.");
                         FOLLOWING_LIST.clearAll(); // initial following list.
-                        getLiversInfo();
-                        // setInterval(getLiversInfo, 60000 * interval); // should not below 3 min. Beware ERROR 412
+                        grabData();
                     }
                     P_UID = UUID;
                     P_SESS = SESSDATA;
                 });
+        });
+    chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
+        function (jct) {
+            JCT = jct.value;
         });
 }
 

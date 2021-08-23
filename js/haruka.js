@@ -21,9 +21,6 @@ const emoji = ["5835", "草", "阿巴",
     "豹睡", "我不玩了", "玩手机",
     "豹豹！", "豹条"];
 
-
-
-
 const link = chrome.extension.getURL("../images/haruka/abaaba.svg");
 var imgs = [];
 for (let i = 0; i < emoji.length; i++) {

@@ -3,9 +3,9 @@
   "manifest_version": 2,
   "version": "4.5",
   "description": "rua!",
-  "permissions": ["cookies", "notifications","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "http://i0.hdslb.com/*"],
+  "permissions": ["cookies", "notifications","webRequest","webRequestBlocking","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "http://i0.hdslb.com/*"],
   "background": {
-    "scripts": ["js/ADT.js","js/Jquery-3.5.1.js","js/background.js"],
+    "scripts": ["js/ADT.js","js/Jquery-3.5.1.js","js/background.js", "js/PushHost.js"],
     "persistent": true
   },
   "icons": {
@@ -31,7 +31,7 @@
     "js": ["js/pudding.js","js/WebHost.js"],
     "matches": [ "*://live.bilibili.com/21413565*", "*://live.bilibili.com/21413565?*", "*://live.bilibili.com/record/21413565*","*://live.bilibili.com/blanc/21413565?liteVersion=true"],
     "run_at": "document_end"
-  } ],
+  }],
   "web_accessible_resources": ["images/*", "css/*", "js/*"],
   "content_security_policy": "script-src 'self' https://api.live.bilibili.com; object-src 'self'"
 }

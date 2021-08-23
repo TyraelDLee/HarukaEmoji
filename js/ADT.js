@@ -38,6 +38,14 @@ FollowingMemberList.prototype.get = function(index){
     return this.list[index];
 }
 
+FollowingMemberList.prototype.getUIDList = function (){
+    if(this.list.length < 1)
+        return [];
+    let L = [];
+    for (let i = 0; i < this.list.length; i++) L.push(this.list[i].UID);
+    return L;
+}
+
 FollowingMemberList.prototype.clearAll = function (){
     this.list = [];
 }
@@ -107,7 +115,6 @@ FollowingMemberList.prototype.maintainList = function (member){
 function ImageButton(URL, span){
     this.URL = URL;
     this.span = span;
-    console.log(this.URL);
 }
 
 ImageButton.prototype.getURL = function (){
