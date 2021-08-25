@@ -2,8 +2,8 @@
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
 const NOTIFICATION_PUSH = true;
+var checkin;
 
-var api="https://api.live.bilibili.com/xlive/web-ucenter/v1/sign/DoSign"
 var TIMESTAMP = Date.now();
 var UUID = -1;
 var SESSDATA = -1;
@@ -11,66 +11,57 @@ var JCT = -1;
 var P_UID = UUID;
 var P_SESS = SESSDATA;
 var FOLLOWING_LIST = new FollowingMemberList();
-var FOLLOWING_LIST_TEMP = new FollowingMemberList();// for remove
-var INDEX = 0;
+var FOLLOWING_LIST_TEMP = new FollowingMemberList();
 var p = 0;
 
-
+//todo: use synchronization if error exist again
 var latency = 0;
 
 function getFollowingList() {
-    p++;
-    let listLength = 0;
-    $.ajax({
-        url: "https://api.bilibili.com/x/relation/followings?vmid=" + UUID + "&pn=" + p,
-        //ps maximum is 50
-        type: "GET",
-        dataType: "json",
-        json: "callback",
-        xhrFields: {
-            withCredentials: true
-        },
-        success: function (json) {
-            console.log(json)
-            if(typeof json["data"]!=="undefined") {
-                var data = json["data"]["list"];
-                listLength = data.length;
-                for (let i = 0; i < data.length; i++) {
-                    let member = new FollowingMember(data[i]["mid"], data[i]["uname"]);
-                    FOLLOWING_LIST.push(member);
-                    FOLLOWING_LIST_TEMP.push(member);
+    if(UUID !== -1 && SESSDATA !== -1){
+        p++;
+        let listLength = 0;
+        $.ajax({
+            url: "https://api.bilibili.com/x/relation/followings?vmid=" + UUID + "&pn=" + p,
+            type: "GET",
+            dataType: "json",
+            json: "callback",
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function (json) {
+                console.log(p+" "+FOLLOWING_LIST.length());
+                console.log(json)
+                if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
+                    var data = json["data"]["list"];
+                    listLength = data.length;
+                    for (let i = 0; i < data.length; i++) {
+                        let member = new FollowingMember(data[i]["mid"], data[i]["uname"]);
+                        FOLLOWING_LIST.push(member);
+                        FOLLOWING_LIST_TEMP.push(member);
+                    }
+                    if (listLength === 0 && FOLLOWING_LIST.length() !== 0) {
+                        // all elements enquired.
+                        p = 0;
+                        FOLLOWING_LIST.update(FOLLOWING_LIST_TEMP);
+                        FOLLOWING_LIST_TEMP.clearAll();
+                        console.log("Load following list complete. " + FOLLOWING_LIST.length() + " followings found.");
+                        TIMESTAMP = Date.now();
+                        console.log(FOLLOWING_LIST);
+                        query();
+                    }
+                    if (listLength !== 0) getFollowingList();
                 }
-                if (listLength === 0 && FOLLOWING_LIST.length() !== 0) {
-                    // all elements enquired.
-                    p = 0;
-                    FOLLOWING_LIST.update(FOLLOWING_LIST_TEMP);
-                    FOLLOWING_LIST_TEMP.clearAll();
-                    console.log("Load following list complete. " + FOLLOWING_LIST.length() + " followings found.");
-                    TIMESTAMP = Date.now();
-                    query()
-                }
-                if (listLength !== 0) getFollowingList();
+            },
+            error: function (msg){
+                errorHandler(msg);
             }
-        },
-        error: function (msg){
-            console.log("ERROR found")
-            if(typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412) {
-                clearInterval(run);
-                setTimeout(grabData, 900000);
-            }
-            // if blocked then retry after 15min.
-            else {
-                clearInterval(run);
-                setTimeout(grabData,1000);
-            }
-            // others error retry immediately.
-        }
-    });
+        });
+    }
 }
 
 function updateList(ON_AIR_LIST){
     console.log(ON_AIR_LIST)
-    console.log(FOLLOWING_LIST)
     if(FOLLOWING_LIST.length() > 0){
         for (let i = 0; i < ON_AIR_LIST.length(); i++) {
             ON_AIR_LIST.updateStatus(i, FOLLOWING_LIST.get(FOLLOWING_LIST.indexOf(ON_AIR_LIST.get(i))).PUSHED);
@@ -94,34 +85,21 @@ function updateList(ON_AIR_LIST){
                             pushNotification(FOLLOWING_LIST.get(i).TITLE,
                                 FOLLOWING_LIST.get(i).NAME,
                                 FOLLOWING_LIST.get(i).ROOM_URL,
-                                (FOLLOWING_LIST.get(i).COVER.length===0?FOLLOWING_LIST.get(i).FACE:FOLLOWING_LIST.get(i).COVER));
+                                (FOLLOWING_LIST.get(i).COVER.length===0?FOLLOWING_LIST.get(i).FACE:FOLLOWING_LIST.get(i).COVER), FOLLOWING_LIST.get(i).TYPE);
                     }
                 }
             }
         }
     }
     console.log("latency: " + (Date.now() - latency));
+    setTimeout(getFollowingList, 10000);
 }
 
-/***
- * Once following list loaded, set 10 seconds gap(
- * to avoid the unexpected results caused by asynchronous
- * operations), then scan the live room info for
- * members who followed by user.
- * */
-function getLiversInfo() {
-    latency = Date.now();
-    p = 0;
-    INDEX = 0;
-    getFollowingList();
-}
-
-
-function pushNotification(roomTitle, liverName, roomUrl, cover) {
+function pushNotification(roomTitle, liverName, roomUrl, cover, type) {
     //console.log(roomTitle + " " + liverName);
     var notification = new Notification(roomTitle, {
         icon: cover,
-        body: liverName + " 开播啦!",
+        body: liverName + " 开播啦!\r\n是"+(type===0?"正常的":"手机")+"直播呦！",
     });
     notification.onclick = function (){
         chrome.tabs.create({url: "https://live.bilibili.com/"+roomUrl});
@@ -155,10 +133,10 @@ function pushNotificationChrome(roomTitle, liverName, roomUrl, cover){
 // Check cookies info every 5 seconds.
 
 setInterval(reloadCookies, 5000);
-var run;
 
-function grabData(){
-    run = setInterval(getLiversInfo, 10000);
+function scheduleCheckIn(){
+    checkIn();
+    checkin = setInterval(checkIn, 86_400_000);
 }
 
 function reloadCookies() {
@@ -170,14 +148,14 @@ function reloadCookies() {
                     (SD === null) ? SESSDATA = -1 : SESSDATA = SD.value;
                     if ((UUID === -1 || SESSDATA === -1) && UUID !== P_UID && SESSDATA !== P_SESS) {
                         // if not log in then stop update liver stream info.
-                        clearInterval(run);
                         console.log("Session info does not exist, liver stream info listener cleared.");
                     }
                     if (UUID !== -1 && SESSDATA !== -1 && UUID !== P_UID && SESSDATA !== P_SESS) {
                         // log in info changed then load following list and start update liver stream info every 3 min.
                         console.log("Session info got.");
                         FOLLOWING_LIST.clearAll(); // initial following list.
-                        grabData();
+                        getFollowingList();
+                        scheduleCheckIn();
                     }
                     P_UID = UUID;
                     P_SESS = SESSDATA;
@@ -185,7 +163,7 @@ function reloadCookies() {
         });
     chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
         function (jct) {
-            JCT = jct.value;
+            (jct === null) ? JCT = -1 : JCT = jct.value;
         });
 }
 
@@ -193,9 +171,38 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
         if(request.msg === "get_JCT"){
             chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
                 function (jct) {
-                    JCT = jct.value;
-                    sendResponse(jct.value);
+                    (jct === null) ? JCT = -1 : JCT = jct.value;
+                    sendResponse(JCT);
                 });
         }
     }
 );
+
+function checkIn(){
+    $.ajax({
+        url: "https://api.live.bilibili.com/xlive/web-ucenter/v1/sign/DoSign",
+        type: "GET",
+        dataType: "json",
+        json: "callback",
+        xhrFields: {
+            withCredentials: true
+        },
+        success: function (json) {},
+        error: function (msg){
+            console.log("ERROR found")
+        }
+    })
+}
+
+function errorHandler(msg){
+    console.log("ERROR found: "+msg)
+    p=0;
+    if(typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412) {
+        setTimeout(getFollowingList, 900000);
+    }
+    // if blocked then retry after 15min.
+    else {
+        setTimeout(getFollowingList,20000);
+    }
+    // others error retry immediately.
+}

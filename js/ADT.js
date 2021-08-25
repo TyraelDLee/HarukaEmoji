@@ -14,6 +14,7 @@ function FollowingMember(UID, NAME, FACE, COVER, KEYFRAME, ROOM_URL, TITLE){
     this.KEYFRAME = KEYFRAME;
     this.ROOM_URL = ROOM_URL;
     this.TITLE = TITLE;
+    this.TYPE = 0;
 }
 
 FollowingMember.prototype.print = function (){

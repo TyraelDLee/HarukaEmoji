@@ -8,10 +8,10 @@ const MADEL_ID = 193709;
 // must be a 2D array, each sub-element has 4 elements maximum.
 // DO NOT CHANGE ANY VARIABLE NAME BELOW!
 const SRC = "../images/pudding/";
-const emoji = ["whl", "草", "赞", "？"];
+const emoji = ["whl", "草", "赞", "？","nano", "打call","死了都要爱"];
 
 const link = chrome.extension.getURL("../images/pudding/icon.png");
 var imgs = [];
 for (let i = 0; i < emoji.length; i++) {
-    imgs.push(new ImageButton(chrome.extension.getURL(SRC+emoji[i]+".gif"), 1));
+    imgs.push(new ImageButton(chrome.extension.getURL(SRC+emoji[i]+".webp"), 1));
 }
