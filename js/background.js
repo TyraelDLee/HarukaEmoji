@@ -4,7 +4,6 @@
 const NOTIFICATION_PUSH = true;
 var checkin;
 
-var TIMESTAMP = Date.now();
 var UUID = -1;
 var SESSDATA = -1;
 var JCT = -1;
@@ -14,8 +13,7 @@ var FOLLOWING_LIST = new FollowingMemberList();
 var FOLLOWING_LIST_TEMP = new FollowingMemberList();
 var p = 0;
 
-//todo: use synchronization if error exist again
-var latency = 0;
+var latency = Date.now();
 
 function getFollowingList() {
     if(UUID !== -1 && SESSDATA !== -1){
@@ -30,8 +28,6 @@ function getFollowingList() {
                 withCredentials: true
             },
             success: function (json) {
-                console.log(p+" "+FOLLOWING_LIST.length());
-                console.log(json)
                 if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
                     var data = json["data"]["list"];
                     listLength = data.length;
@@ -46,9 +42,7 @@ function getFollowingList() {
                         FOLLOWING_LIST.update(FOLLOWING_LIST_TEMP);
                         FOLLOWING_LIST_TEMP.clearAll();
                         console.log("Load following list complete. " + FOLLOWING_LIST.length() + " followings found.");
-                        TIMESTAMP = Date.now();
-                        console.log(FOLLOWING_LIST);
-                        query();
+                        queryLivingRoom();
                     }
                     if (listLength !== 0) getFollowingList();
                 }
@@ -60,8 +54,37 @@ function getFollowingList() {
     }
 }
 
+function queryLivingRoom() {
+    $.ajax({
+        url: "https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids",
+        type: "POST",
+        data: {"uids": FOLLOWING_LIST.getUIDList()},
+        dataType: "json",
+        json: "callback",
+        success: function (json) {
+            if (json["code"] === 0) {
+                let ON_AIR_LIST = new FollowingMemberList()
+                let data = json["data"];
+                for (let i = 0; i < FOLLOWING_LIST.getUIDList().length; i++) {
+                    if (data[FOLLOWING_LIST.getUIDList()[i] + ""] !== undefined) {
+                        if (data[FOLLOWING_LIST.getUIDList()[i] + ""].live_status === 1) {
+                            let member = new FollowingMember(data[FOLLOWING_LIST.getUIDList()[i] + ""]["uid"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["uname"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["face"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["cover_from_user"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["keyframe"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["room_id"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["title"]);
+                            member.ONAIR = true;
+                            member.TYPE = data[FOLLOWING_LIST.getUIDList()[i] + ""]["broadcast_type"] === 1 ? 1 : 0;
+                            ON_AIR_LIST.push(member);
+                        }
+                    }
+                }
+                if (ON_AIR_LIST.list.length > 0) updateList(ON_AIR_LIST);
+            }
+        },
+        error: function (msg) {
+            errorHandler(msg);
+        }
+    });
+}
+
 function updateList(ON_AIR_LIST){
-    console.log(ON_AIR_LIST)
     if(FOLLOWING_LIST.length() > 0){
         for (let i = 0; i < ON_AIR_LIST.length(); i++) {
             ON_AIR_LIST.updateStatus(i, FOLLOWING_LIST.get(FOLLOWING_LIST.indexOf(ON_AIR_LIST.get(i))).PUSHED);
@@ -92,6 +115,7 @@ function updateList(ON_AIR_LIST){
         }
     }
     console.log("latency: " + (Date.now() - latency));
+    latency=Date.now()+10000;
     setTimeout(getFollowingList, 10000);
 }
 
@@ -187,9 +211,11 @@ function checkIn(){
         xhrFields: {
             withCredentials: true
         },
-        success: function (json) {},
+        success: function (json) {
+            console.log("签到成功 "+new Date().toUTCString())
+        },
         error: function (msg){
-            console.log("ERROR found")
+            console.log("ERROR found");
         }
     })
 }

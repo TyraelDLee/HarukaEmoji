@@ -1,9 +1,6 @@
 /***
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
-
-const API_LINK = "https://api.live.bilibili.com/msg/send";
-
 var JCT = -1;
 
 var WINDOW_HEIGHT;
@@ -53,7 +50,7 @@ function renderExtension(){
 
     selec.setAttribute("id", "emoji-selection");
     selec.classList.add("emoji_sec");
-    selec.style.display = "none"
+    selec.style.display = "none";
     selec.innerHTML = "";
 
     emojiPad.setAttribute("id","emoji-tray");
@@ -145,9 +142,7 @@ function renderExtension(){
                 document.onmouseup = null;
             };
         };
-
         popup.onmouseenter = function (){popup.className = "popup-click-hoverin";};
-
         popup.onmouseleave = function (){popup.className = "popup-click-hoverout";};
     }
 
@@ -259,7 +254,6 @@ function delay(){
             document.getElementsByClassName("fullscreen-danmaku")[0].addEventListener("mouseleave", function (){
                 fullscreen_emoji_pad.classList.remove("fullscreen-hoverin");
                 fullscreen_emoji_pad.classList.add("fullscreen-hoverout");
-                console.log(fullscreen_input.value);
             });
             document.getElementById("live-player").addEventListener("mousemove",fs_move);
             fullscreen_input_btn.addEventListener("click", function (){
@@ -314,7 +308,7 @@ function packaging(msg){
 
 function send(form){
     $.ajax({
-        url: API_LINK,
+        url: "https://api.live.bilibili.com/msg/send",
         type: "POST",
         data: form,
         dataType: "JSON",
@@ -333,7 +327,7 @@ function send(form){
 function constructHTMLTable(num_per_line, O, O1, sel, span){
     // enter key shortcut listener
     O.addEventListener("keyup", function (e){
-        console.log(e.keyCode);
+        // console.log(e.keyCode);
         if(e.keyCode === 13){
             e.preventDefault();
             packaging(O.value);
@@ -350,13 +344,13 @@ function constructHTMLTable(num_per_line, O, O1, sel, span){
     sel.addEventListener("mousemove", function (){cursorSelection = inputListener(span, O);});
 
     // construct emoji table
-    let html = "<tbody><tr>"
+    let html = "<tbody><tr>";
     for (let i = 0; i < imgs.length; i++) {
         if(i % num_per_line === 0 && i !== 0)
             html += "</tr><tr>";
         html += "<td colspan="+imgs[i].getSpan()+" style=\" background:url("+ imgs[i].getURL() +") no-repeat bottom center; background-size: contain\"></td>";
     }
-    html += "</tr></tbody>"
+    html += "</tr></tbody>";
     O1.innerHTML = html;
 
     // add listener for each emoji.

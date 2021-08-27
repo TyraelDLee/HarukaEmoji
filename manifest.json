@@ -5,7 +5,7 @@
   "description": "rua!",
   "permissions": ["cookies", "notifications","webRequest","webRequestBlocking","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "http://i0.hdslb.com/*"],
   "background": {
-    "scripts": ["js/ADT.js","js/Jquery-3.5.1.js","js/background.js", "js/PushHost.js"],
+    "scripts": ["js/ADT.js","js/Jquery-3.5.1.js","js/PushHost.js","js/background.js"],
     "persistent": true
   },
   "icons": {
