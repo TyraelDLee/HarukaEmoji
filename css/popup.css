@@ -9,19 +9,16 @@ hr{
     margin-top: 25px;
     border:none;
 }
-
 .button-host{
     position: absolute;
-    width: 300px;
-    height: 100px;
-    transform:scale(0.35);
+    width: 100px;
+    height: 50px;
 }
 
 .button-host span{
-    font-size: 38px;
+    font-size: 14px;
     left: 0;
-    top: 14px;
-    position: absolute;
+    top: 12px;
 }
 
 .button-host section{
@@ -34,27 +31,88 @@ hr{
     text-align: center;
 }
 
+.tooltip {
+    position: absolute;
+    display: inline-block;
+    cursor: help;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 250px;
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    top: 150%;
+    left: 50%;
+    position: absolute;
+    z-index: 10;
+}
+
+.tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent black transparent;
+}
+
+.tooltip .tooltiptext-left{
+    margin-left: -50px;
+}
+
+.tooltip .tooltiptext-right{
+    margin-left: -170px;
+}
+
+.tooltip .tooltiptext-left::after{
+    left: 20%;
+}
+
+.tooltip .tooltiptext-right::after{
+    left: 68%;
+}
+
+.tooltip .tooltiptext {
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
 #btn1{
-    left: -50px;
-    top: 200px;
+    left: 40px;
+    top: 230px;
 }
 
 #btn2{
-    right: -50px;
-    top: 200px;
+    right: 40px;
+    top: 230px;
 }
 
 #btn3{
-    left: -50px;
-    top: 250px;
+    left: 40px;
+    top: 280px;
     /*top: 235px;*/
 }
 
 #btn2 span{
-    left: 45px;
+    right: 25px;
 }
 
 #logo{
     width: 35%;
     height: 35%;
+}
+
+#version{
+    display: inline-block;
 }
