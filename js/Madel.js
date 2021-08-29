@@ -4,11 +4,18 @@
 
 var JCT = -1;
 var MADEL_LIST = new MadelList();
+var MID = -1;
 var room_id = window.location["pathname"].replace("/", "");
 var exp =new RegExp("^[0-9]*$");
-
+var on;
+chrome.storage.sync.get(["medal"], function(result){on = result.medal});
+chrome.storage.onChanged.addListener(function (changes, namespace) {
+    for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+        if(key === "medal") on = newValue;
+    }
+});
 console.log(room_id)
-updateJCT();
+getUserInfo();
 if(exp.test(room_id))
     getMadel();
 
@@ -31,7 +38,8 @@ function getMadel(){
                 if(data["pageinfo"]["totalpages"] === page){
                     console.log("load list complete");
                     if(MADEL_LIST.get(room_id) !== "-1")
-                        wareMadel(MADEL_LIST.get(room_id));
+                        MID = MADEL_LIST.get(room_id);
+                        wareMadel();
                 }else{
                     page++;
                     getMadel();
@@ -41,10 +49,10 @@ function getMadel(){
     });
 }
 
-function wareMadel(mid){
-    if(JCT !== -1){
+function wareMadel(){
+    if(JCT !== -1 && on && MID !== -1){
         var madelForm = new FormData();
-        madelForm.append("medal_id", mid);
+        madelForm.append("medal_id", MID);
         madelForm.append("csrf", JCT);
         madelForm.append("csrf_token", JCT);
         $.ajax({
@@ -59,14 +67,48 @@ function wareMadel(mid){
                 withCredentials: true
             },
             success: function (){
-                console.log("ware madel successful, MID="+mid);
+                console.log("ware madel successful, MID="+MID);
             }
-        })
+        });
     }
 }
 
-function updateJCT(){
+function getUserInfo(){
     if(typeof chrome.app.isInstalled!=="undefined"){
         chrome.extension.sendRequest({ msg: "get_JCT" },function(jct){JCT = jct;});
     }
 }
+
+window.addEventListener("focus", function (){
+    wareMadel();
+});
+
+window.addEventListener("blur", function (){
+    console.log("blur");
+})
+
+// function getMedalInfo(){
+//     console.log(MUID);
+//     let form = new URLSearchParams();
+//     form.append("source", "1");
+//     form.append("uid", UUID);
+//     form.append("target_id", MUID);
+//     form.append("csrf_token", JCT);
+//     form.append("csrf",JCT);
+//     form.append("visit_id", "");
+//     $.ajax({
+//         url: "https://api.live.bilibili.com/live_user/v1/UserInfo/get_weared_medal",
+//         type: "POST",
+//         data: form,
+//         dataType: "JSON",
+//         processData: false,
+//         contentType: "application/x-www-form-urlencoded",
+//         cache: false,
+//         xhrFields: {
+//             withCredentials: true
+//         },
+//         success: function (json) {
+//             console.log(json);
+//         }
+//     });
+// }

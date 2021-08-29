@@ -1,8 +1,9 @@
 /***
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
-const NOTIFICATION_PUSH = true;
+var NOTIFICATION_PUSH;
 var checkin;
+var checkinOn;
 
 var UUID = -1;
 var SESSDATA = -1;
@@ -199,25 +200,31 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
                     sendResponse(JCT);
                 });
         }
+        if(request.msg === "get_UUID"){
+            sendResponse(UUID);
+        }
     }
 );
 
+
 function checkIn(){
-    $.ajax({
-        url: "https://api.live.bilibili.com/xlive/web-ucenter/v1/sign/DoSign",
-        type: "GET",
-        dataType: "json",
-        json: "callback",
-        xhrFields: {
-            withCredentials: true
-        },
-        success: function (json) {
-            console.log("签到成功 "+new Date().toUTCString())
-        },
-        error: function (msg){
-            console.log("ERROR found");
-        }
-    })
+    if(checkinOn){
+        $.ajax({
+            url: "https://api.live.bilibili.com/xlive/web-ucenter/v1/sign/DoSign",
+            type: "GET",
+            dataType: "json",
+            json: "callback",
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function (json) {
+                console.log("签到成功 "+new Date().toUTCString())
+            },
+            error: function (msg){
+                console.log("ERROR found");
+            }
+        })
+    }
 }
 
 function errorHandler(msg){
@@ -232,3 +239,24 @@ function errorHandler(msg){
     }
     // others error retry immediately.
 }
+
+
+// init setting
+chrome.storage.sync.set({"notification": true}, function(){
+    NOTIFICATION_PUSH = true;
+});
+chrome.storage.sync.set({"medal": true}, function(){});
+chrome.storage.sync.set({"checkIn": true}, function(){
+    checkinOn = true;
+});
+
+chrome.storage.onChanged.addListener(function (changes, namespace) {
+    for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+        if(key === "notification"){
+            NOTIFICATION_PUSH = newValue;
+        }
+        if(key === "checkIn"){
+            checkinOn = newValue
+        }
+    }
+});

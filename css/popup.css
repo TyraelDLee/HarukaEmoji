@@ -1,0 +1,60 @@
+body{
+    width: 300px;
+    height: 400px;
+}
+
+hr{
+    width: 90%;
+    height: 1px;
+    margin-top: 25px;
+    border:none;
+}
+
+.button-host{
+    position: absolute;
+    width: 300px;
+    height: 100px;
+    transform:scale(0.35);
+}
+
+.button-host span{
+    font-size: 38px;
+    left: 0;
+    top: 14px;
+    position: absolute;
+}
+
+.button-host section{
+    right: 0;
+    position: absolute;
+}
+
+.host{
+    margin-top: 25px;
+    text-align: center;
+}
+
+#btn1{
+    left: -50px;
+    top: 200px;
+}
+
+#btn2{
+    right: -50px;
+    top: 200px;
+}
+
+#btn3{
+    left: -50px;
+    top: 250px;
+    /*top: 235px;*/
+}
+
+#btn2 span{
+    left: 45px;
+}
+
+#logo{
+    width: 35%;
+    height: 35%;
+}

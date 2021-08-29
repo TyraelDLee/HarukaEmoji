@@ -165,3 +165,10 @@ MadelList.prototype.get = function (rid){
     }
     return -1+"";
 }
+
+MadelList.prototype.getUID = function (rid){
+    for (let i = 0; i < this.list.length; i++) {
+        if(this.list[i].RID === rid) return this.list[i].UID;
+    }
+    return -1+"";
+}
