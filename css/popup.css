@@ -10,9 +10,11 @@ hr{
     border:none;
 }
 .button-host{
-    position: absolute;
+    position: relative;
+    float: left;
     width: 100px;
     height: 50px;
+    margin: 0 5px;
 }
 
 .button-host span{
@@ -29,6 +31,21 @@ hr{
 .host{
     margin-top: 25px;
     text-align: center;
+}
+
+.setting{
+    overflow-y: scroll;
+    height: 200px;
+}
+
+.setting::-webkit-scrollbar{
+    width: 6px;
+    height: 6px;
+}
+
+.setting::-webkit-scrollbar-thumb{
+    border-radius: 6px;
+    background-color: #aaa;
 }
 
 .tooltip {
@@ -62,12 +79,20 @@ hr{
     border-color: transparent transparent black transparent;
 }
 
+.tooltip .tooltiptext-middle{
+    margin-left: -150px;
+}
+
 .tooltip .tooltiptext-left{
     margin-left: -50px;
 }
 
 .tooltip .tooltiptext-right{
     margin-left: -170px;
+}
+
+.tooltip .tooltiptext-middle::after{
+    left: 60%;
 }
 
 .tooltip .tooltiptext-left::after{
@@ -86,22 +111,6 @@ hr{
 .tooltip:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
-}
-
-#btn1{
-    left: 40px;
-    top: 230px;
-}
-
-#btn2{
-    right: 40px;
-    top: 230px;
-}
-
-#btn3{
-    left: 40px;
-    top: 280px;
-    /*top: 235px;*/
 }
 
 #btn2 span{
