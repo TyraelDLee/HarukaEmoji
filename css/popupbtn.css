@@ -5,7 +5,7 @@
 section {
   float: left;
   width: 33.33%;
-  padding: 13px 0;
+  padding: 16px 0;
 }
 
 .checkbox {
@@ -28,20 +28,20 @@ section {
   text-rendering: auto;
 }
 .checkbox label {
-  width: 41px;
-  height: 17px;
+  width: 35px;
+  height: 13px;
   background: #ccc;
   position: relative;
   display: inline-block;
-  border-radius: 21px;
+  border-radius: 19px;
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
 .checkbox label:after {
   content: '';
   position: absolute;
-  width: 21px;
-  height: 21px;
+  width: 17px;
+  height: 17px;
   border-radius: 100%;
   left: 0;
   top: -2px;
@@ -65,7 +65,7 @@ section {
   box-shadow: 0 2px 15px 0 rgba(0, 0, 0, 0.2), 0 3px 8px 0 rgba(0, 0, 0, 0.15);
 }
 .checkbox input:checked + label:after {
-  left: 20px;
+  left: 18px;
 }
 
 .button .checkbox input:checked + label {

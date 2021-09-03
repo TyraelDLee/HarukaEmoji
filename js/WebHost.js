@@ -104,6 +104,7 @@ function renderExtension(){
         popup.onmousedown = function (ev) {
             let popupLocHor;
             let popupLocVac;
+            document.body.style.userSelect = "none";
             popup.className = "popup-click-in";
             const oevent = ev || event;
             const distanceX = oevent.clientX - popup.offsetLeft;
@@ -126,6 +127,7 @@ function renderExtension(){
                     absoluteLoc = [WINDOW_WIDTH - popupLocHor, popupLocVac, popupLocHor];
             };
             document.onmouseup = function () {
+                document.body.style.userSelect = "auto";
                 popup.className = "popup-click-out";
                 if(isMoved(oLoc[0], oLoc[1], cLoc[0], cLoc[1])){
                     if (selec.style.display === "none") {

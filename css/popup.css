@@ -1,3 +1,13 @@
+@keyframes rotate_in {
+    0% {transform: rotate(0deg)}
+    100%{transform: rotate(180deg)}
+}
+
+@keyframes rotate_out {
+    0% {transform: rotate(180deg)}
+    100%{transform: rotate(0deg)}
+}
+
 body{
     width: 300px;
     height: 400px;
@@ -13,7 +23,7 @@ hr{
     position: relative;
     float: left;
     width: 100px;
-    height: 50px;
+    height: 40px;
     margin: 0 5px;
 }
 
@@ -26,6 +36,19 @@ hr{
 .button-host section{
     right: 0;
     position: absolute;
+}
+
+.drop-down{
+    float: left;
+    width: 220px;
+    height: 40px;
+    margin: 12px 5px;
+    position: relative;
+    font-size: 14px;
+}
+
+.drop-down div{
+    float: left;
 }
 
 .host{
@@ -110,7 +133,7 @@ hr{
 
 .tooltip:hover .tooltiptext {
     visibility: visible;
-    opacity: 1;
+    opacity: 75%;
 }
 
 #btn2 span{
@@ -124,4 +147,53 @@ hr{
 
 #version{
     display: inline-block;
+}
+
+
+#drop-down-list{
+    text-align: left;
+    margin-left: 15px;
+    width: 110px;
+    border-radius: 5px;
+    border-top-style: solid;
+    border-right-style: solid;
+    border-bottom-style: solid;
+    border-left-style: solid;
+    border-width: 1px;
+    cursor: pointer;
+}
+
+#drop-down-list span{
+    padding: 5px;
+}
+
+#drop-down-list img{
+    position: absolute;
+    right: 16px;
+    top: 3px;
+}
+
+#drop-down-item{
+    margin-left: 105px;
+}
+
+#drop-down-item ul{
+    padding: 0;
+    margin: 0;
+}
+#drop-down-item li{
+    list-style-type: none;
+    margin: 3px 0;
+}
+
+.no-click img{
+    animation-name: rotate_out;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+.clicked img{
+    animation-name: rotate_in;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
 }

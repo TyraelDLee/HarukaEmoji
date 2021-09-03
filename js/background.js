@@ -156,6 +156,7 @@ function pushNotificationChrome(roomTitle, liverName, roomUrl, cover){
     );
 }
 
+
 // Check cookies info every 5 seconds.
 setInterval(reloadCookies, 5000);
 
