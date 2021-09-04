@@ -4,6 +4,7 @@
 var NOTIFICATION_PUSH;
 var checkin;
 var checkinOn;
+var initializing = true;
 
 var UUID = -1;
 var SESSDATA = -1;
@@ -156,7 +157,7 @@ function pushNotificationChrome(roomTitle, liverName, roomUrl, cover){
     );
 }
 
-
+reloadCookies();
 // Check cookies info every 5 seconds.
 setInterval(reloadCookies, 5000);
 
@@ -207,7 +208,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
     }
 );
 
-
 function checkIn(){
     if(checkinOn){
         $.ajax({
@@ -224,7 +224,7 @@ function checkIn(){
             error: function (msg){
                 console.log("ERROR found");
             }
-        })
+        });
     }
 }
 
@@ -241,23 +241,18 @@ function errorHandler(msg){
     // others error retry immediately.
 }
 
-
-// init setting
-chrome.storage.sync.set({"notification": true}, function(){
-    NOTIFICATION_PUSH = true;
-});
-chrome.storage.sync.set({"medal": true}, function(){});
-chrome.storage.sync.set({"checkIn": true}, function(){
-    checkinOn = true;
-});
+chrome.runtime.onInstalled.addListener(function (obj){
+    // init setting
+    chrome.storage.sync.set({"notification": true}, function(){NOTIFICATION_PUSH = true;});
+    chrome.storage.sync.set({"medal": true}, function(){});
+    chrome.storage.sync.set({"checkIn": true}, function(){checkinOn = true;});
+})
 
 chrome.storage.onChanged.addListener(function (changes, namespace) {
-    for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
-        if(key === "notification"){
+    for (let [key, {oldValue, newValue}] of Object.entries(changes)) {
+        if(key === "notification")
             NOTIFICATION_PUSH = newValue;
-        }
-        if(key === "checkIn"){
-            checkinOn = newValue
-        }
+        if(key === "checkIn")
+            checkinOn = newValue;
     }
 });

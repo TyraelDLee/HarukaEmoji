@@ -2,12 +2,8 @@ const setting1 = document.getElementById("notification");
 const setting2 = document.getElementById("medal");
 const setting3 = document.getElementById("check-in");
 const loginInfo = document.getElementById("login");
-const dropList = document.getElementById("drop-down-list");
-const dropItem = document.getElementById("drop-down-item")
 var UUID = -2;
-var clicked = false;
 
-dropItem.style.display = "none";
 function updateUID(){
     if(typeof chrome.app.isInstalled!=="undefined"){
         chrome.extension.sendRequest({ msg: "get_UUID" },function(uid){UUID = uid;
@@ -25,20 +21,11 @@ function updateUID(){
     }
 }
 
-dropList.addEventListener("click", function (){
-    clicked?clicked=false:clicked=true;
-    if(clicked){
-        dropList.classList.remove("no-click");
-        dropList.classList.add("clicked");
-        dropItem.style.display = "block";
-    }else{
-        dropList.classList.remove("clicked");
-        dropList.classList.add("no-click");
-        dropItem.style.display = "none";
-    }
-});
-
 setInterval(updateUID,1000);
+
+document.getElementById("bug-reporter").addEventListener("click", function (){
+    chrome.tabs.create({url: "https://github.com/TyraelDLee/HarukaEmoji/issues"})
+})
 
 document.getElementById("logo").addEventListener("click", function (){
     chrome.tabs.create({url: "https://chrome.google.com/webstore/detail/rua%E8%B1%B9%E5%99%A8/igapngheaefbfhikpbngjgakfnedkchb"})
@@ -48,11 +35,9 @@ document.getElementById("version").addEventListener("click", function (){
     chrome.tabs.create({url: "https://github.com/TyraelDLee/HarukaEmoji"})
 });
 
-document.getElementById("logo").style.cursor = "pointer";
-document.getElementById("version").style.cursor = "pointer";
-
-
-
+document.getElementById("source").addEventListener("click", function (){
+    chrome.tabs.create({url: "https://github.com/TyraelDLee/HarukaEmoji"})
+});
 
 setting1.addEventListener("change", function (){
     let checked = this.checked;
