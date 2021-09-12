@@ -41,6 +41,7 @@ rua豹使人快乐，rua了又rua！<br>
 <br>
 [bilibili](https://t.bilibili.com/561690948190181609), 不过都来这儿了上面那个链接应该就够了吧<img src="https://github.com/TyraelDLee/HarukaEmoji/blob/main/images/haruka/5835.webp" width="30" height="30"/>。
 
+## 版本记录
 ### ver 4.8
 - 添加了图片模式通知。
 - 修复了一些问题。
