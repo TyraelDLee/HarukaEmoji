@@ -171,7 +171,8 @@ function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face
     }
 }
 
-setTimeout(reloadCookies,100);
+setTimeout(loadSetting, 100);
+setTimeout(reloadCookies,200);
 setInterval(reloadCookies, 5000);
 
 function scheduleCheckIn(){
@@ -251,4 +252,15 @@ function notificationClickHandler(id){
             chrome.notifications.clear(id);
         }
     });
+}
+
+function loadSetting(){
+    chrome.storage.sync.get(["notification"], function(result){
+        NOTIFICATION_PUSH = result.notification;});
+
+    chrome.storage.sync.get(["checkIn"], function(result){
+        CHECKIN_ON = result.checkIn;});
+
+    chrome.storage.sync.get(["imageNotice"], function(result){
+        IMAGE_NOTIFICATION = result.imageNotice;});
 }

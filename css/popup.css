@@ -17,6 +17,7 @@ hr{
 }
 
 .bottom-item{
+    cursor: pointer;
     position: relative;
     float: left;
     margin: 0 5px;
@@ -131,10 +132,6 @@ hr{
     right: 25px;
 }
 
-#bug-reporter{
-    cursor: pointer;
-}
-
 #logo{
     width: 35%;
     height: 35%;
@@ -143,9 +140,5 @@ hr{
 
 #version{
     display: inline-block;
-    cursor: pointer;
-}
-
-#source{
     cursor: pointer;
 }

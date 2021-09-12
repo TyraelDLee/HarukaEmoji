@@ -41,6 +41,10 @@ document.getElementById("source").addEventListener("click", function (){
     chrome.tabs.create({url: "https://github.com/TyraelDLee/HarukaEmoji"})
 });
 
+document.getElementById("readme").addEventListener("click", function (){
+    chrome.tabs.create({url: "https://github.com/TyraelDLee/HarukaEmoji/blob/main/README.md#readme"})
+});
+
 setting1.addEventListener("change", function (){
     let checked = this.checked;
     chrome.storage.sync.set({"notification": checked}, function(){
