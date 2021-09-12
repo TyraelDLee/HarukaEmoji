@@ -86,29 +86,3 @@ window.addEventListener("focus", function (){
 window.addEventListener("blur", function (){
     console.log("blur");
 })
-
-// function getMedalInfo(){
-//     console.log(MUID);
-//     let form = new URLSearchParams();
-//     form.append("source", "1");
-//     form.append("uid", UUID);
-//     form.append("target_id", MUID);
-//     form.append("csrf_token", JCT);
-//     form.append("csrf",JCT);
-//     form.append("visit_id", "");
-//     $.ajax({
-//         url: "https://api.live.bilibili.com/live_user/v1/UserInfo/get_weared_medal",
-//         type: "POST",
-//         data: form,
-//         dataType: "JSON",
-//         processData: false,
-//         contentType: "application/x-www-form-urlencoded",
-//         cache: false,
-//         xhrFields: {
-//             withCredentials: true
-//         },
-//         success: function (json) {
-//             console.log(json);
-//         }
-//     });
-// }

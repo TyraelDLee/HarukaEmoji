@@ -3,8 +3,8 @@
  * */
 var NOTIFICATION_PUSH;
 var checkin;
-var checkinOn;
-var initializing = true;
+var CHECKIN_ON;
+var IMAGE_NOTIFICATION;
 
 var UUID = -1;
 var SESSDATA = -1;
@@ -16,6 +16,22 @@ var FOLLOWING_LIST_TEMP = new FollowingMemberList();
 var p = 0;
 
 var latency = Date.now();
+
+chrome.runtime.onInstalled.addListener(function (obj){
+    // init setting
+    chrome.storage.sync.set({"notification": true}, function(){NOTIFICATION_PUSH = true;});
+    chrome.storage.sync.set({"medal": true}, function(){});
+    chrome.storage.sync.set({"checkIn": true}, function(){CHECKIN_ON = true;});
+    chrome.storage.sync.set({"imageNotice": false}, function(){IMAGE_NOTIFICATION = false;});
+});
+
+chrome.storage.onChanged.addListener(function (changes, namespace) {
+    for (let [key, {oldValue, newValue}] of Object.entries(changes)) {
+        if(key === "notification") NOTIFICATION_PUSH = newValue;
+        if(key === "checkIn") CHECKIN_ON = newValue;
+        if(key === "imageNotice")IMAGE_NOTIFICATION = newValue;
+    }
+});
 
 function getFollowingList() {
     if(UUID !== -1 && SESSDATA !== -1){
@@ -105,12 +121,14 @@ function updateList(ON_AIR_LIST){
                 }else{
                     if (!FOLLOWING_LIST.get(i).PUSHED){
                         FOLLOWING_LIST.updateStatus(i, true);
-                        console.log(FOLLOWING_LIST.get(i).TITLE + " " + FOLLOWING_LIST.get(i).NAME);
+                        console.log(FOLLOWING_LIST.get(i).TITLE + " " + FOLLOWING_LIST.get(i).NAME+" "+new Date());
                         if(NOTIFICATION_PUSH)
-                            pushNotification(FOLLOWING_LIST.get(i).TITLE,
+                            pushNotificationChrome(FOLLOWING_LIST.get(i).TITLE,
                                 FOLLOWING_LIST.get(i).NAME,
                                 FOLLOWING_LIST.get(i).ROOM_URL,
-                                (FOLLOWING_LIST.get(i).COVER.length===0?FOLLOWING_LIST.get(i).FACE:FOLLOWING_LIST.get(i).COVER), FOLLOWING_LIST.get(i).TYPE);
+                                FOLLOWING_LIST.get(i).COVER.length===0?FOLLOWING_LIST.get(i).FACE:FOLLOWING_LIST.get(i).COVER,
+                                FOLLOWING_LIST.get(i).TYPE,
+                                FOLLOWING_LIST.get(i).FACE);
                     }
                 }
             }
@@ -122,7 +140,6 @@ function updateList(ON_AIR_LIST){
 }
 
 function pushNotification(roomTitle, liverName, roomUrl, cover, type) {
-    //console.log(roomTitle + " " + liverName);
     var notification = new Notification(roomTitle, {
         icon: cover,
         body: liverName + " 开播啦!\r\n是"+(type===0?"正常的":"手机")+"直播呦！",
@@ -133,32 +150,28 @@ function pushNotification(roomTitle, liverName, roomUrl, cover, type) {
     }
 }
 
-/** @deprecated */
-function pushNotificationChrome(roomTitle, liverName, roomUrl, cover){
-    /***
-     * Chrome notification api used.
-     * */
-    var id = roomUrl; // set a unique ID for each notification.
-    chrome.notifications.create(id,
-        {
-            type: "basic",
-            iconUrl: cover,
-            title: roomTitle,
-            message: liverName + " 开播啦!",
-        },
-        function (id) {
-            chrome.notifications.onClicked.addListener(function (nid) {
-                if (nid === id) {
-                    chrome.tabs.create({url: roomUrl});
-                    chrome.notifications.clear(id, function () {});
-                }
-            });
-        }
-    );
+function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face){
+    if(IMAGE_NOTIFICATION){
+        chrome.notifications.create(roomUrl+"", {
+                type: "image",
+                iconUrl: face,
+                title: roomTitle,
+                message: liverName + " 开播啦!\r\n是"+(type===0?"正常的":"手机")+"直播呦！",
+                imageUrl: cover
+            }, function (id) {notificationClickHandler(id);}
+        );
+    }else{
+        chrome.notifications.create(roomUrl+"", {
+                type: "basic",
+                iconUrl: cover,
+                title: roomTitle,
+                message: liverName + " 开播啦!\r\n是"+(type===0?"正常的":"手机")+"直播呦！"
+            }, function (id) {notificationClickHandler(id);}
+        );
+    }
 }
 
-reloadCookies();
-// Check cookies info every 5 seconds.
+setTimeout(reloadCookies,100);
 setInterval(reloadCookies, 5000);
 
 function scheduleCheckIn(){
@@ -184,14 +197,11 @@ function reloadCookies() {
                         getFollowingList();
                         scheduleCheckIn();
                     }
-                    P_UID = UUID;
-                    P_SESS = SESSDATA;
+                    P_UID = UUID;P_SESS = SESSDATA;
                 });
         });
     chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
-        function (jct) {
-            (jct === null) ? JCT = -1 : JCT = jct.value;
-        });
+        function (jct) {(jct === null)?JCT=-1:JCT = jct.value;});
 }
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
@@ -209,7 +219,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 );
 
 function checkIn(){
-    if(checkinOn){
+    if(CHECKIN_ON){
         $.ajax({
             url: "https://api.live.bilibili.com/xlive/web-ucenter/v1/sign/DoSign",
             type: "GET",
@@ -231,28 +241,14 @@ function checkIn(){
 function errorHandler(msg){
     console.log("ERROR found: "+msg)
     p=0;
-    if(typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412) {
-        setTimeout(getFollowingList, 900000);
-    }
-    // if blocked then retry after 15min.
-    else {
-        setTimeout(getFollowingList,20000);
-    }
-    // others error retry immediately.
+    (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)?setTimeout(getFollowingList, 900000):setTimeout(getFollowingList,20000);
 }
 
-chrome.runtime.onInstalled.addListener(function (obj){
-    // init setting
-    chrome.storage.sync.set({"notification": true}, function(){NOTIFICATION_PUSH = true;});
-    chrome.storage.sync.set({"medal": true}, function(){});
-    chrome.storage.sync.set({"checkIn": true}, function(){checkinOn = true;});
-})
-
-chrome.storage.onChanged.addListener(function (changes, namespace) {
-    for (let [key, {oldValue, newValue}] of Object.entries(changes)) {
-        if(key === "notification")
-            NOTIFICATION_PUSH = newValue;
-        if(key === "checkIn")
-            checkinOn = newValue;
-    }
-});
+function notificationClickHandler(id){
+    chrome.notifications.onClicked.addListener(function (nid) {
+        if (nid === id) {
+            chrome.tabs.create({url: "https://live.bilibili.com/"+nid});
+            chrome.notifications.clear(id);
+        }
+    });
+}

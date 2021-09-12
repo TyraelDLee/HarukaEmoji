@@ -9,7 +9,4 @@ const SRC = "../images/seki/";
 const emoji = ["寄", "猪跑", "山猪跑", "七跑", "彩猪"];
 
 const link = chrome.extension.getURL("../images/haruka/abaaba.svg");
-var imgs = [];
-for (let i = 0; i < emoji.length; i++) {
-    imgs.push(new ImageButton(chrome.extension.getURL(SRC+emoji[i]+".webp"), 1));
-}
+var imgs = [];for (let i = 0; i < emoji.length; i++)imgs.push(new ImageButton(chrome.extension.getURL(SRC+emoji[i]+".webp"), 1));

@@ -27,7 +27,7 @@ hr{
     float: left;
     width: 100px;
     height: 40px;
-    margin: 0 5px;
+    margin: 0 10px;
 }
 
 .button-host span{
@@ -48,6 +48,7 @@ hr{
 
 .setting{
     overflow-y: scroll;
+    overflow-x: hidden;
     height: 200px;
 }
 

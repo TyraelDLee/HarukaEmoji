@@ -1,7 +1,9 @@
 const setting1 = document.getElementById("notification");
 const setting2 = document.getElementById("medal");
 const setting3 = document.getElementById("check-in");
+const setting4 = document.getElementById("img-notice");
 const loginInfo = document.getElementById("login");
+
 var UUID = -2;
 
 function updateUID(){
@@ -56,6 +58,11 @@ setting3.addEventListener("change", function (){
     chrome.storage.sync.set({"checkIn": checked}, function(){});
 })
 
+setting4.addEventListener("change", function (){
+    let checked = this.checked;
+    chrome.storage.sync.set({"imageNotice": checked}, function (){})
+})
+
 window.addEventListener("focus", function (){
     chrome.storage.sync.get(["notification"], function(result){
         setting1.checked = result.notification;});
@@ -65,4 +72,7 @@ window.addEventListener("focus", function (){
 
     chrome.storage.sync.get(["checkIn"], function(result){
         setting3.checked = result.checkIn;});
+
+    chrome.storage.sync.get(["imageNotice"], function(result){
+        setting4.checked = result.imageNotice;});
 });

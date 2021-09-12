@@ -38,7 +38,6 @@ const fullScreenSection = document.createElement("section");
 const fullScreenButton = document.createElement("div");
 const fullScreenInput = document.createElement("input");
 // let commentsTextArea = null;
-
 // check event
 if(document.getElementsByTagName("article").length === 0) renderExtension();
 
@@ -78,7 +77,6 @@ function renderExtension(){
     DanMuInput.style.display = "none";
 
     textLength.setAttribute("id", "length-indicator");
-    textLength.innerHTML = " 0/30";
     textLength.style.display = "none";
 
     fullScreenSection.classList.add("button");
@@ -176,6 +174,7 @@ function delay(){
             "如未登录，请先登录</div>";
         document.getElementById("load").style.marginTop = "130px";
     }else{
+        textLength.innerHTML = " 0/"+document.getElementsByClassName("input-limit-hint")[0].innerHTML.split("/")[1];
         DanMuInput.style.display = "block";
         DanMuSub.style.display = "block";
         textLength.style.display = "block";
@@ -186,7 +185,7 @@ function delay(){
 
         DanMuSub.onclick = function (){
             packaging(DanMuInput.value);
-            textLength.innerHTML = " 0/30";
+            textLength.innerHTML = " 0/"+document.getElementsByClassName("input-limit-hint")[0].innerHTML.split("/")[1];
             DanMuInput.value = "";
         }
 
