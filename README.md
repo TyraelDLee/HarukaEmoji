@@ -36,6 +36,9 @@ rua豹使人快乐，rua了又rua！<br>
 - 开关自动签到
 - 开关自动切换粉丝勋章
 
+### 移动端
+下载支持插件的浏览器（如kiwi）并在浏览器安装即可。（暂不支持iOS）
+
 ## 下载：
 [chrome插件商店](https://chrome.google.com/webstore/detail/rua%E8%B1%B9%E5%99%A8/igapngheaefbfhikpbngjgakfnedkchb)
 <br>
