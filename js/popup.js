@@ -8,7 +8,7 @@ var UUID = -2;
 
 function updateUID(){
     if(typeof chrome.app.isInstalled!=="undefined"){
-        chrome.extension.sendRequest({ msg: "get_UUID" },function(uid){UUID = uid;
+        chrome.runtime.sendMessage({ msg: "get_UUID" },function(uid){UUID = uid.res;
             let logText = "";
             if(UUID === -1){
                 logText = "未登录";
@@ -42,7 +42,7 @@ document.getElementById("source").addEventListener("click", function (){
 });
 
 document.getElementById("readme").addEventListener("click", function (){
-    chrome.tabs.create({url: "https://github.com/TyraelDLee/HarukaEmoji/blob/main/README.md#readme"})
+    chrome.tabs.create({url: "./readme.html"})
 });
 
 setting1.addEventListener("change", function (){

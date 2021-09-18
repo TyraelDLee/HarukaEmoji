@@ -287,7 +287,7 @@ function delay(){
 
 function updateJCT(){
     if(typeof chrome.app.isInstalled!=="undefined")
-        chrome.extension.sendRequest({ msg: "get_JCT" },function(jct){JCT = jct;});
+        chrome.runtime.sendMessage({ msg: "get_JCT" },function(jct){JCT = jct.res;});
 }
 
 function getTimeSnap(){return Date.now();}

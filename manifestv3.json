@@ -1,0 +1,116 @@
+{
+  "name": "rua豹器",
+  "manifest_version": 3,
+  "version": "4.9",
+  "description": "rua!",
+  "permissions": [
+    "cookies",
+    "storage",
+    "notifications",
+    "webRequest",
+    "webRequestBlocking"
+  ],
+  "background": {
+    "service_worker": "js/sw.js",
+    "type": "module"
+  },
+  "icons": {
+    "16": "images/haruka16.png",
+    "32": "images/haruka32.png",
+    "48": "images/haruka48.png",
+    "128": "images/haruka128.png"
+  },
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "js": [
+        "js/ADT.js",
+        "js/Jquery-3.5.1.js",
+        "js/Madel.js"
+      ],
+      "matches": [
+        "*://live.bilibili.com/*"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "all_frames": true,
+      "css": [
+        "css/host.css",
+        "css/button.css"
+      ],
+      "js": [
+        "js/haruka.js",
+        "js/WebHost.js"
+      ],
+      "matches": [
+        "*://live.bilibili.com/21652717*",
+        "*://live.bilibili.com/21652717?*",
+        "*://live.bilibili.com/record/21652717*",
+        "*://live.bilibili.com/blanc/21652717?liteVersion=true"
+      ],
+      "run_at": "document_end"
+    },
+    {
+      "all_frames": true,
+      "css": [
+        "css/host.css",
+        "css/button.css"
+      ],
+      "js": [
+        "js/pudding.js",
+        "js/WebHost.js"
+      ],
+      "matches": [
+        "*://live.bilibili.com/21413565*",
+        "*://live.bilibili.com/21413565?*",
+        "*://live.bilibili.com/record/21413565*",
+        "*://live.bilibili.com/blanc/21413565?liteVersion=true"
+      ],
+      "run_at": "document_end"
+    },
+    {
+      "all_frames": true,
+      "css": [
+        "css/host.css",
+        "css/button.css"
+      ],
+      "js": [
+        "js/seki.js",
+        "js/WebHost.js"
+      ],
+      "matches": [
+        "*://live.bilibili.com/1603600*",
+        "*://live.bilibili.com/1603600?*",
+        "*://live.bilibili.com/record/1603600*",
+        "*://live.bilibili.com/blanc/1603600?liteVersion=true"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "images/*",
+        "css/*",
+        "js/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "host_permissions": [
+    "https://api.live.bilibili.com/*",
+    "https://api.bilibili.com/*",
+    "https://live.bilibili.com/",
+    "https://www.bilibili.com/",
+    "https://*.hdslb.com/*"
+  ]
+}

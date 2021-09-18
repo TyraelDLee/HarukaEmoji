@@ -11,5 +11,5 @@ const emoji = ["开车", "喷了", "咬牙切齿", "我恨", "咆哮", "大肠",
     "泡脚", "赢了", "凉了", "哼", "没哭", "失败", "擦泪", "河豚",
     "下锅"];
 
-const link = chrome.extension.getURL("../images/haruka/abaaba.svg");
+const link = chrome.runtime.getURL("../images/haruka/abaaba.svg");
 var imgs = [];for (let i = 0; i < emoji.length; i++)imgs.push(new ImageButton(chrome.runtime.getURL(SRC + emoji[i] + ".webp"), 1));

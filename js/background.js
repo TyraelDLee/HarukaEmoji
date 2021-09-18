@@ -15,15 +15,16 @@ var FOLLOWING_LIST = new FollowingMemberList();
 var FOLLOWING_LIST_TEMP = new FollowingMemberList();
 var p = 0;
 
-var latency = Date.now();
-
 chrome.runtime.onInstalled.addListener(function (obj){
     // init setting
+    console.log(obj.reason);
     chrome.storage.sync.set({"notification": true}, function(){NOTIFICATION_PUSH = true;});
     chrome.storage.sync.set({"medal": true}, function(){});
     chrome.storage.sync.set({"checkIn": true}, function(){CHECKIN_ON = true;});
     chrome.storage.sync.set({"imageNotice": false}, function(){IMAGE_NOTIFICATION = false;});
+    chrome.tabs.create({url: "./readme.html"});
 });
+
 
 chrome.storage.onChanged.addListener(function (changes, namespace) {
     for (let [key, {oldValue, newValue}] of Object.entries(changes)) {
@@ -134,8 +135,6 @@ function updateList(ON_AIR_LIST){
             }
         }
     }
-    console.log("latency: " + (Date.now() - latency));
-    latency=Date.now()+10000;
     setTimeout(getFollowingList, 10000);
 }
 
@@ -151,8 +150,9 @@ function pushNotification(roomTitle, liverName, roomUrl, cover, type) {
 }
 
 function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face){
+    let uid = Math.random();
     if(IMAGE_NOTIFICATION){
-        chrome.notifications.create(roomUrl+"", {
+        chrome.notifications.create(uid+":"+roomUrl, {
                 type: "image",
                 iconUrl: face,
                 title: roomTitle,
@@ -161,7 +161,7 @@ function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face
             }, function (id) {notificationClickHandler(id);}
         );
     }else{
-        chrome.notifications.create(roomUrl+"", {
+        chrome.notifications.create(uid+":"+roomUrl, {
                 type: "basic",
                 iconUrl: cover,
                 title: roomTitle,
@@ -205,17 +205,22 @@ function reloadCookies() {
         function (jct) {(jct === null)?JCT=-1:JCT = jct.value;});
 }
 
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
         if(request.msg === "get_JCT"){
             chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
                 function (jct) {
                     (jct === null) ? JCT = -1 : JCT = jct.value;
-                    sendResponse(JCT);
+                    sendResponse({res:JCT});
                 });
         }
         if(request.msg === "get_UUID"){
-            sendResponse(UUID);
+            sendResponse({res:UUID});
         }
+        if(request.msg.includes("MID")){
+            console.log(MADEL_LIST.get(request.msg.split("?")[1]))
+            sendResponse({res:MADEL_LIST.get(request.msg.split("?")[1])});
+        }
+        return true;
     }
 );
 
@@ -240,7 +245,7 @@ function checkIn(){
 }
 
 function errorHandler(msg){
-    console.log("ERROR found: "+msg)
+    console.log("ERROR found: "+msg.toString()+" "+new Date())
     p=0;
     (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)?setTimeout(getFollowingList, 900000):setTimeout(getFollowingList,20000);
 }
@@ -248,7 +253,15 @@ function errorHandler(msg){
 function notificationClickHandler(id){
     chrome.notifications.onClicked.addListener(function (nid) {
         if (nid === id) {
-            chrome.tabs.create({url: "https://live.bilibili.com/"+nid});
+            chrome.windows.getAll(function (wins){
+                if(wins.length>0){
+                    chrome.windows.getLastFocused(function (Lwin){
+                        chrome.windows.update(Lwin.id, {focused: true});
+                        chrome.tabs.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
+                    });
+                }else
+                    chrome.windows.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
+            });
             chrome.notifications.clear(id);
         }
     });

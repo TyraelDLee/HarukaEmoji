@@ -8,5 +8,5 @@ const ROOM_ID = 21413565;
 const SRC = "../images/pudding/";
 const emoji = ["whl", "草", "赞", "？", "nano", "打call", "死了都要爱"];
 
-const link = chrome.extension.getURL("../images/pudding/icon.png");
+const link = chrome.runtime.getURL("../images/pudding/icon.png");
 var imgs = [];for(let i = 0; i < emoji.length; i++)imgs.push(new ImageButton(chrome.extension.getURL(SRC+emoji[i]+".webp"), 1));

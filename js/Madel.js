@@ -4,6 +4,7 @@
 
 var JCT = -1;
 var MADEL_LIST = new MadelList();
+var mp = 1;
 var MID = -1;
 var room_id = window.location["pathname"].replace("/", "");
 var exp =new RegExp("^[0-9]*$");
@@ -14,15 +15,24 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
         if(key === "medal") on = newValue;
     }
 });
-console.log(room_id)
 getUserInfo();
-if(exp.test(room_id))
-    getMadel();
+setTimeout(function (){
+    if(exp.test(room_id))
+        getMadel();
+}, 10);
 
-var page = 1;
+
+function init(){
+    if(typeof chrome.app.isInstalled!=="undefined"){
+        chrome.runtime.sendMessage({ msg: "MID?"+room_id },function(mid){
+            MID = mid.res;
+            wareMadel();});
+    }
+}
+
 function getMadel(){
     $.ajax({
-        url: "https://api.live.bilibili.com/fans_medal/v5/live_fans_medal/iApiMedal?page="+page,
+        url: "https://api.live.bilibili.com/fans_medal/v5/live_fans_medal/iApiMedal?page="+mp,
         type: "GET",
         dataType: "json",
         json: "callback",
@@ -35,13 +45,13 @@ function getMadel(){
                 let madel_list = data["fansMedalList"];
                 for (let i = 0; i < madel_list.length; i++)
                     MADEL_LIST.push(new Madel(madel_list[i]["medal_id"]+"", madel_list[i]["roomid"]+"", madel_list[i]["target_id"]+""));
-                if(data["pageinfo"]["totalpages"] === page){
+                if(data["pageinfo"]["totalpages"] === mp){
                     console.log("load list complete");
                     if(MADEL_LIST.get(room_id) !== "-1")
                         MID = MADEL_LIST.get(room_id);
                         wareMadel();
                 }else{
-                    page++;
+                    mp++;
                     getMadel();
                 }
             }
@@ -75,14 +85,10 @@ function wareMadel(){
 
 function getUserInfo(){
     if(typeof chrome.app.isInstalled!=="undefined"){
-        chrome.extension.sendRequest({ msg: "get_JCT" },function(jct){JCT = jct;});
+        chrome.runtime.sendMessage({ msg: "get_JCT" },function(jct){JCT = jct.res;});
     }
 }
 
 window.addEventListener("focus", function (){
     wareMadel();
 });
-
-window.addEventListener("blur", function (){
-    console.log("blur");
-})

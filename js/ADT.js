@@ -142,7 +142,12 @@ function MadelList(){
 }
 
 MadelList.prototype.push = function (madel){
+    for (let i = 0; i < this.list.length; i++) {
+        if(this.list[i].MID === madel.MID)
+            return false;
+    }
     this.list.push(madel);
+    return true;
 }
 
 MadelList.prototype.existsRID = function (id){
@@ -171,4 +176,12 @@ MadelList.prototype.getUID = function (rid){
         if(this.list[i].RID === rid) return this.list[i].UID;
     }
     return -1+"";
+}
+
+MadelList.prototype.length = function (){
+    return this.list.length;
+}
+
+MadelList.prototype.clearAll = function (){
+    this.list = [];
 }
