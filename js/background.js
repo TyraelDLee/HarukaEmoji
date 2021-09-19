@@ -15,9 +15,11 @@ var FOLLOWING_LIST = new FollowingMemberList();
 var FOLLOWING_LIST_TEMP = new FollowingMemberList();
 var p = 0;
 
+var lastWID = 0;
+
+chrome.windows.onFocusChanged.addListener(function (wID){if(wID!==-1) lastWID = wID;});
 chrome.runtime.onInstalled.addListener(function (obj){
     // init setting
-    console.log(obj.reason);
     chrome.storage.sync.set({"notification": true}, function(){NOTIFICATION_PUSH = true;});
     chrome.storage.sync.set({"medal": true}, function(){});
     chrome.storage.sync.set({"checkIn": true}, function(){CHECKIN_ON = true;});
@@ -255,10 +257,13 @@ function notificationClickHandler(id){
         if (nid === id) {
             chrome.windows.getAll(function (wins){
                 if(wins.length>0){
-                    chrome.windows.getLastFocused(function (Lwin){
-                        chrome.windows.update(Lwin.id, {focused: true});
-                        chrome.tabs.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
-                    });
+                    // why google did not fix this bug over 6 years? WTF
+                    // chrome.windows.getLastFocused(function (Lwin){
+                    //     chrome.windows.update(Lwin.id, {focused: true});
+                    //     chrome.tabs.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
+                    // });
+                    chrome.windows.update(lastWID, {focused: true});
+                    chrome.tabs.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
                 }else
                     chrome.windows.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
             });
