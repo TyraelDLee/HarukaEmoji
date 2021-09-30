@@ -24,6 +24,12 @@
     "run_at": "document_start"
   },{
     "all_frames": true,
+    "js": ["js/MadelAfterLoad.js"],
+    "matches": ["*://live.bilibili.com/*"],
+    "run_at": "document_end"
+  },
+    {
+    "all_frames": true,
     "css": ["css/host.css", "css/button.css"],
     "js": ["js/haruka.js","js/WebHost.js"],
     "matches": [ "*://live.bilibili.com/21652717*", "*://live.bilibili.com/21652717?*", "*://live.bilibili.com/record/21652717*", "*://live.bilibili.com/blanc/21652717?liteVersion=true"],

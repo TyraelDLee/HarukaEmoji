@@ -40,7 +40,6 @@ const fullScreenInput = document.createElement("input");
 // let commentsTextArea = null;
 // check event
 if(document.getElementsByTagName("article").length === 0) renderExtension();
-
 function renderExtension(){
     popup.setAttribute("id", "emoji-popup");
     popup.style.background = "url("+link+") no-repeat center";

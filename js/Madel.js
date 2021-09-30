@@ -21,7 +21,6 @@ setTimeout(function (){
         getMadel();
 }, 10);
 
-
 function init(){
     if(typeof chrome.app.isInstalled!=="undefined"){
         chrome.runtime.sendMessage({ msg: "MID?"+room_id },function(mid){
