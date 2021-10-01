@@ -76,7 +76,7 @@ function wareMadel(){
                 withCredentials: true
             },
             success: function (){
-                console.log("ware madel successful, MID="+MID);
+                console.log("ware medal successful, MID="+MID);
             }
         });
     }

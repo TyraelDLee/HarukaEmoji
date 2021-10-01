@@ -15,7 +15,8 @@ setSize();
 updateJCT();
 setInterval(updateJCT, 3000);
 
-var absoluteLoc = [100, 100, WINDOW_WIDTH - 100];
+var absoluteLoc = [];
+setPopupInitLocation();
 var isDrag = 0;
 const parent = document.body;
 // popup button
@@ -62,10 +63,10 @@ function renderExtension(){
     parent.appendChild(selec);
     parent.appendChild(popup);
 
-    popup.style.left = WINDOW_WIDTH - 100 + 'px';
-    popup.style.top = "100px";
-    selec.style.left = WINDOW_WIDTH - 410 +"px";
-    selec.style.top = "95px";
+    popup.style.left = absoluteLoc[2] + 'px';
+    popup.style.top = absoluteLoc[1]+"px";
+    selec.style.left = (absoluteLoc[2]-310)+"px";
+    selec.style.top = (absoluteLoc[1]-5)+"px";
 
     DanMuSub.setAttribute("id", "input-button");
     DanMuSub.innerHTML = "<span>发送</span>";
@@ -374,4 +375,24 @@ function inputListener(span, O){
     let End = O.selectionEnd;
     calculateTextLength(span, O.value.length);
     return [Start, End];
+}
+
+
+function getAbsLocation(id){
+    let e = document.getElementById(id);
+    let abs = [e.offsetLeft, e.offsetTop];
+    let cur = e.offsetParent;
+    while (cur!==null){
+        abs[0] += cur.offsetLeft;abs[1] += (cur.offsetTop+cur.clientTop);
+        cur = cur.offsetParent;
+    }
+    return abs;
+}
+
+function setPopupInitLocation(){
+    let pos = getAbsLocation("rank-list-vm");
+    pos[0] += 245;
+    pos[1] += 70;
+    absoluteLoc = [WINDOW_WIDTH - pos[0], pos[1], pos[0]];
+    console.log(pos);
 }
