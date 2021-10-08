@@ -47,6 +47,7 @@ document.getElementById("readme").addEventListener("click", function (){
 
 setting1.addEventListener("change", function (){
     let checked = this.checked;
+    buttonDisabled(this.checked, setting4);
     chrome.storage.sync.set({"notification": checked}, function(){
         console.log("notification on:"+checked);
     });
@@ -69,6 +70,7 @@ setting4.addEventListener("change", function (){
 
 window.addEventListener("focus", function (){
     chrome.storage.sync.get(["notification"], function(result){
+        buttonDisabled(result.notification, setting4);
         setting1.checked = result.notification;});
 
     chrome.storage.sync.get(["medal"], function(result){
@@ -80,3 +82,13 @@ window.addEventListener("focus", function (){
     chrome.storage.sync.get(["imageNotice"], function(result){
         setting4.checked = result.imageNotice;});
 });
+
+function buttonDisabled(checked, obj){
+    if(checked) {
+        obj.removeAttribute("disabled");
+        obj.parentElement.getElementsByTagName("label")[0].classList.remove("btn-disabled");
+    } else{
+        obj.setAttribute("disabled", "true");
+        obj.parentElement.getElementsByTagName("label")[0].classList.add("btn-disabled");
+    }
+}

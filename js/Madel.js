@@ -6,7 +6,7 @@ var JCT = -1;
 var MADEL_LIST = new MadelList();
 var mp = 1;
 var MID = -1;
-var room_id = window.location["pathname"].replace("/", "");
+var room_id = window.location["pathname"].replaceAll("/", "").replace("blanc","");
 var exp =new RegExp("^[0-9]*$");
 var on;
 chrome.storage.sync.get(["medal"], function(result){on = result.medal});

@@ -17,6 +17,15 @@ var p = 0;
 
 var lastWID = 0;
 
+// https://api.bilibili.com/x/vip/privilege/receive
+// exchange B coin api.
+// form contain: type: 1 === B coin
+//               | type: 2 === shop
+//               & csrf
+// request method: post
+// header: cookie
+// form type is not web form
+
 chrome.windows.onFocusChanged.addListener(function (wID){if(wID!==-1) lastWID = wID;});
 chrome.runtime.onInstalled.addListener(function (obj){
     // init setting
@@ -179,7 +188,7 @@ setInterval(reloadCookies, 5000);
 
 function scheduleCheckIn(){
     checkIn();
-    checkin = setInterval(checkIn, 86_400_000);
+    checkin = setInterval(checkIn, 43200000);
 }
 
 function reloadCookies() {
@@ -199,6 +208,7 @@ function reloadCookies() {
                         FOLLOWING_LIST.clearAll(); // initial following list.
                         getFollowingList();
                         scheduleCheckIn();
+                        // exchangeVIPCoin();
                     }
                     P_UID = UUID;P_SESS = SESSDATA;
                 });
@@ -241,6 +251,7 @@ function checkIn(){
             },
             error: function (msg){
                 console.log("ERROR found");
+                setTimeout(checkIn(), 10000)
             }
         });
     }
@@ -282,3 +293,22 @@ function loadSetting(){
     chrome.storage.sync.get(["imageNotice"], function(result){
         IMAGE_NOTIFICATION = result.imageNotice;});
 }
+
+
+function exchangeVIPCoin(){
+    $.ajax({
+        url: "https://api.bilibili.com/x/vip/privilege/receive",
+        type: "POST",
+        data: {"type": 1,"csrf":JCT},
+        dataType: "json",
+        json: "callback",
+        success: function (json) {
+            console.log(json)
+        },
+        error: function (msg) {
+            console.log(msg.toString())
+        }
+    });
+}
+
+//todo: fix focus no win ID error, fix error which occur at checkIn after reconnection.

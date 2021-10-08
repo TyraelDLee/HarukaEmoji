@@ -68,9 +68,15 @@ section {
   left: 18px;
 }
 
+.btn-disabled{
+  -webkit-filter: opacity(50%);filter: opacity(50%);
+}
+
 .button .checkbox input:checked + label {
-  background: #FD749B;
+  background: #fd749b;
 }
 .button .checkbox input:checked + label:after {
-  background: #FB7299;
+  background: #fb7299;
 }
+
+

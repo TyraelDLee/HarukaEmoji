@@ -16,7 +16,6 @@ updateJCT();
 setInterval(updateJCT, 3000);
 
 var absoluteLoc = [];
-setPopupInitLocation();
 var isDrag = 0;
 const parent = document.body;
 // popup button
@@ -42,6 +41,7 @@ const fullScreenInput = document.createElement("input");
 // check event
 if(document.getElementsByTagName("article").length === 0) renderExtension();
 function renderExtension(){
+    setPopupInitLocation();
     popup.setAttribute("id", "emoji-popup");
     popup.style.background = "url("+link+") no-repeat center";
     popup.style.backgroundSize = "contain";
@@ -386,13 +386,12 @@ function getAbsLocation(id){
         abs[0] += cur.offsetLeft;abs[1] += (cur.offsetTop+cur.clientTop);
         cur = cur.offsetParent;
     }
+    abs[0] += (e.clientWidth - 60);
+    abs[1] += (e.clientHeight - 60);
     return abs;
 }
 
 function setPopupInitLocation(){
     let pos = getAbsLocation("rank-list-vm");
-    pos[0] += 245;
-    pos[1] += 70;
     absoluteLoc = [WINDOW_WIDTH - pos[0], pos[1], pos[0]];
-    console.log(pos);
 }
