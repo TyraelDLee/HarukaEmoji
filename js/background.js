@@ -15,7 +15,7 @@ var FOLLOWING_LIST = new FollowingMemberList();
 var FOLLOWING_LIST_TEMP = new FollowingMemberList();
 var p = 0;
 
-var lastWID = 0;
+var winIDList = new WindowIDList();
 
 // https://api.bilibili.com/x/vip/privilege/receive
 // exchange B coin api.
@@ -25,8 +25,10 @@ var lastWID = 0;
 // request method: post
 // header: cookie
 // form type is not web form
-
-chrome.windows.onFocusChanged.addListener(function (wID){if(wID!==-1) lastWID = wID;});
+chrome.windows.getAll(function (wins){for (let i = 0; i < wins.length; i++) winIDList.push(wins[i].id);});
+chrome.windows.onCreated.addListener(function (win){winIDList.push(win.id);});
+chrome.windows.onRemoved.addListener(function (wID){winIDList.remove(wID);});
+chrome.windows.onFocusChanged.addListener(function (wID){if(wID!==-1) winIDList.push(wID);});
 chrome.runtime.onInstalled.addListener(function (obj){
     // init setting
     chrome.storage.sync.set({"notification": true}, function(){NOTIFICATION_PUSH = true;});
@@ -273,7 +275,7 @@ function notificationClickHandler(id){
                     //     chrome.windows.update(Lwin.id, {focused: true});
                     //     chrome.tabs.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
                     // });
-                    chrome.windows.update(lastWID, {focused: true});
+                    chrome.windows.update(winIDList.getCurrent(), {focused: true});
                     chrome.tabs.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
                 }else
                     chrome.windows.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
@@ -310,5 +312,3 @@ function exchangeVIPCoin(){
         }
     });
 }
-
-//todo: fix focus no win ID error, fix error which occur at checkIn after reconnection.

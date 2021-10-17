@@ -90,7 +90,7 @@ FollowingMemberList.prototype.indexOf = function (member){
 FollowingMemberList.prototype.remove = function (member){
     let index = this.indexOf(member);
     if(index > -1)
-        this.list.slice(index,1);
+        this.list.splice(index,1);
 }
 
 FollowingMemberList.prototype.print = function (){
@@ -184,4 +184,20 @@ MadelList.prototype.length = function (){
 
 MadelList.prototype.clearAll = function (){
     this.list = [];
+}
+
+
+function WindowIDList(){
+    this.list = [];
+}
+WindowIDList.prototype.push = function (id){
+    this.remove(id);
+    this.list.push(id);
+}
+WindowIDList.prototype.remove = function (id){
+    if (this.list.indexOf(id)>-1)
+        this.list.splice(this.list.indexOf(id),1);
+}
+WindowIDList.prototype.getCurrent = function (){
+    if (this.list.length>0) return this.list[this.list.length-1]; else return -1;
 }
