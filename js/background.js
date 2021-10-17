@@ -251,7 +251,7 @@ function checkIn(){
             },
             error: function (msg){
                 console.log("ERROR found");
-                setTimeout(checkIn(), 10000)
+                setTimeout(checkIn, 10000);
             }
         });
     }

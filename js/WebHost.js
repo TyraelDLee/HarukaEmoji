@@ -5,17 +5,29 @@ var JCT = -1;
 
 var WINDOW_HEIGHT;
 var WINDOW_WIDTH;
+var initWidth = window.innerWidth;
+var labFeatures=[];
+var zoomFactor = 1.0;
 
 function setSize(){
-    WINDOW_HEIGHT = window.innerHeight;
-    WINDOW_WIDTH = window.innerWidth;
+    // if (labFeatures.indexOf("adaptive")!==-1){
+    //     if (window.innerWidth<1930)
+    //         zoomFactor = 1.0;
+    //     if (window.innerWidth>=1930 && window.innerWidth <2058)
+    //         zoomFactor = 15.0/16.0;
+    //     if(window.innerWidth>=2058)
+    //         zoomFactor = 3.0/4.0;
+    // }
+    WINDOW_HEIGHT = window.innerHeight * zoomFactor;
+    WINDOW_WIDTH = window.innerWidth * zoomFactor;
 }
 
 setSize();
 updateJCT();
 setInterval(updateJCT, 3000);
 
-var absoluteLoc = [];
+var moved = false;
+var absoluteLoc = [100,100,100];
 var isDrag = 0;
 const parent = document.body;
 // popup button
@@ -37,11 +49,12 @@ const fullScreenText = document.createElement("span");
 const fullScreenSection = document.createElement("section");
 const fullScreenButton = document.createElement("div");
 const fullScreenInput = document.createElement("input");
+
 // let commentsTextArea = null;
 // check event
 if(document.getElementsByTagName("article").length === 0) renderExtension();
 function renderExtension(){
-    setPopupInitLocation();
+    loadPopPos();
     popup.setAttribute("id", "emoji-popup");
     popup.style.background = "url("+link+") no-repeat center";
     popup.style.backgroundSize = "contain";
@@ -63,9 +76,7 @@ function renderExtension(){
     parent.appendChild(selec);
     parent.appendChild(popup);
 
-    popup.style.left = absoluteLoc[2] + 'px';
     popup.style.top = absoluteLoc[1]+"px";
-    selec.style.left = (absoluteLoc[2]-310)+"px";
     selec.style.top = (absoluteLoc[1]-5)+"px";
 
     DanMuSub.setAttribute("id", "input-button");
@@ -137,6 +148,9 @@ function renderExtension(){
                         selec.classList.add("selection-fade-out");
                         setTimeout(hide, 150);
                     }
+                }else{
+                    moved = true;
+                    localStorage.setItem("rua_pos", absoluteLoc[0]+","+absoluteLoc[1]+","+absoluteLoc[2]);
                 }
                 document.onmousemove = null;
                 document.onmouseup = null;
@@ -151,9 +165,13 @@ function renderExtension(){
      * */
     window.addEventListener("resize", function(){
         let popleft;
+        let relativeX = (absoluteLoc[0] < absoluteLoc[2])?absoluteLoc[0]/initWidth:absoluteLoc[2] / initWidth;
         setSize();
-        absoluteLoc[0] < absoluteLoc[2]?popleft = WINDOW_WIDTH - absoluteLoc[0]:popleft = absoluteLoc[2];
-        popup.style.left = popleft + 'px';
+        if(moved){
+            absoluteLoc[0] < absoluteLoc[2]?popleft = WINDOW_WIDTH - absoluteLoc[0]:popleft = absoluteLoc[2];
+            popup.style.left = popleft + 'px';
+        }else
+           setPopupInitLocation();
         if(absoluteLoc[1] > WINDOW_HEIGHT){
             popup.style.top = WINDOW_HEIGHT - 60 + "px";
             selec.style.top = WINDOW_HEIGHT - 360 + "px";
@@ -165,6 +183,9 @@ function renderExtension(){
 
 function hide(){selec.style.display = "none";}
 
+/***
+ * @return true, not move | false, moved.
+ */
 function isMoved(oX, oY, cX, cY){return Math.abs(oX - cX) === 0 && Math.abs(oY - cY) === 0;}
 
 function delay(){
@@ -377,7 +398,6 @@ function inputListener(span, O){
     return [Start, End];
 }
 
-
 function getAbsLocation(id){
     let e = document.getElementById(id);
     let abs = [e.offsetLeft, e.offsetTop];
@@ -394,4 +414,53 @@ function getAbsLocation(id){
 function setPopupInitLocation(){
     let pos = getAbsLocation("rank-list-vm");
     absoluteLoc = [WINDOW_WIDTH - pos[0], pos[1], pos[0]];
+    if(absoluteLoc[2]>(WINDOW_WIDTH-60)){
+        popup.style.left = WINDOW_WIDTH-60 + 'px';
+        selec.style.left = (WINDOW_WIDTH-370)+"px";
+    }else{
+        popup.style.left = absoluteLoc[2] + 'px';
+        selec.style.left = (absoluteLoc[2]-310)+"px";
+    }
+}
+
+function loadPopPos(){
+    if(localStorage.getItem("rua_pos")===null){
+        setPopupInitLocation();
+        moved=false;
+    }else{
+        moved=true;
+        for (let i = 0; i < 3; i++)
+            absoluteLoc[i] = parseInt(localStorage.getItem("rua_pos").split(",")[i]);
+        let offsetLeft = 0;
+        absoluteLoc[0] < absoluteLoc[2]?offsetLeft = WINDOW_WIDTH - absoluteLoc[0]:offsetLeft = absoluteLoc[2];
+        if(absoluteLoc[1] > WINDOW_HEIGHT - 50)absoluteLoc[1]=WINDOW_HEIGHT - 50;
+        popup.style.left = offsetLeft + 'px';
+        offsetLeft<320?selec.style.left = offsetLeft + 60 + "px":selec.style.left = offsetLeft - 310 + "px";
+    }
+}
+
+var obs = new MutationObserver(function (m){
+    m.forEach(function(mutation) {
+        if (mutation.type === "attributes") {
+            labFeatures = labStyle.getAttribute("lab-style").split(",");
+            labFeatures.indexOf("dark")!==-1?darkMode(true):darkMode(false);
+        }
+    });
+});
+
+const labStyle = document.documentElement;
+obs.observe(labStyle,{
+    attributes: true
+});
+
+function darkMode(on){
+    if(on){
+        selec.style.background = "#151515";
+        DanMuInput.style.background = "#151515";
+        DanMuInput.style.borderColor = "#2b2b2b";
+    }else{
+        selec.style.removeProperty("background");
+        DanMuInput.style.removeProperty("background");
+        DanMuInput.style.removeProperty("border-color");
+    }
 }
