@@ -13,9 +13,8 @@ var P_UID = UUID;
 var P_SESS = SESSDATA;
 var FOLLOWING_LIST = new FollowingMemberList();
 var FOLLOWING_LIST_TEMP = new FollowingMemberList();
-var p = 0;
-
 var winIDList = new WindowIDList();
+var p = 0;
 
 // https://api.bilibili.com/x/vip/privilege/receive
 // exchange B coin api.
@@ -25,6 +24,7 @@ var winIDList = new WindowIDList();
 // request method: post
 // header: cookie
 // form type is not web form
+
 chrome.windows.getAll(function (wins){for (let i = 0; i < wins.length; i++) winIDList.push(wins[i].id);});
 chrome.windows.onCreated.addListener(function (win){winIDList.push(win.id);});
 chrome.windows.onRemoved.addListener(function (wID){winIDList.remove(wID);});
@@ -37,7 +37,6 @@ chrome.runtime.onInstalled.addListener(function (obj){
     chrome.storage.sync.set({"imageNotice": false}, function(){IMAGE_NOTIFICATION = false;});
     chrome.tabs.create({url: "./readme.html"});
 });
-
 
 chrome.storage.onChanged.addListener(function (changes, namespace) {
     for (let [key, {oldValue, newValue}] of Object.entries(changes)) {
@@ -79,9 +78,7 @@ function getFollowingList() {
                     if (listLength !== 0) getFollowingList();
                 }
             },
-            error: function (msg){
-                errorHandler(msg);
-            }
+            error: function (msg){errorHandler(msg);}
         });
     }
 }
@@ -110,9 +107,7 @@ function queryLivingRoom() {
                 if (ON_AIR_LIST.list.length > 0) updateList(ON_AIR_LIST);
             }
         },
-        error: function (msg) {
-            errorHandler(msg);
-        }
+        error: function (msg) {errorHandler(msg);}
     });
 }
 
@@ -203,6 +198,7 @@ function reloadCookies() {
                     if ((UUID === -1 || SESSDATA === -1) && UUID !== P_UID && SESSDATA !== P_SESS) {
                         // if not log in then stop update liver stream info.
                         console.log("Session info does not exist, liver stream info listener cleared.");
+                        clearInterval(checkin);
                     }
                     if (UUID !== -1 && SESSDATA !== -1 && UUID !== P_UID && SESSDATA !== P_SESS) {
                         // log in info changed then load following list and start update liver stream info every 3 min.
@@ -227,9 +223,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
                     sendResponse({res:JCT});
                 });
         }
-        if(request.msg === "get_UUID"){
-            sendResponse({res:UUID});
-        }
+        if(request.msg === "get_UUID") {sendResponse({res:UUID});}
         if(request.msg.includes("MID")){
             console.log(MADEL_LIST.get(request.msg.split("?")[1]))
             sendResponse({res:MADEL_LIST.get(request.msg.split("?")[1])});
@@ -260,7 +254,7 @@ function checkIn(){
 }
 
 function errorHandler(msg){
-    console.log("ERROR found: "+msg.toString()+" "+new Date())
+    console.log("ERROR found: "+msg.toString()+" "+new Date());
     p=0;
     (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)?setTimeout(getFollowingList, 900000):setTimeout(getFollowingList,20000);
 }

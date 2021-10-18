@@ -201,3 +201,6 @@ WindowIDList.prototype.remove = function (id){
 WindowIDList.prototype.getCurrent = function (){
     if (this.list.length>0) return this.list[this.list.length-1]; else return -1;
 }
+WindowIDList.prototype.length = function (){
+    return this.list.length;
+}
