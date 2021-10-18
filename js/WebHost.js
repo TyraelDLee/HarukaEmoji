@@ -132,6 +132,7 @@ function renderExtension(){
                 popup.style.top = popupLocVac + 'px';
                 popupLocHor < 320?selec.style.left = popupLocHor + 60 + "px":selec.style.left = popupLocHor - 310 + "px";
                 popupLocVac > WINDOW_HEIGHT - 360?selec.style.top = WINDOW_HEIGHT - 360 + "px":selec.style.top = popupLocVac - 5 + "px";
+                if(popupLocVac===undefined)popupLocVac=popup.offsetTop;
                 if(popupLocHor > -1)
                     absoluteLoc = [WINDOW_WIDTH - popupLocHor, popupLocVac, popupLocHor];
             };
@@ -172,7 +173,7 @@ function renderExtension(){
             popup.style.left = popleft + 'px';
         }else
            setPopupInitLocation();
-        if(absoluteLoc[1] > WINDOW_HEIGHT){
+        if(absoluteLoc[1] > WINDOW_HEIGHT-60){
             popup.style.top = WINDOW_HEIGHT - 60 + "px";
             selec.style.top = WINDOW_HEIGHT - 360 + "px";
         }
@@ -425,6 +426,10 @@ function setPopupInitLocation(){
 
 function loadPopPos(){
     if(localStorage.getItem("rua_pos")===null){
+        setPopupInitLocation();
+        moved=false;
+    }else if(localStorage.getItem("rua_pos").includes("undefined")){
+        localStorage.removeItem("rua_pos");
         setPopupInitLocation();
         moved=false;
     }else{

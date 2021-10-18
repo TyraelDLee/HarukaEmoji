@@ -290,7 +290,6 @@ function loadSetting(){
         IMAGE_NOTIFICATION = result.imageNotice;});
 }
 
-
 function exchangeVIPCoin(){
     $.ajax({
         url: "https://api.bilibili.com/x/vip/privilege/receive",
