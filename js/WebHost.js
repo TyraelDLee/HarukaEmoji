@@ -50,8 +50,6 @@ const fullScreenSection = document.createElement("section");
 const fullScreenButton = document.createElement("div");
 const fullScreenInput = document.createElement("input");
 
-// let commentsTextArea = null;
-// check event
 if(document.getElementsByTagName("article").length === 0) renderExtension();
 function renderExtension(){
     loadPopPos();

@@ -16,7 +16,7 @@ var FOLLOWING_LIST_TEMP = new FollowingMemberList();
 var winIDList = new WindowIDList();
 var p = 0;
 
-// https://api.bilibili.com/x/vip/privilege/receive
+// https://api.bilibili.com/x/vip/privilege/receive b币兑换API
 // exchange B coin api.
 // form contain: type: 1 === B coin
 //               | type: 2 === shop
@@ -24,6 +24,28 @@ var p = 0;
 // request method: post
 // header: cookie
 // form type is not web form
+
+// https://api.bilibili.com/x/vip/privilege/my 兑换查询API(可能)
+// request method: get
+// header: cookie
+// return: object
+// {
+//      "code":0,
+//      "message":"0",
+//      "ttl":1,
+//      "data":{
+//          "list":[
+//              {
+//                  "type":1, // as same as above. Maybe?
+//                  "state":1, // Used or not. Maybe?
+//                  "expire_time":1635695999 //expire time
+//              },
+//              {
+//                  "type":2,
+//                  "state":1,
+//                  "expire_time":1635695999}]
+//       }
+// }
 
 chrome.windows.getAll(function (wins){for (let i = 0; i < wins.length; i++) winIDList.push(wins[i].id);});
 chrome.windows.onCreated.addListener(function (win){winIDList.push(win.id);});
