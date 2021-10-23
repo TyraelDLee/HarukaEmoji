@@ -2,6 +2,8 @@
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
 var JCT = -1;
+var SESSDATA = -1;
+var port;
 
 var WINDOW_HEIGHT;
 var WINDOW_WIDTH;
@@ -22,6 +24,7 @@ function setSize(){
     WINDOW_WIDTH = window.innerWidth * zoomFactor;
 }
 
+connectToBG();
 setSize();
 updateJCT();
 setInterval(updateJCT, 3000);
@@ -49,6 +52,7 @@ const fullScreenText = document.createElement("span");
 const fullScreenSection = document.createElement("section");
 const fullScreenButton = document.createElement("div");
 const fullScreenInput = document.createElement("input");
+var totalLength;
 
 if(document.getElementsByTagName("article").length === 0) renderExtension();
 function renderExtension(){
@@ -189,12 +193,16 @@ function isMoved(oX, oY, cX, cY){return Math.abs(oX - cX) === 0 && Math.abs(oY -
 
 function delay(){
     console.log("load complete");
-    if(JCT === -1){
+    if(JCT === "-1" && SESSDATA === "-1"){
         emojiTable.innerHTML = "<div id='load'>加载失败，<br>请<a href="+window.location+">点击这里</a>重试<br><br>" +
             "如未登录，请先登录</div>";
         document.getElementById("load").style.marginTop = "130px";
+    }else if(JCT !== "-1" && SESSDATA === "-1"){
+        emojiTable.innerHTML = "<div id='load'>CSRF校验失败，请登录后重试</div>";
+        document.getElementById("load").style.marginTop = "130px";
     }else{
-        textLength.innerHTML = " 0/"+document.getElementsByClassName("input-limit-hint")[0].innerHTML.split("/")[1];
+        totalLength = document.getElementsByClassName("input-limit-hint").length>0?document.getElementsByClassName("input-limit-hint")[0].innerHTML.split("/")[1]:"20";
+        textLength.innerHTML = " 0/"+totalLength;
         DanMuInput.style.display = "block";
         DanMuSub.style.display = "block";
         textLength.style.display = "block";
@@ -306,8 +314,20 @@ function delay(){
 }
 
 function updateJCT(){
-    if(typeof chrome.app.isInstalled!=="undefined")
-        chrome.runtime.sendMessage({ msg: "get_JCT" },function(jct){JCT = jct.res;});
+    if(typeof chrome.app.isInstalled!=="undefined"){
+        chrome.runtime.sendMessage({ msg: "get_LoginInfo" },function(lf){
+            JCT = lf.res.split(",")[0];
+            SESSDATA = lf.res.split(",")[1];
+        });
+    }
+}
+function connectToBG(){
+    port = chrome.runtime.connect();
+    port.onDisconnect.addListener(reconnect);
+}
+function reconnect(){
+    port = null;
+    setTimeout(connectToBG, 200);
 }
 
 function getTimeSnap(){return Date.now();}
@@ -342,7 +362,7 @@ function send(form){
         success: function (){
             console.log("sent");
         }
-    })
+    });
 }
 
 function constructHTMLTable(num_per_line, O, O1, sel, span){
@@ -387,7 +407,7 @@ function constructHTMLTable(num_per_line, O, O1, sel, span){
 }
 
 function calculateTextLength(span, length){
-    span.innerHTML = (length<10)?(" "+length+"/30"):(length+"/30");
+    span.innerHTML = (length<10)?(" "+length+"/"+totalLength):(length+"/"+totalLength);
 }
 
 function inputListener(span, O){

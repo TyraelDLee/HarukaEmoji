@@ -2,10 +2,13 @@ const setting1 = document.getElementById("notification");
 const setting2 = document.getElementById("medal");
 const setting3 = document.getElementById("check-in");
 const setting4 = document.getElementById("img-notice");
+const setting5 = document.getElementById("b-coin");
+const setting6 = document.getElementById("dark-mode");
 const loginInfo = document.getElementById("login");
 
 var UUID = -2;
 
+buttonDisabled(false, setting5);
 function updateUID(){
     if(typeof chrome.app.isInstalled!=="undefined"){
         chrome.runtime.sendMessage({ msg: "get_UUID" },function(uid){UUID = uid.res;
@@ -51,22 +54,27 @@ setting1.addEventListener("change", function (){
     chrome.storage.sync.set({"notification": checked}, function(){
         console.log("notification on:"+checked);
     });
-})
+});
 
 setting2.addEventListener("change", function (){
     let checked = this.checked;
     chrome.storage.sync.set({"medal": checked}, function(){});
-})
+});
 
 setting3.addEventListener("change", function (){
     let checked = this.checked;
     chrome.storage.sync.set({"checkIn": checked}, function(){});
-})
+});
 
 setting4.addEventListener("change", function (){
     let checked = this.checked;
     chrome.storage.sync.set({"imageNotice": checked}, function (){})
-})
+});
+
+setting5.addEventListener("change", function (){
+   let checked = this.checked;
+    chrome.storage.sync.set({"bcoin": checked}, function (){})
+});
 
 window.addEventListener("focus", function (){
     chrome.storage.sync.get(["notification"], function(result){
@@ -81,6 +89,10 @@ window.addEventListener("focus", function (){
 
     chrome.storage.sync.get(["imageNotice"], function(result){
         setting4.checked = result.imageNotice;});
+
+    chrome.storage.sync.get(["bcoin"], function(result){
+        setting5.checked = result.bcoin;});
+
 });
 
 function buttonDisabled(checked, obj){

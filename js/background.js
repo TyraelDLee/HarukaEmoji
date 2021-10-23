@@ -5,6 +5,7 @@ var NOTIFICATION_PUSH;
 var checkin;
 var CHECKIN_ON;
 var IMAGE_NOTIFICATION;
+var BCOIN;
 
 var UUID = -1;
 var SESSDATA = -1;
@@ -14,6 +15,7 @@ var P_SESS = SESSDATA;
 var FOLLOWING_LIST = new FollowingMemberList();
 var FOLLOWING_LIST_TEMP = new FollowingMemberList();
 var winIDList = new WindowIDList();
+var replyPayload = new ReplyPayload();
 var p = 0;
 
 // https://api.bilibili.com/x/vip/privilege/receive b币兑换API
@@ -25,27 +27,15 @@ var p = 0;
 // header: cookie
 // form type is not web form
 
-// https://api.bilibili.com/x/vip/privilege/my 兑换查询API(可能)
-// request method: get
+// https://api.live.bilibili.com/xlive/web-ucenter/v1/labs/EditPlugs Dark mode API
+// form contain: key: dark
+//               status: 1 on, 0 off
+//               csrf: JCT
+//               csrf_token: JCT
+//               visit_id: empty
+// request method: post
 // header: cookie
-// return: object
-// {
-//      "code":0,
-//      "message":"0",
-//      "ttl":1,
-//      "data":{
-//          "list":[
-//              {
-//                  "type":1, // as same as above. Maybe?
-//                  "state":1, // Used or not. Maybe?
-//                  "expire_time":1635695999 //expire time
-//              },
-//              {
-//                  "type":2,
-//                  "state":1,
-//                  "expire_time":1635695999}]
-//       }
-// }
+
 
 chrome.windows.getAll(function (wins){for (let i = 0; i < wins.length; i++) winIDList.push(wins[i].id);});
 chrome.windows.onCreated.addListener(function (win){winIDList.push(win.id);});
@@ -57,6 +47,7 @@ chrome.runtime.onInstalled.addListener(function (obj){
     chrome.storage.sync.set({"medal": true}, function(){});
     chrome.storage.sync.set({"checkIn": true}, function(){CHECKIN_ON = true;});
     chrome.storage.sync.set({"imageNotice": false}, function(){IMAGE_NOTIFICATION = false;});
+    chrome.storage.sync.set({"bcoin": false}, function(){BCOIN = false;});
     chrome.tabs.create({url: "./readme.html"});
 });
 
@@ -65,6 +56,7 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
         if(key === "notification") NOTIFICATION_PUSH = newValue;
         if(key === "checkIn") CHECKIN_ON = newValue;
         if(key === "imageNotice")IMAGE_NOTIFICATION = newValue;
+        if(key === "b-coin")BCOIN = newValue;
     }
 });
 
@@ -181,24 +173,72 @@ function pushNotification(roomTitle, liverName, roomUrl, cover, type) {
 
 function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face){
     let uid = Math.random();
-    if(IMAGE_NOTIFICATION){
-        chrome.notifications.create(uid+":"+roomUrl, {
-                type: "image",
-                iconUrl: face,
-                title: roomTitle,
-                message: liverName + " 开播啦!\r\n是"+(type===0?"正常的":"手机")+"直播呦！",
-                imageUrl: cover
-            }, function (id) {notificationClickHandler(id);}
-        );
-    }else{
-        chrome.notifications.create(uid+":"+roomUrl, {
-                type: "basic",
-                iconUrl: cover,
-                title: roomTitle,
-                message: liverName + " 开播啦!\r\n是"+(type===0?"正常的":"手机")+"直播呦！"
-            }, function (id) {notificationClickHandler(id);}
-        );
-    }
+    let msg = liverName + " 开播啦!\r\n是"+(type===0?"正常的":"手机")+"直播呦！";
+    IMAGE_NOTIFICATION?imageNotification(uid, roomTitle, msg, roomUrl, cover, face):basicNotification(uid, roomTitle, msg, roomUrl, cover);
+}
+
+function basicNotification(uid, roomTitle, msg, roomUrl, cover){
+    chrome.notifications.create(uid+":"+roomUrl, {
+            type: "basic",
+            iconUrl: cover,
+            title: roomTitle,
+            message: msg
+        }, function (id) {notificationClickHandler(id,"https://live.bilibili.com/");}
+    );
+}
+
+function messageNotification(uid, roomUrl, face, msg){
+    chrome.notifications.create(uid+"", {
+            type: "basic",
+            iconUrl: face,
+            title: msg,
+            message:""
+        }, function (id) {
+            chrome.notifications.onClicked.addListener(function (nid) {
+                if (nid === id) {
+                    chrome.windows.getAll(function (wins){
+                        if(wins.length>0){
+                            chrome.windows.update(winIDList.getCurrent(), {focused: true});
+                            chrome.tabs.create({url: roomUrl});
+                        }else
+                            chrome.windows.create({url: roomUrl});
+                    });
+                    chrome.notifications.clear(id);
+                }
+            });
+        }
+    );
+}
+
+function imageNotification(uid, roomTitle, msg, roomUrl, cover, face){
+    chrome.notifications.create(uid+":"+roomUrl, {
+            type: "image",
+            iconUrl: face,
+            title: roomTitle,
+            message: msg,
+            imageUrl: cover
+        }, function (id) {notificationClickHandler(id, "https://live.bilibili.com/");}
+    );
+}
+
+function notificationClickHandler(id, URLPrefix){
+    chrome.notifications.onClicked.addListener(function (nid) {
+        if (nid === id) {
+            chrome.windows.getAll(function (wins){
+                if(wins.length>0){
+                    // why google did not fix this bug over 6 years? WTF
+                    // chrome.windows.getLastFocused(function (Lwin){
+                    //     chrome.windows.update(Lwin.id, {focused: true});
+                    //     chrome.tabs.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
+                    // });
+                    chrome.windows.update(winIDList.getCurrent(), {focused: true});
+                    chrome.tabs.create({url: URLPrefix+nid.split(":")[1]});
+                }else
+                    chrome.windows.create({url: URLPrefix+nid.split(":")[1]});
+            });
+            chrome.notifications.clear(id);
+        }
+    });
 }
 
 setTimeout(loadSetting, 100);
@@ -226,8 +266,10 @@ function reloadCookies() {
                         // log in info changed then load following list and start update liver stream info every 3 min.
                         console.log("Session info got.");
                         FOLLOWING_LIST.clearAll(); // initial following list.
+                        p=0;
                         getFollowingList();
                         scheduleCheckIn();
+                        getUnread();
                         // exchangeVIPCoin();
                     }
                     P_UID = UUID;P_SESS = SESSDATA;
@@ -238,11 +280,15 @@ function reloadCookies() {
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-        if(request.msg === "get_JCT"){
+        if(request.msg === "get_LoginInfo"){
             chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
                 function (jct) {
                     (jct === null) ? JCT = -1 : JCT = jct.value;
-                    sendResponse({res:JCT});
+                    chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'SESSDATA'},
+                        function (sd) {
+                            (sd === null) ? SESSDATA = -1 : SESSDATA = sd.value;
+                            sendResponse({res:JCT+","+SESSDATA});
+                        });
                 });
         }
         if(request.msg === "get_UUID") {sendResponse({res:UUID});}
@@ -281,26 +327,6 @@ function errorHandler(msg){
     (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)?setTimeout(getFollowingList, 900000):setTimeout(getFollowingList,20000);
 }
 
-function notificationClickHandler(id){
-    chrome.notifications.onClicked.addListener(function (nid) {
-        if (nid === id) {
-            chrome.windows.getAll(function (wins){
-                if(wins.length>0){
-                    // why google did not fix this bug over 6 years? WTF
-                    // chrome.windows.getLastFocused(function (Lwin){
-                    //     chrome.windows.update(Lwin.id, {focused: true});
-                    //     chrome.tabs.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
-                    // });
-                    chrome.windows.update(winIDList.getCurrent(), {focused: true});
-                    chrome.tabs.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
-                }else
-                    chrome.windows.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
-            });
-            chrome.notifications.clear(id);
-        }
-    });
-}
-
 function loadSetting(){
     chrome.storage.sync.get(["notification"], function(result){
         NOTIFICATION_PUSH = result.notification;});
@@ -310,9 +336,12 @@ function loadSetting(){
 
     chrome.storage.sync.get(["imageNotice"], function(result){
         IMAGE_NOTIFICATION = result.imageNotice;});
+
+    chrome.storage.sync.get(["bcoin"], function(result){
+        BCOIN = result.bcoin;});
 }
 
-function exchangeVIPCoin(){
+function exchangeBCoin(){
     $.ajax({
         url: "https://api.bilibili.com/x/vip/privilege/receive",
         type: "POST",
@@ -321,6 +350,86 @@ function exchangeVIPCoin(){
         json: "callback",
         success: function (json) {
             console.log(json)
+        },
+        error: function (msg) {
+            console.log(msg.toString())
+        }
+    });
+}
+
+function queryBcoin(){
+    $.ajax({
+        url: "https://api.bilibili.com/x/vip/privilege/my",
+        type: "GET",
+        dataType: "json",
+        json: "callback",
+        success: function (json) {
+            if (json["code"] === 0){
+                console.log(json["data"]["list"]["0"])
+            }
+        },
+        error: function (msg) {
+            console.log(msg.toString())
+        }
+    });
+}
+queryBcoin();
+
+function getUnread(){
+    let totalUnread = 0;
+    $.ajax({
+        url: "https://api.bilibili.com/x/msgfeed/unread",
+        type: "GET",
+        dataType: "json",
+        json: "callback",
+        success: function (json) {
+            if (json["code"] === 0){
+                if(json["data"]["reply"] > 0)
+                    getReply("reply",json["data"]["reply"]);
+                if(json["data"]["like"] > 0)
+                    getReply("like",json["data"]["like"]);
+                console.log("New unread: reply "+json["data"]["reply"]+", like "+json["data"]["like"]+", at "+json["data"]["at"]+", up "+json["data"]["up"]+", sys "+json["data"]["sys_msg"]+" , chat "+json["data"]["chat"]);
+            }
+            setTimeout(getUnread, 10000);
+        },
+        error: function (msg) {
+            console.log(msg.toString())
+        }
+    });
+}
+getReply("reply", 3)
+function getReply(type, item){
+    let link;
+    if(type==="like")
+        link = "https://api.bilibili.com/x/msgfeed/like";
+    if(type==="reply")
+        link = "https://api.bilibili.com/x/msgfeed/reply";
+    $.ajax({
+        url: link,
+        type: "GET",
+        dataType: "json",
+        json: "callback",
+        success: function (json) {
+            if (json["code"] === 0){
+                for (let i = 0; i < item; i++) {
+                    let o = type==="reply"?json["data"]["items"]:json["data"]["total"]["items"];
+                    let url = "";
+                    let msg = "";
+                    let face = "";
+                    if(type==="reply"){
+                        face = o[i+""]["user"]["avatar"].includes("https")?o[i+""]["user"]["avatar"]:o[i+""]["user"]["avatar"].replace("http", "https");
+                        url = o[i+""]["item"]["uri"]+"#reply"+o[i+""]["item"]["source_id"];
+                        msg = o[i+""]["user"]["nickname"]+"回复了你的"+o[i+""]["item"]["business"];
+                    }
+                    if(type==="like"){
+                        url = "https://message.bilibili.com/#/love/"+o[i+""]["id"];
+                        msg = o[i+""]["users"]["0"]["nickname"]+"给你的"+o[i+""]["item"]["business"]+"点了个赞!";
+                        face = o[i+""]["users"]["0"]["avatar"].includes("https")?o[i+""]["users"]["0"]["avatar"]:o[i+""]["users"]["0"]["avatar"].replace("http", "https");
+                    }
+                    messageNotification(Math.random(), url, face, msg);
+                }
+
+            }
         },
         error: function (msg) {
             console.log(msg.toString())

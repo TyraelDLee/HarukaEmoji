@@ -204,3 +204,18 @@ WindowIDList.prototype.getCurrent = function (){
 WindowIDList.prototype.length = function (){
     return this.list.length;
 }
+
+function ReplyPayload(){
+    this.uid = "";
+    this.type = "";
+    this.name = "";
+    this.url = "";
+    this.face = "";
+    this.time = "";
+}
+ReplyPayload.prototype.isSame = function (replyPayload){
+    return this.uid === replyPayload.uid;
+}
+ReplyPayload.prototype.isOlderThan = function (str){
+    return parseInt(this.time)>parseInt(str);
+}

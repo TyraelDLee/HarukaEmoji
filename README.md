@@ -5,7 +5,7 @@
 # HarukaEmoji
 rua豹使人快乐，rua了又rua！<br>
 
-浏览器插件4.10来啦 <br>
+浏览器插件4.11来啦 <br>
 兼容绝大多数chromium内核浏览器，例如：Opera浏览器，360浏览器，新MS Edge，yandex....。<br>
 现已支持火狐浏览器，见：<a href="https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/">火狐扩展商店</a>
 
