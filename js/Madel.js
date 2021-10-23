@@ -84,7 +84,7 @@ function wareMadel(){
 
 function getUserInfo(){
     if(typeof chrome.app.isInstalled!=="undefined"){
-        chrome.runtime.sendMessage({ msg: "get_JCT" },function(jct){JCT = jct.res;});
+        chrome.runtime.sendMessage({ msg: "get_LoginInfo" },function(lf){JCT = lf.res.split(",")[0];});
     }
 }
 

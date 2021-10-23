@@ -397,7 +397,7 @@ function getUnread(){
         }
     });
 }
-getReply("reply", 3)
+
 function getReply(type, item){
     let link;
     if(type==="like")
