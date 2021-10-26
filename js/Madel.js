@@ -17,8 +17,9 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
 });
 getUserInfo();
 setTimeout(function (){
-    if(exp.test(room_id))
+    if(exp.test(room_id)){
         getMadel();
+    }
 }, 10);
 
 function init(){

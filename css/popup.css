@@ -128,6 +128,14 @@ hr{
     opacity: 75%;
 }
 
+.qn-i{
+    height: 20px;
+    line-height: 20px;
+    font-size: 14px;
+    user-select: none;
+    cursor: pointer;
+}
+
 #btn2 span{
     right: 25px;
 }
@@ -141,4 +149,21 @@ hr{
 #version{
     display: inline-block;
     cursor: pointer;
+}
+
+#btn7{
+    overflow: hidden;
+}
+
+#btn7 input{
+    margin: 5px 15px;
+}
+/*#btn7:hover{*/
+/*    overflow: visible;*/
+/*}*/
+
+#qn-items{
+    position: absolute;
+    width: 100px;
+    background: #fff;
 }

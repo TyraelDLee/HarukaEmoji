@@ -21,7 +21,7 @@
 <div class="setting">
     <div style="font-size: 20px; padding-top: 10px; padding-left: 15px">设置</div>
     <div style="font-size: 16px; padding-top: 10px; padding-left: 25px">直播相关</div>
-    <div class="host" style="margin: 0px 25px;height: 80px;">
+    <div class="host" style="margin: 0px 25px;height: 120px;">
         <div class="button-host" id="btn1">
             <span class="tooltip">开播通知
                 <span class="tooltiptext tooltiptext-left">开启后会在关注的主播开播后发送通知</span>
@@ -55,20 +55,43 @@
                 </div>
             </section>
         </div>
-    </div>
-    <div style="font-size: 16px; padding-top: 10px; padding-left: 25px">其他设置</div>
-    <div class="host" style="margin: 0px 25px;height: 80px;">
         <div class="button-host" id="btn3">
             <span class="tooltip">自动签到
-                <span class="tooltiptext tooltiptext-left">开启后每日自动签到</span>
+                <span class="tooltiptext tooltiptext-right">开启后每日自动签到</span>
+            </span>
+        <section class="button">
+            <div class="checkbox">
+                <input type="checkbox" id="check-in">
+                <label></label>
+            </div>
+        </section>
+        </div>
+        <div class="button-host" id="btn6">
+            <span class="tooltip">默认画质
+                <span class="tooltiptext tooltiptext-left">若当前直播间没有此清晰度，则会向上选择。</span>
             </span>
             <section class="button">
                 <div class="checkbox">
-                    <input type="checkbox" id="check-in">
+                    <input type="checkbox" id="qn">
                     <label></label>
                 </div>
             </section>
         </div>
+        <div class="button-host" id="btn7">
+            <div style="height: 11px; width: 100px"></div>
+            <div id="qn-items" style="margin-top: 0">
+                <div class="qn-i">原画</div>
+                <div class="qn-i">蓝光</div>
+                <div class="qn-i">超清</div>
+                <div class="qn-i">高清</div>
+                <div class="qn-i">流畅</div>
+            </div>
+            <div style="margin-left:75px; position: absolute; font-size: 15px; height: 20px; line-height: 20px; color: #fd749b"><b>—</b></div>
+            <div style="margin-left:10px; position: absolute; font-size: 15px; height: 20px; line-height: 20px; color: #fd749b"><b>—</b></div>
+        </div>
+    </div>
+    <div style="font-size: 16px; padding-top: 10px; padding-left: 25px">其他设置</div>
+    <div class="host" style="margin: 0px 25px;height: 80px;">
         <div class="button-host" id="btn5">
             <span class="tooltip">B币兑换
                 <span class="tooltiptext tooltiptext-right">自动兑换大会员的每月5B币</span>

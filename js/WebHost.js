@@ -193,12 +193,9 @@ function isMoved(oX, oY, cX, cY){return Math.abs(oX - cX) === 0 && Math.abs(oY -
 
 function delay(){
     console.log("load complete");
-    if(JCT === "-1" && SESSDATA === "-1"){
+    if(JCT === "-1" || SESSDATA === "-1"){
         emojiTable.innerHTML = "<div id='load'>加载失败，<br>请<a href="+window.location+">点击这里</a>重试<br><br>" +
             "如未登录，请先登录</div>";
-        document.getElementById("load").style.marginTop = "130px";
-    }else if(JCT !== "-1" && SESSDATA === "-1"){
-        emojiTable.innerHTML = "<div id='load'>CSRF校验失败，请登录后重试</div>";
         document.getElementById("load").style.marginTop = "130px";
     }else{
         totalLength = document.getElementsByClassName("input-limit-hint").length>0?document.getElementsByClassName("input-limit-hint")[0].innerHTML.split("/")[1]:"20";

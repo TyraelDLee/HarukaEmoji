@@ -6,6 +6,8 @@ var checkin;
 var CHECKIN_ON;
 var IMAGE_NOTIFICATION;
 var BCOIN;
+var QN;
+var QNV;
 
 var UUID = -1;
 var SESSDATA = -1;
@@ -15,7 +17,7 @@ var P_SESS = SESSDATA;
 var FOLLOWING_LIST = new FollowingMemberList();
 var FOLLOWING_LIST_TEMP = new FollowingMemberList();
 var winIDList = new WindowIDList();
-var replyPayload = new ReplyPayload();
+//var replyPayload = new ReplyPayload();
 var p = 0;
 
 // https://api.bilibili.com/x/vip/privilege/receive b币兑换API
@@ -48,6 +50,8 @@ chrome.runtime.onInstalled.addListener(function (obj){
     chrome.storage.sync.set({"checkIn": true}, function(){CHECKIN_ON = true;});
     chrome.storage.sync.set({"imageNotice": false}, function(){IMAGE_NOTIFICATION = false;});
     chrome.storage.sync.set({"bcoin": false}, function(){BCOIN = false;});
+    chrome.storage.sync.set({"qn": false}, function(){QN = false;});
+    chrome.storage.sync.set({"qnvalue": "原画"}, function(){});
     chrome.tabs.create({url: "./readme.html"});
 });
 
@@ -269,7 +273,7 @@ function reloadCookies() {
                         p=0;
                         getFollowingList();
                         scheduleCheckIn();
-                        getUnread();
+                        // getUnread();
                         // exchangeVIPCoin();
                     }
                     P_UID = UUID;P_SESS = SESSDATA;
@@ -339,6 +343,9 @@ function loadSetting(){
 
     chrome.storage.sync.get(["bcoin"], function(result){
         BCOIN = result.bcoin;});
+
+    chrome.storage.sync.get(["qn"], function(result){
+        QN = result.qn;});
 }
 
 function exchangeBCoin(){
@@ -375,64 +382,65 @@ function queryBcoin(){
 }
 queryBcoin();
 
-function getUnread(){
-    let totalUnread = 0;
-    $.ajax({
-        url: "https://api.bilibili.com/x/msgfeed/unread",
-        type: "GET",
-        dataType: "json",
-        json: "callback",
-        success: function (json) {
-            if (json["code"] === 0){
-                if(json["data"]["reply"] > 0)
-                    getReply("reply",json["data"]["reply"]);
-                if(json["data"]["like"] > 0)
-                    getReply("like",json["data"]["like"]);
-                console.log("New unread: reply "+json["data"]["reply"]+", like "+json["data"]["like"]+", at "+json["data"]["at"]+", up "+json["data"]["up"]+", sys "+json["data"]["sys_msg"]+" , chat "+json["data"]["chat"]);
-            }
-            setTimeout(getUnread, 10000);
-        },
-        error: function (msg) {
-            console.log(msg.toString())
-        }
-    });
-}
-
-function getReply(type, item){
-    let link;
-    if(type==="like")
-        link = "https://api.bilibili.com/x/msgfeed/like";
-    if(type==="reply")
-        link = "https://api.bilibili.com/x/msgfeed/reply";
-    $.ajax({
-        url: link,
-        type: "GET",
-        dataType: "json",
-        json: "callback",
-        success: function (json) {
-            if (json["code"] === 0){
-                for (let i = 0; i < item; i++) {
-                    let o = type==="reply"?json["data"]["items"]:json["data"]["total"]["items"];
-                    let url = "";
-                    let msg = "";
-                    let face = "";
-                    if(type==="reply"){
-                        face = o[i+""]["user"]["avatar"].includes("https")?o[i+""]["user"]["avatar"]:o[i+""]["user"]["avatar"].replace("http", "https");
-                        url = o[i+""]["item"]["uri"]+"#reply"+o[i+""]["item"]["source_id"];
-                        msg = o[i+""]["user"]["nickname"]+"回复了你的"+o[i+""]["item"]["business"];
-                    }
-                    if(type==="like"){
-                        url = "https://message.bilibili.com/#/love/"+o[i+""]["id"];
-                        msg = o[i+""]["users"]["0"]["nickname"]+"给你的"+o[i+""]["item"]["business"]+"点了个赞!";
-                        face = o[i+""]["users"]["0"]["avatar"].includes("https")?o[i+""]["users"]["0"]["avatar"]:o[i+""]["users"]["0"]["avatar"].replace("http", "https");
-                    }
-                    messageNotification(Math.random(), url, face, msg);
-                }
-
-            }
-        },
-        error: function (msg) {
-            console.log(msg.toString())
-        }
-    });
-}
+// function getUnread(){
+//     let totalUnread = 0;
+//     $.ajax({
+//         url: "https://api.bilibili.com/x/msgfeed/unread",
+//         type: "GET",
+//         dataType: "json",
+//         json: "callback",
+//         success: function (json) {
+//             if (json["code"] === 0){
+//                 if(json["data"]["reply"] > 0)
+//                     setTimeout(function (){getReply("reply",json["data"]["reply"]);},10000);
+//                 if(json["data"]["like"] > 0)
+//                     setTimeout(function (){getReply("like",json["data"]["like"]);},10000);
+//                 console.log("New unread: reply "+json["data"]["reply"]+", like "+json["data"]["like"]+", at "+json["data"]["at"]+", up "+json["data"]["up"]+", sys "+json["data"]["sys_msg"]+" , chat "+json["data"]["chat"]);
+//             }
+//             setTimeout(getUnread, 10000);
+//         },
+//         error: function (msg) {
+//             console.log("ERROR found: "+msg.toString()+" "+new Date());
+//             (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)?setTimeout(getUnread, 900000):setTimeout(getUnread,20000);
+//         }
+//     });
+// }
+//
+// function getReply(type, item){
+//     let link;
+//     if(type==="like")
+//         link = "https://api.bilibili.com/x/msgfeed/like";
+//     if(type==="reply")
+//         link = "https://api.bilibili.com/x/msgfeed/reply";
+//     $.ajax({
+//         url: link,
+//         type: "GET",
+//         dataType: "json",
+//         json: "callback",
+//         success: function (json) {
+//             if (json["code"] === 0){
+//                 for (let i = 0; i < item; i++) {
+//                     let o = type==="reply"?json["data"]["items"]:json["data"]["total"]["items"];
+//                     console.log(o);
+//                     let url = "";
+//                     let msg = "";
+//                     let face = "";
+//                     if(type==="reply"){
+//                         face = o[i+""]["user"]["avatar"].includes("https")?o[i+""]["user"]["avatar"]:o[i+""]["user"]["avatar"].replace("http", "https");
+//                         url = o[i+""]["item"]["uri"]+"#reply"+o[i+""]["item"]["source_id"];
+//                         msg = o[i+""]["user"]["nickname"]+"回复了你的"+o[i+""]["item"]["business"];
+//                     }
+//                     if(type==="like"){
+//                         face = o[i+""]["users"]["0"]["avatar"].includes("https")?o[i+""]["users"]["0"]["avatar"]:o[i+""]["users"]["0"]["avatar"].replace("http", "https");
+//                         url = "https://message.bilibili.com/#/love/"+o[i+""]["id"];
+//                         msg = o[i+""]["users"]["0"]["nickname"]+"给你的"+o[i+""]["item"]["business"]+"点了个赞!";
+//                     }
+//                     messageNotification(Math.random(), url, face, msg);
+//                 }
+//             }
+//         },
+//         error: function (msg) {
+//             console.log(msg.toString())
+//         }
+//     });
+// }
