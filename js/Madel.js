@@ -1,7 +1,6 @@
 /***
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
-
 var JCT = -1;
 var MADEL_LIST = new MadelList();
 var mp = 1;
@@ -84,8 +83,10 @@ function wareMadel(){
 }
 
 function getUserInfo(){
-    if(typeof chrome.app.isInstalled!=="undefined"){
-        chrome.runtime.sendMessage({ msg: "get_LoginInfo" },function(lf){JCT = lf.res.split(",")[0];});
+    if(typeof chrome.app.isInstalled!=="undefined") {
+        chrome.runtime.sendMessage({msg: "get_LoginInfo"}, function (lf) {
+            JCT = lf.res.split(",")[0];
+        });
     }
 }
 

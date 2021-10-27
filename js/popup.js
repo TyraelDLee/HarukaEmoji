@@ -12,9 +12,11 @@ const qn_table = ["原画", "蓝光","超清","高清","流畅"];
 const qnItem = setting7.getElementsByClassName("qn-i");
 
 var qnvalue = 0;
+var qn;
 var UUID = -2;
-
+function en(e){e.preventDefault()}
 buttonDisabled(false, setting5);
+chrome.runtime.connect({ name: "popup" });
 function updateUID(){
     if(typeof chrome.app.isInstalled!=="undefined"){
         chrome.runtime.sendMessage({ msg: "get_UUID" },function(uid){UUID = uid.res;
@@ -83,20 +85,22 @@ setting5.addEventListener("change", function (){
 });
 
 setting6.addEventListener("change", function (){
-    let checked = this.checked;
+    qn = this.checked;
     scrollDisabled(this.checked, setting7);
-    chrome.storage.sync.set({"qn": checked}, function (){})
+    chrome.storage.sync.set({"qn": qn}, function (){})
 });
 
 setting7.addEventListener("wheel", function (e){
-    e.deltaY>=50?qnvalue+=1:qnvalue-=1;
-    if (qnvalue<=0)qnvalue=0;
-    if(qnvalue>=4)qnvalue=4;
-    let top = qnvalue * -20;
-    scrollAnim(top);
-    chrome.storage.sync.set({"qnvalue": qn_table[qnvalue]}, function (){});
+    if(qn){
+        e.deltaY>=50?qnvalue+=1:qnvalue-=1;
+        if (qnvalue<=0)qnvalue=0;
+        if(qnvalue>=4)qnvalue=4;
+        let top = qnvalue * -20;
+        scrollAnim(top);
+        chrome.runtime.sendMessage({ msg: "QNV?"+qn_table[qnvalue] },function (){});
+    }
 });
-function en(e){e.preventDefault()}
+
 setting7.addEventListener("mouseenter", function (){
     setting.addEventListener("wheel", en);
 });
@@ -106,10 +110,12 @@ setting7.addEventListener("mouseleave", function (){
 
 for (let i = 0; i < qnItem.length; i++) {
     qnItem[i].addEventListener("click",function (){
-        qnvalue = i;
-        let top = qnvalue * -20;
-        scrollAnim(top);
-        chrome.storage.sync.set({"qnvalue": qn_table[i]}, function (){});
+        if(qn){
+            qnvalue = i;
+            let top = qnvalue * -20;
+            scrollAnim(top);
+            chrome.storage.sync.set({"qnvalue": qn_table[i]}, function (){});
+        }
     });
 }
 
@@ -132,16 +138,21 @@ window.addEventListener("focus", function (){
 
     chrome.storage.sync.get(["qn"], function(result){
         setting6.checked = result.qn;
+        qn = result.qn;
         scrollDisabled(result.qn, setting7);
     });
 
     chrome.storage.sync.get(["qnvalue"], function (result){
-        console.log(qnvalue)
         qnvalue = qn_table.indexOf(result.qnvalue);
-        document.getElementById("qn-items").style.marginTop = qnvalue*-20+"px";
+        scrollAnim(qnvalue*-20)
+        //document.getElementById("qn-items").style.marginTop = qnvalue*-20+"px";
     })
 
 });
+
+window.addEventListener("blur", function (){
+    console.log("blur")
+})
 
 function buttonDisabled(checked, obj){
     if(checked) {
@@ -155,10 +166,8 @@ function buttonDisabled(checked, obj){
 
 function scrollDisabled(checked, obj){
     if(checked) {
-        obj.removeEventListener("wheel", en);
         obj.classList.remove("btn-disabled");
     } else{
-        obj.addEventListener("wheel", en);
         obj.classList.add("btn-disabled");
     }
 }
@@ -171,10 +180,12 @@ function scrollAnim(newPos){
     function scroll(){
         console.log(currentPos)
         op?currentPos-=1:currentPos+=1;
+        for (let i = 0; i < 5; i++)
+            document.getElementsByClassName("qn-i")[i].style.transform = "rotateX("+(20*i+currentPos)*2.5+"deg)";
         document.getElementById("qn-items").style.marginTop = currentPos+"px";
         setTimeout(function (){
             if(currentPos!==newPos)scroll();
-        }, 15);
+        }, 10);
     }
 }
 

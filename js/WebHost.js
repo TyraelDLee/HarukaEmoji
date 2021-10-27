@@ -24,7 +24,6 @@ function setSize(){
     WINDOW_WIDTH = window.innerWidth * zoomFactor;
 }
 
-connectToBG();
 setSize();
 updateJCT();
 setInterval(updateJCT, 3000);
@@ -311,20 +310,12 @@ function delay(){
 }
 
 function updateJCT(){
-    if(typeof chrome.app.isInstalled!=="undefined"){
-        chrome.runtime.sendMessage({ msg: "get_LoginInfo" },function(lf){
+    if(typeof chrome.app.isInstalled!=="undefined") {
+        chrome.runtime.sendMessage({msg: "get_LoginInfo"}, function (lf) {
             JCT = lf.res.split(",")[0];
             SESSDATA = lf.res.split(",")[1];
         });
     }
-}
-function connectToBG(){
-    port = chrome.runtime.connect();
-    port.onDisconnect.addListener(reconnect);
-}
-function reconnect(){
-    port = null;
-    setTimeout(connectToBG, 200);
 }
 
 function getTimeSnap(){return Date.now();}

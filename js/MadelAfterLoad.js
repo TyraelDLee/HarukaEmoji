@@ -1,3 +1,6 @@
+/***
+ * Copyright (c) 2021 Tyrael, Y. LI
+ * */
 const qn_table = {"原画":10000, "蓝光":400,"超清":250,"高清":150,"流畅":80};
 var qn;
 var qnv = "原画";

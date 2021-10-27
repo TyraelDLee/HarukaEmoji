@@ -300,9 +300,20 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
             console.log(MADEL_LIST.get(request.msg.split("?")[1]))
             sendResponse({res:MADEL_LIST.get(request.msg.split("?")[1])});
         }
+        if(request.msg.includes("QNV")){
+            QNV = request.msg.split("?")[1];
+        }
         return true;
     }
 );
+
+chrome.runtime.onConnect.addListener(function (p){
+    if(p.name==="popup"){
+        p.onDisconnect.addListener(function (){
+            chrome.storage.sync.set({"qnvalue": QNV}, function (){});
+        });
+    }
+});
 
 function checkIn(){
     if(CHECKIN_ON){
