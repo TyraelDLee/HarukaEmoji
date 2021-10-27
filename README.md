@@ -48,6 +48,10 @@ rua豹使人快乐，rua了又rua！<br>
 [bilibili](https://t.bilibili.com/561690948190181609), 不过都来这儿了上面那个链接应该就够了吧<img src="https://github.com/TyraelDLee/HarukaEmoji/blob/main/images/haruka/5835.webp" width="30" height="30"/>。
 
 ## 版本记录
+### ver 4.11
+- 添加了默认画质的设置。
+- 修复了一些微小的问题。
+
 ### ver 4.10
 - 添加了直播间悬窗的初始位置。
 - 修复了在某些直播间换牌子失效的问题。
