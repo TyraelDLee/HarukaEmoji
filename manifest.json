@@ -27,8 +27,12 @@
     "js": ["js/MadelAfterLoad.js"],
     "matches": ["*://live.bilibili.com/*"],
     "run_at": "document_end"
-  },
-    {
+  },{
+    "all_frames": true,
+    "js": ["js/Lott.js"],
+    "matches": ["*://live.bilibili.com/p/html/live-lottery/anchor-join*"],
+    "run_at": "document_end"
+  },{
     "all_frames": true,
     "css": ["css/host.css", "css/button.css"],
     "js": ["js/haruka.js","js/WebHost.js"],

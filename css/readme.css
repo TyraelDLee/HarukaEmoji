@@ -1,3 +1,13 @@
+body::-webkit-scrollbar{
+    width: 6px;
+    height: 6px;
+}
+
+body::-webkit-scrollbar-thumb{
+    border-radius: 6px;
+    background-color: #aaa;
+}
+
 li{
     margin: 10px 0;
 }

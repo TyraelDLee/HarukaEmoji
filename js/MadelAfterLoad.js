@@ -32,14 +32,15 @@ setTimeout(function (){
 function q(qn){
     let e = document.createEvent("MouseEvents");
     e.initEvent("mousemove", false, false);
-    if(document.getElementById("live-player") === null)
+    if(document.getElementById("live-player") === undefined)
         setTimeout(q,200);
     else{
         let v = document.getElementById("live-player");
-        v.dispatchEvent(e);
+
         let s = v.getElementsByClassName("web-player-controller-wrap");
         s[0].style.visibility = "hidden";
         s[1].style.visibility = "hidden";
+        v.dispatchEvent(e);
         setTimeout(function (){
             // let e = document.createEvent("MouseEvents");
             e.initEvent("mouseenter", false, true);
@@ -54,15 +55,17 @@ function q(qn){
                         for (let i = 0; i < vps.length; i++)
                             obj.push(vps[i].innerHTML.replaceAll(" ",""));
                         vps[getAvailableQN(qn,obj)].dispatchEvent(e);
+                        e.initEvent("mouseleave",false,false);
+                        v.dispatchEvent(e);
+                        setTimeout(()=>{
+                            s[0].style.visibility = "visible";
+                            s[1].style.visibility = "visible";
+                        },250);
                     }
                 },100);
             }
 
         },100);
-        setTimeout(function (){
-            s[0].style.visibility = "visible";
-            s[1].style.visibility = "visible";
-        },2000);
     }
 }
 

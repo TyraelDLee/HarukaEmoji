@@ -95,8 +95,7 @@ setting7.addEventListener("wheel", function (e){
         e.deltaY>=50?qnvalue+=1:qnvalue-=1;
         if (qnvalue<=0)qnvalue=0;
         if(qnvalue>=4)qnvalue=4;
-        let top = qnvalue * -20;
-        scrollAnim(top);
+        scrollAnim(qnvalue);
         chrome.runtime.sendMessage({ msg: "QNV?"+qn_table[qnvalue] },function (){});
     }
 });
@@ -112,8 +111,7 @@ for (let i = 0; i < qnItem.length; i++) {
     qnItem[i].addEventListener("click",function (){
         if(qn){
             qnvalue = i;
-            let top = qnvalue * -20;
-            scrollAnim(top);
+            scrollAnim(qnvalue);
             chrome.storage.sync.set({"qnvalue": qn_table[i]}, function (){});
         }
     });
@@ -144,7 +142,7 @@ window.addEventListener("focus", function (){
 
     chrome.storage.sync.get(["qnvalue"], function (result){
         qnvalue = qn_table.indexOf(result.qnvalue);
-        scrollAnim(qnvalue*-20)
+        scrollAnim(qnvalue)
         //document.getElementById("qn-items").style.marginTop = qnvalue*-20+"px";
     })
 
@@ -173,6 +171,7 @@ function scrollDisabled(checked, obj){
 }
 
 function scrollAnim(newPos){
+    newPos*=-18;
     let currentPos = parseInt(document.getElementById("qn-items").style.marginTop.replace("px",""));
     let op = currentPos>newPos;
     if(currentPos - newPos !== 0)
@@ -183,7 +182,7 @@ function scrollAnim(newPos){
         for (let i = 0; i < 5; i++)
             document.getElementsByClassName("qn-i")[i].style.transform = "rotateX("+(20*i+currentPos)*2.5+"deg)";
         document.getElementById("qn-items").style.marginTop = currentPos+"px";
-        setTimeout(function (){
+        setTimeout(()=>{
             if(currentPos!==newPos)scroll();
         }, 10);
     }
