@@ -133,7 +133,7 @@ hr{
     line-height: 20px;
     font-size: 14px;
     user-select: none;
-    cursor: pointer;
+
 }
 
 #btn2 span{
@@ -153,10 +153,21 @@ hr{
 
 #btn7{
     overflow: hidden;
+    cursor: pointer;
 }
 
 #btn7 input{
     margin: 5px 15px;
+}
+
+#btn7 span{
+    position: absolute;
+    font-size: 15px;
+    height: 20px;
+    line-height: 20px;
+    color: #fd749b;
+    user-select: none;
+
 }
 /*#btn7:hover{*/
 /*    overflow: visible;*/

@@ -9,7 +9,13 @@ var exp =new RegExp("^[0-9]*$");
 chrome.storage.sync.get(["qn"], function(result){qn = result.qn});
 chrome.storage.sync.get(["qnvalue"], function(result){qnv = result.qnvalue});
 
-c();
+if(document.getElementsByTagName("article").length === 0) {
+    c();
+    setTimeout(function (){
+        if(qn && exp.test(room_id))q(qnv);
+    },20);
+}
+
 function c(){
     let e = document.createEvent("MouseEvents");
     e.initEvent("click", false, true);
@@ -24,25 +30,21 @@ function c(){
         },20);
     }
 }
-setTimeout(function (){
-    if(qn && exp.test(room_id))q(qnv);
-},20);
-
 
 function q(qn){
     let e = document.createEvent("MouseEvents");
     e.initEvent("mousemove", false, false);
-    if(document.getElementById("live-player") === undefined)
+    if(document.getElementById("live-player") === undefined || document.getElementById("live-player").getElementsByClassName("web-player-controller-wrap").length===0)
         setTimeout(q,200);
     else{
         let v = document.getElementById("live-player");
-
         let s = v.getElementsByClassName("web-player-controller-wrap");
-        s[0].style.visibility = "hidden";
-        s[1].style.visibility = "hidden";
+        if(s!==undefined){
+            s[0].style.visibility = "hidden";
+            s[1].style.visibility = "hidden";
+        }
         v.dispatchEvent(e);
         setTimeout(function (){
-            // let e = document.createEvent("MouseEvents");
             e.initEvent("mouseenter", false, true);
             let vp = v.getElementsByClassName("quality-wrap")[0];
             if(vp !== undefined){
@@ -57,14 +59,15 @@ function q(qn){
                         vps[getAvailableQN(qn,obj)].dispatchEvent(e);
                         e.initEvent("mouseleave",false,false);
                         v.dispatchEvent(e);
-                        setTimeout(()=>{
+                    }
+                    setTimeout(()=>{
+                        if(s!==undefined){
                             s[0].style.visibility = "visible";
                             s[1].style.visibility = "visible";
-                        },250);
-                    }
+                        }
+                    },250);
                 },100);
             }
-
         },100);
     }
 }

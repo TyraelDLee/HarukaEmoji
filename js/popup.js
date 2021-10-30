@@ -91,8 +91,9 @@ setting6.addEventListener("change", function (){
 });
 
 setting7.addEventListener("wheel", function (e){
+
     if(qn){
-        e.deltaY>=50?qnvalue+=1:qnvalue-=1;
+        e.deltaY>=0?qnvalue+=1:qnvalue-=1;
         if (qnvalue<=0)qnvalue=0;
         if(qnvalue>=4)qnvalue=4;
         scrollAnim(qnvalue);
@@ -112,7 +113,7 @@ for (let i = 0; i < qnItem.length; i++) {
         if(qn){
             qnvalue = i;
             scrollAnim(qnvalue);
-            chrome.storage.sync.set({"qnvalue": qn_table[i]}, function (){});
+            chrome.runtime.sendMessage({ msg: "QNV?"+qn_table[qnvalue] },function (){});
         }
     });
 }
@@ -177,14 +178,14 @@ function scrollAnim(newPos){
     if(currentPos - newPos !== 0)
         scroll();
     function scroll(){
-        console.log(currentPos)
         op?currentPos-=1:currentPos+=1;
         for (let i = 0; i < 5; i++)
-            document.getElementsByClassName("qn-i")[i].style.transform = "rotateX("+(20*i+currentPos)*2.5+"deg)";
+            document.getElementsByClassName("qn-i")[i].style.transform = "rotateX("+(18*i+currentPos)*2.5+"deg)";
         document.getElementById("qn-items").style.marginTop = currentPos+"px";
-        setTimeout(()=>{
-            if(currentPos!==newPos)scroll();
-        }, 10);
+        if(currentPos!==newPos){
+            setTimeout(()=>{scroll();}, 10);
+        }
+
     }
 }
 

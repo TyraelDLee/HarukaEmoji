@@ -20,7 +20,7 @@
   "content_scripts": [ {
     "all_frames": true,
     "js": ["js/ADT.js","js/Jquery-3.5.1.js","js/Madel.js"],
-    "matches": ["*://live.bilibili.com/*"],
+    "matches": ["*://live.bilibili.com/*","*://live.bilibili.com/blanc/*"],
     "run_at": "document_start"
   },{
     "all_frames": true,

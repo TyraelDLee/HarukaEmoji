@@ -302,6 +302,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
         }
         if(request.msg.includes("QNV")){
             QNV = request.msg.split("?")[1];
+            sendResponse({res:"ok"});
         }
         return true;
     }
@@ -370,7 +371,8 @@ function exchangeBCoin(){
             console.log(json)
         },
         error: function (msg) {
-            console.log(msg.toString())
+            console.log(msg.toString());
+            setTimeout(queryBcoin,10000);
         }
     });
 }
@@ -387,7 +389,8 @@ function queryBcoin(){
             }
         },
         error: function (msg) {
-            console.log(msg.toString())
+            console.log(msg.toString());
+            setTimeout(queryBcoin,10000);
         }
     });
 }
