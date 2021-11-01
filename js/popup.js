@@ -15,7 +15,6 @@ var qnvalue = 0;
 var qn;
 var UUID = -2;
 function en(e){e.preventDefault()}
-buttonDisabled(false, setting5);
 chrome.runtime.connect({ name: "popup" });
 function updateUID(){
     if(typeof chrome.app.isInstalled!=="undefined"){

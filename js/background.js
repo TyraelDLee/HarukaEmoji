@@ -3,6 +3,7 @@
  * */
 var NOTIFICATION_PUSH;
 var checkin;
+var exchangeBcoin;
 var CHECKIN_ON;
 var IMAGE_NOTIFICATION;
 var BCOIN;
@@ -17,27 +18,7 @@ var P_SESS = SESSDATA;
 var FOLLOWING_LIST = new FollowingMemberList();
 var FOLLOWING_LIST_TEMP = new FollowingMemberList();
 var winIDList = new WindowIDList();
-//var replyPayload = new ReplyPayload();
 var p = 0;
-
-// https://api.bilibili.com/x/vip/privilege/receive b币兑换API
-// exchange B coin api.
-// form contain: type: 1 === B coin
-//               | type: 2 === shop
-//               & csrf
-// request method: post
-// header: cookie
-// form type is not web form
-
-// https://api.live.bilibili.com/xlive/web-ucenter/v1/labs/EditPlugs Dark mode API
-// form contain: key: dark
-//               status: 1 on, 0 off
-//               csrf: JCT
-//               csrf_token: JCT
-//               visit_id: empty
-// request method: post
-// header: cookie
-
 
 chrome.windows.getAll(function (wins){for (let i = 0; i < wins.length; i++) winIDList.push(wins[i].id);});
 chrome.windows.onCreated.addListener(function (win){winIDList.push(win.id);});
@@ -49,7 +30,7 @@ chrome.runtime.onInstalled.addListener(function (obj){
     chrome.storage.sync.set({"medal": true}, function(){});
     chrome.storage.sync.set({"checkIn": true}, function(){CHECKIN_ON = true;});
     chrome.storage.sync.set({"imageNotice": false}, function(){IMAGE_NOTIFICATION = false;});
-    chrome.storage.sync.set({"bcoin": false}, function(){BCOIN = false;});
+    chrome.storage.sync.set({"bcoin": true}, function(){BCOIN = true;});
     chrome.storage.sync.set({"qn": false}, function(){QN = false;});
     chrome.storage.sync.set({"qnvalue": "原画"}, function(){});
     chrome.tabs.create({url: "./readme.html"});
@@ -58,9 +39,15 @@ chrome.runtime.onInstalled.addListener(function (obj){
 chrome.storage.onChanged.addListener(function (changes, namespace) {
     for (let [key, {oldValue, newValue}] of Object.entries(changes)) {
         if(key === "notification") NOTIFICATION_PUSH = newValue;
-        if(key === "checkIn") CHECKIN_ON = newValue;
+        if(key === "checkIn") {
+            CHECKIN_ON = newValue;
+            if(CHECKIN_ON) checkIn();
+        }
         if(key === "imageNotice")IMAGE_NOTIFICATION = newValue;
-        if(key === "b-coin")BCOIN = newValue;
+        if(key === "bcoin"){
+            BCOIN = newValue;
+            if(BCOIN) queryBcoin();
+        }
     }
 });
 
@@ -252,6 +239,7 @@ setInterval(reloadCookies, 5000);
 function scheduleCheckIn(){
     checkIn();
     checkin = setInterval(checkIn, 43200000);
+    exchangeBcoin = setInterval(queryBcoin, 43200000);
 }
 
 function reloadCookies() {
@@ -265,6 +253,7 @@ function reloadCookies() {
                         // if not log in then stop update liver stream info.
                         console.log("Session info does not exist, liver stream info listener cleared.");
                         clearInterval(checkin);
+                        clearInterval(exchangeBcoin);
                     }
                     if (UUID !== -1 && SESSDATA !== -1 && UUID !== P_UID && SESSDATA !== P_SESS) {
                         // log in info changed then load following list and start update liver stream info every 3 min.
@@ -368,7 +357,18 @@ function exchangeBCoin(){
         dataType: "json",
         json: "callback",
         success: function (json) {
-            console.log(json)
+            console.log(json);
+            chrome.notifications.create(Math.random()+"", {
+                    type: "basic",
+                    iconUrl: "./images/abaaba.png",
+                    title: "本月大会员的5B币兑换成功！",
+                    message:""
+                }, function (id) {
+                    setTimeout(function (){
+                        chrome.notifications.clear(id);
+                    },3000);
+                }
+            );
         },
         error: function (msg) {
             console.log(msg.toString());
@@ -378,23 +378,25 @@ function exchangeBCoin(){
 }
 
 function queryBcoin(){
-    $.ajax({
-        url: "https://api.bilibili.com/x/vip/privilege/my",
-        type: "GET",
-        dataType: "json",
-        json: "callback",
-        success: function (json) {
-            if (json["code"] === 0){
-                console.log(json["data"]["list"]["0"])
+    if(BCOIN){
+        $.ajax({
+            url: "https://api.bilibili.com/x/vip/privilege/my",
+            type: "GET",
+            dataType: "json",
+            json: "callback",
+            success: function (json) {
+                if (json["code"] === 0){
+                    if(json["data"]["list"]["0"]["type"]===1&&json["data"]["list"]["0"]["state"]===0)
+                        exchangeBCoin();
+                }
+            },
+            error: function (msg) {
+                console.log(msg.toString());
+                setTimeout(queryBcoin,10000);
             }
-        },
-        error: function (msg) {
-            console.log(msg.toString());
-            setTimeout(queryBcoin,10000);
-        }
-    });
+        });
+    }
 }
-queryBcoin();
 
 // function getUnread(){
 //     let totalUnread = 0;
