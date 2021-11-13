@@ -238,6 +238,7 @@ setInterval(reloadCookies, 5000);
 
 function scheduleCheckIn(){
     checkIn();
+    queryBcoin();
     checkin = setInterval(checkIn, 43200000);
     exchangeBcoin = setInterval(queryBcoin, 43200000);
 }
@@ -260,8 +261,8 @@ function reloadCookies() {
                         console.log("Session info got.");
                         FOLLOWING_LIST.clearAll(); // initial following list.
                         p=0;
-                        getFollowingList();
                         scheduleCheckIn();
+                        getFollowingList();
                         // getUnread();
                         // exchangeVIPCoin();
                     }
@@ -357,7 +358,7 @@ function exchangeBCoin(){
         dataType: "json",
         json: "callback",
         success: function (json) {
-            console.log(json);
+            console.log("兑换成功！好耶( •̀ ω •́ )✧");
             chrome.notifications.create(Math.random()+"", {
                     type: "basic",
                     iconUrl: "./images/abaaba.png",
@@ -385,9 +386,12 @@ function queryBcoin(){
             dataType: "json",
             json: "callback",
             success: function (json) {
+                console.log("checked vip status")
                 if (json["code"] === 0){
                     if(json["data"]["list"]["0"]["type"]===1&&json["data"]["list"]["0"]["state"]===0)
                         exchangeBCoin();
+                    else if(json["data"]["list"]["0"]["type"]===1&&json["data"]["list"]["0"]["state"]===1)
+                        console.log("这个月的已经兑换过了，好耶！( •̀ ω •́ )✧")
                 }
             },
             error: function (msg) {

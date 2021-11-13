@@ -34,7 +34,7 @@ function c(){
 function q(qn){
     let e = document.createEvent("MouseEvents");
     e.initEvent("mousemove", false, false);
-    if(document.getElementById("live-player") === undefined || document.getElementById("live-player").getElementsByClassName("web-player-controller-wrap").length===0)
+    if(document.getElementById("live-player") === undefined || document.getElementById("live-player").getElementsByClassName("web-player-controller-wrap").length===undefined||document.getElementById("live-player").getElementsByClassName("web-player-controller-wrap").length===0)
         setTimeout(q,200);
     else{
         let v = document.getElementById("live-player");
@@ -60,14 +60,14 @@ function q(qn){
                         e.initEvent("mouseleave",false,false);
                         v.dispatchEvent(e);
                     }
-                    setTimeout(()=>{
-                        if(s!==undefined){
-                            s[0].style.visibility = "visible";
-                            s[1].style.visibility = "visible";
-                        }
-                    },250);
                 },100);
             }
+            setTimeout(()=>{
+                if(s!==undefined){
+                    s[0].style.visibility = "visible";
+                    s[1].style.visibility = "visible";
+                }
+            },250);
         },100);
     }
 }

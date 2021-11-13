@@ -1,19 +1,30 @@
-var JOIN = reloadComponent("particitation-btn");
-var CLOSE = reloadComponent("close-btn");
-
-setListener();
-function reloadComponent(className){
-    let obj = document.getElementsByClassName(className)[0];
-    if(obj === undefined) {setTimeout(()=>{reloadComponent(className)}, 100); return undefined;}
-    else return obj;
-}
-
-function setListener(){
-    if(JOIN !== undefined && CLOSE !== undefined){
-        JOIN.addEventListener("click", ()=>{
+loadComponent();
+setTimeout(loadList, 4*1000*60);
+function loadComponent(){
+    var join = document.getElementsByClassName("particitation-btn")[0];
+    var close = document.getElementsByClassName("close-btn")[0];
+    if(join === undefined || close === undefined)
+        setTimeout(loadComponent,200);
+    else{
+        join.addEventListener("click", ()=>{
+            console.log("click")
             let e = document.createEvent("MouseEvents");
             e.initEvent("click", false, true);
-            setTimeout(()=>{CLOSE.dispatchEvent(e);},10);
+            setTimeout(()=>{close.dispatchEvent(e);},10);
         });
-    }else setTimeout(()=>{setListener()}, 100);
+    }
+}
+
+function loadList(){
+    var list = document.getElementsByClassName("lottery-result")[0];
+    var close = document.getElementsByClassName("close-btn")[0];
+    if(list === undefined || close === undefined){
+        setTimeout(loadList,200);
+    }else{
+        if(list.getElementsByTagName("strong")[0]!==undefined && list.getElementsByTagName("strong")[0].innerText.includes("很遗憾")){
+            let e = document.createEvent("MouseEvents");
+            e.initEvent("click", false, true);
+            setTimeout(()=>{close.dispatchEvent(e);},10);
+        }
+    }
 }
