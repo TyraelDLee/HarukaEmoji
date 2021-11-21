@@ -50,6 +50,12 @@ rua豹使人快乐，rua了又rua！<br>
 [bilibili](https://t.bilibili.com/561690948190181609), 不过都来这儿了上面那个链接应该就够了吧<img src="https://github.com/TyraelDLee/HarukaEmoji/blob/main/images/haruka/5835.webp" width="30" height="30"/>。
 
 ## 版本记录
+### ver 4.12
+- 添加了视频更新的推送通知。
+- 修复了关闭浏览器再启动后无法立即签到的问题。
+- 更改了天选之人抽奖的逻辑。现在点击参与后天选窗口会自动关闭，开奖时若没有中奖则不再会弹窗。注：此功能不会影响正常参与天选。
+- 修复了一些微小的问题。
+
 ### ver 4.11
 - 添加了默认画质的设置。
 - 添加了大会员B币兑换。  

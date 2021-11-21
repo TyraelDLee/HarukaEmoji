@@ -83,7 +83,7 @@ function getFollowingList() {
                     if (listLength !== 0) getFollowingList();
                 }
             },
-            error: function (msg){errorHandler(msg);}
+            error: function (msg){p = 0;errorHandler(getFollowingList, msg);}
         });
     }
 }
@@ -112,7 +112,7 @@ function queryLivingRoom() {
                 if (ON_AIR_LIST.list.length > 0) updateList(ON_AIR_LIST);
             }
         },
-        error: function (msg) {errorHandler(msg);}
+        error: function (msg) {p = 0;errorHandler(getFollowingList, msg);}
     });
 }
 
@@ -157,7 +157,7 @@ function pushNotification(roomTitle, liverName, roomUrl, cover, type) {
         body: liverName + " 开播啦!\r\n是"+(type===0?"正常的":"手机")+"直播呦！",
     });
     notification.onclick = function (){
-        chrome.tabs.create({url: "https://live.bilibili.com/"+roomUrl});
+        chrome.tabs.create({url: roomUrl});
         notification.close();
     }
 }
@@ -165,16 +165,16 @@ function pushNotification(roomTitle, liverName, roomUrl, cover, type) {
 function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face){
     let uid = Math.random();
     let msg = liverName + " 开播啦!\r\n是"+(type===0?"正常的":"手机")+"直播呦！";
-    IMAGE_NOTIFICATION?imageNotification(uid, roomTitle, msg, roomUrl, cover, face):basicNotification(uid, roomTitle, msg, roomUrl, cover);
+    IMAGE_NOTIFICATION?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "https://live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, cover, "https://live.bilibili.com/");
 }
 
-function basicNotification(uid, roomTitle, msg, roomUrl, cover){
+function basicNotification(uid, roomTitle, msg, roomUrl, cover, URLPrefix){
     chrome.notifications.create(uid+":"+roomUrl, {
             type: "basic",
             iconUrl: cover,
             title: roomTitle,
             message: msg
-        }, function (id) {notificationClickHandler(id,"https://live.bilibili.com/");}
+        }, function (id) {notificationClickHandler(id,URLPrefix);}
     );
 }
 
@@ -201,14 +201,14 @@ function messageNotification(uid, roomUrl, face, msg){
     );
 }
 
-function imageNotification(uid, roomTitle, msg, roomUrl, cover, face){
+function imageNotification(uid, roomTitle, msg, roomUrl, cover, face, URLPrefix){
     chrome.notifications.create(uid+":"+roomUrl, {
             type: "image",
             iconUrl: face,
             title: roomTitle,
             message: msg,
             imageUrl: cover
-        }, function (id) {notificationClickHandler(id, "https://live.bilibili.com/");}
+        }, function (id) {notificationClickHandler(id, URLPrefix);}
     );
 }
 
@@ -239,7 +239,7 @@ setInterval(reloadCookies, 5000);
 function scheduleCheckIn(){
     checkIn();
     queryBcoin();
-    checkin = setInterval(checkIn, 43200000);
+    checkin = setInterval(checkIn, 21600000);
     exchangeBcoin = setInterval(queryBcoin, 43200000);
 }
 
@@ -261,6 +261,7 @@ function reloadCookies() {
                         console.log("Session info got.");
                         FOLLOWING_LIST.clearAll(); // initial following list.
                         p=0;
+                        videoNotify(false);
                         scheduleCheckIn();
                         getFollowingList();
                         // getUnread();
@@ -327,10 +328,9 @@ function checkIn(){
     }
 }
 
-function errorHandler(msg){
+function errorHandler(handler, msg){
     console.log("ERROR found: "+msg.toString()+" "+new Date());
-    p=0;
-    (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)?setTimeout(getFollowingList, 900000):setTimeout(getFollowingList,20000);
+    (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)?setTimeout(handler, 900000):setTimeout(handler,20000);
 }
 
 function loadSetting(){
@@ -401,7 +401,42 @@ function queryBcoin(){
         });
     }
 }
-
+let dynamic_id_list = [];
+function videoNotify(push){
+    $.ajax({
+        url: "https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid="+UUID+"&type_list=8,512,4097,4098,4099,4100,4101",
+        type: "GET",
+        dataType: "json",
+        json: "callback",
+        success: function (json) {
+            if(json["code"] === 0){
+                let o = json["data"]["cards"];
+                //console.log(o);
+                for (let i = 0; i < o.length; i++) {
+                    let c = JSON.parse(o[i+""]["card"]);
+                    let type = o[i+""]["desc"]["type"];
+                    //console.log(o[i+""]["desc"]["dynamic_id"]);
+                    if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
+                        if(push){
+                            if(type === 8){
+                                console.log("你关注的up "+c["owner"]["name"]+" 投稿了新视频！"+c["title"]+" see:"+o[i+""]["desc"]["bvid"]);
+                                basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+c["owner"]["name"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], c["owner"]["face"], "https://b23.tv/");
+                            }else if(type >= 512 && type <= 4101){
+                                console.log("你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！"+c["index"]+" see:"+c["url"]);
+                                basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！",c["new_desc"],c["url"], c["cover"],"");
+                            }
+                        }
+                        dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
+                    }
+                }
+            }
+            setTimeout(()=>{videoNotify(true)},10000);
+        },
+        error: function (msg) {
+            errorHandler(videoNotify,msg);
+        }
+    });
+}
 // function getUnread(){
 //     let totalUnread = 0;
 //     $.ajax({

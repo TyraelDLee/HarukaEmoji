@@ -6,7 +6,7 @@
     "default_popup": "popup.html"
   },
   "description": "rua!",
-  "permissions": ["cookies","storage","notifications","webRequest","webRequestBlocking","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "https://*.hdslb.com/*"],
+  "permissions": ["cookies","storage","notifications","webRequest","webRequestBlocking","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "https://*.hdslb.com/*", "https://api.vc.bilibili.com/"],
   "background": {
     "scripts": ["js/ADT.js","js/Jquery-3.5.1.js","js/PushHost.js","js/background.js"],
     "persistent": true
@@ -49,6 +49,12 @@
     "css": ["css/host.css", "css/button.css"],
     "js": ["js/seki.js","js/WebHost.js"],
     "matches": [ "*://live.bilibili.com/1603600*", "*://live.bilibili.com/1603600?*", "*://live.bilibili.com/record/1603600*","*://live.bilibili.com/blanc/1603600?liteVersion=true"],
+    "run_at": "document_end"
+  },{
+    "all_frames": true,
+    "css": ["css/bilimain.css"],
+    "js": ["js/biliMain.js"],
+    "matches": ["*://www.bilibili.com/"],
     "run_at": "document_end"
   }],
   "web_accessible_resources": ["images/*", "css/*", "js/*"],

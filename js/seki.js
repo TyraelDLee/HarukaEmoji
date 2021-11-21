@@ -8,5 +8,5 @@ const ROOM_ID = 1603600;
 const SRC = "../images/seki/";
 const emoji = ["寄", "猪跑", "山猪跑", "七跑", "彩猪"];
 
-const link = chrome.runtime.getURL("../images/haruka/abaaba.svg");
+const link = chrome.runtime.getURL("../images/seki/七跑.webp");
 var imgs = [];for (let i = 0; i < emoji.length; i++)imgs.push(new ImageButton(chrome.runtime.getURL(SRC+emoji[i]+".webp"), 1));

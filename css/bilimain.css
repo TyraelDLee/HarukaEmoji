@@ -1,0 +1,65 @@
+@keyframes fade-in {
+    0% {opacity: 0.0}
+    100% {opacity: 1.0}
+}
+
+@keyframes fade-out {
+    0% {opacity: 1.0}
+    100% {opacity: 0.0}
+}
+
+@keyframes remove-on {
+    0% {fill: #fb7299}
+    100% {fill: #23ade5}
+}
+
+@keyframes remove-off {
+    0% {fill: #23ade5}
+    100% {fill: #fb7299}
+}
+
+@keyframes disable {
+    0% {-webkit-filter: opacity(100%);filter: opacity(100%);}
+    100% {-webkit-filter: opacity(50%);filter: opacity(50%);}
+}
+
+@keyframes enable {
+    0% {-webkit-filter: opacity(50%);filter: opacity(50%);}
+    100% {-webkit-filter: opacity(100%);filter: opacity(100%);}
+}
+
+.rua-ban{
+    height: 24px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.rua-ban-close{
+    animation-name: fade-out;
+    animation-duration: 0.2s;
+}
+
+.rua-ban-open{
+    animation-name: fade-in;
+    animation-duration: 0.2s;
+}
+
+.rua-hidden{
+    display: none;
+}
+
+.rua-display{
+    display: block;
+}
+
+.rua-elv-disable{
+    animation-name: disable;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
+}
+
+.rua-elv-enable{
+    animation-name: enable;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
+}
