@@ -47,7 +47,7 @@ rua豹器4.12来啦 <br>
 <br>
 [火狐扩展商店](https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/)
 <br>
-[bilibili](https://t.bilibili.com/561690948190181609), 不过都来这儿了上面那个链接应该就够了吧<img src="https://github.com/TyraelDLee/HarukaEmoji/blob/main/images/haruka/5835.webp" width="30" height="30"/>。
+[bilibili](https://t.bilibili.com/592584948593832922), 不过都来这儿了上面那个链接应该就够了吧<img src="https://github.com/TyraelDLee/HarukaEmoji/blob/main/images/haruka/5835.webp" width="30" height="30"/>。
 
 ## 版本记录
 ### ver 4.12
