@@ -6,6 +6,7 @@ const setting4 = document.getElementById("img-notice");
 const setting5 = document.getElementById("b-coin");
 const setting6 = document.getElementById("qn");
 const setting7 = document.getElementById("btn7");
+const setting8 = document.getElementById("dynamicPush");
 const loginInfo = document.getElementById("login");
 
 const qn_table = ["原画", "蓝光","超清","高清","流畅"];
@@ -75,22 +76,21 @@ setting3.addEventListener("change", function (){
 
 setting4.addEventListener("change", function (){
     let checked = this.checked;
-    chrome.storage.sync.set({"imageNotice": checked}, function (){})
+    chrome.storage.sync.set({"imageNotice": checked}, function (){});
 });
 
 setting5.addEventListener("change", function (){
    let checked = this.checked;
-    chrome.storage.sync.set({"bcoin": checked}, function (){})
+    chrome.storage.sync.set({"bcoin": checked}, function (){});
 });
 
 setting6.addEventListener("change", function (){
     qn = this.checked;
     scrollDisabled(this.checked, setting7);
-    chrome.storage.sync.set({"qn": qn}, function (){})
+    chrome.storage.sync.set({"qn": qn}, function (){});
 });
 
 setting7.addEventListener("wheel", function (e){
-
     if(qn){
         e.deltaY>=0?qnvalue+=1:qnvalue-=1;
         if (qnvalue<=0)qnvalue=0;
@@ -117,6 +117,10 @@ for (let i = 0; i < qnItem.length; i++) {
     });
 }
 
+setting8.addEventListener("change", function (){
+    let checked = this.checked;
+    chrome.storage.sync.set({"dynamicPush": checked}, function (){});
+});
 window.addEventListener("focus", function (){
     chrome.storage.sync.get(["notification"], function(result){
         buttonDisabled(result.notification, setting4);
@@ -144,8 +148,10 @@ window.addEventListener("focus", function (){
         qnvalue = qn_table.indexOf(result.qnvalue);
         scrollAnim(qnvalue)
         //document.getElementById("qn-items").style.marginTop = qnvalue*-20+"px";
-    })
+    });
 
+    chrome.storage.sync.get(["dynamicPush"], function (result){
+        setting8.checked = result.dynamicPush;});
 });
 
 window.addEventListener("blur", function (){

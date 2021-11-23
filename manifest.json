@@ -50,12 +50,6 @@
     "js": ["js/seki.js","js/WebHost.js"],
     "matches": [ "*://live.bilibili.com/1603600*", "*://live.bilibili.com/1603600?*", "*://live.bilibili.com/record/1603600*","*://live.bilibili.com/blanc/1603600?liteVersion=true"],
     "run_at": "document_end"
-  },{
-    "all_frames": true,
-    "css": ["css/bilimain.css"],
-    "js": ["js/biliMain.js"],
-    "matches": ["*://www.bilibili.com/"],
-    "run_at": "document_end"
   }],
   "web_accessible_resources": ["images/*", "css/*", "js/*"],
   "content_security_policy": "script-src 'self' https://api.live.bilibili.com; object-src 'self'"

@@ -1,14 +1,16 @@
 /***
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
-var NOTIFICATION_PUSH;
 var checkin;
 var exchangeBcoin;
-var CHECKIN_ON;
-var IMAGE_NOTIFICATION;
+
+var notificationPush;
+var checkinSwitch;
+var imageNotificationSwitch;
 var BCOIN;
 var QN;
 var QNV;
+var dynamicPush;
 
 var UUID = -1;
 var SESSDATA = -1;
@@ -26,28 +28,31 @@ chrome.windows.onRemoved.addListener(function (wID){winIDList.remove(wID);});
 chrome.windows.onFocusChanged.addListener(function (wID){if(wID!==-1) winIDList.push(wID);});
 chrome.runtime.onInstalled.addListener(function (obj){
     // init setting
-    chrome.storage.sync.set({"notification": true}, function(){NOTIFICATION_PUSH = true;});
+    chrome.storage.sync.set({"notification": true}, function(){notificationPush = true;});
     chrome.storage.sync.set({"medal": true}, function(){});
-    chrome.storage.sync.set({"checkIn": true}, function(){CHECKIN_ON = true;});
-    chrome.storage.sync.set({"imageNotice": false}, function(){IMAGE_NOTIFICATION = false;});
+    chrome.storage.sync.set({"checkIn": true}, function(){checkinSwitch = true;});
+    chrome.storage.sync.set({"imageNotice": false}, function(){imageNotificationSwitch = false;});
     chrome.storage.sync.set({"bcoin": true}, function(){BCOIN = true;});
     chrome.storage.sync.set({"qn": false}, function(){QN = false;});
     chrome.storage.sync.set({"qnvalue": "原画"}, function(){});
+    chrome.storage.sync.set({"dynamicPush":true}, function (){dynamicPush = true});
     chrome.tabs.create({url: "./readme.html"});
 });
 
 chrome.storage.onChanged.addListener(function (changes, namespace) {
     for (let [key, {oldValue, newValue}] of Object.entries(changes)) {
-        if(key === "notification") NOTIFICATION_PUSH = newValue;
+        if(key === "notification") notificationPush = newValue;
         if(key === "checkIn") {
-            CHECKIN_ON = newValue;
-            if(CHECKIN_ON) checkIn();
+            checkinSwitch = newValue;
+            if(checkinSwitch) checkIn();
         }
-        if(key === "imageNotice")IMAGE_NOTIFICATION = newValue;
+        if(key === "imageNotice")imageNotificationSwitch = newValue;
         if(key === "bcoin"){
             BCOIN = newValue;
             if(BCOIN) queryBcoin();
         }
+        if(key === "dynamicPush")
+            dynamicPush = newValue;
     }
 });
 
@@ -136,7 +141,7 @@ function updateList(ON_AIR_LIST){
                     if (!FOLLOWING_LIST.get(i).PUSHED){
                         FOLLOWING_LIST.updateStatus(i, true);
                         console.log(FOLLOWING_LIST.get(i).TITLE + " " + FOLLOWING_LIST.get(i).NAME+" "+new Date());
-                        if(NOTIFICATION_PUSH)
+                        if(notificationPush)
                             pushNotificationChrome(FOLLOWING_LIST.get(i).TITLE,
                                 FOLLOWING_LIST.get(i).NAME,
                                 FOLLOWING_LIST.get(i).ROOM_URL,
@@ -165,7 +170,7 @@ function pushNotification(roomTitle, liverName, roomUrl, cover, type) {
 function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face){
     let uid = Math.random();
     let msg = liverName + " 开播啦!\r\n是"+(type===0?"正常的":"手机")+"直播呦！";
-    IMAGE_NOTIFICATION?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "https://live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, cover, "https://live.bilibili.com/");
+    imageNotificationSwitch?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "https://live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, cover, "https://live.bilibili.com/");
 }
 
 function basicNotification(uid, roomTitle, msg, roomUrl, cover, URLPrefix){
@@ -173,7 +178,8 @@ function basicNotification(uid, roomTitle, msg, roomUrl, cover, URLPrefix){
             type: "basic",
             iconUrl: cover,
             title: roomTitle,
-            message: msg
+            message: msg,
+            contextMessage:"rua豹器"
         }, function (id) {notificationClickHandler(id,URLPrefix);}
     );
 }
@@ -207,7 +213,8 @@ function imageNotification(uid, roomTitle, msg, roomUrl, cover, face, URLPrefix)
             iconUrl: face,
             title: roomTitle,
             message: msg,
-            imageUrl: cover
+            imageUrl: cover,
+            contextMessage:"rua豹器"
         }, function (id) {notificationClickHandler(id, URLPrefix);}
     );
 }
@@ -308,7 +315,7 @@ chrome.runtime.onConnect.addListener(function (p){
 });
 
 function checkIn(){
-    if(CHECKIN_ON){
+    if(checkinSwitch){
         $.ajax({
             url: "https://api.live.bilibili.com/xlive/web-ucenter/v1/sign/DoSign",
             type: "GET",
@@ -335,13 +342,13 @@ function errorHandler(handler, msg){
 
 function loadSetting(){
     chrome.storage.sync.get(["notification"], function(result){
-        NOTIFICATION_PUSH = result.notification;});
+        notificationPush = result.notification;});
 
     chrome.storage.sync.get(["checkIn"], function(result){
-        CHECKIN_ON = result.checkIn;});
+        checkinSwitch = result.checkIn;});
 
     chrome.storage.sync.get(["imageNotice"], function(result){
-        IMAGE_NOTIFICATION = result.imageNotice;});
+        imageNotificationSwitch = result.imageNotice;});
 
     chrome.storage.sync.get(["bcoin"], function(result){
         BCOIN = result.bcoin;});
@@ -409,13 +416,11 @@ function videoNotify(push){
         dataType: "json",
         json: "callback",
         success: function (json) {
-            if(json["code"] === 0){
+            if(json["code"] === 0 && dynamicPush){
                 let o = json["data"]["cards"];
-                //console.log(o);
                 for (let i = 0; i < o.length; i++) {
                     let c = JSON.parse(o[i+""]["card"]);
                     let type = o[i+""]["desc"]["type"];
-                    //console.log(o[i+""]["desc"]["dynamic_id"]);
                     if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
                         if(push){
                             if(type === 8){
