@@ -94,7 +94,7 @@ function renderExtension(){
     fullScreenSection.classList.add("button");
     fullScreenButton.classList.add("checkbox");
     fullScreenInput.type = "checkbox";
-    fullScreenInput.defaultChecked;
+    fullScreenInput.checked = true;
     fullScreenButton.appendChild(fullScreenInput);
     fullScreenButton.appendChild(document.createElement("label"));
     fullScreenSection.appendChild(fullScreenButton);
