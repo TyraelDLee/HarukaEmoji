@@ -169,7 +169,7 @@ function pushNotification(roomTitle, liverName, roomUrl, cover, type) {
 
 function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face){
     let uid = Math.random();
-    let msg = liverName + " 开播啦!\r\n是"+(type===0?"正常的":"手机")+"直播呦！";
+    let msg = liverName + " 开播啦!\r\n是"+(type===0?"电脑":"手机")+"直播！";
     imageNotificationSwitch?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "https://live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, cover, "https://live.bilibili.com/");
 }
 
@@ -222,7 +222,6 @@ function imageNotification(uid, roomTitle, msg, roomUrl, cover, face, URLPrefix)
 function notificationClickHandler(id, URLPrefix){
     chrome.notifications.onClicked.addListener(function (nid) {
         if (nid === id) {
-            console.log(nid.split(":")[1]);
             chrome.windows.getAll(function (wins){
                 if(wins.length>0){
                     // why google did not fix this bug over 6 years? WTF
@@ -429,7 +428,7 @@ function videoNotify(push){
                                 basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+c["owner"]["name"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], c["owner"]["face"], "https://b23.tv/");
                             }else if(type >= 512 && type <= 4101){
                                 console.log("你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！"+c["index"]+" see:"+c["url"]);
-                                basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！",c["new_desc"],c["url"], c["cover"],"");
+                                basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！",c["new_desc"],c["url"].replace("https://www.bilibili.com/",""), c["cover"],"https://www.bilibili.com/");
                             }
                         }
                         dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
