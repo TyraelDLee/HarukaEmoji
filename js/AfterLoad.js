@@ -111,7 +111,8 @@ function setFullscreen(){
                 if(document.getElementById("aside-area-vm").style.display !== "none"){
                     document.getElementById("aside-area-vm").setAttribute("style","display: none;");
                     document.getElementsByClassName("player-section")[0].setAttribute("style","width: 100% !important;");
-                    document.getElementById("rua_tip").innerText = "退出网页全屏(无侧边栏)";
+                    text = "退出网页全屏(无侧边栏)"
+                    document.getElementById("rua_tip").innerText = text;
                 }else{
                     document.body.classList.remove("player-full-win");
                     document.body.classList.remove("over-hidden");
@@ -119,7 +120,8 @@ function setFullscreen(){
                     document.getElementById("aside-area-vm").setAttribute("style","display: block;");
                     document.getElementsByClassName("danmaku-item-container")[0].style.width=window.innerWidth+"px";
                     document.getElementsByClassName("danmaku-item-container")[0].style.width=window.innerWidth+"px";
-                    document.getElementById("rua_tip").innerText = "网页全屏(无侧边栏)";
+                    text = "网页全屏(无侧边栏)"
+                    document.getElementById("rua_tip").innerText = text;
                     if(document.getElementsByClassName("right-area")[0].getElementsByClassName("tip-wrap")[1].getElementsByTagName("span")[0].getElementsByTagName("g").length===0){
                         document.getElementsByClassName("right-area")[0].getElementsByClassName("tip-wrap")[1].getElementsByTagName("span")[0].dispatchEvent(e);
                     }
@@ -129,14 +131,16 @@ function setFullscreen(){
                 document.body.classList.add("over-hidden");
                 document.getElementsByClassName("player-section")[0].setAttribute("style","width: 100% !important;");
                 document.getElementById("aside-area-vm").setAttribute("style","display: none;");
-                document.getElementById("rua_tip").innerText = "退出网页全屏(无侧边栏)";
+                text = "退出网页全屏(无侧边栏)"
+                document.getElementById("rua_tip").innerText = text;
             }
         });
         $("#live-player").on("click", ".tip-wrap", function (e){
             if($(this).index() <= 1){
                 document.getElementsByClassName("player-section")[0].removeAttribute("style");
                 document.getElementById("aside-area-vm").setAttribute("style","display: block;");
-                document.getElementById("rua_tip").innerText = "网页全屏(无侧边栏)";
+                text = "网页全屏(无侧边栏)"
+                document.getElementById("rua_tip").innerText = text;
             }
         });
     }
