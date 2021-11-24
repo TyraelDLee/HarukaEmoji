@@ -2,12 +2,13 @@
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
 var JCT = -1;
-var MADEL_LIST = new MadelList();
+var MEDAL_LIST = new MedalList();
 var mp = 1;
 var MID = -1;
 var room_id = window.location["pathname"].replaceAll("/", "").replace("blanc","");
 var exp =new RegExp("^[0-9]*$");
 var on;
+var medalName = "";
 chrome.storage.sync.get(["medal"], function(result){on = result.medal});
 chrome.storage.onChanged.addListener(function (changes, namespace) {
     for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
@@ -17,7 +18,7 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
 getUserInfo();
 setTimeout(function (){
     if(exp.test(room_id)){
-        getMadel();
+        getMedal();
     }
 }, 10);
 
@@ -25,11 +26,11 @@ function init(){
     if(typeof chrome.app.isInstalled!=="undefined"){
         chrome.runtime.sendMessage({ msg: "MID?"+room_id },function(mid){
             MID = mid.res;
-            wareMadel();});
+            wareMedal();});
     }
 }
 
-function getMadel(){
+function getMedal(){
     $.ajax({
         url: "https://api.live.bilibili.com/fans_medal/v5/live_fans_medal/iApiMedal?page="+mp,
         type: "GET",
@@ -41,24 +42,27 @@ function getMadel(){
         success: function (json) {
             let data = json["data"];
             if(data.length !== 0){
-                let madel_list = data["fansMedalList"];
-                for (let i = 0; i < madel_list.length; i++)
-                    MADEL_LIST.push(new Madel(madel_list[i]["medal_id"]+"", madel_list[i]["roomid"]+"", madel_list[i]["target_id"]+""));
+                let medal_list = data["fansMedalList"];
+                for (let i = 0; i < medal_list.length; i++)
+                    MEDAL_LIST.push(new Medal(medal_list[i]["medal_id"]+"", medal_list[i]["roomid"]+"", medal_list[i]["target_id"]+"", medal_list[i]["medalName"]));
                 if(data["pageinfo"]["totalpages"] === mp){
                     console.log("load list complete");
-                    if(MADEL_LIST.get(room_id) !== "-1")
-                        MID = MADEL_LIST.get(room_id);
-                        wareMadel();
+                    if(MEDAL_LIST.get(room_id) !== "-1"){
+                        MID = MEDAL_LIST.get(room_id);
+                        medalName = MEDAL_LIST.getName(room_id);
+                        wareMedal();
+                    }else
+                        medalName = "none";
                 }else{
                     mp++;
-                    getMadel();
+                    getMedal();
                 }
             }
         }
     });
 }
 
-function wareMadel(){
+function wareMedal(){
     if(JCT !== -1 && on && MID !== -1){
         var madelForm = new FormData();
         madelForm.append("medal_id", MID);
@@ -91,5 +95,5 @@ function getUserInfo(){
 }
 
 window.addEventListener("focus", function (){
-    wareMadel();
+    wareMedal();
 });

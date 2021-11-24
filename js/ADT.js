@@ -131,17 +131,18 @@ ImageButton.prototype.getSpan = function (){
         return this.span;
 }
 
-function Madel(MID, RID, UID){
+function Medal(MID, RID, UID, Name){
     this.MID = MID; // madel id
     this.RID = RID; // room id
     this.UID = UID;
+    this.Name = Name;
 }
 
-function MadelList(){
+function MedalList(){
     this.list = [];
 }
 
-MadelList.prototype.push = function (madel){
+MedalList.prototype.push = function (madel){
     for (let i = 0; i < this.list.length; i++) {
         if(this.list[i].MID === madel.MID)
             return false;
@@ -150,39 +151,46 @@ MadelList.prototype.push = function (madel){
     return true;
 }
 
-MadelList.prototype.existsRID = function (id){
+MedalList.prototype.existsRID = function (id){
     for (let i = 0; i < this.list.length; i++) {
         if(this.list[i].RID === id) return true;
     }
     return false;
 }
 
-MadelList.prototype.existsUID = function (id){
+MedalList.prototype.existsUID = function (id){
     for (let i = 0; i < this.list.length; i++) {
         if(this.list[i].UID === id) return true;
     }
     return false;
 }
 
-MadelList.prototype.get = function (rid){
+MedalList.prototype.get = function (rid){
     for (let i = 0; i < this.list.length; i++) {
         if(this.list[i].RID === rid) return this.list[i].MID;
     }
     return -1+"";
 }
 
-MadelList.prototype.getUID = function (rid){
+MedalList.prototype.getUID = function (rid){
     for (let i = 0; i < this.list.length; i++) {
         if(this.list[i].RID === rid) return this.list[i].UID;
     }
     return -1+"";
 }
 
-MadelList.prototype.length = function (){
+MedalList.prototype.getName = function (rid){
+    for (let i = 0; i < this.list.length; i++) {
+        if(this.list[i].RID === rid) return this.list[i].Name;
+    }
+    return -1+"";
+}
+
+MedalList.prototype.length = function (){
     return this.list.length;
 }
 
-MadelList.prototype.clearAll = function (){
+MedalList.prototype.clearAll = function (){
     this.list = [];
 }
 

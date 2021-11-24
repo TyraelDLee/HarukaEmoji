@@ -19,12 +19,13 @@
   },
   "content_scripts": [ {
     "all_frames": true,
-    "js": ["js/ADT.js","js/Jquery-3.5.1.js","js/Madel.js"],
+    "js": ["js/ADT.js","js/Jquery-3.5.1.js","js/Medal.js"],
     "matches": ["*://live.bilibili.com/*","*://live.bilibili.com/blanc/*"],
     "run_at": "document_start"
   },{
     "all_frames": true,
-    "js": ["js/MadelAfterLoad.js"],
+    "css": ["css/tips.css"],
+    "js": ["js/AfterLoad.js"],
     "matches": ["*://live.bilibili.com/*"],
     "run_at": "document_end"
   },{

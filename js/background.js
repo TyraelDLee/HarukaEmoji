@@ -222,6 +222,7 @@ function imageNotification(uid, roomTitle, msg, roomUrl, cover, face, URLPrefix)
 function notificationClickHandler(id, URLPrefix){
     chrome.notifications.onClicked.addListener(function (nid) {
         if (nid === id) {
+            console.log(nid.split(":")[1]);
             chrome.windows.getAll(function (wins){
                 if(wins.length>0){
                     // why google did not fix this bug over 6 years? WTF
@@ -295,8 +296,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
         }
         if(request.msg === "get_UUID") {sendResponse({res:UUID});}
         if(request.msg.includes("MID")){
-            console.log(MADEL_LIST.get(request.msg.split("?")[1]))
-            sendResponse({res:MADEL_LIST.get(request.msg.split("?")[1])});
+            console.log(MEDAL_LIST.get(request.msg.split("?")[1]))
+            sendResponse({res:MEDAL_LIST.get(request.msg.split("?")[1])});
         }
         if(request.msg.includes("QNV")){
             QNV = request.msg.split("?")[1];
