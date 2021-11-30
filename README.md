@@ -5,7 +5,7 @@
 # HarukaEmoji
 rua豹使人快乐，rua了又rua！<br>
 
-rua豹器4.12来啦 <br>
+rua豹器4.13来啦 <br>
 兼容绝大多数chromium内核浏览器，例如：Opera浏览器，360浏览器，新MS Edge，yandex....。<br>
 现已支持火狐浏览器，见：<a href="https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/">火狐扩展商店</a>
 
@@ -54,6 +54,10 @@ rua豹器4.12来啦 <br>
 [bilibili](https://t.bilibili.com/592584948593832922), 不过都来这儿了上面那个链接应该就够了吧<img src="https://github.com/TyraelDLee/HarukaEmoji/blob/main/images/haruka/5835.webp" width="30" height="30"/>。
 
 ## 版本记录
+### ver 4.13
+- 修复了一系列问题。
+- 移除了直播间无侧边栏网页全屏的选项。(因为我是猪陛...)
+
 ### ver 4.12
 - 添加了视频更新的推送通知。
 - 添加了直播间无侧边栏网页全屏的选项。  

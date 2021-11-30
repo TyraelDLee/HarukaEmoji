@@ -9,7 +9,7 @@ var checkinSwitch;
 var imageNotificationSwitch;
 var BCOIN;
 var QN;
-var QNV;
+var QNV = "原画";
 var dynamicPush;
 
 var UUID = -1;
@@ -55,6 +55,27 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
             dynamicPush = newValue;
     }
 });
+
+function loadSetting(){
+    chrome.storage.sync.get(["notification"], function(result){
+        notificationPush = result.notification;});
+
+    chrome.storage.sync.get(["checkIn"], function(result){
+        checkinSwitch = result.checkIn;});
+
+    chrome.storage.sync.get(["imageNotice"], function(result){
+        imageNotificationSwitch = result.imageNotice;});
+
+    chrome.storage.sync.get(["bcoin"], function(result){
+        BCOIN = result.bcoin;});
+
+    chrome.storage.sync.get(["qn"], function(result){
+        QN = result.qn;});
+
+    chrome.storage.sync.get(["dynamicPush"], (result)=>{
+        dynamicPush = result.dynamicPush;
+    });
+}
 
 function getFollowingList() {
     if(UUID !== -1 && SESSDATA !== -1){
@@ -340,23 +361,6 @@ function errorHandler(handler, msg){
     (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)?setTimeout(handler, 900000):setTimeout(handler,20000);
 }
 
-function loadSetting(){
-    chrome.storage.sync.get(["notification"], function(result){
-        notificationPush = result.notification;});
-
-    chrome.storage.sync.get(["checkIn"], function(result){
-        checkinSwitch = result.checkIn;});
-
-    chrome.storage.sync.get(["imageNotice"], function(result){
-        imageNotificationSwitch = result.imageNotice;});
-
-    chrome.storage.sync.get(["bcoin"], function(result){
-        BCOIN = result.bcoin;});
-
-    chrome.storage.sync.get(["qn"], function(result){
-        QN = result.qn;});
-}
-
 function exchangeBCoin(){
     $.ajax({
         url: "https://api.bilibili.com/x/vip/privilege/receive",
@@ -422,7 +426,7 @@ function videoNotify(push){
                     let c = JSON.parse(o[i+""]["card"]);
                     let type = o[i+""]["desc"]["type"];
                     if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
-                        if(push){
+                        if(push || push === undefined){
                             if(type === 8){
                                 console.log("你关注的up "+c["owner"]["name"]+" 投稿了新视频！"+c["title"]+" see:"+o[i+""]["desc"]["bvid"]);
                                 basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+c["owner"]["name"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], c["owner"]["face"], "https://b23.tv/");
