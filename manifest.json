@@ -17,15 +17,10 @@
     "48": "images/haruka48.png",
     "128": "images/haruka128.png"
   },
-  "content_scripts": [ {
-    "all_frames": true,
-    "js": ["js/ADT.js","js/Jquery-3.5.1.js","js/Medal.js"],
-    "matches": ["*://live.bilibili.com/*","*://live.bilibili.com/blanc/*"],
-    "run_at": "document_start"
-  },{
+  "content_scripts": [{
     "all_frames": true,
     "css": ["css/tips.css"],
-    "js": ["js/AfterLoad.js"],
+    "js": ["js/ADT.js","js/Jquery-3.5.1.js","js/AfterLoad.js"],
     "matches": ["*://live.bilibili.com/*"],
     "run_at": "document_end"
   },{

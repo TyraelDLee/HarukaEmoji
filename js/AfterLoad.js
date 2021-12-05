@@ -5,17 +5,91 @@ const qn_table = {"原画":10000, "蓝光":400,"超清":250,"高清":150,"流畅
 var qn;
 var qnv = "原画";
 var medalSwitch;
+var JCT = -1;
+var MEDAL_LIST = new MedalList();
+var mp = 1;
+var MID = -1;
 var room_id = window.location["pathname"].replaceAll("/", "").replace("blanc","");
 var exp =new RegExp("^[0-9]*$");
+var medalName = "";
 chrome.storage.sync.get(["qn"], function(result){qn = result.qn});
 chrome.storage.sync.get(["qnvalue"], function(result){qnv = result.qnvalue});
 chrome.storage.sync.get(["medal"], (result)=>{medalSwitch = result.medal});
+chrome.storage.onChanged.addListener(function (changes, namespace) {
+    for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+        if(key === "medal") medalSwitch = newValue;
+    }
+});
 
-if(document.getElementsByTagName("article").length === 0) {
-    setTimeout(function (){
-        if(medalSwitch) c();
-        if(qn && exp.test(room_id))q(qnv);
-    },20);
+getUserInfo();
+setTimeout(function (){
+    if(exp.test(room_id)) getMedal();
+    if(qn && exp.test(room_id) && document.getElementsByTagName("article").length === 0)q(qnv);
+}, 10);
+
+function getMedal(){
+    $.ajax({
+        url: "https://api.live.bilibili.com/fans_medal/v5/live_fans_medal/iApiMedal?page="+mp,
+        type: "GET",
+        dataType: "json",
+        json: "callback",
+        xhrFields: {
+            withCredentials: true
+        },
+        success: function (json) {
+            let data = json["data"];
+            if(data.length !== 0){
+                let medal_list = data["fansMedalList"];
+                for (let i = 0; i < medal_list.length; i++)
+                    MEDAL_LIST.push(new Medal(medal_list[i]["medal_id"]+"", medal_list[i]["roomid"]+"", medal_list[i]["target_id"]+"", medal_list[i]["medalName"]));
+                if(data["pageinfo"]["totalpages"] === mp){
+                    console.log("load list complete");
+                    if(MEDAL_LIST.get(room_id) !== "-1"){
+                        MID = MEDAL_LIST.get(room_id);
+                        medalName = MEDAL_LIST.getName(room_id);
+                        wareMedal(true);
+                    }else
+                        medalName = "none";
+                }else{
+                    mp++;
+                    getMedal();
+                }
+            }
+        }
+    });
+}
+
+function wareMedal(upd){
+    if(JCT !== -1 && medalSwitch && MID !== -1){
+        var madelForm = new FormData();
+        madelForm.append("medal_id", MID);
+        madelForm.append("csrf", JCT);
+        madelForm.append("csrf_token", JCT);
+        $.ajax({
+            url: "https://api.live.bilibili.com/xlive/web-room/v1/fansMedal/wear",
+            type: "POST",
+            data: madelForm,
+            dataType: "JSON",
+            processData: false,
+            contentType: false,
+            cache: false,
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function (){
+                console.log("ware medal successful, MID="+MID);
+                if(upd) c();
+            }
+        });
+    }
+}
+
+function getUserInfo(){
+    if(typeof chrome.app.isInstalled!=="undefined") {
+        chrome.runtime.sendMessage({msg: "get_LoginInfo"}, function (lf) {
+            JCT = lf.res.split(",")[0];
+        });
+    }
 }
 
 function c(){
@@ -84,3 +158,8 @@ function getAvailableQN(qn, obj){
     }
     return index;
 }
+
+
+window.addEventListener("focus", function (){
+    wareMedal(false);
+});
