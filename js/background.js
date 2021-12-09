@@ -1,6 +1,7 @@
 /***
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
+// new medal api: https://api.live.bilibili.com/fans_medal/v1/fans_medal/get_home_medals?uid=&source=2&need_rank=false&master_status=0&page=1
 var checkin;
 var exchangeBcoin;
 
@@ -11,6 +12,7 @@ var BCOIN;
 var QN;
 var QNV = "原画";
 var dynamicPush;
+var hiddenEntry = false;
 
 var UUID = -1;
 var SESSDATA = -1;
@@ -36,6 +38,7 @@ chrome.runtime.onInstalled.addListener(function (obj){
     chrome.storage.sync.set({"qn": false}, function(){QN = false;});
     chrome.storage.sync.set({"qnvalue": "原画"}, function(){});
     chrome.storage.sync.set({"dynamicPush":true}, function (){dynamicPush = true});
+    chrome.storage.sync.set({"hiddenEntry":false}, function (){hiddenEntry = false});
     chrome.tabs.create({url: "./readme.html"});
 });
 
@@ -53,6 +56,8 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
         }
         if(key === "dynamicPush")
             dynamicPush = newValue;
+        if(key === "hiddenEntry")
+            hiddenEntry = newValue;
     }
 });
 
@@ -74,6 +79,10 @@ function loadSetting(){
 
     chrome.storage.sync.get(["dynamicPush"], (result)=>{
         dynamicPush = result.dynamicPush;
+    });
+
+    chrome.storage.sync.get(["hiddenEntry"], (result)=>{
+        hiddenEntry = result.hiddenEntry;
     });
 }
 
@@ -315,10 +324,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
                 });
         }
         if(request.msg === "get_UUID") {sendResponse({res:UUID});}
-        if(request.msg.includes("MID")){
-            console.log(MEDAL_LIST.get(request.msg.split("?")[1]))
-            sendResponse({res:MEDAL_LIST.get(request.msg.split("?")[1])});
-        }
         if(request.msg.includes("QNV")){
             QNV = request.msg.split("?")[1];
             sendResponse({res:"ok"});
@@ -445,6 +450,45 @@ function videoNotify(push){
             errorHandler(videoNotify,msg);
         }
     });
+}
+
+chrome.webRequest.onBeforeRequest.addListener((details)=>{
+    return hiddenEntry&&!details.url.includes("room_id=2842865")?{redirectUrl: "https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?room_id=2842865&from=0"}:undefined},
+    {urls: ["*://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser*"]}, ["blocking"]);
+
+function checkMedal(){
+    let pn = 1;
+    let medals = [];
+    localStorage.setItem("rua_lastDK", Date());
+    function getMedal(){
+        $.ajax({
+            url: "https://api.live.bilibili.com/fans_medal/v5/live_fans_medal/iApiMedal?page="+pn,
+            type: "GET",
+            dataType: "json",
+            json: "callback",
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function (json) {
+                pn++;
+                for (let i = 0; i < json["data"]["fansMedalList"]; i++) {
+                    medals.push(json["data"]["fansMedalList"][i]["roomid"]);
+                }
+                if(json["data"]["pageinfo"]["totalpages"]===pn)
+                    daka(medals);
+                else getMedal();
+            },
+            error: function (msg) {
+                errorHandler(checkMedal,msg);
+            }
+        });
+    }
+}
+
+function daka(medals){
+    for (let i = 0; i < medals.length; i++) {
+
+    }
 }
 // function getUnread(){
 //     let totalUnread = 0;

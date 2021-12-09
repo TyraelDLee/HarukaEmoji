@@ -131,11 +131,15 @@ ImageButton.prototype.getSpan = function (){
         return this.span;
 }
 
-function Medal(MID, RID, UID, Name){
+function Medal(MID, RID, UID, mName, mLevel, mColourStart, mColourEnd, mColourBorder){
     this.MID = MID; // madel id
     this.RID = RID; // room id
     this.UID = UID;
-    this.Name = Name;
+    this.mName = mName;
+    this.mLevel = mLevel;
+    this.mColourStart = mColourStart;
+    this.mColourEnd = mColourEnd;
+    this.mColourBorder = mColourBorder;
 }
 
 function MedalList(){
@@ -167,9 +171,9 @@ MedalList.prototype.existsUID = function (id){
 
 MedalList.prototype.get = function (rid){
     for (let i = 0; i < this.list.length; i++) {
-        if(this.list[i].RID === rid) return this.list[i].MID;
+        if(this.list[i].RID === rid) return this.list[i];
     }
-    return -1+"";
+    return new Medal("-1","-1","-1","null","-1","0","0","0");
 }
 
 MedalList.prototype.getUID = function (rid){
@@ -181,7 +185,7 @@ MedalList.prototype.getUID = function (rid){
 
 MedalList.prototype.getName = function (rid){
     for (let i = 0; i < this.list.length; i++) {
-        if(this.list[i].RID === rid) return this.list[i].Name;
+        if(this.list[i].RID === rid) return this.list[i].mName;
     }
     return -1+"";
 }

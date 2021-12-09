@@ -1,12 +1,13 @@
 const setting  = document.getElementsByClassName("setting")[0];
-const setting1 = document.getElementById("notification");
-const setting2 = document.getElementById("medal");
-const setting3 = document.getElementById("check-in");
-const setting4 = document.getElementById("img-notice");
-const setting5 = document.getElementById("b-coin");
-const setting6 = document.getElementById("qn");
+const liveNotification = document.getElementById("notification");
+const medal = document.getElementById("medal");
+const checkIn = document.getElementById("check-in");
+const imageNotice = document.getElementById("img-notice");
+const bCoin = document.getElementById("b-coin");
+const qualitySetting = document.getElementById("qn");
 const setting7 = document.getElementById("btn7");
-const setting8 = document.getElementById("dynamicPush");
+const dynamicPush = document.getElementById("dynamicPush");
+const hiddenEntry = document.getElementById("HiddenEntry");
 const loginInfo = document.getElementById("login");
 
 const qn_table = ["原画", "蓝光","超清","高清","流畅"];
@@ -56,35 +57,35 @@ document.getElementById("readme").addEventListener("click", function (){
     chrome.tabs.create({url: "./readme.html"})
 });
 
-setting1.addEventListener("change", function (){
+liveNotification.addEventListener("change", function (){
     let checked = this.checked;
-    buttonDisabled(this.checked, setting4);
+    buttonDisabled(this.checked, imageNotice);
     chrome.storage.sync.set({"notification": checked}, function(){
         console.log("notification on:"+checked);
     });
 });
 
-setting2.addEventListener("change", function (){
+medal.addEventListener("change", function (){
     let checked = this.checked;
     chrome.storage.sync.set({"medal": checked}, function(){});
 });
 
-setting3.addEventListener("change", function (){
+checkIn.addEventListener("change", function (){
     let checked = this.checked;
     chrome.storage.sync.set({"checkIn": checked}, function(){});
 });
 
-setting4.addEventListener("change", function (){
+imageNotice.addEventListener("change", function (){
     let checked = this.checked;
     chrome.storage.sync.set({"imageNotice": checked}, function (){});
 });
 
-setting5.addEventListener("change", function (){
+bCoin.addEventListener("change", function (){
    let checked = this.checked;
     chrome.storage.sync.set({"bcoin": checked}, function (){});
 });
 
-setting6.addEventListener("change", function (){
+qualitySetting.addEventListener("change", function (){
     qn = this.checked;
     scrollDisabled(this.checked, setting7);
     chrome.storage.sync.set({"qn": qn}, function (){});
@@ -117,29 +118,35 @@ for (let i = 0; i < qnItem.length; i++) {
     });
 }
 
-setting8.addEventListener("change", function (){
+dynamicPush.addEventListener("change", function (){
     let checked = this.checked;
     chrome.storage.sync.set({"dynamicPush": checked}, function (){});
 });
+
+hiddenEntry.addEventListener("change", function (){
+    let checked = this.checked;
+    chrome.storage.sync.set({"hiddenEntry": checked}, function (){});
+});
+
 window.addEventListener("focus", function (){
     chrome.storage.sync.get(["notification"], function(result){
-        buttonDisabled(result.notification, setting4);
-        setting1.checked = result.notification;});
+        buttonDisabled(result.notification, imageNotice);
+        liveNotification.checked = result.notification;});
 
     chrome.storage.sync.get(["medal"], function(result){
-        setting2.checked = result.medal;});
+        medal.checked = result.medal;});
 
     chrome.storage.sync.get(["checkIn"], function(result){
-        setting3.checked = result.checkIn;});
+        checkIn.checked = result.checkIn;});
 
     chrome.storage.sync.get(["imageNotice"], function(result){
-        setting4.checked = result.imageNotice;});
+        imageNotice.checked = result.imageNotice;});
 
     chrome.storage.sync.get(["bcoin"], function(result){
-        setting5.checked = result.bcoin;});
+        bCoin.checked = result.bcoin;});
 
     chrome.storage.sync.get(["qn"], function(result){
-        setting6.checked = result.qn;
+        qualitySetting.checked = result.qn;
         qn = result.qn;
         scrollDisabled(result.qn, setting7);
     });
@@ -151,7 +158,10 @@ window.addEventListener("focus", function (){
     });
 
     chrome.storage.sync.get(["dynamicPush"], function (result){
-        setting8.checked = result.dynamicPush;});
+        dynamicPush.checked = result.dynamicPush;});
+
+    chrome.storage.sync.get(["hiddenEntry"], function (result){
+        hiddenEntry.checked = result.hiddenEntry;});
 });
 
 window.addEventListener("blur", function (){

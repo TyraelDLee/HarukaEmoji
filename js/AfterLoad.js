@@ -8,10 +8,8 @@ var medalSwitch;
 var JCT = -1;
 var MEDAL_LIST = new MedalList();
 var mp = 1;
-var MID = -1;
 var room_id = window.location["pathname"].replaceAll("/", "").replace("blanc","");
 var exp =new RegExp("^[0-9]*$");
-var medalName = "";
 chrome.storage.sync.get(["qn"], function(result){qn = result.qn});
 chrome.storage.sync.get(["qnvalue"], function(result){qnv = result.qnvalue});
 chrome.storage.sync.get(["medal"], (result)=>{medalSwitch = result.medal});
@@ -23,8 +21,8 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
 
 getUserInfo();
 setTimeout(function (){
-    if(exp.test(room_id)) getMedal();
-    if(qn && exp.test(room_id) && document.getElementsByTagName("article").length === 0)q(qnv);
+    if(exp.test(room_id) && room_id.length>0) getMedal();
+    if(qn && exp.test(room_id)  && room_id.length>0 && document.getElementsByTagName("article").length === 0)q(qnv);
 }, 10);
 
 function getMedal(){
@@ -41,15 +39,12 @@ function getMedal(){
             if(data.length !== 0){
                 let medal_list = data["fansMedalList"];
                 for (let i = 0; i < medal_list.length; i++)
-                    MEDAL_LIST.push(new Medal(medal_list[i]["medal_id"]+"", medal_list[i]["roomid"]+"", medal_list[i]["target_id"]+"", medal_list[i]["medalName"]));
+                    MEDAL_LIST.push(new Medal(medal_list[i]["medal_id"]+"", medal_list[i]["roomid"]+"", medal_list[i]["target_id"]+"", medal_list[i]["medalName"], medal_list[i]["medal_level"], medal_list[i]["medal_color_start"], medal_list[i]["medal_color_end"], medal_list[i]["medal_color_border"]));
                 if(data["pageinfo"]["totalpages"] === mp){
                     console.log("load list complete");
-                    if(MEDAL_LIST.get(room_id) !== "-1"){
-                        MID = MEDAL_LIST.get(room_id);
-                        medalName = MEDAL_LIST.getName(room_id);
-                        wareMedal(true);
-                    }else
-                        medalName = "none";
+                    if(MEDAL_LIST.get(room_id).MID !== "-1"){
+                        wareMedal(MEDAL_LIST.get(room_id), true);
+                    }
                 }else{
                     mp++;
                     getMedal();
@@ -59,10 +54,10 @@ function getMedal(){
     });
 }
 
-function wareMedal(upd){
-    if(JCT !== -1 && medalSwitch && MID !== -1){
+function wareMedal(medal, upd){
+    if(JCT !== -1 && medalSwitch && medal.MID !== "-1"){
         var madelForm = new FormData();
-        madelForm.append("medal_id", MID);
+        madelForm.append("medal_id", medal.MID);
         madelForm.append("csrf", JCT);
         madelForm.append("csrf_token", JCT);
         $.ajax({
@@ -77,8 +72,8 @@ function wareMedal(upd){
                 withCredentials: true
             },
             success: function (){
-                console.log("ware medal successful, MID="+MID);
-                if(upd) c();
+                console.log("ware medal successful, MID="+medal.MID);
+                if(upd) c(medal);
             }
         });
     }
@@ -92,11 +87,11 @@ function getUserInfo(){
     }
 }
 
-function c(){
+function c(medal){
     let e = document.createEvent("MouseEvents");
     e.initEvent("click", false, true);
     if(document.getElementsByClassName("medal-section").length === 0 || document.getElementsByClassName("medal-section")[0].getElementsByTagName("span").length === 0 || document.getElementsByClassName("medal-section")[0].getElementsByTagName("span")[0].getElementsByTagName("span").length === 0)
-        setTimeout(c,200);
+        setTimeout(()=>{c(medal)},200);
     else{
         let m = document.getElementsByClassName("medal-section")[0].getElementsByTagName("span")[0];
         m.dispatchEvent(e);
@@ -104,8 +99,9 @@ function c(){
             let i =  document.getElementById("control-panel-ctnr-box").getElementsByClassName("medal")[0];
             if(i!==undefined) i.style.display = "none";
             let s = document.getElementById("control-panel-ctnr-box").getElementsByClassName("fans-medal-content")[0].innerText;
-            if(s===undefined || s !== medalName && medalName !== "none")
-                setTimeout(c, 1000);
+            console.log(medal);
+            if(s===undefined || s !== medal.mName)
+                setTimeout(()=>{c(medal)}, 1000);
         },20);
     }
 }
@@ -161,5 +157,5 @@ function getAvailableQN(qn, obj){
 
 
 window.addEventListener("focus", function (){
-    wareMedal(false);
+    wareMedal(MEDAL_LIST.get(room_id),false);
 });

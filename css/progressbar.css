@@ -1,0 +1,87 @@
+@keyframes mousein {
+    0% {height: 2px; transform: translate(0, 0px)}
+    100% {height: 4px; transform: translate(0, -1px)}
+}
+
+@keyframes mouseout {
+    0% {height: 4px; transform: translate(0, 0px)}
+    100% {height: 2px; transform: translate(0, 1px)}
+}
+
+@keyframes iconmousein {
+    0% {transform: scale(0)}
+    90% {transform: scale(1.01)}
+    100% {transform: scale(1)}
+}
+
+@keyframes iconmouseout {
+    0% {transform: scale(1)}
+    100% {transform: scale(0)}
+}
+
+.rua-progress-mousein{
+    animation-name: mousein;
+    animation-duration: 200ms;
+    animation-fill-mode: forwards;
+}
+
+.rua-progress-mouseout{
+    animation-name: mouseout;
+    animation-duration: 200ms;
+    animation-fill-mode: forwards;
+}
+
+.rua-progress-thumb-mousein{
+    animation-name: iconmousein;
+    animation-duration: 200ms;
+    animation-fill-mode: forwards;
+}
+
+.rua-progress-thumb-mouseout{
+    animation-name: iconmouseout;
+    animation-duration: 200ms;
+    animation-fill-mode: forwards;
+}
+
+#rua-progress-bar{
+    position: absolute;
+    height: 16px;
+    width: 100%;
+    bottom: 34px;
+    cursor: pointer;
+}
+
+#rua-progress-truck{
+    top: 8px;
+    position: absolute;
+    text-align: left;
+    width: 100%;
+    height: 2px;
+    display: flex;
+    color: #222;
+    background-color: hsla(0,0%,100%,.2);
+    -webkit-box-align: center;
+    align-items: center;
+}
+
+#rua-progress{
+    background-color: #00a1d6;
+    position: absolute;
+    transform-origin: 0 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+#rua-progress-thumb{
+    pointer-events: none;
+    cursor: pointer;
+    z-index: 16;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+}
