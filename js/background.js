@@ -462,10 +462,10 @@ chrome.webRequest.onBeforeRequest.addListener((details)=>{
     {urls: ["*://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser*"]}, ["blocking"]);
 
 function checkMedal(){
-    console.log(Date.now()+" "+(localStorage.getItem("rua_lastDK")===undefined || (Date.now() - localStorage.getItem("rua_lastDK"))>1000*3600*24));
-    if(localStorage.getItem("rua_lastDK")===undefined || (Date.now() - localStorage.getItem("rua_lastDK"))>1000*3600*24){
+    console.log(Date.now()+" "+(localStorage.getItem("rua_lastDK")===undefined || isNewerThan(localStorage.getItem("rua_lastDK").split("-"), (new Date().getFullYear()+"-"+new Date().getMonth()+"-"+new Date().getDay()).split("-"))));
+    if(localStorage.getItem("rua_lastDK")===undefined || isNewerThan(localStorage.getItem("rua_lastDK").split("-"), (new Date().getFullYear()+"-"+new Date().getMonth()+"-"+new Date().getDay()).split("-"))){
         let medals = [];
-        localStorage.setItem("rua_lastDK", Date.now());
+        localStorage.setItem("rua_lastDK", new Date().getFullYear()+"-"+new Date().getMonth()+"-"+new Date().getDay());
         getMedal();
         function getMedal(){
             $.ajax({
@@ -483,7 +483,7 @@ function checkMedal(){
                     daka(medals);
                 },
                 error: function (msg) {
-                    localStorage.setItem("rua_lastDK", 0);
+                    localStorage.setItem("rua_lastDK", new Date().getFullYear()+"-"+new Date().getMonth()+"-"+(new Date().getDay()-1));
                     errorHandler(checkMedal,msg);
                 }
             });
@@ -629,3 +629,8 @@ function findVideo(vid){
 //         }
 //     });
 // }
+console.log(new Date().getFullYear()+"-"+new Date().getMonth()+"-"+new Date().getDay());
+console.log(isNewerThan(["21","12","11"], ["21","12","11"]))
+function isNewerThan(dateOld, dateNew){
+    return parseInt(dateOld[0])<parseInt(dateNew[0])?true:parseInt(dateOld[0])>parseInt(dateNew[0])?false:parseInt(dateOld[1])<parseInt(dateNew[1])?true:parseInt(dateOld[1])>parseInt(dateNew[1])?false:parseInt(dateOld[2])<parseInt(dateNew[2]);
+}

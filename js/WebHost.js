@@ -328,7 +328,7 @@ function packaging(msg){
     DanMuForm.append("mode", "1");
     DanMuForm.append("fontsize", "25");
     DanMuForm.append("rnd", getTimeSnap()+"");
-    DanMuForm.append("roomid", ROOM_ID);
+    DanMuForm.append("roomid", ROOM_ID); // short id is not allowed.
     DanMuForm.append("csrf", JCT);
     DanMuForm.append("csrf_token", JCT);
     if(msg.length !== 0)
