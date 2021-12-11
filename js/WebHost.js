@@ -318,7 +318,7 @@ function updateJCT(){
     }
 }
 
-function getTimeSnap(){return Date.now();}
+function getTimeSnap(){return Math.round(Date.now()/1000);}
 
 function packaging(msg){
     let DanMuForm = new FormData();
@@ -336,21 +336,30 @@ function packaging(msg){
 }
 
 function send(form){
-    $.ajax({
-        url: "https://api.live.bilibili.com/msg/send",
-        type: "POST",
-        data: form,
-        dataType: "JSON",
-        processData: false,
-        contentType: false,
-        cache: false,
-        xhrFields: {
-            withCredentials: true
-        },
-        success: function (){
-            console.log("sent");
-        }
+    fetch("https://api.live.bilibili.com/msg/send", {
+        method:"POST",
+        credentials: 'include',
+        body: form
+    }).then(result=>{
+        console.log("sent");
+    }).catch(error=>{
+        console.error('Error:', error);
     });
+    // $.ajax({
+    //     url: "https://api.live.bilibili.com/msg/send",
+    //     type: "POST",
+    //     data: form,
+    //     dataType: "JSON",
+    //     processData: false,
+    //     contentType: false,
+    //     cache: false,
+    //     xhrFields: {
+    //         withCredentials: true
+    //     },
+    //     success: function (){
+    //         console.log("sent");
+    //     }
+    // });
 }
 
 function constructHTMLTable(num_per_line, O, O1, sel, span){

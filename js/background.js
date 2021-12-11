@@ -4,6 +4,7 @@
 // new medal api: https://api.live.bilibili.com/fans_medal/v1/fans_medal/get_home_medals?uid=&source=2&need_rank=false&master_status=0&page=1
 var checkin;
 var exchangeBcoin;
+var dk;
 
 var notificationPush;
 var checkinSwitch;
@@ -276,8 +277,10 @@ setInterval(reloadCookies, 5000);
 function scheduleCheckIn(){
     checkIn();
     queryBcoin();
+    checkMedal();
     checkin = setInterval(checkIn, 21600000);
     exchangeBcoin = setInterval(queryBcoin, 43200000);
+    dk = setInterval(checkMedal, 3600000);
 }
 
 function reloadCookies() {
@@ -292,6 +295,7 @@ function reloadCookies() {
                         console.log("Session info does not exist, liver stream info listener cleared.");
                         clearInterval(checkin);
                         clearInterval(exchangeBcoin);
+                        clearInterval(dk)
                     }
                     if (UUID !== -1 && SESSDATA !== -1 && UUID !== P_UID && SESSDATA !== P_SESS) {
                         // log in info changed then load following list and start update liver stream info every 3 min.
@@ -299,6 +303,7 @@ function reloadCookies() {
                         FOLLOWING_LIST.clearAll(); // initial following list.
                         p=0;
                         videoNotify(false);
+
                         scheduleCheckIn();
                         getFollowingList();
                         // getUnread();
@@ -457,12 +462,41 @@ chrome.webRequest.onBeforeRequest.addListener((details)=>{
     {urls: ["*://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser*"]}, ["blocking"]);
 
 function checkMedal(){
-    let pn = 1;
-    let medals = [];
-    localStorage.setItem("rua_lastDK", Date());
-    function getMedal(){
+    console.log(Date.now()+" "+(localStorage.getItem("rua_lastDK")===undefined || (Date.now() - localStorage.getItem("rua_lastDK"))>1000*3600*24));
+    if(localStorage.getItem("rua_lastDK")===undefined || (Date.now() - localStorage.getItem("rua_lastDK"))>1000*3600*24){
+        let medals = [];
+        localStorage.setItem("rua_lastDK", Date.now());
+        getMedal();
+        function getMedal(){
+            $.ajax({
+                url: "https://api.live.bilibili.com/xlive/web-ucenter/user/MedalWall?target_id="+UUID,
+                type: "GET",
+                dataType: "json",
+                json: "callback",
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: function (json) {
+                    for (let i = 0; i < json["data"]["list"].length; i++)
+                        medals.push(json["data"]["list"][i]["medal_info"]["target_id"]);
+                    console.log(medals);
+                    daka(medals);
+                },
+                error: function (msg) {
+                    localStorage.setItem("rua_lastDK", 0);
+                    errorHandler(checkMedal,msg);
+                }
+            });
+        }
+    }
+}
+
+function daka(medals){
+    let index = 0;
+    go();
+    function go(){
         $.ajax({
-            url: "https://api.live.bilibili.com/fans_medal/v5/live_fans_medal/iApiMedal?page="+pn,
+            url: "https://api.live.bilibili.com/live_user/v1/Master/info?uid="+medals[index],
             type: "GET",
             dataType: "json",
             json: "callback",
@@ -470,25 +504,68 @@ function checkMedal(){
                 withCredentials: true
             },
             success: function (json) {
-                pn++;
-                for (let i = 0; i < json["data"]["fansMedalList"]; i++) {
-                    medals.push(json["data"]["fansMedalList"][i]["roomid"]);
+                if(json["code"]===0 || json["data"].length){
+                    let DanMuForm = new FormData();
+                    DanMuForm.append("bubble", "0");
+                    DanMuForm.append("msg", "打卡");
+                    DanMuForm.append("color", "16777215");
+                    DanMuForm.append("mode", "1");
+                    DanMuForm.append("fontsize", "25");
+                    DanMuForm.append("rnd", Math.round(Date.now()/1000)+"");
+                    DanMuForm.append("roomid", json["data"]["room_id"]);
+                    DanMuForm.append("csrf", JCT);
+                    DanMuForm.append("csrf_token", JCT);
+                    fetch("https://api.live.bilibili.com/msg/send", {
+                        method:"POST",
+                        credentials: 'include',
+                        body: DanMuForm
+                    }).then(result=>{
+                        console.log("打卡成功: https://live.bilibili.com/"+json["data"]["room_id"]);
+                        if(index<medals.length){
+                            setTimeout(()=>{go()},(Math.random()*5+10)*1000);
+                            index++;
+                        }
+                    }).catch(error=>{console.error('Error:', error);});
                 }
-                if(json["data"]["pageinfo"]["totalpages"]===pn)
-                    daka(medals);
-                else getMedal();
-            },
-            error: function (msg) {
-                errorHandler(checkMedal,msg);
             }
         });
     }
 }
 
-function daka(medals){
-    for (let i = 0; i < medals.length; i++) {
+createContextMenu();
+function createContextMenu(){
+    chrome.contextMenus.create({contexts: ["selection", "link"], title: "用bilibili搜索", type: "normal", id:"rua-contextMenu"});
+    chrome.contextMenus.onClicked.addListener((info)=>{
+        if(info.menuItemId==="rua-contextMenu"){
+            legalVideoLink(info.selectionText).then(r => {
+                r?chrome.tabs.create({url: "https://www.bilibili.com/video/"+info.selectionText}):chrome.tabs.create({url:"https://search.bilibili.com/all?keyword="+info.selectionText});
+            });
+        }
+    });
+}
 
+async function legalVideoLink(str){
+    let headB = "AaBb";
+    let headE = "Vv";
+    if(headB.includes(str.charAt(0)) && headE.includes(str.charAt(1))){
+        if(headB.substr(0,2).includes(str.charAt(0)))
+            return await findVideo("aid="+str.substr(2,str.length-1))
+        else
+            return await findVideo("bvid="+str);
     }
+    return false;
+}
+
+function findVideo(vid){
+    return new Promise(function (videoExist){
+        let findVideoRequest = new XMLHttpRequest();
+        findVideoRequest.open("GET", "https://api.bilibili.com/x/web-interface/view?"+vid, true);
+        findVideoRequest.send(null);
+        findVideoRequest.onload = function (e){
+            console.log(JSON.parse(findVideoRequest.responseText)["code"]);
+            findVideoRequest.status===200?videoExist(JSON.parse(findVideoRequest.responseText)["code"]===0):videoExist(false);
+        }
+    });
 }
 // function getUnread(){
 //     let totalUnread = 0;

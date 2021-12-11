@@ -6,7 +6,7 @@
     "default_popup": "popup.html"
   },
   "description": "rua!",
-  "permissions": ["cookies","storage","notifications","webRequest","webRequestBlocking","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "https://*.hdslb.com/*", "https://api.vc.bilibili.com/"],
+  "permissions": ["cookies","contextMenus", "storage","notifications","webRequest","webRequestBlocking","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "https://*.hdslb.com/*", "https://api.vc.bilibili.com/"],
   "background": {
     "scripts": ["js/ADT.js","js/Jquery-3.5.1.js","js/PushHost.js","js/background.js"],
     "persistent": true

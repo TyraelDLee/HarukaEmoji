@@ -5,14 +5,17 @@ const qn_table = {"原画":10000, "蓝光":400,"超清":250,"高清":150,"流畅
 var qn;
 var qnv = "原画";
 var medalSwitch;
+var hiddenEntry = false;
 var JCT = -1;
 var MEDAL_LIST = new MedalList();
 var mp = 1;
 var room_id = window.location["pathname"].replaceAll("/", "").replace("blanc","");
+var uid = -1;
 var exp =new RegExp("^[0-9]*$");
 chrome.storage.sync.get(["qn"], function(result){qn = result.qn});
 chrome.storage.sync.get(["qnvalue"], function(result){qnv = result.qnvalue});
 chrome.storage.sync.get(["medal"], (result)=>{medalSwitch = result.medal});
+chrome.storage.sync.get(["hiddenEntry"], (result)=>{hiddenEntry = result.hiddenEntry});
 chrome.storage.onChanged.addListener(function (changes, namespace) {
     for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
         if(key === "medal") medalSwitch = newValue;
@@ -22,8 +25,11 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
 getUserInfo();
 setTimeout(function (){
     if(exp.test(room_id) && room_id.length>0) getMedal();
-    if(qn && exp.test(room_id)  && room_id.length>0 && document.getElementsByTagName("article").length === 0)q(qnv);
+    if(qn && exp.test(room_id) && room_id.length>0 && document.getElementsByTagName("article").length === 0)q(qnv);
+    if(hiddenEntry && exp.test(room_id) && room_id.length>0 && document.getElementsByTagName("article").length === 0)hideEntry();
 }, 10);
+
+function hideEntry(){}
 
 function getMedal(){
     $.ajax({

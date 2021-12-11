@@ -141,6 +141,9 @@ function Medal(MID, RID, UID, mName, mLevel, mColourStart, mColourEnd, mColourBo
     this.mColourEnd = mColourEnd;
     this.mColourBorder = mColourBorder;
 }
+Medal.prototype.toString = function (){
+    return this.MID+" "+ this.UID + " " + this.mName;
+}
 
 function MedalList(){
     this.list = [];
@@ -172,6 +175,13 @@ MedalList.prototype.existsUID = function (id){
 MedalList.prototype.get = function (rid){
     for (let i = 0; i < this.list.length; i++) {
         if(this.list[i].RID === rid) return this.list[i];
+    }
+    return new Medal("-1","-1","-1","null","-1","0","0","0");
+}
+
+MedalList.prototype.getByUid = function (uid){
+    for (let i = 0; i < this.list.length; i++) {
+        if(this.list[i].UID === uid) return this.list[i];
     }
     return new Medal("-1","-1","-1","null","-1","0","0","0");
 }
