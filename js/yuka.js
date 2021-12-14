@@ -1,7 +1,7 @@
 /***
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
-const ROOM_ID = 411318;
+const ROOM_ID = 0;
 // add new emoji text here.
 // Keep all assets in webp.
 // DO NOT CHANGE ANY VARIABLE NAME BELOW!

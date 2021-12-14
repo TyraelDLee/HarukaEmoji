@@ -1,4 +1,4 @@
-
+// has been abandoned.
 //?cid=房间号&platform=web&qn=清晰度.
 var streamDuration = 0;
 var streamCurrentTime = 0;
