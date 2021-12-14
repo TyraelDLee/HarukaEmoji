@@ -1,6 +1,6 @@
-loadComponent();
+
 setTimeout(loadList, 4*1000*60);
-function loadComponent(){
+!function loadComponent(){
     var join = document.getElementsByClassName("particitation-btn")[0];
     var close = document.getElementsByClassName("close-btn")[0];
     if(join === undefined || close === undefined)
@@ -13,7 +13,7 @@ function loadComponent(){
             setTimeout(()=>{close.dispatchEvent(e);},10);
         });
     }
-}
+}();
 
 function loadList(){
     var list = document.getElementsByClassName("lottery-result")[0];

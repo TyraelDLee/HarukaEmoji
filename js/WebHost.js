@@ -2,8 +2,8 @@
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
 !function (){
-    var JCT = -1;
-    var SESSDATA = -1;
+    var JCT = "-1";
+    var SESSDATA = "-1";
 
     var WINDOW_HEIGHT;
     var WINDOW_WIDTH;

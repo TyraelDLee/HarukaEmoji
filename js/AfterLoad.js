@@ -7,7 +7,7 @@
     var qnv = "原画";
     var medalSwitch;
     var hiddenEntry = false;
-    var JCT = -1;
+    var JCT = "-1";
     var MEDAL_LIST = new MedalList();
     var mp = 1;
     var room_id = window.location["pathname"].replaceAll("/", "").replace("blanc","");
@@ -33,7 +33,7 @@
     setTimeout(function (){
         if(exp.test(room_id) && room_id.length>0) getMedal();
         if(qn && exp.test(room_id) && room_id.length>0 && document.getElementsByTagName("article").length === 0)q(qnv);
-        if(hiddenEntry && exp.test(room_id) && room_id.length>0 && document.getElementsByTagName("article").length === 0)hideEntry();
+        if(hiddenEntry && JCT !== "-1" && exp.test(room_id) && room_id.length>0 && document.getElementsByTagName("article").length === 0)hideEntry();
     }, 10);
 
     function hideEntry(){
@@ -75,7 +75,7 @@
     }
 
     function wareMedal(medal, upd){
-        if(JCT !== -1 && medalSwitch && medal.MID !== "-1"){
+        if(JCT !== "-1" && medalSwitch && medal.MID !== "-1"){
             var madelForm = new FormData();
             madelForm.append("medal_id", medal.MID);
             madelForm.append("csrf", JCT);

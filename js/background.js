@@ -6,13 +6,13 @@
     var exchangeBcoin;
     var dk;
 
-    var notificationPush;
-    var checkinSwitch;
-    var imageNotificationSwitch;
-    var BCOIN;
-    var QN;
+    var notificationPush = true;
+    var checkinSwitch = true;
+    var imageNotificationSwitch = false;
+    var BCOIN = true;
+    var QN = false;
     var QNV = "原画";
-    var dynamicPush;
+    var dynamicPush = false;
     var hiddenEntry = false;
     var dakaSwitch = true;
 
@@ -556,10 +556,7 @@
         let headB = "AaBb";
         let headE = "Vv";
         if(headB.includes(str.charAt(0)) && headE.includes(str.charAt(1))){
-            if(headB.substr(0,2).includes(str.charAt(0)))
-                return await findVideo("aid="+str.substr(2,str.length-1))
-            else
-                return await findVideo("bvid="+str);
+            return headB.substr(0,2).includes(str.charAt(0))?await findVideo("aid="+str.substr(2,str.length-1)):await findVideo("bvid="+str);
         }
         return false;
     }
@@ -570,10 +567,8 @@
             findVideoRequest.open("GET", "https://api.bilibili.com/x/web-interface/view?"+vid, true);
             findVideoRequest.send(null);
             findVideoRequest.onload = function (e){
-                console.log(JSON.parse(findVideoRequest.responseText)["code"]);
                 findVideoRequest.status===200?videoExist(JSON.parse(findVideoRequest.responseText)["code"]===0):videoExist(false);
-            }
-        });
+            }});
     }
 
     function isNewerThan(dateOld, dateNew){
