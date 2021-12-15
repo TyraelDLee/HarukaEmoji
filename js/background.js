@@ -32,7 +32,7 @@
     chrome.windows.onFocusChanged.addListener(function (wID){if(wID!==-1) winIDList.push(wID);});
     chrome.runtime.onInstalled.addListener(function (obj){
         // init setting
-        if(localStorage.getItem("rua_lastDK")===undefined)localStorage.setItem("rua_lastDK", "1970-01-01");
+        if(localStorage.getItem("rua_lastDK")===null)localStorage.setItem("rua_lastDK", "1970-01-01");
         chrome.storage.sync.set({"notification": true}, function(){notificationPush = true;});
         chrome.storage.sync.set({"medal": true}, function(){});
         chrome.storage.sync.set({"checkIn": true}, function(){checkinSwitch = true;});
@@ -426,7 +426,7 @@
                 },
                 error: function (msg) {
                     console.log(msg.toString());
-                    setTimeout(queryBcoin,10000);
+                    errorHandler(queryBcoin, msg);
                 }
             });
         }
