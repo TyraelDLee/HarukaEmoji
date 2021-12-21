@@ -186,7 +186,7 @@
 
     window.addEventListener("blur", function (){
         console.log("blur")
-    })
+    });
 
     function buttonDisabled(checked, obj){
         if(checked) {
@@ -219,9 +219,12 @@
         }
     }
 
-    (function getLatestVer(){
+    window.onload = function (){
+        getLatestVer();
+    }
+    function getLatestVer(){
         var request = new XMLHttpRequest();
-        request.open("GET", "https://tyraeldlee.github.io/HarukaEmoji/", true);
+        request.open("GET", "https://tyraeldlee.github.io/HarukaEmoji/?_="+new Date().getTime(), true);
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
                 if((/<title>(.*?)<\/title>/m).exec(request.responseText)[1]!==currentVersion){
@@ -231,7 +234,7 @@
             }
         }
         request.send();
-        request.ontimeout = function (){};
+        request.ontimeout = function (){/*add alternative request here.*/};
         request.onerror = function (){};
-    })();
+    }
 }();
