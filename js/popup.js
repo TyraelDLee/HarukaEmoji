@@ -199,11 +199,7 @@
     }
 
     function scrollDisabled(checked, obj){
-        if(checked) {
-            obj.classList.remove("btn-disabled");
-        } else{
-            obj.classList.add("btn-disabled");
-        }
+        checked?obj.classList.remove("btn-disabled") :obj.classList.add("btn-disabled");
     }
 
     function scrollAnim(newPos){
@@ -223,13 +219,11 @@
         }
     }
 
-    window.onload = function (){getLatestVer();}
-    function getLatestVer(){
+    (function getLatestVer(){
         var request = new XMLHttpRequest();
         request.open("GET", "https://tyraeldlee.github.io/HarukaEmoji/", true);
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
-                console.log(request.responseText)
                 if((/<title>(.*?)<\/title>/m).exec(request.responseText)[1]!==currentVersion){
                     updateSection.style.display = "block";
                     updateSection.innerText="有新版本更新";
@@ -239,5 +233,5 @@
         request.send();
         request.ontimeout = function (){};
         request.onerror = function (){};
-    }
+    })();
 }();

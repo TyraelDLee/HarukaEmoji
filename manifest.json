@@ -8,7 +8,7 @@
   "description": "rua!",
   "permissions": ["cookies","contextMenus", "storage","notifications","webRequest","webRequestBlocking","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "https://*.hdslb.com/*", "https://api.vc.bilibili.com/", "https://gitee.com/", "https://tyraeldlee.github.io/"],
   "background": {
-    "scripts": ["js/ADT.js","js/Jquery-3.5.1.js","js/background.js"],
+    "scripts": ["js/ADT.js","js/Jquery-3.5.1.js","js/background.min.js"],
     "persistent": true
   },
   "icons": {
