@@ -1,4 +1,5 @@
 !function (){
+    const currentVersion = "4.14.3";
     const setting  = document.getElementsByClassName("setting")[0];
     const liveNotification = document.getElementById("notification");
     const medal = document.getElementById("medal");
@@ -210,7 +211,6 @@
             if(currentPos!==newPos){
                 setTimeout(()=>{scroll();}, 10);
             }
-
         }
     }
 }();

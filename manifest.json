@@ -1,14 +1,14 @@
 {
   "name": "rua豹器",
   "manifest_version": 2,
-  "version": "4.15",
+  "version": "4.14.3",
   "browser_action": {
     "default_popup": "popup.html"
   },
   "description": "rua!",
-  "permissions": ["cookies","contextMenus", "storage","notifications","webRequest","webRequestBlocking","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "https://*.hdslb.com/*", "https://api.vc.bilibili.com/"],
+  "permissions": ["cookies","contextMenus", "storage","notifications","webRequest","webRequestBlocking","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "https://*.hdslb.com/*", "https://api.vc.bilibili.com/", "https://gitee.com/"],
   "background": {
-    "scripts": ["js/ADT.js","js/Jquery-3.5.1.js","js/PushHost.js","js/background.js"],
+    "scripts": ["js/ADT.js","js/Jquery-3.5.1.js","js/background.js"],
     "persistent": true
   },
   "icons": {
@@ -20,30 +20,30 @@
   "content_scripts": [{
     "all_frames": true,
     "css": ["css/tips.css"],
-    "js": ["js/ADT.js","js/Jquery-3.5.1.js","js/AfterLoad.js"],
+    "js": ["js/ADT.js","js/Jquery-3.5.1.js","js/AfterLoad.min.js"],
     "matches": ["*://live.bilibili.com/*"],
     "run_at": "document_end"
   },{
     "all_frames": true,
-    "js": ["js/Lott.js"],
+    "js": ["js/Lott.min.js"],
     "matches": ["*://live.bilibili.com/p/html/live-lottery/anchor-join*"],
     "run_at": "document_end"
   },{
     "all_frames": true,
     "css": ["css/host.css", "css/button.css"],
-    "js": ["js/haruka.js","js/WebHost.js"],
+    "js": ["js/haruka.js","js/WebHost.min.js"],
     "matches": [ "*://live.bilibili.com/21652717*", "*://live.bilibili.com/21652717?*", "*://live.bilibili.com/record/21652717*", "*://live.bilibili.com/blanc/21652717?liteVersion=true"],
     "run_at": "document_end"
   },{
     "all_frames": true,
     "css": ["css/host.css", "css/button.css"],
-    "js": ["js/pudding.js","js/WebHost.js"],
+    "js": ["js/pudding.js","js/WebHost.min.js"],
     "matches": [ "*://live.bilibili.com/21413565*", "*://live.bilibili.com/21413565?*", "*://live.bilibili.com/record/21413565*","*://live.bilibili.com/blanc/21413565?liteVersion=true"],
     "run_at": "document_end"
   },{
     "all_frames": true,
     "css": ["css/host.css", "css/button.css"],
-    "js": ["js/seki.js","js/WebHost.js"],
+    "js": ["js/seki.js","js/WebHost.min.js"],
     "matches": [ "*://live.bilibili.com/1603600*", "*://live.bilibili.com/1603600?*", "*://live.bilibili.com/record/1603600*","*://live.bilibili.com/blanc/1603600?liteVersion=true"],
     "run_at": "document_end"
   }],

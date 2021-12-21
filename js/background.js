@@ -96,6 +96,16 @@
             dakaSwitch = result.daka;});
     }
 
+    /**
+     * Maintain and updated the following ups info.
+     * Non-duplicated and shrank when unfollow someone.
+     *
+     * time O(n^2), may be quicker
+     *
+     * API: https://api.bilibili.com/x/relation/followings
+     * method: GET
+     * url param: vmid->uid, pn->page number.
+     * */
     function getFollowingList() {
         if(UUID !== -1 && SESSDATA !== -1){
             p++;
@@ -114,14 +124,14 @@
                         listLength = data.length;
                         for (let i = 0; i < data.length; i++) {
                             let member = new FollowingMember(data[i]["mid"], data[i]["uname"]);
-                            FOLLOWING_LIST.push(member);
-                            FOLLOWING_LIST_TEMP.push(member);
+                            FOLLOWING_LIST.push(member); // maintain the global list
+                            FOLLOWING_LIST_TEMP.push(member); // push new to local list(this time only)
                         }
                         if (listLength === 0 && FOLLOWING_LIST.length() !== 0) {
                             // all elements enquired.
                             p = 0;
-                            FOLLOWING_LIST.update(FOLLOWING_LIST_TEMP);
-                            FOLLOWING_LIST_TEMP.clearAll();
+                            FOLLOWING_LIST.update(FOLLOWING_LIST_TEMP); // get intersection of global and local list.
+                            FOLLOWING_LIST_TEMP.clearAll(); // empty local list for next turn.
                             console.log("Load following list complete. " + FOLLOWING_LIST.length() + " followings found.");
                             queryLivingRoom();
                         }
@@ -133,6 +143,15 @@
         }
     }
 
+    /**
+     * Check live room status once for all.
+     *
+     * time O(n^2), may be quicker
+     *
+     * API: https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids
+     * method: POST
+     * attention: not accept cookie.
+     * */
     function queryLivingRoom() {
         $.ajax({
             url: "https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids",
@@ -161,6 +180,18 @@
         });
     }
 
+    /**
+     * Update the following list for notification.
+     *
+     * time: O(n)
+     *
+     * If the element in the list not on air last time but
+     * on air this time, then push a notification to users.
+     * If the element in the list on air last time but
+     * not on air this time, then clear the notification info
+     * for that element for next time push.
+     * Otherwise, do nothing.
+     * */
     function updateList(ON_AIR_LIST){
         if(FOLLOWING_LIST.length() > 0){
             for (let i = 0; i < ON_AIR_LIST.length(); i++) {
@@ -185,9 +216,9 @@
                                 pushNotificationChrome(FOLLOWING_LIST.get(i).TITLE,
                                     FOLLOWING_LIST.get(i).NAME,
                                     FOLLOWING_LIST.get(i).ROOM_URL,
-                                    FOLLOWING_LIST.get(i).COVER.length===0?FOLLOWING_LIST.get(i).FACE:FOLLOWING_LIST.get(i).COVER,
+                                    FOLLOWING_LIST.get(i).COVER.length===0||FOLLOWING_LIST.get(i).COVER.length==null?(FOLLOWING_LIST.get(i).FACE.length===0||FOLLOWING_LIST.get(i).FACE.length==null?"../images/haruka128.png":FOLLOWING_LIST.get(i).FACE):FOLLOWING_LIST.get(i).COVER,
                                     FOLLOWING_LIST.get(i).TYPE,
-                                    FOLLOWING_LIST.get(i).FACE);
+                                    FOLLOWING_LIST.get(i).FACE.length===0||FOLLOWING_LIST.get(i).FACE.length==null?"../images/haruka128.png":FOLLOWING_LIST.get(i).FACE);
                         }
                     }
                 }
@@ -196,6 +227,9 @@
         setTimeout(getFollowingList, 10000);
     }
 
+    /**
+     * Create notification. (Web API ver.)
+     * */
     function pushNotification(roomTitle, liverName, roomUrl, cover, type) {
         var notification = new Notification(roomTitle, {
             icon: cover,
@@ -210,9 +244,20 @@
     function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face){
         let uid = Math.random();
         let msg = liverName + " 开播啦!\r\n是"+(type===0?"电脑":"手机")+"直播！";
-        imageNotificationSwitch?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "https://live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, cover, "https://live.bilibili.com/");
+        imageNotificationSwitch?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "https://live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, face, "https://live.bilibili.com/");
     }
 
+    /**
+     * Create notification. (Web Extension API ver.)
+     * normal ver.
+     *
+     * @param uid, a random number for notification id.
+     * @param roomTitle, live room title.
+     * @param msg, notification content.
+     * @param roomUrl, part of live URL for click jump to.
+     * @param cover, notification icon, normally will be up's face.
+     * @param URLPrefix, "live.bilibili.com/", will be combine with roomUrl to build a full link.
+     * */
     function basicNotification(uid, roomTitle, msg, roomUrl, cover, URLPrefix){
         chrome.notifications.create(uid+":"+roomUrl, {
                 type: "basic",
@@ -221,6 +266,30 @@
                 message: msg,
                 contextMessage:"rua豹器"
             }, function (id) {notificationClickHandler(id,URLPrefix);}
+        );
+    }
+
+    /**
+     * Create notification. (Web Extension API ver.)
+     * image ver.
+     *
+     * @param uid, a random number for notification id.
+     * @param roomTitle, live room title.
+     * @param msg, notification content.
+     * @param roomUrl, part of live URL for click jump to.
+     * @param cover, notification content image, normally will be live room face.
+     * @param face, notification icon, normally will be up's face.
+     * @param URLPrefix, "live.bilibili.com/", will be combine with roomUrl to build a full link.
+     * */
+    function imageNotification(uid, roomTitle, msg, roomUrl, cover, face, URLPrefix){
+        chrome.notifications.create(uid+":"+roomUrl, {
+                type: "image",
+                iconUrl: face,
+                title: roomTitle,
+                message: msg,
+                imageUrl: cover,
+                contextMessage:"rua豹器"
+            }, function (id) {notificationClickHandler(id, URLPrefix);}
         );
     }
 
@@ -247,18 +316,16 @@
         );
     }
 
-    function imageNotification(uid, roomTitle, msg, roomUrl, cover, face, URLPrefix){
-        chrome.notifications.create(uid+":"+roomUrl, {
-                type: "image",
-                iconUrl: face,
-                title: roomTitle,
-                message: msg,
-                imageUrl: cover,
-                contextMessage:"rua豹器"
-            }, function (id) {notificationClickHandler(id, URLPrefix);}
-        );
-    }
-
+    /**
+     * A handler for notification click event.
+     * When click the notification, browser will
+     * open the URL contained in notifications for
+     * users.
+     *
+     * @param id, specific notification id,
+     * @param URLPrefix, the url contained in notification is only a part of them
+     * includes aid, bid or live room number, prefix will be used for build url.
+     * */
     function notificationClickHandler(id, URLPrefix){
         chrome.notifications.onClicked.addListener(function (nid) {
             if (nid === id) {
@@ -269,7 +336,7 @@
                         //     chrome.windows.update(Lwin.id, {focused: true});
                         //     chrome.tabs.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
                         // });
-                        chrome.windows.update(winIDList.getCurrent(), {focused: true});
+                        chrome.windows.update(winIDList.getCurrent(), {focused: true});/*ensure the browser will always open tabs in the most top window.*/
                         chrome.tabs.create({url: URLPrefix+nid.split(":")[1]});
                     }else
                         chrome.windows.create({url: URLPrefix+nid.split(":")[1]});
@@ -292,6 +359,10 @@
         dk = setInterval(checkMedalDaka, 3600000);
     }
 
+    /**
+     * Load cookies to check users' login status.
+     * All functions should work when users' login info is set only.
+     * */
     function reloadCookies() {
         chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'DedeUserID'},
             function (uid) {
@@ -325,6 +396,10 @@
             function (jct) {(jct === null)?JCT=-1:JCT = jct.value;});
     }
 
+    /**
+     * Communicate with content script, since content script
+     * cannot load some info, like cookie.
+     * */
     chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
             if(request.msg === "get_LoginInfo"){
                 chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
@@ -368,15 +443,23 @@
                     console.log("签到成功 "+new Date().toUTCString())
                 },
                 error: function (msg){
-                    console.log("ERROR found");
-                    setTimeout(checkIn, 10000);
+                    errorHandler(checkIn, msg);
                 }
             });
         }
     }
 
+    /**
+     * Handler for network error,
+     * For 412 internal error wait for 15 mins,
+     * others retry after 20 secs.
+     *
+     * @param handler, the function which need to be handled.
+     * @param msg, the error message.
+     * */
     function errorHandler(handler, msg){
-        console.log("ERROR found: "+msg.toString()+" "+new Date());
+        console.log("ERROR found @ "+new Date()+":");
+        console.log(msg);
         (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)?setTimeout(handler, 900000):setTimeout(handler,20000);
     }
 
@@ -402,8 +485,7 @@
                 );
             },
             error: function (msg) {
-                console.log(msg.toString());
-                setTimeout(queryBcoin,10000);
+                errorHandler(queryBcoin, msg);
             }
         });
     }
@@ -425,79 +507,107 @@
                     }
                 },
                 error: function (msg) {
-                    console.log(msg.toString());
                     errorHandler(queryBcoin, msg);
                 }
             });
         }
     }
+
     let dynamic_id_list = [];
     function videoNotify(push){
-        (function grabUpdate(){
-            $.ajax({
-                url: "https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid="+UUID+"&type_list=8,512,4097,4098,4099,4100,4101",
-                type: "GET",
-                dataType: "json",
-                json: "callback",
-                success: function (json) {
-                    if(json["code"] === 0 && dynamicPush){
-                        let o = json["data"]["cards"];
-                        for (let i = 0; i < o.length; i++) {
-                            let c = JSON.parse(o[i+""]["card"]);
-                            let type = o[i+""]["desc"]["type"];
-                            if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
-                                if(push || push === undefined){
-                                    if(type === 8){
-                                        console.log("你关注的up "+c["owner"]["name"]+" 投稿了新视频！"+c["title"]+" see:"+o[i+""]["desc"]["bvid"]);
-                                        basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+c["owner"]["name"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], c["owner"]["face"], "https://b23.tv/");
-                                    }else if(type >= 512 && type <= 4101){
-                                        console.log("你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！"+c["index"]+" see:"+c["url"]);
-                                        basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！",c["new_desc"],c["url"].replace("https://www.bilibili.com/",""), c["cover"],"https://www.bilibili.com/");
-                                    }
+        $.ajax({
+            url: "https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid="+UUID+"&type_list=8,512,4097,4098,4099,4100,4101",
+            type: "GET",
+            dataType: "json",
+            json: "callback",
+            success: function (json) {
+                if(json["code"] === 0 && dynamicPush){
+                    let o = json["data"]["cards"];
+                    for (let i = 0; i < o.length; i++) {
+                        let c = JSON.parse(o[i+""]["card"]);
+                        let type = o[i+""]["desc"]["type"];
+                        if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
+                            if(push || push === undefined){
+                                if(type === 8){
+                                    console.log("你关注的up "+c["owner"]["name"]+" 投稿了新视频！"+c["title"]+" see:"+o[i+""]["desc"]["bvid"]);
+                                    basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+c["owner"]["name"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], c["owner"]["face"], "https://b23.tv/");
+                                }else if(type >= 512 && type <= 4101){
+                                    console.log("你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！"+c["index"]+" see:"+c["url"]);
+                                    basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！",c["new_desc"],c["url"].replace("https://www.bilibili.com/",""), c["cover"],"https://www.bilibili.com/");
                                 }
-                                dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
                             }
+                            dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
                         }
                     }
-                    setTimeout(()=>{videoNotify(true)},10000);
-                },
-                error: function (msg) {
-                    errorHandler(videoNotify,msg);
                 }
-            });
-        })();
+                setTimeout(()=>{videoNotify(true)},10000);
+            },
+            error: function (msg) {
+                errorHandler(videoNotify,msg);
+            }
+        });
     }
-
+    chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
+            let headers = details["requestHeaders"];
+            for (let header in headers) {
+                if (headers[header].name === "Cookie") {
+                    headers[header].value = ""
+                }
+            }
+            return {requestHeaders: details.requestHeaders};
+        }, {urls: ["https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids"]}, ['blocking', "requestHeaders", "extraHeaders"]
+    );
+    chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
+            let headers = details["requestHeaders"];
+            for (let header in headers) {
+                if(headers[header].name === "Origin"){
+                    headers[header].value = "https://www.bilibili.com/"
+                }
+            }
+            return {requestHeaders: details.requestHeaders};
+        }, {urls: ["https://api.bilibili.com/x/vip/privilege/receive", "https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids"]}, ['blocking', "requestHeaders", "extraHeaders"]
+    );
+    chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
+            let headers = details["requestHeaders"];
+            for (let header in headers) {
+                if(headers[header].name === "Origin"){
+                    headers[header].value = "https://live.bilibili.com"
+                }
+                if(headers[header].name === "Sec-Fetch-Site")
+                    headers[header].value = "same-site"
+            }
+            details.requestHeaders.push({name: 'Referer', value:'https://live.bilibili.com/'});
+            return {requestHeaders: details.requestHeaders};
+        }, {urls: ["https://api.live.bilibili.com/msg/send"]}, ['blocking', "requestHeaders", "extraHeaders"]
+    );
     chrome.webRequest.onBeforeRequest.addListener((details)=>{
             return hiddenEntry&&!details.url.includes("room_id=2842865")?{redirectUrl: "https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?room_id=2842865&from=0"}:undefined},
         {urls: ["*://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser*"]}, ["blocking"]);
 
     function checkMedalDaka(){
         console.log("Grabbing medal info");
-        if(checkinSwitch && isNewerThan(localStorage.getItem("rua_lastDK").split("-"), (getUTC8Time().getFullYear()+"-"+getUTC8Time().getMonth()+"-"+getUTC8Time().getDate()).split("-"))){
+        if(dakaSwitch && isNewerThan(localStorage.getItem("rua_lastDK").split("-"), (getUTC8Time().getFullYear()+"-"+getUTC8Time().getMonth()+"-"+getUTC8Time().getDate()).split("-"))){
             let medals = [];
             localStorage.setItem("rua_lastDK", getUTC8Time().getFullYear()+"-"+getUTC8Time().getMonth()+"-"+getUTC8Time().getDate());
-            (function getMedal(){
-                $.ajax({
-                    url: "https://api.live.bilibili.com/xlive/web-ucenter/user/MedalWall?target_id="+UUID,
-                    type: "GET",
-                    dataType: "json",
-                    json: "callback",
-                    xhrFields: {
-                        withCredentials: true
-                    },
-                    success: function (json) {
-                        console.log(json["data"]["list"].length+" medal founded.")
-                        for (let i = 0; i < json["data"]["list"].length; i++)
-                            medals.push(json["data"]["list"][i]["medal_info"]["target_id"]);
-                        daka(medals);
-                    },
-                    error: function (msg) {
-                        localStorage.setItem("rua_lastDK", "1970-01-01");
-                        errorHandler(checkMedalDaka,msg);
-                    }
-                });
-            })();
+            $.ajax({
+                url: "https://api.live.bilibili.com/xlive/web-ucenter/user/MedalWall?target_id="+UUID,
+                type: "GET",
+                dataType: "json",
+                json: "callback",
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: function (json) {
+                    console.log(json["data"]["list"].length+" medal founded.")
+                    for (let i = 0; i < json["data"]["list"].length; i++)
+                        medals.push(json["data"]["list"][i]["medal_info"]["target_id"]);
+                    daka(medals);
+                },
+                error: function (msg) {
+                    localStorage.setItem("rua_lastDK", "1970-01-01");
+                    errorHandler(checkMedalDaka,msg);
+                }
+            });
         }else console.log("No more grab needed.");
     }
 
