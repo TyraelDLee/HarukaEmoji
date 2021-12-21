@@ -1,5 +1,7 @@
 !function (){
     const currentVersion = "4.14.3";
+    const versionSection = document.getElementById("version");
+    const updateSection = document.getElementById("update");
     const setting  = document.getElementsByClassName("setting")[0];
     const liveNotification = document.getElementById("notification");
     const medal = document.getElementById("medal");
@@ -21,6 +23,9 @@
     var UUID = -2;
     function en(e){e.preventDefault()}
     chrome.runtime.connect({ name: "popup" });
+    (function ver(){
+        versionSection.innerHTML = "ver. <i>"+currentVersion+"</i>";
+    })();
     function updateUID(){
         if(typeof chrome.app.isInstalled!=="undefined"){
             chrome.runtime.sendMessage({ msg: "get_UUID" },function(uid){UUID = uid.res;
@@ -41,23 +46,27 @@
     setInterval(updateUID,1000);
 
     document.getElementById("bug-reporter").addEventListener("click", function (){
-        chrome.tabs.create({url: "https://github.com/TyraelDLee/HarukaEmoji/issues"})
+        chrome.tabs.create({url: "https://github.com/TyraelDLee/HarukaEmoji/issues"});
     })
 
     document.getElementById("logo").addEventListener("click", function (){
-        chrome.tabs.create({url: "https://chrome.google.com/webstore/detail/rua%E8%B1%B9%E5%99%A8/igapngheaefbfhikpbngjgakfnedkchb"})
+        chrome.tabs.create({url: "https://chrome.google.com/webstore/detail/rua%E8%B1%B9%E5%99%A8/igapngheaefbfhikpbngjgakfnedkchb"});
     });
 
     document.getElementById("version").addEventListener("click", function (){
-        chrome.tabs.create({url: "https://github.com/TyraelDLee/HarukaEmoji"})
+        chrome.tabs.create({url: "https://github.com/TyraelDLee/HarukaEmoji"});
     });
 
     document.getElementById("source").addEventListener("click", function (){
-        chrome.tabs.create({url: "https://github.com/TyraelDLee/HarukaEmoji"})
+        chrome.tabs.create({url: "https://github.com/TyraelDLee/HarukaEmoji"});
     });
 
     document.getElementById("readme").addEventListener("click", function (){
-        chrome.tabs.create({url: "./readme.html"})
+        chrome.tabs.create({url: "./readme.html"});
+    });
+
+    updateSection.addEventListener("click", ()=>{
+        chrome.tabs.create({url:"https://github.com/TyraelDLee/HarukaEmoji/releases/latest"});
     });
 
     liveNotification.addEventListener("change", function (){
@@ -212,5 +221,21 @@
                 setTimeout(()=>{scroll();}, 10);
             }
         }
+    }
+getLatestVer()
+    function getLatestVer(){
+        var request = new XMLHttpRequest();
+        request.open("GET", "https://tyraeldlee.github.io/HarukaEmoji/", true);
+        request.onreadystatechange = function() {
+            if (request.readyState == 4) {
+                if((/<title>(.*?)<\/title>/m).exec(request.responseText)[1]!==currentVersion){
+                    updateSection.style.display = "block";
+                    updateSection.innerText="有新版本更新";
+                }
+            }
+        }
+        request.send();
+        request.ontimeout = function (){};
+        request.onerror = function (){};
     }
 }();
