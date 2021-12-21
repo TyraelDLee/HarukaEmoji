@@ -167,6 +167,35 @@
         return index;
     }
 
+    (function harunaHdpi(){
+        //You enhanced haruna for over 6 years and still not support hdpi? OMG
+        let scale = 1 / window.devicePixelRatio;
+        getHaruna();
+        function getHaruna(){
+            if(document.getElementsByClassName("live-haruna-ctnr")[0]===undefined)
+                setTimeout(getHaruna, 200);
+            else{
+                let css = document.getElementsByClassName("live-haruna-ctnr")[0].getAttribute("style").replace(";","");
+                document.getElementsByClassName("live-haruna-ctnr")[0].setAttribute("style",css+" scale("+scale+");");
+                var obs = new MutationObserver(function (m){
+                    m.forEach(function(mutation) {
+                        if (mutation.type === "attributes") {
+                            if(mutation.attributeName === "style"){
+                                let css = document.getElementsByClassName("live-haruna-ctnr")[0].getAttribute("style").replace(";","");
+                                if(!css.includes("scale")){
+                                    document.getElementsByClassName("live-haruna-ctnr")[0].setAttribute("style",css+" scale("+scale+");");
+                                }
+                            }
+                        }
+                    });
+                });
+                obs.observe(document.getElementsByClassName("live-haruna-ctnr")[0],{
+                    attributes: true
+                });
+            }
+        }
+    })();
+
     window.addEventListener("focus", function (){
         wareMedal(MEDAL_LIST.get(room_id),false);
     });

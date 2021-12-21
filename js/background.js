@@ -2,9 +2,11 @@
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
 !function (){
+    const currentVersion = "4.14.3";
     var checkin;
     var exchangeBcoin;
     var dk;
+    var updateAvailable = false;
 
     var notificationPush = true;
     var checkinSwitch = true;
@@ -354,9 +356,11 @@
         checkIn();
         queryBcoin();
         checkMedalDaka();
+        checkUpd();
         checkin = setInterval(checkIn, 21600000);
         exchangeBcoin = setInterval(queryBcoin, 43200000);
         dk = setInterval(checkMedalDaka, 3600000);
+        setInterval(checkUpd, 3600000);
     }
 
     /**
@@ -413,6 +417,7 @@
                     });
             }
             if(request.msg === "get_UUID") {sendResponse({res:UUID});}
+            if(request.msg === "updateStatus") {sendResponse({res:updateAvailable});}
             if(request.msg.includes("QNV")){
                 QNV = request.msg.split("?")[1];
                 sendResponse({res:"ok"});
@@ -679,6 +684,22 @@
             findVideoRequest.onload = function (e){
                 findVideoRequest.status===200?videoExist(JSON.parse(findVideoRequest.responseText)["code"]===0):videoExist(false);
             }});
+    }
+
+    function checkUpd(){
+        console.log("check update");
+        if(dakaSwitch && isNewerThan(localStorage.getItem("rua_lastDK").split("-"), (getUTC8Time().getFullYear()+"-"+getUTC8Time().getMonth()+"-"+getUTC8Time().getDate()).split("-"))){
+            var request = new XMLHttpRequest();
+            request.open("GET", "https://tyraeldlee.github.io/HarukaEmoji/?_="+new Date().getTime(), true);
+            request.onreadystatechange = function() {
+                if (request.readyState == 4) {
+                    updateAvailable = (/<title>(.*?)<\/title>/m).exec(request.responseText)[1] !== currentVersion;
+                }
+            }
+            request.send();
+            request.ontimeout = function (){/*add alternative request here.*/};
+            request.onerror = function (){};
+        }
     }
 
     function isNewerThan(dateOld, dateNew){

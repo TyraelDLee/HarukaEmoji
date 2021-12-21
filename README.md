@@ -56,6 +56,11 @@ rua豹器4.15来啦 <br>
 [bilibili](https://t.bilibili.com/592584948593832922), 不过都来这儿了上面那个链接应该就够了吧<img src="https://github.com/TyraelDLee/HarukaEmoji/blob/main/images/haruka/5835.webp" width="30" height="30"/>。
 
 ## 版本记录
+### ver 4.14.3
+- 将Haruna对高分辨率屏幕做了支持。
+- 添加了检测更新版本功能。
+- 修复了一些问题。
+
 ### ver 4.14
 - 添加了隐身进入直播间的功能。
 - 添加了右键关联菜单搜索。

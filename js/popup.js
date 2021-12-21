@@ -223,18 +223,14 @@
         getLatestVer();
     }
     function getLatestVer(){
-        var request = new XMLHttpRequest();
-        request.open("GET", "https://tyraeldlee.github.io/HarukaEmoji/?_="+new Date().getTime(), true);
-        request.onreadystatechange = function() {
-            if (request.readyState == 4) {
-                if((/<title>(.*?)<\/title>/m).exec(request.responseText)[1]!==currentVersion){
-                    updateSection.style.display = "block";
-                    updateSection.innerText="有新版本更新";
-                }
+        chrome.runtime.sendMessage({ msg: "updateStatus" }, function (updateStatus){
+            if(updateStatus.res){
+                updateSection.style.display = "block";
+                updateSection.innerText="有新版本更新";
+            }else{
+                updateSection.style.display = "none";
+                updateSection.innerText="";
             }
-        }
-        request.send();
-        request.ontimeout = function (){/*add alternative request here.*/};
-        request.onerror = function (){};
+        });
     }
 }();

@@ -41,5 +41,25 @@
       <option name="workingDir" value="" />
       <envs />
     </TaskOptions>
+    <TaskOptions isEnabled="true">
+      <option name="arguments" value="&quot;C:\Users\leety\AppData\Roaming\npm\node_modules\babel-minify\bin\minify.js&quot; $FileName$ --mangle.keepClassName --outFile $FileNameWithoutExtension$.min.js" />
+      <option name="checkSyntaxErrors" value="true" />
+      <option name="description" />
+      <option name="exitCodeBehavior" value="ERROR" />
+      <option name="fileExtension" value="js" />
+      <option name="immediateSync" value="true" />
+      <option name="name" value="minify" />
+      <option name="output" value="$FileNameWithoutExtension$.min.js" />
+      <option name="outputFilters">
+        <array />
+      </option>
+      <option name="outputFromStdout" value="false" />
+      <option name="program" value="node" />
+      <option name="runOnExternalChanges" value="true" />
+      <option name="scopeName" value="Project Files" />
+      <option name="trackOnlyRoot" value="false" />
+      <option name="workingDir" value="" />
+      <envs />
+    </TaskOptions>
   </component>
 </project>
