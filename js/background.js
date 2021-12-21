@@ -360,7 +360,7 @@
         checkin = setInterval(checkIn, 21600000);
         exchangeBcoin = setInterval(queryBcoin, 43200000);
         dk = setInterval(checkMedalDaka, 3600000);
-        setInterval(checkUpd, 3600000);
+        setInterval(checkUpd, 43200000);
     }
 
     /**
@@ -688,18 +688,25 @@
 
     function checkUpd(){
         console.log("check update");
-        if(dakaSwitch && isNewerThan(localStorage.getItem("rua_lastDK").split("-"), (getUTC8Time().getFullYear()+"-"+getUTC8Time().getMonth()+"-"+getUTC8Time().getDate()).split("-"))){
-            var request = new XMLHttpRequest();
-            request.open("GET", "https://tyraeldlee.github.io/HarukaEmoji/?_="+new Date().getTime(), true);
-            request.onreadystatechange = function() {
-                if (request.readyState == 4) {
-                    updateAvailable = (/<title>(.*?)<\/title>/m).exec(request.responseText)[1] !== currentVersion;
+        var request = new XMLHttpRequest();
+        request.open("GET", "https://tyraeldlee.github.io/HarukaEmoji/?_="+new Date().getTime(), true);
+        request.onreadystatechange = function() {
+            if (request.readyState == 4) {
+                console.log(request.responseText);
+                if((/<title>(.*?)<\/title>/m).exec(request.responseText)[1]!==currentVersion){
+                    updateAvailable = true;
+                    chrome.browserAction.setTitle({title: "rua豹器 有更新可用"});
+                    chrome.browserAction.setBadgeBackgroundColor({color: "#00A0FF"});
+                    chrome.browserAction.setBadgeText({text: "1"});
+                }else{
+                    chrome.browserAction.setTitle({title: "rua豹器"});
+                    chrome.browserAction.setBadgeText({text: ""});
                 }
             }
-            request.send();
-            request.ontimeout = function (){/*add alternative request here.*/};
-            request.onerror = function (){};
         }
+        request.send();
+        request.ontimeout = function (){/*add alternative request here.*/};
+        request.onerror = function (){};
     }
 
     function isNewerThan(dateOld, dateNew){

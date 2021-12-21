@@ -226,7 +226,7 @@
         chrome.runtime.sendMessage({ msg: "updateStatus" }, function (updateStatus){
             if(updateStatus.res){
                 updateSection.style.display = "block";
-                updateSection.innerText="有新版本更新";
+                updateSection.innerText="有更新可用";
             }else{
                 updateSection.style.display = "none";
                 updateSection.innerText="";
