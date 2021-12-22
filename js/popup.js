@@ -21,6 +21,7 @@
     var qnvalue = 0;
     var qn;
     var UUID = -2;
+    var availableLink = "https://gitee.com/tyrael-lee/HarukaEmoji/releases";
     function en(e){e.preventDefault()}
     chrome.runtime.connect({ name: "popup" });
     (function ver(){
@@ -66,7 +67,7 @@
     });
 
     updateSection.addEventListener("click", ()=>{
-        chrome.tabs.create({url:"https://github.com/TyraelDLee/HarukaEmoji/releases/latest"});
+        chrome.tabs.create({url:availableLink});
     });
 
     liveNotification.addEventListener("change", function (){
@@ -227,6 +228,7 @@
             if(updateStatus.res){
                 updateSection.style.display = "block";
                 updateSection.innerText="有更新可用";
+                availableLink = updateStatus.address;
             }else{
                 updateSection.style.display = "none";
                 updateSection.innerText="";

@@ -149,7 +149,7 @@
                         } else {
                             selec.classList.remove("selection-fade-in");
                             selec.classList.add("selection-fade-out");
-                            setTimeout(hide, 150);
+                            setTimeout(()=>{selec.style.display = "none";}, 300);
                         }
                     }else{
                         moved = true;
@@ -183,8 +183,6 @@
         });
         setTimeout(delay,5000);
     }
-
-    function hide(){selec.style.display = "none";}
 
     /***
      * @return true, not move | false, moved.

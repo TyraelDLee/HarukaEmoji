@@ -7,6 +7,7 @@
     var exchangeBcoin;
     var dk;
     var updateAvailable = false;
+    var availableBranch = "https://gitee.com/tyrael-lee/HarukaEmoji/releases";
 
     var notificationPush = true;
     var checkinSwitch = true;
@@ -348,19 +349,19 @@
         });
     }
 
+    checkUpd("https://tyrael-lee.gitee.io/harukaemoji/?_=");
     setTimeout(loadSetting, 100);
     setTimeout(reloadCookies,200);
     setInterval(reloadCookies, 5000);
-
+    setInterval(()=>{checkUpd("https://tyrael-lee.gitee.io/harukaemoji/?_=")}, 43200000);
     function scheduleCheckIn(){
         checkIn();
         queryBcoin();
         checkMedalDaka();
-        checkUpd();
         checkin = setInterval(checkIn, 21600000);
         exchangeBcoin = setInterval(queryBcoin, 43200000);
         dk = setInterval(checkMedalDaka, 3600000);
-        setInterval(checkUpd, 43200000);
+
     }
 
     /**
@@ -417,7 +418,7 @@
                     });
             }
             if(request.msg === "get_UUID") {sendResponse({res:UUID});}
-            if(request.msg === "updateStatus") {sendResponse({res:updateAvailable});}
+            if(request.msg === "updateStatus") {sendResponse({res:updateAvailable, address:availableBranch});}
             if(request.msg.includes("QNV")){
                 QNV = request.msg.split("?")[1];
                 sendResponse({res:"ok"});
@@ -686,27 +687,38 @@
             }});
     }
 
-    function checkUpd(){
-        console.log("check update");
+    function checkUpd(url){
+        console.log("checking update at "+(new URL(url)).hostname);
         var request = new XMLHttpRequest();
-        request.open("GET", "https://tyraeldlee.github.io/HarukaEmoji/?_="+new Date().getTime(), true);
+        request.open("GET", url+new Date().getTime(), true);
+        request.timeout = 2000;
         request.onreadystatechange = function() {
             if (request.readyState == 4) {
-                console.log(request.responseText);
                 if((/<title>(.*?)<\/title>/m).exec(request.responseText)[1]!==currentVersion){
+                    console.log("A newer version found: "+(/<title>(.*?)<\/title>/m).exec(request.responseText)[1]);
                     updateAvailable = true;
+                    availableBranch = new URL(url).hostname.includes("github")?"https://github.com/TyraelDLee/HarukaEmoji/releases/latest":"https://gitee.com/tyrael-lee/HarukaEmoji/releases";
                     chrome.browserAction.setTitle({title: "rua豹器 有更新可用"});
                     chrome.browserAction.setBadgeBackgroundColor({color: "#00A0FF"});
                     chrome.browserAction.setBadgeText({text: "1"});
                 }else{
+                    console.log("Current version is latest.");
+                    updateAvailable = false;
                     chrome.browserAction.setTitle({title: "rua豹器"});
                     chrome.browserAction.setBadgeText({text: ""});
                 }
             }
         }
         request.send();
-        request.ontimeout = function (){/*add alternative request here.*/};
-        request.onerror = function (){};
+        request.ontimeout = function (){
+            /*add alternative request here.*/
+            checkUpd("https://tyraeldlee.github.io/HarukaEmoji/?_=");
+        };
+        request.onerror = function (){
+            setTimeout(()=>{
+                let backup = url.includes("https://tyraeldlee.github.io/HarukaEmoji/")?"https://tyrael-lee.gitee.io/harukaemoji/?_=":"https://tyraeldlee.github.io/HarukaEmoji/?_=";
+                checkUpd(backup);},1800000);
+        };
     }
 
     function isNewerThan(dateOld, dateNew){
