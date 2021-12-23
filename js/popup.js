@@ -224,6 +224,7 @@
         getLatestVer();
     }
     function getLatestVer(){
+        chrome.runtime.sendMessage({msg: "popupfired"});
         chrome.runtime.sendMessage({ msg: "updateStatus" }, function (updateStatus){
             if(updateStatus.res){
                 updateSection.style.display = "block";

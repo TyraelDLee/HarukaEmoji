@@ -3,6 +3,7 @@
  * */
 !function (){
     const currentVersion = "4.14.3";
+    var latestVersion = currentVersion;
     var checkin;
     var exchangeBcoin;
     var dk;
@@ -29,6 +30,7 @@
     var winIDList = new WindowIDList();
     var p = 0;
 
+    chrome.browserAction.setBadgeBackgroundColor({color: "#00A0FF"});
     chrome.windows.getAll(function (wins){for (let i = 0; i < wins.length; i++) winIDList.push(wins[i].id);});
     chrome.windows.onCreated.addListener(function (win){winIDList.push(win.id);});
     chrome.windows.onRemoved.addListener(function (wID){winIDList.remove(wID);});
@@ -70,6 +72,41 @@
                 if(dakaSwitch)
                     checkMedalDaka();
             }
+        }
+    });
+
+    /**
+     * Communicate with content script, since content script
+     * cannot load some info, like cookie.
+     * */
+    chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+            if(request.msg === "get_LoginInfo"){
+                chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
+                    function (jct) {
+                        (jct === null) ? JCT = -1 : JCT = jct.value;
+                        chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'SESSDATA'},
+                            function (sd) {
+                                (sd === null) ? SESSDATA = -1 : SESSDATA = sd.value;
+                                sendResponse({res:JCT+","+SESSDATA});
+                            });
+                    });
+            }
+            if(request.msg === "get_UUID") {sendResponse({res:UUID});}
+            if(request.msg === "updateStatus") {sendResponse({res:updateAvailable, address:availableBranch});}
+            if(request.msg === "popupfired"){setBadge("rua豹器", "");}
+            if(request.msg.includes("QNV")){
+                QNV = request.msg.split("?")[1];
+                sendResponse({res:"ok"});
+            }
+            return true;
+        }
+    );
+
+    chrome.runtime.onConnect.addListener(function (p){
+        if(p.name==="popup"){
+            p.onDisconnect.addListener(function (){
+                chrome.storage.sync.set({"qnvalue": QNV}, function (){});
+            });
         }
     });
 
@@ -401,40 +438,6 @@
             function (jct) {(jct === null)?JCT=-1:JCT = jct.value;});
     }
 
-    /**
-     * Communicate with content script, since content script
-     * cannot load some info, like cookie.
-     * */
-    chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-            if(request.msg === "get_LoginInfo"){
-                chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
-                    function (jct) {
-                        (jct === null) ? JCT = -1 : JCT = jct.value;
-                        chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'SESSDATA'},
-                            function (sd) {
-                                (sd === null) ? SESSDATA = -1 : SESSDATA = sd.value;
-                                sendResponse({res:JCT+","+SESSDATA});
-                            });
-                    });
-            }
-            if(request.msg === "get_UUID") {sendResponse({res:UUID});}
-            if(request.msg === "updateStatus") {sendResponse({res:updateAvailable, address:availableBranch});}
-            if(request.msg.includes("QNV")){
-                QNV = request.msg.split("?")[1];
-                sendResponse({res:"ok"});
-            }
-            return true;
-        }
-    );
-
-    chrome.runtime.onConnect.addListener(function (p){
-        if(p.name==="popup"){
-            p.onDisconnect.addListener(function (){
-                chrome.storage.sync.set({"qnvalue": QNV}, function (){});
-            });
-        }
-    });
-
     function checkIn(){
         if(checkinSwitch){
             $.ajax({
@@ -691,33 +694,32 @@
         console.log("checking update at "+(new URL(url)).hostname);
         var request = new XMLHttpRequest();
         request.open("GET", url+new Date().getTime(), true);
-        request.timeout = 2000;
+        request.timeout = 5000;
         request.onreadystatechange = function() {
-            if (request.readyState == 4) {
-                if((/<title>(.*?)<\/title>/m).exec(request.responseText)[1]!==currentVersion){
-                    console.log("A newer version found: "+(/<title>(.*?)<\/title>/m).exec(request.responseText)[1]);
-                    updateAvailable = true;
-                    availableBranch = new URL(url).hostname.includes("github")?"https://github.com/TyraelDLee/HarukaEmoji/releases/latest":"https://gitee.com/tyrael-lee/HarukaEmoji/releases";
-                    chrome.browserAction.setTitle({title: "rua豹器 有更新可用"});
-                    chrome.browserAction.setBadgeBackgroundColor({color: "#00A0FF"});
-                    chrome.browserAction.setBadgeText({text: "1"});
-                }else{
-                    console.log("Current version is latest.");
-                    updateAvailable = false;
-                    chrome.browserAction.setTitle({title: "rua豹器"});
-                    chrome.browserAction.setBadgeText({text: ""});
+            if (request.responseText !== null && request.readyState == 4) {
+                if(latestVersion !== (/<title>(.*?)<\/title>/m).exec(request.responseText)[1]){
+                    latestVersion = (/<title>(.*?)<\/title>/m).exec(request.responseText)[1];
+                    if(latestVersion!==currentVersion){
+                        console.log("A newer version found: "+latestVersion);
+                        updateAvailable = true;
+                        availableBranch = new URL(url).hostname.includes("github")?"https://github.com/TyraelDLee/HarukaEmoji/releases/latest":"https://gitee.com/tyrael-lee/HarukaEmoji/releases";
+                        setBadge("rua豹器 有更新可用", "1");
+                    }else{
+                        console.log("Current version is latest.");
+                        updateAvailable = false;
+                        setBadge("rua豹器", "");
+                    }
                 }
             }
         }
         request.send();
         request.ontimeout = function (){
             /*add alternative request here.*/
-            checkUpd("https://tyraeldlee.github.io/HarukaEmoji/?_=");
+            checkUpd(url.includes("github")?"https://tyrael-lee.gitee.io/harukaemoji/?_=":"https://tyraeldlee.github.io/HarukaEmoji/?_=");
         };
         request.onerror = function (){
             setTimeout(()=>{
-                let backup = url.includes("https://tyraeldlee.github.io/HarukaEmoji/")?"https://tyrael-lee.gitee.io/harukaemoji/?_=":"https://tyraeldlee.github.io/HarukaEmoji/?_=";
-                checkUpd(backup);},1800000);
+                checkUpd(url.includes("github")?"https://tyrael-lee.gitee.io/harukaemoji/?_=":"https://tyraeldlee.github.io/HarukaEmoji/?_=");},1800000);
         };
     }
 
@@ -727,6 +729,11 @@
 
     function getUTC8Time(){
         return new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 + 28800000);
+    }
+
+    function setBadge(title, text){
+        chrome.browserAction.setTitle({title: title});
+        chrome.browserAction.setBadgeText({text: text});
     }
 }();
 
