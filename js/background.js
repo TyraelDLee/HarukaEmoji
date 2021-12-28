@@ -2,13 +2,14 @@
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
 !function (){
-    const currentVersion = "4.14.3";
+    const currentVersion = chrome.runtime.getManifest().version;
     var latestVersion = currentVersion;
     var checkin;
     var exchangeBcoin;
     var dk;
     var updateAvailable = false;
     var availableBranch = "https://gitee.com/tyrael-lee/HarukaEmoji/releases";
+    var downloadFileName = "";
 
     var notificationPush = true;
     var checkinSwitch = true;
@@ -94,6 +95,7 @@
             if(request.msg === "get_UUID") {sendResponse({res:UUID});}
             if(request.msg === "updateStatus") {sendResponse({res:updateAvailable, address:availableBranch});}
             if(request.msg === "popupfired"){setBadge("rua豹器", "");}
+            if(request.msg === "requestDownload"){downloadFileName = request.fileName;}
             if(request.msg.includes("QNV")){
                 QNV = request.msg.split("?")[1];
                 sendResponse({res:"ok"});
@@ -472,6 +474,9 @@
         (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)?setTimeout(handler, 900000):setTimeout(handler,20000);
     }
 
+    /**
+     * Exchange B coin section.
+     * */
     function exchangeBCoin(){
         $.ajax({
             url: "https://api.bilibili.com/x/vip/privilege/receive",
@@ -522,6 +527,9 @@
         }
     }
 
+    /**
+     * Check and notify dynamic update section.
+     * */
     let dynamic_id_list = [];
     function videoNotify(push){
         $.ajax({
@@ -556,6 +564,10 @@
             }
         });
     }
+
+    /**
+     * Web traffic control section.
+     * */
     chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
             let headers = details["requestHeaders"];
             for (let header in headers) {
@@ -593,9 +605,20 @@
             return hiddenEntry&&!details.url.includes("room_id=2842865")?{redirectUrl: "https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?room_id=2842865&from=0"}:undefined},
         {urls: ["*://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser*"]}, ["blocking"]);
 
+    chrome.webRequest.onHeadersReceived.addListener((details)=>{
+        if(new URLSearchParams(new URL(details["url"])["search"]).get("requestFrom")==="ruaDL"){
+            let fileFormat = new URL(details["url"])["pathname"].substr(new URL(details["url"])["pathname"].length-4,4);
+            details.responseHeaders.push({name:"Content-Disposition", value:"attachment; filename="+downloadFileName+fileFormat+""});
+        }
+        return {responseHeaders: details.responseHeaders};
+    }, {urls: ["*://*.bilivideo.com/upgcxcode/*", "*://*.akamaized.net/upgcxcode/*"]}, ["responseHeaders", 'blocking']);
+
+    /**
+     * Live room check in section.
+     * */
     function checkMedalDaka(){
         console.log("Grabbing medal info");
-        if(dakaSwitch && isNewerThan(localStorage.getItem("rua_lastDK").split("-"), (getUTC8Time().getFullYear()+"-"+getUTC8Time().getMonth()+"-"+getUTC8Time().getDate()).split("-"))){
+        if(dakaSwitch && (localStorage.getItem("rua_lastDK")===null || isNewerThan(localStorage.getItem("rua_lastDK").split("-"), (getUTC8Time().getFullYear()+"-"+getUTC8Time().getMonth()+"-"+getUTC8Time().getDate()).split("-")))){
             let medals = [];
             localStorage.setItem("rua_lastDK", getUTC8Time().getFullYear()+"-"+getUTC8Time().getMonth()+"-"+getUTC8Time().getDate());
             $.ajax({
@@ -620,6 +643,9 @@
         }else console.log("No more grab needed.");
     }
 
+    /**
+     * Send damaku to each live room.
+     * */
     function daka(medals){
         let index = 0;
         (function go(){
@@ -632,7 +658,7 @@
                     withCredentials: true
                 },
                 success: function (json) {
-                    if(json["code"]===0 || json["data"].length){
+                    if(json["code"]===0 || json["data"].length>0){
                         let DanMuForm = new FormData();
                         DanMuForm.append("bubble", "0");
                         DanMuForm.append("msg", "打卡");
@@ -660,6 +686,9 @@
         })();
     }
 
+    /**
+     * Context menu section.
+     * */
     (function(){
         chrome.contextMenus.create({contexts: ["selection", "link"], title: "用bilibili搜索", type: "normal", id:"rua-contextMenu"});
         chrome.contextMenus.onClicked.addListener((info)=>{
@@ -671,6 +700,9 @@
         });
     })();
 
+    /**
+     * Analysis selected text is a/bv id or not.
+     * */
     async function legalVideoLink(str){
         let headB = "AaBb";
         let headE = "Vv";
@@ -680,6 +712,9 @@
         return false;
     }
 
+    /**
+     * Query selected a/bv id is exist or not.
+     * */
     function findVideo(vid){
         return new Promise(function (videoExist){
             let findVideoRequest = new XMLHttpRequest();
@@ -690,13 +725,16 @@
             }});
     }
 
+    /**
+     * Check updated section.
+     * */
     function checkUpd(url){
         console.log("checking update at "+(new URL(url)).hostname);
         var request = new XMLHttpRequest();
         request.open("GET", url+new Date().getTime(), true);
         request.timeout = 5000;
         request.onreadystatechange = function() {
-            if (request.responseText !== null && request.readyState == 4) {
+            if (request.responseText !== null && request.readyState == 4 && (/<title>(.*?)<\/title>/m).exec(request.responseText) !== null) {
                 if(latestVersion !== (/<title>(.*?)<\/title>/m).exec(request.responseText)[1]){
                     latestVersion = (/<title>(.*?)<\/title>/m).exec(request.responseText)[1];
                     if(latestVersion!==currentVersion){

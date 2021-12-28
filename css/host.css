@@ -105,17 +105,6 @@
     z-index: 9999999;
 }
 
-#emoji-selection{
-    width: 300px;
-    height: 350px;
-    background-color: #fff;
-    position: fixed;
-    z-index: 9999999;
-    border-radius: 12px;
-    margin:0 auto;
-    overflow: hidden;
-}
-
 .emoji_sec{
     text-align: center;
     overflow-y: scroll;
@@ -131,9 +120,15 @@
     background-color: #aaa;
 }
 
-#emoji-tray{
+#emoji-selection{
     width: 300px;
-    height: 280px;
+    height: 350px;
+    background-color: #fff;
+    position: fixed;
+    z-index: 9999999;
+    border-radius: 12px;
+    margin:0 auto;
+    overflow: hidden;
 }
 
 #emoji-selection table{
@@ -143,6 +138,11 @@
 #emoji-selection td{
     width: 60px;
     height: 60px;
+}
+
+#emoji-tray{
+    width: 300px;
+    height: 280px;
 }
 
 #load{

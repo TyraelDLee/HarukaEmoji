@@ -12,14 +12,6 @@
     var zoomFactor = 1.0;
 
     function setSize(){
-        // if (labFeatures.indexOf("adaptive")!==-1){
-        //     if (window.innerWidth<1930)
-        //         zoomFactor = 1.0;
-        //     if (window.innerWidth>=1930 && window.innerWidth <2058)
-        //         zoomFactor = 15.0/16.0;
-        //     if(window.innerWidth>=2058)
-        //         zoomFactor = 3.0/4.0;
-        // }
         WINDOW_HEIGHT = window.innerHeight * zoomFactor;
         WINDOW_WIDTH = window.innerWidth * zoomFactor;
     }
@@ -370,7 +362,7 @@
         for (let i = 0; i < imgs.length; i++) {
             if(i % num_per_line === 0 && i !== 0)
                 html += "</tr><tr>";
-            html += "<td colspan="+imgs[i].getSpan()+" style=\" background:url("+ imgs[i].getURL() +") no-repeat bottom center; background-size: contain\"></td>";
+            html += "<td colspan="+imgs[i].getSpan()+" class=\"rua-emoji-icon\" style=\" background:url("+ imgs[i].getURL() +") no-repeat bottom center; background-size: contain\"></td>";
         }
         html += "</tr></tbody>";
         O1.innerHTML = html;
@@ -446,8 +438,12 @@
     var obs = new MutationObserver(function (m){
         m.forEach(function(mutation) {
             if (mutation.type === "attributes") {
-                labFeatures = labStyle.getAttribute("lab-style").split(",");
-                labFeatures.indexOf("dark")!==-1?darkMode(true):darkMode(false);
+                if(labStyle.getAttribute("lab-style")!==null){
+                    labFeatures = labStyle.getAttribute("lab-style").split(",");
+                    labFeatures.indexOf("dark")!==-1?darkMode(true):darkMode(false);
+                }else{
+                    darkMode(false);
+                }
             }
         });
     });
@@ -460,10 +456,15 @@
     function darkMode(on){
         if(on){
             selec.style.background = "#151515";
+            emojiPad.style.opacity = "0.8";
+            DanMuSub.style.opacity = "0.8";
             DanMuInput.style.background = "#151515";
             DanMuInput.style.borderColor = "#2b2b2b";
+
         }else{
             selec.style.removeProperty("background");
+            emojiPad.style.removeProperty("opacity");
+            DanMuSub.style.removeProperty("opacity");
             DanMuInput.style.removeProperty("background");
             DanMuInput.style.removeProperty("border-color");
         }

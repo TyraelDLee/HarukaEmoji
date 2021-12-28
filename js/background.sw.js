@@ -1,1 +1,0 @@
-importScripts('js/ADT.js', 'js/Jquery-3.5.1.js', 'js/PushHost.js');

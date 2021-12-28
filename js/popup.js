@@ -1,5 +1,5 @@
 !function (){
-    const currentVersion = "4.14.3";
+    const currentVersion = chrome.runtime.getManifest().version;
     const versionSection = document.getElementById("version");
     const updateSection = document.getElementById("update");
     const setting  = document.getElementsByClassName("setting")[0];

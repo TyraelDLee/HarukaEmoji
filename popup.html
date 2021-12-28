@@ -3,8 +3,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link href="./css/popup.css" type="text/css" rel="stylesheet">
-    <link href="./css/popupbtn.css" type="text/css" rel="stylesheet">
+    <link href="./css/popup.min.css" type="text/css" rel="stylesheet">
+    <link href="./css/popupbtn.min.css" type="text/css" rel="stylesheet">
 </head>
 <body>
 <div class="host">
@@ -12,7 +12,7 @@
     <div style="font-size: 14px">rua豹器</div>
     <div><span>b站状态: </span>
         <span class="tooltip" id="login" style="color:#aaa; font-size: 12px; position: relative">加载中
-            <span class="tooltiptext tooltiptext-middle">b站登录状态。插件要在b站登录后才能启用全部功能。</span>
+            <span class="tooltiptext tooltiptext-middle">b站登录状态。扩展要在b站登录后才能启用全部功能。</span>
         </span>
     </div>
     <div id="version" style="font-size: 12px"></div>
@@ -20,8 +20,8 @@
 </div>
 <hr size="1" color="#aaa">
 <div class="setting">
-    <div style="font-size: 20px; padding-top: 10px; padding-left: 15px">设置</div>
-    <div style="font-size: 16px; padding-top: 10px; padding-left: 25px">直播相关</div>
+    <div style="font-size: 20px; padding-top: 10px; padding-left: 15px; user-select: none">设置</div>
+    <div style="font-size: 16px; padding-top: 10px; padding-left: 25px; user-select: none">直播相关</div>
     <div class="host" style="margin: 0 25px;height: 160px;">
         <div class="button-host" id="btn1">
             <span class="tooltip">开播通知
@@ -113,7 +113,7 @@
             </section>
         </div>
     </div>
-    <div style="font-size: 16px; padding-top: 10px; padding-left: 25px">主站相关</div>
+    <div style="font-size: 16px; padding-top: 10px; padding-left: 25px; user-select: none">主站相关</div>
     <div class="host" style="margin: 0px 25px;height: 80px;">
         <div class="button-host" id="btn5">
             <span class="tooltip">B币兑换
@@ -128,7 +128,7 @@
         </div>
         <div class="button-host" id="btn8">
             <span class="tooltip">视频更新
-                <span class="tooltiptext tooltiptext-right">开启后在关注的up主发布新视频是推送通知。</span>
+                <span class="tooltiptext tooltiptext-right">开启后在关注的up主发布新视频时推送通知。</span>
             </span>
             <section class="button">
                 <div class="checkbox">
