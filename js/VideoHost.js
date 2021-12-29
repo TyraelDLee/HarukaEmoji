@@ -3,16 +3,14 @@
  * */
 !function (){
     const link = chrome.runtime.getURL("../images/haruka/abaaba.svg");
-    const vid = window.location["pathname"].replaceAll("/", "").replace("video","");// id for current page, av or bv.
+    var vid = window.location["pathname"].replaceAll("/", "").replace("video","");// id for current page, av or bv.
+    var aid = "";
     var bvid = "0";//bv id for current page. convert all id to bv id.
     var pid = new URLSearchParams(window.location["search"]).get("p")===null?0:new URLSearchParams(window.location["search"]).get("p")-1;// current part id.
     var cids = [];// actual id for each video (different parts).
     var acceptQn = {}; // quality info for current part.
     var vtitle = []; // video title, p title if page has more than 1 part.
-
-
-    var JCT = "-1";
-    var SESSDATA = "-1";
+    var downloadBlocks = [];
 
     var WINDOW_HEIGHT;
     var WINDOW_WIDTH;
@@ -22,12 +20,16 @@
 
     new MutationObserver(()=>{
         const p = new URLSearchParams(window.location["search"]).get("p")-1;
+        const nvid = window.location["pathname"].replaceAll("/", "").replace("video","");
         if(new URLSearchParams(window.location["search"]).get("p") !== null && pid!==p){
             pid = p;
             getQn(cids[p]);
         }
+        if(nvid!==null && nvid!==vid){
+            vid = nvid;
+            grabVideoInfo();
+        }
     }).observe(document, {subtree: true, childList: true});
-
 
 
     function setSize(){
@@ -36,8 +38,6 @@
     }
 
     setSize();
-    updateJCT();
-    setInterval(updateJCT, 3000);
 
     var moved = false;
     var absoluteLoc = [100,100,100];
@@ -48,6 +48,14 @@
 // popup window
     const selec = document.createElement("div");
 
+    const videoInfoSec = document.createElement("div");
+    videoInfoSec.setAttribute("id","rua-video-info");
+    videoInfoSec.style.paddingTop = "2px";
+    const videoInfo = document.createElement("div");
+    videoInfo.style.float = "left";
+    videoInfo.style.paddingLeft = "5px";
+    videoInfoSec.appendChild(videoInfo);
+
     const damakuTable = document.createElement("table");
     const damakuTray = document.createElement("div");
     damakuTray.setAttribute("id","rua-damaku");
@@ -56,6 +64,15 @@
     const downloadTray = document.createElement("div");
     downloadTray.setAttribute("id","rua-download");
     downloadTray.classList.add("emoji_sec");
+
+    const downloadTag = document.createElement("div");
+    downloadTag.setAttribute("style", "width: 290px; position: fixed; background: #fff");
+    downloadTag.innerHTML = "<div style='float: left; user-select: none; padding-left: 5px'><b>视频下载：</b></div>";
+    downloadTray.appendChild(downloadTag);
+
+    const downloadVideoTray = document.createElement("div");
+    downloadVideoTray.setAttribute("style", "margin: 20px 0 0 15px;");
+    downloadTray.appendChild(downloadVideoTray);
 
     function getQn(cid){
         $.ajax({
@@ -67,7 +84,9 @@
                 withCredentials: true
             },
             success: function (json) {
-                downloadTray.innerHTML = "";
+                videoInfo.innerHTML = "<b style='user-select: none'>视频ID:</b> "+ "av" + aid + " / "+bvid + " "+(pid-1+2)+ "p/"+cids.length+"p";
+                removeListener();
+                downloadVideoTray.innerHTML = "";
                 if(json["code"]===0){
                     for (let i = 0; i < json["data"]["accept_quality"].length; i++) {
                         acceptQn[json["data"]["accept_quality"][i]] = {
@@ -77,38 +96,61 @@
                         rua_download_block.setAttribute("id","qn-"+json["data"]["accept_quality"][i]);
                         rua_download_block.classList.add("rua-download-block");
                         rua_download_block.innerHTML = "<div class='rua-quality-des'>"+acceptQn[json["data"]["accept_quality"][i]]["accept_description"]+"</div>";
-                        downloadTray.appendChild(rua_download_block);
-
+                        downloadVideoTray.appendChild(rua_download_block);
+                        downloadBlocks.push(rua_download_block);
                         rua_download_block.onclick = () =>{
-                            clickHandler(bvid, cid, json["data"]["accept_quality"][i]).then(r=>{
-                                console.log(r);
-                                for (let j = 0; j < r.length; j++) {
-                                    r[j] = r[j]+"&requestFrom=ruaDL";
-                                    chrome.runtime.sendMessage({msg:"requestDownload", fileName:(vtitle[pid]+" "+json["data"]["accept_description"][i]+(r.length===1?"":"_p"+j)).replaceAll(" ", "_")});
-                                    const a = document.createElement('a');
-                                    document.body.appendChild(a)
-                                    a.style.display = 'none'
-                                    a.href = r[j];
-                                    a.target = "_Blank";
-                                    a.referrerPolicy = "unsafe-url";
-                                    a.download;
-                                    a.click();
-                                    document.body.removeChild(a);
-                                }
-                            });
+                            download(bvid, cid, json["data"]["accept_quality"][i], vtitle[pid]+" "+json["data"]["accept_description"][i]);
                         }
                     }
+                    downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40 + "px";
+                    getAudioOnly(cid);
                     console.log(acceptQn);
                 }
             }
         });
     }
 
-    async function clickHandler(bvid, cid, qn){
-        return await download(bvid,cid,qn);
+    function getAudioOnly(cid){
+        $.ajax({
+            url: "https://api.bilibili.com/x/player/playurl?bvid="+bvid+"&cid="+cid+"&qn=120&fnval=16",
+            type: "GET",
+            dataType: "json",
+            json: "callback",
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function (json) {
+                if(json["code"]===0 && json["data"]!==null){
+                    console.log(json["data"]["dash"]["audio"][0]["baseUrl"]);
+                    if(json["data"]["dash"]["audio"][0]["baseUrl"]!==null){
+                        let rua_download_block = document.createElement("div");
+                        rua_download_block.setAttribute("id","qn-sound");
+                        rua_download_block.classList.add("rua-download-block");
+                        rua_download_block.innerHTML = "<div class='rua-quality-des'>Sound Only</div>";
+                        downloadVideoTray.appendChild(rua_download_block);
+                        downloadBlocks.push(rua_download_block);
+                        downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40+"px";
+                        rua_download_block.onclick = () =>{
+                            const url = json["data"]["dash"]["audio"][0]["baseUrl"]+"&requestFrom=ruaDL";
+                            chrome.runtime.sendMessage({msg:"requestDownload", fileName:(vtitle[pid]+" SoundOnly").replaceAll(" ", "_")});
+                            const a = document.createElement('a');
+                            document.body.appendChild(a);
+                            a.style.display = 'none';
+                            a.href = url;
+                            a.target = "_Blank";
+                            a.referrerPolicy = "unsafe-url";
+                            a.download;
+                            a.click();
+                            document.body.removeChild(a);
+                        }
+                    }
+                }
+            }
+        });
     }
 
-    (function grabVideoInfo(){
+    grabVideoInfo();
+    function grabVideoInfo(){
         $.ajax({
             url: "https://api.bilibili.com/x/web-interface/view?"+abv(vid),
             type: "GET",
@@ -119,19 +161,22 @@
             },
             success: function (json) {
                 pid = pid<0?0:pid;
-                if(json["code"]===0 || json["data"].length>0){
+                cids = [];
+                vtitle = [];
+                if(json["code"]===0){
+                    aid = json["data"]["aid"];
                     bvid = json["data"]["bvid"];
                     for (let i = 0; i < json["data"]["pages"].length; i++) {
                         cids.push(json["data"]["pages"][i]["cid"]);
                         (json["data"]["pages"].length===1)?vtitle.push(json["data"]["title"]):vtitle.push(json["data"]["pages"][i]["part"]);
                     }
-                    console.log(pid);
+                    console.log(bvid);
                     console.log(cids);
                     getQn(cids[pid]);
                 }
             }
         });
-    })();
+    }
 
     if(document.getElementsByTagName("article").length === 0) renderPopup();
     function renderPopup(){
@@ -148,6 +193,7 @@
         selec.style.display = "none";
         selec.innerHTML = "";
 
+        selec.appendChild(videoInfoSec);
         selec.appendChild(damakuTray);
         selec.appendChild(downloadTray);
 
@@ -240,15 +286,6 @@
      */
     function isMoved(oX, oY, cX, cY){return Math.abs(oX - cX) === 0 && Math.abs(oY - cY) === 0;}
 
-    function updateJCT(){
-        if(typeof chrome.app.isInstalled!=="undefined") {
-            chrome.runtime.sendMessage({msg: "get_LoginInfo"}, function (lf) {
-                JCT = lf.res.split(",")[0];
-                SESSDATA = lf.res.split(",")[1];
-            });
-        }
-    }
-
     function getAbsLocation(id){
         let e = document.getElementById(id);
         let abs = [e.offsetLeft, e.offsetTop];
@@ -318,25 +355,45 @@
         }
     }
 
-    function download(vid, cid, qn){
-        return new Promise(function (url){
-            let urlList = [];
-            let grabDownloadURL = new XMLHttpRequest();
-            grabDownloadURL.withCredentials = true;
-            grabDownloadURL.open("GET","https://api.bilibili.com/x/player/playurl?bvid="+bvid+"&cid="+cid+"&qn="+qn+"&type=flv&fourk=1");
-            grabDownloadURL.send(null);
-            grabDownloadURL.onload = function (e){
-               if(grabDownloadURL.status===200) {
-                   if(JSON.parse(grabDownloadURL.responseText)["code"]===0 && JSON.parse(grabDownloadURL.responseText)["data"]["durl"]!==null){
-                       for (let i = 0; i < JSON.parse(grabDownloadURL.responseText)["data"]["durl"].length; i++) {
-                            urlList.push(JSON.parse(grabDownloadURL.responseText)["data"]["durl"][i]["url"]);
-                       }
-                   }
-               }
-                url(urlList);
+    function download(vid, cid, qn, fileName){
+        let grabDownloadURL = new XMLHttpRequest();
+        grabDownloadURL.withCredentials = true;
+        grabDownloadURL.open("GET","https://api.bilibili.com/x/player/playurl?bvid="+bvid+"&cid="+cid+"&qn="+qn+"&type=flv&fourk=1");
+        grabDownloadURL.send(null);
+        grabDownloadURL.onload = function (e){
+            if(grabDownloadURL.status===200) {
+                if(JSON.parse(grabDownloadURL.responseText)["code"]===0 && JSON.parse(grabDownloadURL.responseText)["data"]["durl"]!==null){
+                    downloadSegments(JSON.parse(grabDownloadURL.responseText)["data"]["durl"], fileName, 0, JSON.parse(grabDownloadURL.responseText)["data"]["durl"].length);
+                }
             }
+        }
+    }
 
-        });
+    function downloadSegments(durl, fileName, currentLocation, totalSize){
+        const url = durl[currentLocation]["url"]+"&requestFrom=ruaDL";
+        chrome.runtime.sendMessage({msg:"requestDownload", fileName:(fileName+(durl.length===1?"":"_p"+currentLocation)).replaceAll(" ", "_")});
+        const a = document.createElement('a');
+        document.body.appendChild(a);
+        a.style.display = 'none';
+        a.href = url;
+        a.target = "_Blank";
+        a.referrerPolicy = "unsafe-url";
+        a.download;
+        a.click();
+        document.body.removeChild(a);
+        currentLocation=currentLocation+1;
+        if(currentLocation<totalSize){
+            setTimeout(()=>{
+                downloadSegments(durl, fileName, currentLocation, totalSize);
+            }, 2000);
+        }
+    }
+
+    function removeListener(){
+        for (let i = 0; i < downloadBlocks.length; i++) {
+            downloadBlocks[i].onclick = null;
+        }
+        downloadBlocks = [];
     }
 
     function abv(str){

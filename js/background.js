@@ -607,7 +607,9 @@
 
     chrome.webRequest.onHeadersReceived.addListener((details)=>{
         if(new URLSearchParams(new URL(details["url"])["search"]).get("requestFrom")==="ruaDL"){
+            console.log("rename");
             let fileFormat = new URL(details["url"])["pathname"].substr(new URL(details["url"])["pathname"].length-4,4);
+            if(fileFormat === ".m4s") fileFormat = ".mp3";
             details.responseHeaders.push({name:"Content-Disposition", value:"attachment; filename="+downloadFileName+fileFormat+""});
         }
         return {responseHeaders: details.responseHeaders};

@@ -1,6 +1,10 @@
+#rua-video-info{
+    height: 20px;
+}
+
 #rua-damaku{
     width: 300px;
-    height: 220px;
+    height: 200px;
     background: #0f0;
 }
 
@@ -16,7 +20,7 @@
 .rua-download-block{
     background: #FB7299;
     height: 30px;
-    width: 90px;
+    width: 80px;
     float: left;
     margin: 4px;
     cursor: pointer;
@@ -25,6 +29,12 @@
 .rua-quality-des{
     color: #fff;
     padding-top: 6px;
+    user-select: none;
+}
+
+#emoji-selection{
+    border-radius: 5px;
+    box-shadow: #ddd 0 0 5px;
 }
 
 #rua-download{
