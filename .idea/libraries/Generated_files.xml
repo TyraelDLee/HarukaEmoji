@@ -2,6 +2,7 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/js/ADT.min.js" />
         <item url="file://$PROJECT_DIR$/js/AfterLoad.min.js" />
         <item url="file://$PROJECT_DIR$/js/Video.min.js" />
         <item url="file://$PROJECT_DIR$/js/VideoHost.min.js" />
@@ -9,10 +10,11 @@
         <item url="file://$PROJECT_DIR$/js/background.min.js" />
         <item url="file://$PROJECT_DIR$/js/haruka.min.js" />
         <item url="file://$PROJECT_DIR$/js/popup.min.js" />
-        <item url="file://$PROJECT_DIR$/js/protobuf.min.min.js" />
+        <item url="file://$PROJECT_DIR$/js/protobuf.min.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
+      <root url="file://$PROJECT_DIR$/js/ADT.min.js" />
       <root url="file://$PROJECT_DIR$/js/AfterLoad.min.js" />
       <root url="file://$PROJECT_DIR$/js/Video.min.js" />
       <root url="file://$PROJECT_DIR$/js/VideoHost.min.js" />
@@ -20,7 +22,7 @@
       <root url="file://$PROJECT_DIR$/js/background.min.js" />
       <root url="file://$PROJECT_DIR$/js/haruka.min.js" />
       <root url="file://$PROJECT_DIR$/js/popup.min.js" />
-      <root url="file://$PROJECT_DIR$/js/protobuf.min.min.js" />
+      <root url="file://$PROJECT_DIR$/js/protobuf.min.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

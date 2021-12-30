@@ -3,6 +3,7 @@
  * */
 !function (){
     const currentVersion = chrome.runtime.getManifest().version;
+    const crc = new CRC32();
     var latestVersion = currentVersion;
     var checkin;
     var exchangeBcoin;
@@ -96,6 +97,17 @@
             if(request.msg === "updateStatus") {sendResponse({res:updateAvailable, address:availableBranch});}
             if(request.msg === "popupfired"){setBadge("rua豹器", "");}
             if(request.msg === "requestDownload"){downloadFileName = request.fileName;}
+            if(request.msg === "requestDanmaku"){
+                let danmakuBulider = new DanmakuArr();
+                for (let i = 0; i < request.danmakuObj.length; i++) {
+                    if(request.danmakuObj[i]["progress"]===undefined)
+                        request.danmakuObj[i]["progress"] = 0;
+                    danmakuBulider.push(new DanmakuObj(convertMSToS(request.danmakuObj[i]["progress"]), crc.crack(request.danmakuObj[i]["midHash"]), request.danmakuObj[i]["content"]))
+                }
+                danmakuBulider.sort(1000);
+                console.log(danmakuBulider)
+                sendResponse({danmakuContent: danmakuBulider, danmakuPoolSize: request.danmakuObj.length});
+            }
             if(request.msg.includes("QNV")){
                 QNV = request.msg.split("?")[1];
                 sendResponse({res:"ok"});
@@ -103,6 +115,17 @@
             return true;
         }
     );
+
+    function convertMSToS(time){
+        time = time / 1000;
+        let secs = Math.floor(time % 60);
+        let mint = Math.floor((time / 60) % 60);
+        let hour = Math.floor((time / 3600) % 60);
+        hour = (hour === 0)?"":((hour < 10 && hour >0)?"0"+hour:hour)+":";
+        mint = (mint < 10)?"0"+mint:mint;
+        secs = (secs < 10)?"0"+secs:secs;
+        return hour+mint+":"+secs;
+    }
 
     chrome.runtime.onConnect.addListener(function (p){
         if(p.name==="popup"){
@@ -775,8 +798,9 @@
         chrome.browserAction.setTitle({title: title});
         chrome.browserAction.setBadgeText({text: text});
     }
-}();
 
+
+}();
 // function getUnread(){
 //     let totalUnread = 0;
 //     $.ajax({

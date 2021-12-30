@@ -241,3 +241,165 @@ ReplyPayload.prototype.isSame = function (replyPayload){
 ReplyPayload.prototype.isOlderThan = function (str){
     return parseInt(this.time)>parseInt(str);
 }
+
+
+function DanmakuObj(time, mid, content){
+    this.time = time;
+    this.mid = mid;
+    this.content = content;
+}
+
+function DanmakuArr(){
+    this.list = []
+    this.size = 0;
+}
+
+DanmakuArr.prototype.push = function (danmakuObj){
+    this.list.push(danmakuObj);
+    this.size++;
+}
+
+DanmakuArr.prototype.concat = function (danmakuArrObj){
+    this.list = this.list.concat(danmakuArrObj.list);
+    this.size+=danmakuArrObj.size;
+}
+
+DanmakuArr.prototype.get = function (index){
+    return this.list[index];
+}
+
+DanmakuArr.prototype.max = function (){
+    let local_Max = 0;
+    for (let i = 0; i < this.list.length; i++) {
+        if (local_Max < this.list[i].time)
+            local_Max = this.list[i].time;
+    }
+    return local_Max;
+}
+
+DanmakuArr.prototype.min = function (){
+    let local_Min = Number.MAX_VALUE;
+    for (let i = 0; i < this.list.length; i++) {
+        if (local_Min > this.list[i].time)
+            local_Min = this.list[i].time
+    }
+    return local_Min;
+}
+
+DanmakuArr.prototype.sort = function (num){
+    function swap(arr, i, j){
+        const t = arr[i];
+        arr[i] = arr[j];
+        arr[j] = t;
+    }
+    const max = this.max();
+    const min = this.min();
+    const buc = [];
+    const bucSize = Math.floor((max - min) / num) + 1;
+    for (let i = 0; i < this.size; i++) {
+        const index = ~~(this.list[i].time / bucSize);
+        !buc[index] && (buc[index] = []);
+        buc[index].push(this.list[i]);
+        let localSize = buc[index].length;
+        while (localSize > 0){
+            if (buc[index][localSize]!==undefined && buc[index][localSize].time < buc[index][localSize - 1].time)
+                swap(buc[index], localSize, localSize - 1);
+            localSize--;
+        }
+    }
+    let wrap = [];
+    for (let i = 0; i < buc.length; i++) {
+        buc[i] && ((wrap = wrap.concat(buc[i])));
+    }
+    this.list = wrap;
+}
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+     * License, v. 2.0. If a copy of the MPL was not distributed with this
+     * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+function CRC32(){
+    this.crc32Table = new Uint32Array(256);
+    this.initCrc32Table(this.crc32Table);
+    this.rainbowTableHash = new Uint32Array(100000);
+    this.rainbowTableValue = new Uint32Array(100000);
+    let fullHashCache = new Uint32Array(100000),
+        shortHashBuckets = new Uint32Array(65537);
+    // Initialize the rainbow Table
+    for (let i = 0; i < 100000; i++) {
+        let hash = this.compute(i) >>> 0;
+        fullHashCache[i] = hash;
+        shortHashBuckets[hash >>> 16]++;
+    }
+    let runningSum = 0;
+    this.shortHashBucketStarts = shortHashBuckets.map((n) => runningSum += n);
+    for (let i = 0; i < 100000; i++) {
+        let idx = --this.shortHashBucketStarts[fullHashCache[i] >>> 16];
+        this.rainbowTableHash[idx] = fullHashCache[i];
+        this.rainbowTableValue[idx] = i;
+    }
+}
+CRC32.prototype.initCrc32Table = function (table){
+    for (let i = 0; i < 256; i++) {
+        let currCrc = i;
+        for (let j = 0; j < 8; j++) {
+            if (currCrc & 1) {
+                currCrc = (currCrc >>> 1) ^ 0xEDB88320;
+            } else {
+                currCrc >>>= 1;
+            }
+        }
+        table[i] = currCrc;
+    }
+}
+CRC32.prototype.compute = function (input, addPadding = false){
+    let currCrc = 0;
+    for (let digit of input.toString()) {
+        currCrc = this.crc32Update(currCrc, Number(digit));
+    }
+    if (addPadding) {
+        for (let i = 0; i < 5; i++) {
+            currCrc = this.crc32Update(currCrc, 0);
+        }
+    }
+    return currCrc;
+}
+CRC32.prototype.crack = function (hash){
+    let candidates = [];
+    let hashVal = ~Number('0x' + hash) >>> 0;
+    let baseHash = 0xFFFFFFFF;
+
+    for (let digitCount = 1; digitCount < 10; digitCount++) {
+        baseHash = this.crc32Update(baseHash, 0x30); // 0x30: '0'
+        if (digitCount < 6) {
+            // Direct lookup
+            candidates = candidates.concat(this.lookup(hashVal ^ baseHash));
+        } else {
+            // Lookup with prefix
+            let startPrefix = Math.pow(10, digitCount - 6);
+            let endPrefix = Math.pow(10, digitCount - 5);
+
+            for (let prefix = startPrefix; prefix < endPrefix; prefix++) {
+                for (let postfix of this.lookup(hashVal ^ baseHash ^
+                    this.compute(prefix, true))) {
+                    candidates.push(prefix * 100000 + postfix);
+                }
+            }
+        }
+    }
+    return candidates;
+}
+CRC32.prototype.crc32Update = function (currCrc, code) {
+    return (currCrc >>> 8) ^ this.crc32Table[(currCrc ^ code) & 0xFF];
+}
+CRC32.prototype.lookup = function (hash) {
+    hash >>>= 0;
+    let candidates = [];
+    let shortHash = hash >>> 16;
+    for (let i = this.shortHashBucketStarts[shortHash];
+         i < this.shortHashBucketStarts[shortHash + 1]; i++) {
+        if (this.rainbowTableHash[i] === hash) {
+            candidates.push(this.rainbowTableValue[i]);
+        }
+    }
+    return candidates;
+}

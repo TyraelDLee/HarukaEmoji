@@ -2,13 +2,16 @@
     height: 20px;
 }
 
-#rua-damaku{
+#rua-danmaku{
     width: 300px;
     height: 200px;
-    background: #0f0;
+    margin-top: 22px;
+
+    text-align: left;
+    position: relative;
 }
 
-#rua-damaku table{
+#rua-danmaku table{
     margin: 0 auto;
 }
 
@@ -32,6 +35,32 @@
     user-select: none;
 }
 
+.rua-danmaku{
+    width: 195px;
+    padding-right: 5px;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+    word-break: keep-all;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.rua-danmaku-content{
+    height: 20px;
+    width: 100%;
+    display: flex;
+    position: absolute;
+}
+
+.rua-danmaku-time{
+    width: 45px;
+    padding-right: 5px;
+}
+
+.rua-mid{
+    width: 50px;
+}
+
 #emoji-selection{
     border-radius: 5px;
     box-shadow: #ddd 0 0 5px;
@@ -39,6 +68,7 @@
 
 #rua-download{
     width: 300px;
-    height: 130px;
+    height: 80px;
+    margin-top: 22px;
 }
 
