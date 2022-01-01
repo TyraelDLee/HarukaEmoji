@@ -59,6 +59,13 @@ rua豹器4.14来啦 <br>
 [bilibili](https://t.bilibili.com/592584948593832922), 不过都来这儿了上面那个链接应该就够了吧<img src="https://github.com/TyraelDLee/HarukaEmoji/blob/main/images/haruka/5835.webp" width="30" height="30"/>。
 
 ## 版本记录
+### ver 5.0
+- 添加了视频页面的视频/音轨下载功能。
+- 添加了视频页面的弹幕查询功能。
+- 优化了直播间深色模式的支持。
+- 更新了勋章查询的API，修复了勋章佩戴失效的问题。
+- 修复了一些问题。
+
 ### ver 4.14.3
 - 将Haruna对高分辨率屏幕做了支持。
 - 添加了检测更新版本功能。

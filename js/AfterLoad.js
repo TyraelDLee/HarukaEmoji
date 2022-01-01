@@ -10,6 +10,7 @@
     var JCT = "-1";
     var MEDAL_LIST = new MedalList();
     var uid = "";
+    var mid = "";
     var room_id = window.location["pathname"].replaceAll("/", "").replace("blanc","");
     var exp =new RegExp("^[0-9]*$");
     chrome.storage.sync.get(["qn"], function(result){qn = result.qn});
@@ -57,7 +58,7 @@
             },
             success: function (json) {
                 if(json["code"] === 0){
-                    console.log(json["data"]["uid"]);
+                    mid = json["data"]["uid"];
                     getMedal(json["data"]["uid"]);
                 }
 
@@ -209,6 +210,6 @@
     })();
 
     window.addEventListener("focus", function (){
-        wareMedal(MEDAL_LIST.get(room_id),false);
+        wareMedal(MEDAL_LIST.getByUid(mid),false);
     });
 }();
