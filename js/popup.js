@@ -28,20 +28,18 @@
         versionSection.innerHTML = "ver. <i>"+currentVersion+"</i>";
     })();
     function updateUID(){
-        if(typeof chrome.app.isInstalled!=="undefined"){
-            chrome.runtime.sendMessage({ msg: "get_UUID" },function(uid){UUID = uid.res;
-                let logText = "";
-                if(UUID === -1){
-                    logText = "未登录";
-                    loginInfo.style.color = "#f44336";
-                }else if(UUID !== -2){
-                    logText = "已登录";
-                    loginInfo.style.color = "#6dc781";
-                }
-                logText+="<span class=\"tooltiptext tooltiptext-middle\">b站登录状态。插件要在b站登录后才能启用全部功能。</span>";
-                loginInfo.innerHTML = logText;
-            });
-        }
+        chrome.runtime.sendMessage({ msg: "get_UUID" },function(uid){UUID = uid.res;
+            let logText = "";
+            if(UUID === -1){
+                logText = "未登录";
+                loginInfo.style.color = "#f44336";
+            }else if(UUID !== -2){
+                logText = "已登录";
+                loginInfo.style.color = "#6dc781";
+            }
+            logText+="<span class=\"tooltiptext tooltiptext-middle\">b站登录状态。插件要在b站登录后才能启用全部功能。</span>";
+            loginInfo.innerHTML = logText;
+        });
     }
 
     setInterval(updateUID,1000);

@@ -9,7 +9,7 @@
     var hiddenEntry = false;
     var JCT = "-1";
     var MEDAL_LIST = new MedalList();
-    var mp = 1;
+    var uid = "";
     var room_id = window.location["pathname"].replaceAll("/", "").replace("blanc","");
     var exp =new RegExp("^[0-9]*$");
     chrome.storage.sync.get(["qn"], function(result){qn = result.qn});
@@ -23,15 +23,16 @@
     });
 
     (function getUserInfo(){
-        if(typeof chrome.app.isInstalled!=="undefined") {
-            chrome.runtime.sendMessage({msg: "get_LoginInfo"}, function (lf) {
-                JCT = lf.res.split(",")[0];
-            });
-        }
+        chrome.runtime.sendMessage({msg: "get_LoginInfo"}, function (lf) {
+            JCT = lf.res.split(",")[0];
+        });
+        chrome.runtime.sendMessage({msg: "get_UUID"}, (id)=>{
+            uid = id.res;
+        })
     })();
 
     setTimeout(function (){
-        if(exp.test(room_id) && room_id.length>0) getMedal();
+        if(exp.test(room_id) && room_id.length>0) getRoomInfo();
         if(qn && exp.test(room_id) && room_id.length>0 && document.getElementsByTagName("article").length === 0)q(qnv);
         if(hiddenEntry && JCT !== "-1" && exp.test(room_id) && room_id.length>0 && document.getElementsByTagName("article").length === 0)hideEntry();
     }, 10);
@@ -45,9 +46,9 @@
                 document.getElementById("chat-items").getElementsByClassName("important-prompt-item")[0].style.display = "none";}
     }
 
-    function getMedal(){
+    function getRoomInfo(){
         $.ajax({
-            url: "https://api.live.bilibili.com/fans_medal/v5/live_fans_medal/iApiMedal?page="+mp,
+            url: "http://api.live.bilibili.com/room/v1/Room/room_init?id="+room_id,
             type: "GET",
             dataType: "json",
             json: "callback",
@@ -55,20 +56,31 @@
                 withCredentials: true
             },
             success: function (json) {
-                let data = json["data"];
-                if(data.length !== 0){
-                    let medal_list = data["fansMedalList"];
-                    for (let i = 0; i < medal_list.length; i++)
-                        MEDAL_LIST.push(new Medal(medal_list[i]["medal_id"]+"", medal_list[i]["roomid"]+"", medal_list[i]["target_id"]+"", medal_list[i]["medalName"], medal_list[i]["medal_level"], medal_list[i]["medal_color_start"], medal_list[i]["medal_color_end"], medal_list[i]["medal_color_border"]));
-                    if(data["pageinfo"]["totalpages"] === mp){
-                        console.log("load list complete");
-                        if(MEDAL_LIST.get(room_id).MID !== "-1"){
-                            wareMedal(MEDAL_LIST.get(room_id), true);
-                        }
-                    }else{
-                        mp++;
-                        getMedal();
+                if(json["code"] === 0){
+                    console.log(json["data"]["uid"]);
+                    getMedal(json["data"]["uid"]);
+                }
+
+            }
+        });
+    }
+    function getMedal(mid){
+        $.ajax({
+            url: "https://api.live.bilibili.com/xlive/web-ucenter/user/MedalWall?target_id="+uid,
+            type: "GET",
+            dataType: "json",
+            json: "callback",
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function (json) {
+                if(json["code"] === 0){
+                    let medalList = json["data"]["list"];
+                    for (let i = 0; i < medalList.length; i++) {
+                        MEDAL_LIST.push(new Medal(medalList[i]["medal_info"]["medal_id"],medalList[i]["medal_info"]["target_id"],medalList[i]["medal_info"]["target_id"],medalList[i]["medal_info"]["medal_name"],medalList[i]["medal_info"]["level"], medalList[i]["medal_info"]["medal_color_start"], medalList[i]["medal_info"]["medal_color_end"], medalList[i]["medal_info"]["medal_color_border"]))
                     }
+                    //console.log(MEDAL_LIST.getByUid(mid));
+                    wareMedal(MEDAL_LIST.getByUid(mid), true);
                 }
             }
         });

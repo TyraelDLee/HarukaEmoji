@@ -301,12 +301,10 @@
     }
 
     function updateJCT(){
-        if(typeof chrome.app.isInstalled!=="undefined") {
-            chrome.runtime.sendMessage({msg: "get_LoginInfo"}, function (lf) {
-                JCT = lf.res.split(",")[0];
-                SESSDATA = lf.res.split(",")[1];
-            });
-        }
+        chrome.runtime.sendMessage({msg: "get_LoginInfo"}, function (lf) {
+            JCT = lf.res.split(",")[0];
+            SESSDATA = lf.res.split(",")[1];
+        });
     }
 
     function getTimeSnap(){return Math.round(Date.now()/1000);}

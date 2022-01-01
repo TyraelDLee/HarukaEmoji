@@ -105,7 +105,6 @@
                     danmakuBulider.push(new DanmakuObj(convertMSToS(request.danmakuObj[i]["progress"]), crc.crack(request.danmakuObj[i]["midHash"]), request.danmakuObj[i]["content"]))
                 }
                 danmakuBulider.sort(danmakuBulider.size-1);
-                console.log(danmakuBulider)
                 sendResponse({danmakuContent: danmakuBulider, danmakuPoolSize: request.danmakuObj.length});
             }
             if(request.msg === "requestUserInfo"){
@@ -648,7 +647,6 @@
             let fileFormat = new URL(details["url"])["pathname"].substr(new URL(details["url"])["pathname"].length-4,4);
             if(fileFormat === ".m4s") fileFormat = ".mp3";
             details.responseHeaders.push({name:"Content-Disposition", value:"attachment; filename=\""+downloadFileName+fileFormat+"\"; filename*=\"UTF-8''"+downloadFileName+fileFormat+"\""});
-            console.log(details.responseHeaders);
         }
         return {responseHeaders: details.responseHeaders};
     }, {urls: ["*://*.bilivideo.com/upgcxcode/*", "*://*.akamaized.net/upgcxcode/*"]}, ["responseHeaders", 'blocking']);

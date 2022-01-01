@@ -108,6 +108,7 @@
 .emoji_sec{
     text-align: center;
     overflow-y: scroll;
+    scrollbar-width:thin;
 }
 
 .emoji_sec::-webkit-scrollbar{
