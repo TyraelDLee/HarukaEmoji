@@ -243,7 +243,7 @@
      * */
 
     function getQn(cid){
-        videoInfo.innerHTML = "<b style='user-select: none'>视频ID: </b> "+ "<span>av" + aid + "</span><span style='user-select: none'> / </span><span>"+bvid + "</span>";
+        videoInfo.innerHTML = "<b style='user-select: none'>视频ID：</b> "+ "<span>av" + aid + "</span><span style='user-select: none'> / </span><span>"+bvid + "</span>";
         pInfo.innerText = (pid-1+2)+ "p/"+cids.length+"p";
         removeListener();
         downloadVideoTray.innerHTML = "";
@@ -300,7 +300,6 @@
             },
             success: function (json) {
                 if(json["code"]===0 && json["data"]!==null){
-                    console.log(json["data"]["dash"]["audio"][0]["baseUrl"]);
                     if(json["data"]["dash"]["audio"][0]["baseUrl"]!==null){
                         let rua_download_block = document.createElement("div");
                         rua_download_block.setAttribute("id","qn-sound");
@@ -469,10 +468,15 @@
     danmakuTray.onscroll = function (e){
         if(danmakuArr.size>=20){
             let disposeLengthTop = Math.floor(e.target.scrollTop / 20);
-            danmakuArea.innerHTML = "";
-            for (let i = 0; i < 20; i++) {
-                if(disposeLengthTop+i<danmakuArr.size){
-                    danmakuArea.appendChild(drawDanmaku(danmakuArr.get(i+disposeLengthTop).time, danmakuArr.get(i+disposeLengthTop).content, danmakuArr.get(i+disposeLengthTop).mid,i+disposeLengthTop));
+            while (danmakuArea.hasChildNodes()){
+                danmakuArea.firstChild.onmousedown = null;
+                //mind garbage collection.
+                danmakuArea.removeChild(danmakuArea.firstChild);
+            }
+            //danmakuArea.innerHTML = "";
+            for (let i = 0; i < 25; i++) {
+                if(disposeLengthTop+i-5<danmakuArr.size && disposeLengthTop+i-5>=0){
+                    danmakuArea.appendChild(drawDanmaku(danmakuArr.get(i+disposeLengthTop-5).time, danmakuArr.get(i+disposeLengthTop-5).content, danmakuArr.get(i+disposeLengthTop-5).mid,i+disposeLengthTop-5));
                 }
             }
         }
@@ -480,9 +484,8 @@
 
     function drawDanmaku(time, content, mid, index){
         const div = document.createElement("div");
-        const spanTime = document.createElement("a");
+        const spanTime = document.createElement("span");
         const spanContent = document.createElement("span");
-        const spanMid = document.createElement("span");
         const timearr = time.split(":");
         const timetable = [1,60,3600];
         let jumpTo = 0;
@@ -500,11 +503,116 @@
         spanContent.classList.add("rua-danmaku");
         spanContent.innerText=content;
         div.appendChild(spanContent);
-        spanMid.setAttribute("class","rua-mid rua-danmaku");
-        spanMid.setAttribute("title","用户ID:"+mid);
-        spanMid.innerText=mid;
-        div.appendChild(spanMid);
+
+        div.onmousedown = function (e){
+            if(e.button === 0)
+                drawUserInfoDanmaku(document.body, mid, selec.style.left.replace("px","")-1+1,e.clientY-140, index);
+        }
         return div;
+    }
+
+    function drawUserInfoDanmaku(parent, mid, posX, posY, index){
+        let bg = document.createElement("div");
+        bg.setAttribute("class", "rua-danmaku-user-info");
+        bg.setAttribute("style", "top:"+posY+"px;"+"left:"+posX+"px;")
+        let div = document.createElement("div");
+        div.setAttribute("class", "rua-danmaku-user-host");
+        //div.innerText = mid;
+        let controlBar = document.createElement("div");
+        controlBar.setAttribute("id", "rua-user-control-bar");
+
+        let controlText = document.createElement("b");
+        controlText.innerText = "用户信息";
+        controlText.style.paddingLeft = "20px";
+
+        let controlBtn = document.createElement("div");
+        controlBtn.setAttribute("style","position: absolute; top: 2px; left: 280px; width: 14px; height: 14px;");
+        controlBtn.innerHTML = "<svg width=\"14\" height=\"14\"><circle cx=\"7\" cy=\"7\" r=\"7\" fill=\"#f16c59\"/><line class=\"rua-cross\" x1=\"4\" y1=\"4\" x2=\"10.5\" y2=\"10.5\" style=\"stroke:#f16c59;stroke-width:1\"/><line class=\"rua-cross\" x1=\"10.5\" y1=\"4\" x2=\"4\" y2=\"10.5\" style=\"stroke:#f16c59;stroke-width:1\"/></svg>"
+
+        controlBar.appendChild(controlText);
+        controlBar.appendChild(controlBtn);
+
+        if(document.body.getElementsByClassName("rua-danmaku-user-info").length>0){
+            controlBtn.onmouseenter = null;
+            controlBtn.onmouseleave = null;
+            controlBtn.onmousedown = null;
+            document.getElementById("app").onmousedown = null;
+            for (let i = 0; i < document.body.getElementsByClassName("rua-danmaku-user-info").length; i++) {
+                document.body.removeChild(document.body.getElementsByClassName("rua-danmaku-user-info")[i]);
+            }
+        }
+
+        controlBtn.onmouseenter = () =>{
+            for (let i = 0; i < controlBtn.getElementsByClassName("rua-cross").length; i++) {
+                controlBtn.getElementsByClassName("rua-cross")[i].style.stroke = "#A0000A";
+            }
+        }
+        controlBtn.onmouseleave = () =>{
+            for (let i = 0; i < controlBtn.getElementsByClassName("rua-cross").length; i++) {
+                controlBtn.getElementsByClassName("rua-cross")[i].style.stroke = "#f16c59";
+            }
+        }
+        controlBtn.onmousedown = (e) =>{
+            if(e.button === 0){
+                controlBtn.onmouseenter = null;
+                controlBtn.onmouseleave = null;
+                controlBtn.onmousedown = null;
+                document.getElementById("app").onmousedown = null;
+                parent.removeChild(bg);
+            }
+        }
+        const userHost = document.createElement("div");
+        userHost.setAttribute("id", "rua-user-host");
+        userHost.classList.add("emoji_sec");
+        for (let i = 0; i < mid.length; i++) {
+            chrome.runtime.sendMessage({msg:"requestUserInfo", mid:mid[i]}, (callback)=>{
+                const user = document.createElement("div");
+                user.setAttribute("class", "rua-user");
+                const face = document.createElement("a");
+                const faceIcon = document.createElement("img");
+                face.href = "https://space.bilibili.com/"+mid[i];
+                face.target = "_Blank";
+                face.setAttribute("class","rua-user-avatar");
+                faceIcon.classList.add("bili-avatar-img");
+                faceIcon.setAttribute("src", callback.response["face"].replace("http://","https://"));
+                face.appendChild(faceIcon);
+                user.appendChild(face);
+
+                const name = document.createElement("div");
+                name.setAttribute("style", "padding-left: 50px; padding-top: 9px;min-width: 100px;");
+                const nameLink = document.createElement("a");
+                nameLink.href = "https://space.bilibili.com/"+mid[i];
+                nameLink.target = "_Blank";
+                const uname = document.createElement("b");
+                uname.innerText=callback.response["name"];
+                const uid = document.createElement("a");
+                uid.href = "https://space.bilibili.com/"+mid[i];
+                uid.target = "_Blank";
+                uid.innerText = "uid: "+mid[i];
+
+                const white = document.createElement("br");
+                nameLink.appendChild(uname);
+                name.appendChild(nameLink);
+                name.appendChild(white);
+                name.appendChild(uid);
+                user.appendChild(name);
+
+                userHost.appendChild(user);
+            });
+        }
+
+        div.appendChild(controlBar);
+        div.appendChild(userHost);
+
+        bg.appendChild(div);
+        parent.appendChild(bg);
+        document.getElementById("app").onmousedown = () =>{
+            controlBtn.onmouseenter = null;
+            controlBtn.onmouseleave = null;
+            controlBtn.onmousedown = null;
+            document.getElementById("app").onmousedown = null;
+            parent.removeChild(bg);
+        }
     }
 
     function findId(DOMObj, className, idName){

@@ -247,6 +247,10 @@ function DanmakuObj(time, mid, content){
     this.time = time;
     this.mid = mid;
     this.content = content;
+    this.name = [];
+}
+DanmakuObj.prototype.setName = function (name){
+    this.name = name;
 }
 
 function DanmakuArr(){

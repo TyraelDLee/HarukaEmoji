@@ -79,7 +79,7 @@
 
     /**
      * Communicate with content script, since content script
-     * cannot load some info, like cookie.
+     * cannot load some info.
      * */
     chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
             if(request.msg === "get_LoginInfo"){
@@ -104,9 +104,24 @@
                         request.danmakuObj[i]["progress"] = 0;
                     danmakuBulider.push(new DanmakuObj(convertMSToS(request.danmakuObj[i]["progress"]), crc.crack(request.danmakuObj[i]["midHash"]), request.danmakuObj[i]["content"]))
                 }
-                danmakuBulider.sort(1000);
+                danmakuBulider.sort(danmakuBulider.size-1);
                 console.log(danmakuBulider)
                 sendResponse({danmakuContent: danmakuBulider, danmakuPoolSize: request.danmakuObj.length});
+            }
+            if(request.msg === "requestUserInfo"){
+                fetch("https://api.bilibili.com/x/web-interface/card?mid="+request.mid+"&photo=true", {
+                    method:"GET",
+                    headers: {'Accept': 'application/json'},
+                    credentials: 'include',
+                    body: null
+                })
+                    .then(res => res.json())
+                    .then(result=>{
+                        if(result["code"]===0 && result["data"]!==null){
+                            sendResponse({response:result["data"]["card"]});
+                        }
+                    });
+
             }
             if(request.msg.includes("QNV")){
                 QNV = request.msg.split("?")[1];
@@ -230,7 +245,7 @@
                     let data = json["data"];
                     for (let i = 0; i < FOLLOWING_LIST.getUIDList().length; i++) {
                         if (data[FOLLOWING_LIST.getUIDList()[i] + ""] !== undefined) {
-                            if (data[FOLLOWING_LIST.getUIDList()[i] + ""].live_status === 1) {
+                            if (data[FOLLOWING_LIST.getUIDList()[i] + ""]["live_status"] === 1) {
                                 let member = new FollowingMember(data[FOLLOWING_LIST.getUIDList()[i] + ""]["uid"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["uname"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["face"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["cover_from_user"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["keyframe"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["room_id"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["title"]);
                                 member.ONAIR = true;
                                 member.TYPE = data[FOLLOWING_LIST.getUIDList()[i] + ""]["broadcast_type"] === 1 ? 1 : 0;
@@ -609,7 +624,7 @@
                 }
             }
             return {requestHeaders: details.requestHeaders};
-        }, {urls: ["https://api.bilibili.com/x/vip/privilege/receive", "https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids"]}, ['blocking', "requestHeaders", "extraHeaders"]
+        }, {urls: ["https://api.bilibili.com/x/vip/privilege/receive", "https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids", "https://api.bilibili.com/x/web-interface/card*"]}, ['blocking', "requestHeaders", "extraHeaders"]
     );
     chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
             let headers = details["requestHeaders"];
@@ -630,10 +645,10 @@
 
     chrome.webRequest.onHeadersReceived.addListener((details)=>{
         if(new URLSearchParams(new URL(details["url"])["search"]).get("requestFrom")==="ruaDL"){
-            console.log("rename");
             let fileFormat = new URL(details["url"])["pathname"].substr(new URL(details["url"])["pathname"].length-4,4);
             if(fileFormat === ".m4s") fileFormat = ".mp3";
-            details.responseHeaders.push({name:"Content-Disposition", value:"attachment; filename="+downloadFileName+fileFormat+""});
+            details.responseHeaders.push({name:"Content-Disposition", value:"attachment; filename=\""+downloadFileName+fileFormat+"\"; filename*=\"UTF-8''"+downloadFileName+fileFormat+"\""});
+            console.log(details.responseHeaders);
         }
         return {responseHeaders: details.responseHeaders};
     }, {urls: ["*://*.bilivideo.com/upgcxcode/*", "*://*.akamaized.net/upgcxcode/*"]}, ["responseHeaders", 'blocking']);
