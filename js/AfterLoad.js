@@ -26,10 +26,8 @@
     (function getUserInfo(){
         chrome.runtime.sendMessage({msg: "get_LoginInfo"}, function (lf) {
             JCT = lf.res.split(",")[0];
+            uid = lf.res.split(",")[2];
         });
-        chrome.runtime.sendMessage({msg: "get_UUID"}, (id)=>{
-            uid = id.res;
-        })
     })();
 
     setTimeout(function (){
@@ -49,7 +47,7 @@
 
     function getRoomInfo(){
         $.ajax({
-            url: "http://api.live.bilibili.com/room/v1/Room/room_init?id="+room_id,
+            url: "https://api.live.bilibili.com/room/v1/Room/room_init?id="+room_id,
             type: "GET",
             dataType: "json",
             json: "callback",
@@ -61,10 +59,10 @@
                     mid = json["data"]["uid"];
                     getMedal(json["data"]["uid"]);
                 }
-
             }
         });
     }
+
     function getMedal(mid){
         $.ajax({
             url: "https://api.live.bilibili.com/xlive/web-ucenter/user/MedalWall?target_id="+uid,
@@ -80,7 +78,6 @@
                     for (let i = 0; i < medalList.length; i++) {
                         MEDAL_LIST.push(new Medal(medalList[i]["medal_info"]["medal_id"],medalList[i]["medal_info"]["target_id"],medalList[i]["medal_info"]["target_id"],medalList[i]["medal_info"]["medal_name"],medalList[i]["medal_info"]["level"], medalList[i]["medal_info"]["medal_color_start"], medalList[i]["medal_info"]["medal_color_end"], medalList[i]["medal_info"]["medal_color_border"]))
                     }
-                    //console.log(MEDAL_LIST.getByUid(mid));
                     wareMedal(MEDAL_LIST.getByUid(mid), true);
                 }
             }
@@ -88,6 +85,7 @@
     }
 
     function wareMedal(medal, upd){
+        console.log(medal);
         if(JCT !== "-1" && medalSwitch && medal.MID !== "-1"){
             var madelForm = new FormData();
             madelForm.append("medal_id", medal.MID);

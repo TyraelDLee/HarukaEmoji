@@ -320,7 +320,11 @@ DanmakuArr.prototype.sort = function (num){
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
      * License, v. 2.0. If a copy of the MPL was not distributed with this
-     * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+     * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+     *
+     * Originally from bilibili-helper at https://github.com/bilibili-helper/bilibili-helper-o/blob/master/src/js/libs/crc32.js
+     *
+     * */
 function CRC32(){
     this.crc32Table = new Uint32Array(256);
     this.initCrc32Table(this.crc32Table);

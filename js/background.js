@@ -89,7 +89,7 @@
                         chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'SESSDATA'},
                             function (sd) {
                                 (sd === null) ? SESSDATA = -1 : SESSDATA = sd.value;
-                                sendResponse({res:JCT+","+SESSDATA});
+                                sendResponse({res:JCT+","+SESSDATA+","+UUID});
                             });
                     });
             }
