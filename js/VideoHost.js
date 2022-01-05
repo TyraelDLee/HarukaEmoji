@@ -321,14 +321,14 @@
 
     function getAudioOnlyRaw(url){
         url += "&requestFrom=ruaDL";
-        chrome.runtime.sendMessage({msg:"requestDownload", fileName:(vtitle[0]+(vtitle.length===1?"":vtitle[pid+1])+" SoundOnly")});
+        chrome.runtime.sendMessage({msg:"requestDownload", fileName:(vtitle[0]+(vtitle.length===1?"":vtitle[pid+1]))});
         const a = document.createElement('a');
-        document.body.appendChild(a);
         a.style.display = 'none';
         a.href = url;
         a.target = "_Blank";
         a.referrerPolicy = "unsafe-url";
         a.download;
+        document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
     }
@@ -342,7 +342,7 @@
         })
         .then(result => {
             progressBar.getElementsByClassName("rua-quality-des")[0].innerText = "下载中...";
-            return result.ok?result:console.error("请求失败");
+            return result.ok?result:console.error("请重试");
         })
         .then(response => {
             size = response.headers.get("Content-Length");
@@ -350,9 +350,9 @@
         .then(body => {
             const reader = body.getReader();
             return new ReadableStream({
-                start(controller) {
-                    return pump();
-                    function pump() {
+                start(controller){
+                    return push();
+                    function push() {
                         return reader.read().then(res => {
                             const {done, value} = res;
                             if (done) {
@@ -362,7 +362,7 @@
                             get += value.length || 0;
                             setProgress(progressBar, (get/size) * 100);
                             controller.enqueue(value);
-                            return pump();
+                            return push();
                         });
                     }
                 }
@@ -370,15 +370,13 @@
         })
         .then(stream => new Response(stream).arrayBuffer())
         .then(arrayBuffer=>{
-            let audioCtx = new AudioContext();
-            audioCtx.decodeAudioData(arrayBuffer, (audioBuffer) => {
-                let blob = bufferToWave(audioBuffer, audioBuffer.length);
-                const url = window.URL.createObjectURL(blob);
+            new AudioContext().decodeAudioData(arrayBuffer, (audioBuffer) => {
+                const url = window.URL.createObjectURL(bufferToWave(audioBuffer, audioBuffer.length));
                 const a = document.createElement('a');
-                document.body.appendChild(a);
                 a.style.display = 'none';
                 a.href = url;
                 a.download = fileName + ".wav";
+                document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
@@ -394,7 +392,7 @@
     }
 
     function bufferToWave(audioBuffer, len) {
-        var length = len * audioBuffer.numberOfChannels * 2 + 44,
+        let length = len * audioBuffer.numberOfChannels * 2 + 44,
             buffer = new ArrayBuffer(length),
             view = new DataView(buffer),
             channels = [], i, sample,
