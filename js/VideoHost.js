@@ -15,6 +15,13 @@
     var danmakuPoolSize = 0;
     var danmakuArr = new DanmakuArr();
     var initPrint = true;
+    var wavFile = false;
+    chrome.storage.sync.get(["wav"], function(result){wavFile = result.wav});
+    chrome.storage.onChanged.addListener(function (changes, namespace) {
+        for (let [key, {oldValue, newValue}] of Object.entries(changes)) {
+            if(key === "wav") wavFile = newValue;
+        }
+    });
 
     var WINDOW_HEIGHT;
     var WINDOW_WIDTH;
@@ -188,10 +195,6 @@
         });
     }
 
-    function delay(){
-
-    }
-
     function isMoved(oX, oY, cX, cY){return Math.abs(oX - cX) === 0 && Math.abs(oY - cY) === 0;}
 
     function getAbsLocation(id){
@@ -282,7 +285,6 @@
                     }
                     downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40 + "px";
                     getAudioOnly(cid);
-                    console.log(acceptQn);
                     grabDanmaku(cid, aid, 1, getDMSegments(videoDuration));
                 }
             }
@@ -309,22 +311,134 @@
                         downloadBlocks.push(rua_download_block);
                         downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40+"px";
                         rua_download_block.onclick = () =>{
-                            const url = json["data"]["dash"]["audio"][0]["baseUrl"]+"&requestFrom=ruaDL";
-                            chrome.runtime.sendMessage({msg:"requestDownload", fileName:(vtitle[0]+(vtitle.length===1?"":vtitle[pid+1])+" SoundOnly")});
-                            const a = document.createElement('a');
-                            document.body.appendChild(a);
-                            a.style.display = 'none';
-                            a.href = url;
-                            a.target = "_Blank";
-                            a.referrerPolicy = "unsafe-url";
-                            a.download;
-                            a.click();
-                            document.body.removeChild(a);
+                            wavFile?getAudioOnlyWav(json["data"]["dash"]["audio"][0]["baseUrl"], vtitle[0]+(vtitle.length===1?"":vtitle[pid+1]), rua_download_block):getAudioOnlyRaw(json["data"]["dash"]["audio"][0]["baseUrl"]);
                         }
                     }
                 }
             }
         });
+    }
+
+    function getAudioOnlyRaw(url){
+        url += "&requestFrom=ruaDL";
+        chrome.runtime.sendMessage({msg:"requestDownload", fileName:(vtitle[0]+(vtitle.length===1?"":vtitle[pid+1])+" SoundOnly")});
+        const a = document.createElement('a');
+        document.body.appendChild(a);
+        a.style.display = 'none';
+        a.href = url;
+        a.target = "_Blank";
+        a.referrerPolicy = "unsafe-url";
+        a.download;
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    function getAudioOnlyWav(url, fileName, hostObj){
+        hostObj.onclick = null;
+        let size=0, get=0, progressBar = document.getElementById("qn-sound");
+        fetch(url,{
+            method:"GET",
+            body:null
+        })
+        .then(result => {
+            progressBar.getElementsByClassName("rua-quality-des")[0].innerText = "下载中...";
+            return result.ok?result:console.error("请求失败");
+        })
+        .then(response => {
+            size = response.headers.get("Content-Length");
+            return response.body})
+        .then(body => {
+            const reader = body.getReader();
+            return new ReadableStream({
+                start(controller) {
+                    return pump();
+                    function pump() {
+                        return reader.read().then(res => {
+                            const {done, value} = res;
+                            if (done) {
+                                controller.close();
+                                progressBar.getElementsByClassName("rua-quality-des")[0].innerText = "转码中...";
+                            }
+                            get += value.length || 0;
+                            setProgress(progressBar, (get/size) * 100);
+                            controller.enqueue(value);
+                            return pump();
+                        });
+                    }
+                }
+            });
+        })
+        .then(stream => new Response(stream).arrayBuffer())
+        .then(arrayBuffer=>{
+            let audioCtx = new AudioContext();
+            audioCtx.decodeAudioData(arrayBuffer, (audioBuffer) => {
+                let blob = bufferToWave(audioBuffer, audioBuffer.length);
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                document.body.appendChild(a);
+                a.style.display = 'none';
+                a.href = url;
+                a.download = fileName + ".wav";
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                progressBar.setAttribute("style","");
+                progressBar.getElementsByClassName("rua-quality-des")[0].innerText = "Sound Only";
+                hostObj.onclick = ()=>{getAudioOnlyWav(url,fileName,hostObj);}
+            })
+        });
+    }
+
+    function setProgress(obj, progress){
+        obj.setAttribute("style", "background: linear-gradient(to right, #23ade5 0%, #23ade5 "+progress+"%, #FB7299 +"+progress+"%, #FB7299);");
+    }
+
+    function bufferToWave(audioBuffer, len) {
+        var length = len * audioBuffer.numberOfChannels * 2 + 44,
+            buffer = new ArrayBuffer(length),
+            view = new DataView(buffer),
+            channels = [], i, sample,
+            offset = 0,
+            pos = 0;
+
+        setUint32(0x46464952);
+        setUint32(length - 8);
+        setUint32(0x45564157);
+        setUint32(0x20746d66);
+        setUint32(16);
+        setUint16(1);
+        setUint16(audioBuffer.numberOfChannels);
+        setUint32(audioBuffer.sampleRate);
+        setUint32(audioBuffer.sampleRate * 2 * audioBuffer.numberOfChannels);
+        setUint16(audioBuffer.numberOfChannels * 2);
+        setUint16(16);
+        setUint32(0x61746164);
+        setUint32(length - pos - 4);
+
+        for(i = 0; i < audioBuffer.numberOfChannels; i++)
+            channels.push(audioBuffer.getChannelData(i));
+
+        while(pos < length) {
+            for(i = 0; i < audioBuffer.numberOfChannels; i++) {
+                sample = Math.max(-1, Math.min(1, channels[i][offset]));
+                sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0;
+                view.setInt16(pos, sample, true);
+                pos += 2;
+            }
+            offset++
+        }
+
+        return new Blob([buffer], {type: "audio/wav"});
+
+        function setUint16(data) {
+            view.setUint16(pos, data, true);
+            pos += 2;
+        }
+
+        function setUint32(data) {
+            view.setUint32(pos, data, true);
+            pos += 4;
+        }
     }
 
     grabVideoInfo();
@@ -447,10 +561,10 @@
 
                 if (initPrint){
                     for (let i = 0; i < 20; i++){
-                        if(!findId(danmakuArea, "rua-danmaku-content","rua-danmaku-"+i))
-                        danmakuArea.appendChild(drawDanmaku(danmakuArr.get(i).time, danmakuArr.get(i).content, danmakuArr.get(i).mid, i));
+                        if(!findId(danmakuArea, "rua-danmaku-content","rua-danmaku-"+i) && i<danmakuArr.size)
+                            danmakuArea.appendChild(drawDanmaku(danmakuArr.get(i).time, danmakuArr.get(i).content, danmakuArr.get(i).mid, i));
                     }
-                    initPrint = false;
+                    initPrint = danmakuArr.size<20;
                 }
             });
 

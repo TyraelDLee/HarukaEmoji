@@ -77,11 +77,19 @@ hr{
     text-align: center;
     border-radius: 6px;
     padding: 5px 0;
-
     top: 150%;
     left: 50%;
     position: absolute;
     z-index: 10;
+}
+
+.tooltiptext-top{
+    top: -500% !important;
+}
+
+.tooltiptext-top::after{
+    top: 100% !important;
+    border-color: #000 transparent transparent transparent !important;
 }
 
 .tooltip .tooltiptext::after {

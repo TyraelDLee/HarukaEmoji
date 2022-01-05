@@ -14,6 +14,7 @@
     const hiddenEntry = document.getElementById("HiddenEntry");
     const loginInfo = document.getElementById("login");
     const daka = document.getElementById("daka-switch");
+    const wav = document.getElementById("wav");
 
     const qn_table = ["原画", "蓝光","超清","高清","流畅"];
     const qnItem = setting7.getElementsByClassName("qn-i");
@@ -144,6 +145,11 @@
         chrome.storage.sync.set({"daka": checked}, function (){});
     });
 
+    wav.addEventListener("change", function (){
+        let checked = this.checked;
+        chrome.storage.sync.set({"wav": checked}, function (){});
+    });
+
     window.addEventListener("focus", function (){
         chrome.storage.sync.get(["notification"], function(result){
             buttonDisabled(result.notification, imageNotice);
@@ -181,6 +187,9 @@
 
         chrome.storage.sync.get(["daka"], function (result){
             daka.checked = result.daka;});
+
+        chrome.storage.sync.get(["wav"], function (result){
+            wav.checked = result.wav;});
     });
 
     window.addEventListener("blur", function (){
