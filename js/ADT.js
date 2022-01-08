@@ -248,6 +248,7 @@ function DanmakuObj(time, mid, content){
     this.mid = mid;
     this.content = content;
     this.name = [];
+    this.look = true;
 }
 DanmakuObj.prototype.setName = function (name){
     this.name = name;
@@ -316,6 +317,17 @@ DanmakuArr.prototype.sort = function (num){
         buc[i] && ((wrap = wrap.concat(buc[i])));
     }
     this.list = wrap;
+}
+
+DanmakuArr.prototype.find = (content)=>{
+    if (content === ""){
+        for (let i = 0; i < this.size; i++)
+            this.list[i].look = true;
+    }else{
+        for (let i = 0; i < this.size; i++)
+            this.list[i].look = this.list[i].content.includes(content);
+    }
+
 }
 
 /* This Source Code Form is subject to the terms of the Mozilla Public

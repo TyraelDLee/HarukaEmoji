@@ -5,7 +5,7 @@
 # HarukaEmoji
 rua豹使人快乐，rua了又rua！<br>
 
-rua豹器4.14来啦 <br>
+rua豹器5.1.0来啦 <br>
 兼容绝大多数chromium内核浏览器，例如：Opera浏览器，360浏览器，新MS Edge，yandex....。<br>
 现已支持火狐浏览器，见：<a href="https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/">火狐扩展商店</a>
 
@@ -22,7 +22,8 @@ rua豹器4.14来啦 <br>
 - 右键关联菜单搜索。识别到AV/BV号时会自动跳转到视频页面，其余的会跳转到b站搜索结果。
 - 自动打卡有牌子的直播间。
 - 主站视频下载，支持单音轨下载<br>
-  注：音轨音质保存是会选择视频提供的最佳音频；默认格式为mp3，如果不能播放请手动将后缀改为mp4。
+  注：音轨音质保存是会选择视频提供的最佳音频；默认格式为mp3，如果不能播放请手动将后缀改为mp4。<br>
+  现在支持了在线转码为wav格式，提升了兼容性，可以在扩展设置中启用。但是wav文件较大且开启后文件会先缓存在内存中，因此在下载时间较长的音频时不建议开启。
 
 ## 安装
 ### crx文件安装
@@ -55,10 +56,12 @@ rua豹器4.14来啦 <br>
 [chrome插件商店](https://chrome.google.com/webstore/detail/rua%E8%B1%B9%E5%99%A8/igapngheaefbfhikpbngjgakfnedkchb)
 <br>
 [火狐扩展商店](https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/)
-<br>
-[bilibili](https://t.bilibili.com/592584948593832922), 不过都来这儿了上面那个链接应该就够了吧<img src="https://github.com/TyraelDLee/HarukaEmoji/blob/main/images/haruka/5835.webp" width="30" height="30"/>。
 
 ## 版本记录
+### ver 5.1
+- 添加了音频的wav转码功能。
+- 修复了一些问题。
+
 ### ver 5.0
 - 添加了视频页面的视频/音轨下载功能。
 - 添加了视频页面的弹幕查询功能。
@@ -125,6 +128,3 @@ rua豹器4.14来啦 <br>
 ### ver 4.3
 - 添加了新的表情包。
 - 修正了在活动页面不能正常显示的问题。
-
-### ver 4.2
-- 添加了全屏下的显示功能。 

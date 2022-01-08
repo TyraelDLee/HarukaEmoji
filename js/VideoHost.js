@@ -311,7 +311,7 @@
                         downloadBlocks.push(rua_download_block);
                         downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40+"px";
                         rua_download_block.onclick = () =>{
-                            wavFile?getAudioOnlyWav(json["data"]["dash"]["audio"][0]["baseUrl"], vtitle[0]+(vtitle.length===1?"":vtitle[pid+1]), rua_download_block):getAudioOnlyRaw(json["data"]["dash"]["audio"][0]["baseUrl"]);
+                            wavFile&&json["data"]["timelength"]<3600000?getAudioOnlyWav(json["data"]["dash"]["audio"][0]["baseUrl"], vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid):getAudioOnlyRaw(json["data"]["dash"]["audio"][0]["baseUrl"]);
                         }
                     }
                 }
@@ -321,7 +321,7 @@
 
     function getAudioOnlyRaw(url){
         url += "&requestFrom=ruaDL";
-        chrome.runtime.sendMessage({msg:"requestDownload", fileName:(vtitle[0]+(vtitle.length===1?"":vtitle[pid+1]))});
+        chrome.runtime.sendMessage({msg:"requestDownload", fileName:(vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]))});
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = url;
@@ -333,42 +333,43 @@
         document.body.removeChild(a);
     }
 
-    function getAudioOnlyWav(url, fileName, hostObj){
+    function getAudioOnlyWav(url, fileName, cid){
+        let hostObj = downloadBlocks[downloadBlocks.length-1];
         hostObj.onclick = null;
-        let size=0, get=0, progressBar = document.getElementById("qn-sound");
+        let size=0, get=0;
+        hostObj.removeAttribute("title");
         fetch(url,{
             method:"GET",
             body:null
         })
-        .then(result => {
-            progressBar.getElementsByClassName("rua-quality-des")[0].innerText = "下载中...";
-            return result.ok?result:console.error("请重试");
-        })
         .then(response => {
+            hostObj.getElementsByClassName("rua-quality-des")[0].innerText = "下载中...";
             size = response.headers.get("Content-Length");
-            return response.body})
+            return response.body;
+        })
         .then(body => {
             const reader = body.getReader();
-            return new ReadableStream({
-                start(controller){
-                    return push();
-                    function push() {
-                        return reader.read().then(res => {
-                            const {done, value} = res;
-                            if (done) {
-                                controller.close();
-                                progressBar.getElementsByClassName("rua-quality-des")[0].innerText = "转码中...";
-                            }
-                            get += value.length || 0;
-                            setProgress(progressBar, (get/size) * 100);
-                            controller.enqueue(value);
-                            return push();
-                        });
+            return new Response(
+                new ReadableStream({
+                    start(controller){
+                        return push();
+                        function push() {
+                            return reader.read().then(res => {
+                                const {done, value} = res;
+                                if (done) {
+                                    controller.close();
+                                    hostObj.getElementsByClassName("rua-quality-des")[0].innerText = "转码中...";
+                                }
+                                get += value.length || 0;
+                                setProgress(hostObj, (get/size) * 100);
+                                controller.enqueue(value);
+                                return push();
+                            });
+                        }
                     }
-                }
-            });
+                })
+            ).arrayBuffer();
         })
-        .then(stream => new Response(stream).arrayBuffer())
         .then(arrayBuffer=>{
             new AudioContext().decodeAudioData(arrayBuffer, (audioBuffer) => {
                 const url = window.URL.createObjectURL(bufferToWave(audioBuffer, audioBuffer.length));
@@ -380,15 +381,40 @@
                 a.click();
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
-                progressBar.setAttribute("style","");
-                progressBar.getElementsByClassName("rua-quality-des")[0].innerText = "Sound Only";
-                hostObj.onclick = ()=>{getAudioOnlyWav(url,fileName,hostObj);}
-            })
+                hostObj.removeAttribute("style");
+                hostObj.removeAttribute("title");
+                hostObj.getElementsByClassName("rua-quality-des")[0].innerText = "Sound Only";
+                renewSoundDLObj(hostObj, cid);
+            }).catch(e => {
+                downloadError(hostObj, cid, "请在设置中关闭音频转码后重试。",true);
+            });
+        })
+        .catch(e =>{
+            downloadError(hostObj, cid, e.toString(), false);
         });
     }
 
     function setProgress(obj, progress){
-        obj.setAttribute("style", "background: linear-gradient(to right, #23ade5 0%, #23ade5 "+progress+"%, #FB7299 +"+progress+"%, #FB7299);");
+        obj.setAttribute("style", "background: linear-gradient(to right, #23ade5 0%, #23ade5 "+progress+"%, #fb7299 "+progress+"%, #fb7299);");
+    }
+
+    function downloadError(obj, cid, errMsg, decode){
+        console.log(errMsg);
+        obj.setAttribute("style","background: #ff4650;");
+        obj.setAttribute("title",errMsg);
+        obj.getElementsByClassName("rua-quality-des")[0].innerText = decode?"转码失败":"下载失败";
+        obj.onclick = () => {
+            obj.onclick = null;
+            renewSoundDLObj(obj, cid);
+        }
+    }
+
+    function renewSoundDLObj(obj, cid){
+        obj.removeAttribute("title");
+        obj.onclick = null;
+        downloadBlocks.splice(downloadBlocks.length-1,1);
+        getAudioOnly(cid);
+        obj.parentElement.removeChild(obj);
     }
 
     function bufferToWave(audioBuffer, len) {
@@ -559,7 +585,7 @@
 
                 if (initPrint){
                     for (let i = 0; i < 20; i++){
-                        if(!findId(danmakuArea, "rua-danmaku-content","rua-danmaku-"+i) && i<danmakuArr.size)
+                        if(!findId(danmakuArea, "rua-danmaku-content","rua-danmaku-"+i) && i<danmakuArr.size && danmakuArr.get(i).look)
                             danmakuArea.appendChild(drawDanmaku(danmakuArr.get(i).time, danmakuArr.get(i).content, danmakuArr.get(i).mid, i));
                     }
                     initPrint = danmakuArr.size<20;
@@ -579,17 +605,20 @@
 
     danmakuTray.onscroll = function (e){
         if(danmakuArr.size>=20){
-            let disposeLengthTop = Math.floor(e.target.scrollTop / 20);
-            while (danmakuArea.hasChildNodes()){
-                danmakuArea.firstChild.onmousedown = null;
-                //mind garbage collection.
-                danmakuArea.removeChild(danmakuArea.firstChild);
-            }
-            //danmakuArea.innerHTML = "";
-            for (let i = 0; i < 25; i++) {
-                if(disposeLengthTop+i-5<danmakuArr.size && disposeLengthTop+i-5>=0){
-                    danmakuArea.appendChild(drawDanmaku(danmakuArr.get(i+disposeLengthTop-5).time, danmakuArr.get(i+disposeLengthTop-5).content, danmakuArr.get(i+disposeLengthTop-5).mid,i+disposeLengthTop-5));
-                }
+            updateDanmaku(e.target.scrollTop);
+        }
+    }
+
+    function updateDanmaku(position){
+        let disposeLengthTop = Math.floor(position / 20);
+        while (danmakuArea.hasChildNodes()){
+            danmakuArea.firstChild.onmousedown = null;
+            //mind garbage collection.
+            danmakuArea.removeChild(danmakuArea.firstChild);
+        }
+        for (let i = 0; i < 25; i++) {
+            if(disposeLengthTop+i-5<danmakuArr.size && disposeLengthTop+i-5>=0 && danmakuArr.get(i).look){
+                danmakuArea.appendChild(drawDanmaku(danmakuArr.get(i+disposeLengthTop-5).time, danmakuArr.get(i+disposeLengthTop-5).content, danmakuArr.get(i+disposeLengthTop-5).mid,i+disposeLengthTop-5));
             }
         }
     }
