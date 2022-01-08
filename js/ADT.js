@@ -257,6 +257,7 @@ DanmakuObj.prototype.setName = function (name){
 function DanmakuArr(){
     this.list = []
     this.size = 0;
+    this.displaySize = this.size;
 }
 
 DanmakuArr.prototype.push = function (danmakuObj){
@@ -319,15 +320,21 @@ DanmakuArr.prototype.sort = function (num){
     this.list = wrap;
 }
 
-DanmakuArr.prototype.find = (content)=>{
-    if (content === ""){
-        for (let i = 0; i < this.size; i++)
-            this.list[i].look = true;
-    }else{
-        for (let i = 0; i < this.size; i++)
-            this.list[i].look = this.list[i].content.includes(content);
+DanmakuArr.prototype.find = function (content){
+    function convertMark(str){
+        return str.replaceAll(",","，").replaceAll(".","。").replaceAll("?","？").replaceAll("!","！").replaceAll(";","；").replaceAll(":","：").replaceAll("“", "\"").replaceAll("”","\"").replaceAll("(","（").replaceAll(")","）");
     }
-
+    let temp = new DanmakuArr();
+    content = convertMark(content);
+    if (content === ""){
+        return this;
+    }else{
+        for (let i = 0; i < this.size; i++) {
+            if (convertMark(this.list[i].content).includes(content))
+                temp.push(this.list[i]);
+        }
+        return temp;
+    }
 }
 
 /* This Source Code Form is subject to the terms of the Mozilla Public

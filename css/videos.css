@@ -31,6 +31,22 @@
     margin-top: 22px;
 }
 
+#rua-danmaku-search-input{
+    overflow: hidden;
+    float: right;
+    height: 18px;
+    padding: 0 5px;
+    margin-right: 5px;
+    margin-top: -2px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #aaa;
+    border-image: initial;
+    border-radius: 9px;
+    resize: none;
+    outline: none !important;
+}
+
 .rua-download-block{
     background: #FB7299;
     height: 30px;

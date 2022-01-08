@@ -14,6 +14,7 @@
     var videoDuration = 0;
     var danmakuPoolSize = 0;
     var danmakuArr = new DanmakuArr();
+    var danmakuSearchArr = new DanmakuArr();
     var initPrint = true;
     var wavFile = false;
     chrome.storage.sync.get(["wav"], function(result){wavFile = result.wav});
@@ -74,7 +75,7 @@
 
     const danmakuTag = document.createElement("div");
     danmakuTag.setAttribute("style", "width: 300px; position: fixed; background: #fff");
-    danmakuTag.innerHTML = "<div style='float: left; user-select: none; padding-left: 5px'><b>弹幕：</b></div><div style='float: right; padding-right: 5px; user-select: none' id='rua-danmaku-size'>共查询到"+ danmakuPoolSize + " 弹幕</div>";
+    danmakuTag.innerHTML = "<div style='float: left; padding-left: 5px; user-select: none;'><b>弹幕：</b></div><div style='float: right; padding-right: 5px; user-select: none;' id='rua-danmaku-size'>共"+ danmakuPoolSize + " 弹幕</div><div style='float: right; padding-right: 5px;user-select: none;cursor: pointer' id='rua-danmaku-search'><svg width='18' height='18' viewBox='0 0 18 18' xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"8\" cy=\"8\" r=\"5\" style=\"stroke:#aaa;stroke-width:2; fill: none\"/><line x1=\"11.5\" y1=\"11.5\" x2=\"15\" y2=\"15\" style=\"stroke:#aaa;stroke-width:2\" /></svg></div><textarea id='rua-danmaku-search-input' placeholder='输入要查询的弹幕内容'></textarea>";
     const danmakuArea = document.createElement("div");
     danmakuArea.style.position = "relative";
     danmakuTray.appendChild(danmakuArea);
@@ -245,6 +246,9 @@
      * Popup UI render section end.
      * */
 
+    /**
+     * Download section
+     * */
     function getQn(cid){
         videoInfo.innerHTML = "<b style='user-select: none'>视频ID：</b> "+ "<span>av" + aid + "</span><span style='user-select: none'> / </span><span>"+bvid + "</span>";
         pInfo.innerText = (pid-1+2)+ "p/"+cids.length+"p";
@@ -565,6 +569,9 @@
         }
     }
 
+    /**
+     * Danmaku section
+     * */
     function grabDanmaku(cid, aid, segment, totalSegment){
         fetch("https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid="+cid+"&pid="+aid+"&segment_index="+segment, {
             method:"GET",
@@ -579,16 +586,17 @@
             chrome.runtime.sendMessage({msg: "requestDanmaku", danmakuObj: DMMessage.decode(u8)["elems"]}, function (callback){
                 //danmakuArea.innerHTML += callback.danmakuContent;
                 danmakuArr.concat(callback.danmakuContent);
+                danmakuSearchArr.concat(callback.danmakuContent);
                 danmakuPoolSize+=callback.danmakuPoolSize;
-                document.getElementById("rua-danmaku-size").innerText = "共查询到"+ danmakuArr.size + " 弹幕";
-                danmakuArea.style.height = danmakuArr.size * 20 +"px";
+                document.getElementById("rua-danmaku-size").innerText = "共"+ danmakuPoolSize + " 弹幕";
+                danmakuArea.style.height = danmakuSearchArr.size * 20 +"px";
 
                 if (initPrint){
                     for (let i = 0; i < 20; i++){
-                        if(!findId(danmakuArea, "rua-danmaku-content","rua-danmaku-"+i) && i<danmakuArr.size && danmakuArr.get(i).look)
-                            danmakuArea.appendChild(drawDanmaku(danmakuArr.get(i).time, danmakuArr.get(i).content, danmakuArr.get(i).mid, i));
+                        if(!findId(danmakuArea, "rua-danmaku-content","rua-danmaku-"+i) && i<danmakuSearchArr.size && danmakuSearchArr.get(i).look)
+                            danmakuArea.appendChild(drawDanmaku(danmakuSearchArr.get(i).time, danmakuSearchArr.get(i).content, danmakuSearchArr.get(i).mid, i));
                     }
-                    initPrint = danmakuArr.size<20;
+                    initPrint = danmakuSearchArr.size<20;
                 }
             });
 
@@ -604,21 +612,45 @@
     }
 
     danmakuTray.onscroll = function (e){
-        if(danmakuArr.size>=20){
+        if(danmakuSearchArr.size>=20){
             updateDanmaku(e.target.scrollTop);
         }
     }
 
+    document.getElementById("rua-danmaku-search-input").addEventListener("focus", ()=>{
+        document.getElementById("rua-danmaku-search-input").style.borderColor = "#23ade5";
+    });
+    document.getElementById("rua-danmaku-search-input").addEventListener("blur", ()=>{
+        document.getElementById("rua-danmaku-search-input").style.borderColor = "#aaa";
+    });
+    document.getElementById("rua-danmaku-search-input").addEventListener("input", (e)=>{
+        findDanmaku(e.target.value);
+    });
+
+    function drawDanmakuSearch(){
+        document.getElementById("rua-danmaku-search").onclick = ()=>{
+
+        }
+    }
+
+    function findDanmaku(queryString){
+        danmakuSearchArr = danmakuArr.find(queryString);
+        danmakuArea.style.height = danmakuSearchArr.size * 20 +"px";
+        danmakuArea.scrollTop = 0;
+        updateDanmaku(0);
+    }
+
+
     function updateDanmaku(position){
-        let disposeLengthTop = Math.floor(position / 20);
+        let disposeLengthTop = Math.floor(position / 20) - 5;
         while (danmakuArea.hasChildNodes()){
             danmakuArea.firstChild.onmousedown = null;
             //mind garbage collection.
             danmakuArea.removeChild(danmakuArea.firstChild);
         }
         for (let i = 0; i < 25; i++) {
-            if(disposeLengthTop+i-5<danmakuArr.size && disposeLengthTop+i-5>=0 && danmakuArr.get(i).look){
-                danmakuArea.appendChild(drawDanmaku(danmakuArr.get(i+disposeLengthTop-5).time, danmakuArr.get(i+disposeLengthTop-5).content, danmakuArr.get(i+disposeLengthTop-5).mid,i+disposeLengthTop-5));
+            if(danmakuSearchArr.get(disposeLengthTop+i)!==undefined){
+                danmakuArea.appendChild(drawDanmaku(danmakuSearchArr.get(i+disposeLengthTop).time, danmakuSearchArr.get(i+disposeLengthTop).content, danmakuSearchArr.get(i+disposeLengthTop).mid,i+disposeLengthTop));
             }
         }
     }
@@ -653,24 +685,20 @@
     }
 
     function drawUserInfoDanmaku(parent, mid, posX, posY, index){
-        let bg = document.createElement("div");
+        const bg = document.createElement("div");
         bg.setAttribute("class", "rua-danmaku-user-info");
         bg.setAttribute("style", "top:"+posY+"px;"+"left:"+posX+"px;")
-        let div = document.createElement("div");
+        const div = document.createElement("div");
         div.setAttribute("class", "rua-danmaku-user-host");
         //div.innerText = mid;
-        let controlBar = document.createElement("div");
+        const controlBar = document.createElement("div");
         controlBar.setAttribute("id", "rua-user-control-bar");
+        controlBar.innerHTML = "<b style=\"padding-left: 20px;\">用户信息</b>";
 
-        let controlText = document.createElement("b");
-        controlText.innerText = "用户信息";
-        controlText.style.paddingLeft = "20px";
-
-        let controlBtn = document.createElement("div");
+        const controlBtn = document.createElement("div");
         controlBtn.setAttribute("style","position: absolute; top: 2px; left: 280px; width: 14px; height: 14px;");
         controlBtn.innerHTML = "<svg width=\"14\" height=\"14\"><circle cx=\"7\" cy=\"7\" r=\"7\" fill=\"#f16c59\"/><line class=\"rua-cross\" x1=\"4\" y1=\"4\" x2=\"10.5\" y2=\"10.5\" style=\"stroke:#f16c59;stroke-width:1\"/><line class=\"rua-cross\" x1=\"10.5\" y1=\"4\" x2=\"4\" y2=\"10.5\" style=\"stroke:#f16c59;stroke-width:1\"/></svg>"
 
-        controlBar.appendChild(controlText);
         controlBar.appendChild(controlBtn);
 
         if(document.body.getElementsByClassName("rua-danmaku-user-info").length>0){
