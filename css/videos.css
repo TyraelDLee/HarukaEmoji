@@ -3,6 +3,16 @@
     100% {transform: translate(0px, 0px); opacity: 1}
 }
 
+@keyframes searchIn {
+    0% {transform: translate(20px, 0px); opacity: 0; width: 0}
+    100% {width: 147px; opacity: 1;}
+}
+
+@keyframes searchOut {
+    0% {width: 147px; opacity: 1;}
+    100% {transform: translate(20px, 0px); opacity: 0; width: 0}
+}
+
 #emoji-selection{
     border-radius: 5px;
     box-shadow: #ddd 0 0 5px;
@@ -124,6 +134,11 @@
     height: 82px;
 }
 
+#rua-danmaku-search-input{
+    width: 0;
+
+}
+
 .rua-user{
     width: 250px;
     height: 50px;
@@ -144,4 +159,16 @@
     height: 50px;
     border-radius: 50%;
     object-fit: cover;
+}
+
+.rua-danmaku-search-in{
+    animation-name: searchIn;
+    animation-duration: 0.8s;
+    animation-fill-mode: forwards;
+}
+
+.rua-danmaku-search-out{
+    animation-name: searchOut;
+    animation-duration: 0.8s;
+    animation-fill-mode: forwards;
 }

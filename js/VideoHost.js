@@ -75,7 +75,7 @@
 
     const danmakuTag = document.createElement("div");
     danmakuTag.setAttribute("style", "width: 300px; position: fixed; background: #fff");
-    danmakuTag.innerHTML = "<div style='float: left; padding-left: 5px; user-select: none;'><b>弹幕：</b></div><div style='float: right; padding-right: 5px; user-select: none;' id='rua-danmaku-size'>共"+ danmakuPoolSize + " 弹幕</div><div style='float: right; padding-right: 5px;user-select: none;cursor: pointer' id='rua-danmaku-search'><svg width='18' height='18' viewBox='0 0 18 18' xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"8\" cy=\"8\" r=\"5\" style=\"stroke:#aaa;stroke-width:2; fill: none\"/><line x1=\"11.5\" y1=\"11.5\" x2=\"15\" y2=\"15\" style=\"stroke:#aaa;stroke-width:2\" /></svg></div><textarea id='rua-danmaku-search-input' placeholder='输入要查询的弹幕内容'></textarea>";
+    danmakuTag.innerHTML = "<div style='float: left; padding-left: 5px; user-select: none;'><b>弹幕：</b></div><div style='float: right; padding-right: 5px; user-select: none;' id='rua-danmaku-size'>共"+ danmakuPoolSize + " 弹幕</div><div style='float: right; padding-right: 5px;user-select: none;cursor: pointer' id='rua-danmaku-search' title='查询弹幕内容'><svg width='18' height='18' viewBox='0 0 18 18' xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"8\" cy=\"8\" r=\"5\" style=\"stroke:#aaa;stroke-width:2; fill: none\"/><line x1=\"11.5\" y1=\"11.5\" x2=\"15\" y2=\"15\" style=\"stroke:#aaa;stroke-width:2\" /></svg></div><textarea id='rua-danmaku-search-input' class='rua-danmaku-search-out' style='display: none' placeholder='输入要查询的弹幕内容'></textarea>";
     const danmakuArea = document.createElement("div");
     danmakuArea.style.position = "relative";
     danmakuTray.appendChild(danmakuArea);
@@ -257,8 +257,14 @@
         videoDuration = 0;
         danmakuPoolSize = 0;
         danmakuArr = new DanmakuArr();
-        danmakuArea.innerHTML = "";
+        danmakuSearchArr = new DanmakuArr();
+        document.getElementById("rua-danmaku-search-input").value = "";
+        while (danmakuArea.hasChildNodes()){
+            danmakuArea.firstChild.onmousedown = null;
+            danmakuArea.removeChild(danmakuArea.firstChild);
+        }
         initPrint = true;
+        // refresh components.
 
         $.ajax({
             url: "https://api.bilibili.com/x/player/playurl?bvid="+bvid+"&cid="+cid+"&qn=120&type=flv&fourk=1",
@@ -624,28 +630,33 @@
         document.getElementById("rua-danmaku-search-input").style.borderColor = "#aaa";
     });
     document.getElementById("rua-danmaku-search-input").addEventListener("input", (e)=>{
-        findDanmaku(e.target.value);
-    });
-
-    function drawDanmakuSearch(){
-        document.getElementById("rua-danmaku-search").onclick = ()=>{
-
-        }
-    }
-
-    function findDanmaku(queryString){
-        danmakuSearchArr = danmakuArr.find(queryString);
+        danmakuSearchArr = danmakuArr.find(e.target.value);
         danmakuArea.style.height = danmakuSearchArr.size * 20 +"px";
         danmakuArea.scrollTop = 0;
         updateDanmaku(0);
-    }
+    });
 
+    let searchClick = false;
+    document.getElementById("rua-danmaku-search").onclick = ()=>{
+        if(searchClick){
+            searchClick = false;
+            document.getElementById("rua-danmaku-search-input").classList.remove("rua-danmaku-search-in");
+            document.getElementById("rua-danmaku-search-input").classList.add("rua-danmaku-search-out");
+            setTimeout(()=>{
+                document.getElementById("rua-danmaku-search-input").style.display = "none";
+            }, 800);
+        }else{
+            searchClick = true;
+            document.getElementById("rua-danmaku-search-input").style.display = "block";
+            document.getElementById("rua-danmaku-search-input").classList.remove("rua-danmaku-search-out");
+            document.getElementById("rua-danmaku-search-input").classList.add("rua-danmaku-search-in");
+        }
+    }
 
     function updateDanmaku(position){
         let disposeLengthTop = Math.floor(position / 20) - 5;
         while (danmakuArea.hasChildNodes()){
             danmakuArea.firstChild.onmousedown = null;
-            //mind garbage collection.
             danmakuArea.removeChild(danmakuArea.firstChild);
         }
         for (let i = 0; i < 25; i++) {
@@ -793,7 +804,7 @@
 }();
 
 
-var dmObj = {
+const dmObj = {
     "nested": {
         "bilibili": {
             "nested": {
