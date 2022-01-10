@@ -51,6 +51,7 @@ hr{
     overflow-y: scroll;
     overflow-x: hidden;
     height: 200px;
+    scrollbar-width:thin;
 }
 
 .setting::-webkit-scrollbar{
