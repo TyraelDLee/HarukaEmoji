@@ -20,7 +20,7 @@
   "content_scripts": [{
     "all_frames": true,
     "css": ["css/tips.min.css"],
-    "js": ["js/ADT.js","js/Jquery-3.5.1.js","js/AfterLoad.min.js"],
+    "js": ["js/ADT.js","js/AfterLoad.min.js"],
     "matches": ["*://live.bilibili.com/*"],
     "run_at": "document_end"
   },{
@@ -49,7 +49,7 @@
   },{
     "all_frames": true,
     "css": ["css/host.min.css", "css/button.min.css", "css/videos.min.css"],
-    "js": ["js/protobuf.js", "js/ADT.js", "js/Jquery-3.5.1.js", "js/VideoHost.min.js"],
+    "js": ["js/protobuf.js", "js/ADT.js", "js/VideoHost.min.js"],
     "matches": ["*://www.bilibili.com/video/*"],
     "run_at": "document_end"
   }],

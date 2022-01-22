@@ -189,36 +189,62 @@
         if(UUID !== -1 && SESSDATA !== -1){
             p++;
             let listLength = 0;
-            $.ajax({
-                url: "https://api.bilibili.com/x/relation/followings?vmid=" + UUID + "&pn=" + p,
-                type: "GET",
-                dataType: "json",
-                json: "callback",
-                xhrFields: {
-                    withCredentials: true
-                },
-                success: function (json) {
-                    if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
-                        var data = json["data"]["list"];
-                        listLength = data.length;
-                        for (let i = 0; i < data.length; i++) {
-                            let member = new FollowingMember(data[i]["mid"], data[i]["uname"]);
-                            FOLLOWING_LIST.push(member); // maintain the global list
-                            FOLLOWING_LIST_TEMP.push(member); // push new to local list(this time only)
-                        }
-                        if (listLength === 0 && FOLLOWING_LIST.length() !== 0) {
-                            // all elements enquired.
-                            p = 0;
-                            FOLLOWING_LIST.update(FOLLOWING_LIST_TEMP); // get intersection of global and local list.
-                            FOLLOWING_LIST_TEMP.clearAll(); // empty local list for next turn.
-                            console.log("Load following list complete. " + FOLLOWING_LIST.length() + " followings found.");
-                            queryLivingRoom();
-                        }
-                        if (listLength !== 0) getFollowingList();
+            fetch("https://api.bilibili.com/x/relation/followings?vmid=" + UUID + "&pn=" + p,{
+                method:"GET",
+                credentials: 'include',
+                body:null
+            })
+            .then(res => res.json())
+            .then(json => {
+                if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
+                    var data = json["data"]["list"];
+                    listLength = data.length;
+                    for (let i = 0; i < data.length; i++) {
+                        let member = new FollowingMember(data[i]["mid"], data[i]["uname"]);
+                        FOLLOWING_LIST.push(member); // maintain the global list
+                        FOLLOWING_LIST_TEMP.push(member); // push new to local list(this time only)
                     }
-                },
-                error: function (msg){p = 0;errorHandler(getFollowingList, msg);}
-            });
+                    if (listLength === 0 && FOLLOWING_LIST.length() !== 0) {
+                        // all elements enquired.
+                        p = 0;
+                        FOLLOWING_LIST.update(FOLLOWING_LIST_TEMP); // get intersection of global and local list.
+                        FOLLOWING_LIST_TEMP.clearAll(); // empty local list for next turn.
+                        console.log("Load following list complete. " + FOLLOWING_LIST.length() + " followings found.");
+                        queryLivingRoom();
+                    }
+                    if (listLength !== 0) getFollowingList();
+                }
+            }).catch(msg =>{p = 0;errorHandler(getFollowingList, msg);});
+            // $.ajax({
+            //     url: "https://api.bilibili.com/x/relation/followings?vmid=" + UUID + "&pn=" + p,
+            //     type: "GET",
+            //     dataType: "json",
+            //     json: "callback",
+            //     xhrFields: {
+            //         withCredentials: true
+            //     },
+            //     success: function (json) {
+            //         if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
+            //             var data = json["data"]["list"];
+            //             listLength = data.length;
+            //             for (let i = 0; i < data.length; i++) {
+            //                 let member = new FollowingMember(data[i]["mid"], data[i]["uname"]);
+            //                 FOLLOWING_LIST.push(member); // maintain the global list
+            //                 FOLLOWING_LIST_TEMP.push(member); // push new to local list(this time only)
+            //             }
+            //             if (listLength === 0 && FOLLOWING_LIST.length() !== 0) {
+            //                 // all elements enquired.
+            //                 p = 0;
+            //                 FOLLOWING_LIST.update(FOLLOWING_LIST_TEMP); // get intersection of global and local list.
+            //                 FOLLOWING_LIST_TEMP.clearAll(); // empty local list for next turn.
+            //                 console.log("Load following list complete. " + FOLLOWING_LIST.length() + " followings found.");
+            //                 queryLivingRoom();
+            //             }
+            //             if (listLength !== 0) getFollowingList();
+            //         }
+            //     },
+            //     error: function (msg){p = 0;errorHandler(getFollowingList, msg);}
+            // });
         }
     }
 
@@ -232,13 +258,13 @@
      * attention: not accept cookie.
      * */
     function queryLivingRoom() {
-        $.ajax({
-            url: "https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids",
-            type: "POST",
-            data: {"uids": FOLLOWING_LIST.getUIDList()},
-            dataType: "json",
-            json: "callback",
-            success: function (json) {
+        fetch("https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids",{
+            method:"POST",
+            credentials: 'omit',
+            body:{"uids": FOLLOWING_LIST.getUIDList()}
+        })
+            .then(res => res.json())
+            .then(json => {
                 if (json["code"] === 0) {
                     let ON_AIR_LIST = new FollowingMemberList()
                     let data = json["data"];
@@ -254,9 +280,32 @@
                     }
                     if (ON_AIR_LIST.list.length > 0) updateList(ON_AIR_LIST);
                 }
-            },
-            error: function (msg) {p = 0;errorHandler(getFollowingList, msg);}
-        });
+            }).catch(msg =>{p = 0;errorHandler(getFollowingList, msg);});
+        // $.ajax({
+        //     url: "https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids",
+        //     type: "POST",
+        //     data: {"uids": FOLLOWING_LIST.getUIDList()},
+        //     dataType: "json",
+        //     json: "callback",
+        //     success: function (json) {
+        //         if (json["code"] === 0) {
+        //             let ON_AIR_LIST = new FollowingMemberList()
+        //             let data = json["data"];
+        //             for (let i = 0; i < FOLLOWING_LIST.getUIDList().length; i++) {
+        //                 if (data[FOLLOWING_LIST.getUIDList()[i] + ""] !== undefined) {
+        //                     if (data[FOLLOWING_LIST.getUIDList()[i] + ""]["live_status"] === 1) {
+        //                         let member = new FollowingMember(data[FOLLOWING_LIST.getUIDList()[i] + ""]["uid"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["uname"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["face"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["cover_from_user"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["keyframe"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["room_id"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["title"]);
+        //                         member.ONAIR = true;
+        //                         member.TYPE = data[FOLLOWING_LIST.getUIDList()[i] + ""]["broadcast_type"] === 1 ? 1 : 0;
+        //                         ON_AIR_LIST.push(member);
+        //                     }
+        //                 }
+        //             }
+        //             if (ON_AIR_LIST.list.length > 0) updateList(ON_AIR_LIST);
+        //         }
+        //     },
+        //     error: function (msg) {p = 0;errorHandler(getFollowingList, msg);}
+        // });
     }
 
     /**
@@ -479,21 +528,28 @@
 
     function checkIn(){
         if(checkinSwitch){
-            $.ajax({
-                url: "https://api.live.bilibili.com/xlive/web-ucenter/v1/sign/DoSign",
-                type: "GET",
-                dataType: "json",
-                json: "callback",
-                xhrFields: {
-                    withCredentials: true
-                },
-                success: function (json) {
+            fetch("https://api.live.bilibili.com/xlive/web-ucenter/v1/sign/DoSign",{
+                method:"GET",
+                credentials: 'include',
+                body: null
+            }).then(res => {
                     console.log("签到成功 "+new Date().toUTCString())
-                },
-                error: function (msg){
-                    errorHandler(checkIn, msg);
-                }
-            });
+                }).catch(msg =>{errorHandler(checkIn, msg);});
+            // $.ajax({
+            //     url: "https://api.live.bilibili.com/xlive/web-ucenter/v1/sign/DoSign",
+            //     type: "GET",
+            //     dataType: "json",
+            //     json: "callback",
+            //     xhrFields: {
+            //         withCredentials: true
+            //     },
+            //     success: function (json) {
+            //         console.log("签到成功 "+new Date().toUTCString())
+            //     },
+            //     error: function (msg){
+            //         errorHandler(checkIn, msg);
+            //     }
+            // });
         }
     }
 
@@ -515,13 +571,13 @@
      * Exchange B coin section.
      * */
     function exchangeBCoin(){
-        $.ajax({
-            url: "https://api.bilibili.com/x/vip/privilege/receive",
-            type: "POST",
-            data: {"type": 1,"csrf":JCT},
-            dataType: "json",
-            json: "callback",
-            success: function (json) {
+        fetch("https://api.bilibili.com/x/vip/privilege/receive",{
+            method:"POST",
+            credentials: 'include',
+            body:{"type": 1,"csrf":JCT}
+        })
+            .then(res => res.json())
+            .then(json => {
                 console.log("兑换成功！好耶( •̀ ω •́ )✧");
                 chrome.notifications.create(Math.random()+"", {
                         type: "basic",
@@ -534,21 +590,42 @@
                         },3000);
                     }
                 );
-            },
-            error: function (msg) {
-                errorHandler(queryBcoin, msg);
-            }
-        });
+            }).catch(msg =>{errorHandler(queryBcoin, msg);});
+        // $.ajax({
+        //     url: "https://api.bilibili.com/x/vip/privilege/receive",
+        //     type: "POST",
+        //     data: {"type": 1,"csrf":JCT},
+        //     dataType: "json",
+        //     json: "callback",
+        //     success: function (json) {
+        //         console.log("兑换成功！好耶( •̀ ω •́ )✧");
+        //         chrome.notifications.create(Math.random()+"", {
+        //                 type: "basic",
+        //                 iconUrl: "./images/abaaba.png",
+        //                 title: "本月大会员的5B币兑换成功！",
+        //                 message:""
+        //             }, function (id) {
+        //                 setTimeout(function (){
+        //                     chrome.notifications.clear(id);
+        //                 },3000);
+        //             }
+        //         );
+        //     },
+        //     error: function (msg) {
+        //         errorHandler(queryBcoin, msg);
+        //     }
+        // });
     }
 
     function queryBcoin(){
         if(BCOIN){
-            $.ajax({
-                url: "https://api.bilibili.com/x/vip/privilege/my",
-                type: "GET",
-                dataType: "json",
-                json: "callback",
-                success: function (json) {
+            fetch("https://api.bilibili.com/x/vip/privilege/my",{
+                method:"GET",
+                credentials: 'include',
+                body: null
+            })
+                .then(res => res.json())
+                .then(json => {
                     console.log("checked vip status")
                     if (json["code"] === 0){
                         if(json["data"]["list"]["0"]["type"]===1&&json["data"]["list"]["0"]["state"]===0)
@@ -556,11 +633,25 @@
                         else if(json["data"]["list"]["0"]["type"]===1&&json["data"]["list"]["0"]["state"]===1)
                             console.log("这个月的已经兑换过了，好耶！( •̀ ω •́ )✧");
                     }
-                },
-                error: function (msg) {
-                    errorHandler(queryBcoin, msg);
-                }
-            });
+                }).catch(msg =>{errorHandler(queryBcoin, msg);});
+            // $.ajax({
+            //     url: "https://api.bilibili.com/x/vip/privilege/my",
+            //     type: "GET",
+            //     dataType: "json",
+            //     json: "callback",
+            //     success: function (json) {
+            //         console.log("checked vip status")
+            //         if (json["code"] === 0){
+            //             if(json["data"]["list"]["0"]["type"]===1&&json["data"]["list"]["0"]["state"]===0)
+            //                 exchangeBCoin();
+            //             else if(json["data"]["list"]["0"]["type"]===1&&json["data"]["list"]["0"]["state"]===1)
+            //                 console.log("这个月的已经兑换过了，好耶！( •̀ ω •́ )✧");
+            //         }
+            //     },
+            //     error: function (msg) {
+            //         errorHandler(queryBcoin, msg);
+            //     }
+            // });
         }
     }
 
@@ -569,12 +660,13 @@
      * */
     let dynamic_id_list = [];
     function videoNotify(push){
-        $.ajax({
-            url: "https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid="+UUID+"&type_list=8,512,4097,4098,4099,4100,4101",
-            type: "GET",
-            dataType: "json",
-            json: "callback",
-            success: function (json) {
+        fetch("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid="+UUID+"&type_list=8,512,4097,4098,4099,4100,4101",{
+            method:"GET",
+            credentials: 'include',
+            body: null
+        })
+            .then(res => res.json())
+            .then(json => {
                 if(json["code"] === 0 && dynamicPush){
                     let o = json["data"]["cards"];
                     for (let i = 0; i < o.length; i++) {
@@ -595,11 +687,38 @@
                     }
                 }
                 setTimeout(()=>{videoNotify(true)},10000);
-            },
-            error: function (msg) {
-                errorHandler(videoNotify,msg);
-            }
-        });
+            }).catch(msg =>{errorHandler(videoNotify,msg);});
+        // $.ajax({
+        //     url: "https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid="+UUID+"&type_list=8,512,4097,4098,4099,4100,4101",
+        //     type: "GET",
+        //     dataType: "json",
+        //     json: "callback",
+        //     success: function (json) {
+        //         if(json["code"] === 0 && dynamicPush){
+        //             let o = json["data"]["cards"];
+        //             for (let i = 0; i < o.length; i++) {
+        //                 let c = JSON.parse(o[i+""]["card"]);
+        //                 let type = o[i+""]["desc"]["type"];
+        //                 if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
+        //                     if(push || push === undefined){
+        //                         if(type === 8){
+        //                             console.log("你关注的up "+c["owner"]["name"]+" 投稿了新视频！"+c["title"]+" see:"+o[i+""]["desc"]["bvid"]);
+        //                             basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+c["owner"]["name"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], c["owner"]["face"], "https://b23.tv/");
+        //                         }else if(type >= 512 && type <= 4101){
+        //                             console.log("你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！"+c["index"]+" see:"+c["url"]);
+        //                             basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！",c["new_desc"],c["url"].replace("https://www.bilibili.com/",""), c["cover"],"https://www.bilibili.com/");
+        //                         }
+        //                     }
+        //                     dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
+        //                 }
+        //             }
+        //         }
+        //         setTimeout(()=>{videoNotify(true)},10000);
+        //     },
+        //     error: function (msg) {
+        //         errorHandler(videoNotify,msg);
+        //     }
+        // });
     }
 
     /**

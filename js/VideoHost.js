@@ -242,6 +242,30 @@
             offsetLeft<320?selec.style.left = offsetLeft + 60 + "px":selec.style.left = offsetLeft - 310 + "px";
         }
     }
+
+    var obs = new MutationObserver(function (m){
+        m.forEach(function(mutation) {
+            if (mutation.type === "attributes") {
+                if(labStyle.getAttribute("lab-style")!==null){
+                    labFeatures = labStyle.getAttribute("lab-style").split(",");
+                    labFeatures.indexOf("dark")!==-1?darkMode(true):darkMode(false);
+                }else{
+                    darkMode(false);
+                }
+            }
+        });
+    });
+
+    const labStyle = document.documentElement;
+    obs.observe(labStyle,{attributes: true});
+
+    function darkMode(on){
+        if(on){
+            selec.style.background = "#151515";
+        }else{
+            selec.style.removeProperty("background");
+        }
+    }
     /**
      * Popup UI render section end.
      * */
@@ -249,6 +273,31 @@
     /**
      * Download section
      * */
+    grabVideoInfo();
+    function grabVideoInfo(){
+        pid = pid<0?0:pid;
+        cids = [];
+        vtitle = [];
+        fetch("https://api.bilibili.com/x/web-interface/view?"+abv(vid), {
+            method:"GET",
+            credentials: 'include',
+            body:null
+        })
+        .then(res => res.json())
+        .then(json => {
+            if(json["code"]===0){
+                aid = json["data"]["aid"];
+                bvid = json["data"]["bvid"];
+                vtitle.push(json["data"]["title"]);
+                for (let i = 0; i < json["data"]["pages"].length; i++) {
+                    cids.push(json["data"]["pages"][i]["cid"]);
+                    if(json["data"]["pages"].length>1)vtitle.push(json["data"]["pages"][i]["part"]);
+                }
+                getQn(cids[pid]);
+            }
+        });
+    }
+
     function getQn(cid){
         videoInfo.innerHTML = "<b style='user-select: none'>视频ID：</b> "+ "<span>av" + aid + "</span><span style='user-select: none'> / </span><span>"+bvid + "</span>";
         pInfo.innerText = (pid-1+2)+ "p/"+cids.length+"p";
@@ -266,63 +315,57 @@
         initPrint = true;
         // refresh components.
 
-        $.ajax({
-            url: "https://api.bilibili.com/x/player/playurl?bvid="+bvid+"&cid="+cid+"&qn=120&type=flv&fourk=1",
-            type: "GET",
-            dataType: "json",
-            json: "callback",
-            xhrFields: {
-                withCredentials: true
-            },
-            success: function (json) {
-                if(json["code"]===0){
-                    for (let i = 0; i < json["data"]["durl"].length; i++) {
-                        videoDuration += json["data"]["durl"][i]["length"]-1+1;
-                    }
-                    for (let i = 0; i < json["data"]["accept_quality"].length; i++) {
-                        acceptQn[json["data"]["accept_quality"][i]] = {
-                            "accept_description": json["data"]["accept_description"][i],
-                            "accept_format": json["data"]["accept_format"].split(",")[i]}
-                        let rua_download_block = document.createElement("div");
-                        rua_download_block.setAttribute("id","qn-"+json["data"]["accept_quality"][i]);
-                        rua_download_block.classList.add("rua-download-block");
-                        rua_download_block.innerHTML = "<div class='rua-quality-des'>"+acceptQn[json["data"]["accept_quality"][i]]["accept_description"]+"</div>";
-                        downloadVideoTray.appendChild(rua_download_block);
-                        downloadBlocks.push(rua_download_block);
-                        rua_download_block.onclick = () =>{
-                            download(bvid, cid, json["data"]["accept_quality"][i], vtitle[0]+(vtitle.length===1?"":vtitle[pid+1])+" "+json["data"]["accept_description"][i]);
-                        }
-                    }
-                    downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40 + "px";
-                    getAudioOnly(cid);
-                    grabDanmaku(cid, aid, 1, getDMSegments(videoDuration));
+        fetch("https://api.bilibili.com/x/player/playurl?bvid="+bvid+"&cid="+cid+"&qn=120&type=flv&fourk=1",{
+            method:"GET",
+            credentials: 'include',
+            body:null
+        })
+        .then(res => res.json())
+        .then(json => {
+            if(json["code"]===0){
+                for (let i = 0; i < json["data"]["durl"].length; i++) {
+                    videoDuration += json["data"]["durl"][i]["length"]-1+1;
                 }
+                for (let i = 0; i < json["data"]["accept_quality"].length; i++) {
+                    acceptQn[json["data"]["accept_quality"][i]] = {
+                        "accept_description": json["data"]["accept_description"][i],
+                        "accept_format": json["data"]["accept_format"].split(",")[i]}
+                    let rua_download_block = document.createElement("div");
+                    rua_download_block.setAttribute("id","qn-"+json["data"]["accept_quality"][i]);
+                    rua_download_block.classList.add("rua-download-block");
+                    rua_download_block.innerHTML = "<div class='rua-quality-des'>"+acceptQn[json["data"]["accept_quality"][i]]["accept_description"]+"</div>";
+                    downloadVideoTray.appendChild(rua_download_block);
+                    downloadBlocks.push(rua_download_block);
+                    rua_download_block.onclick = () =>{
+                        download(bvid, cid, json["data"]["accept_quality"][i], vtitle[0]+(vtitle.length===1?"":vtitle[pid+1])+" "+json["data"]["accept_description"][i]);
+                    }
+                }
+                downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40 + "px";
+                getAudioOnly(cid);
+                grabDanmaku(cid, aid, 1, getDMSegments(videoDuration));
             }
         });
     }
 
     function getAudioOnly(cid){
-        $.ajax({
-            url: "https://api.bilibili.com/x/player/playurl?bvid="+bvid+"&cid="+cid+"&qn=120&fnval=16",
-            type: "GET",
-            dataType: "json",
-            json: "callback",
-            xhrFields: {
-                withCredentials: true
-            },
-            success: function (json) {
-                if(json["code"]===0 && json["data"]!==null){
-                    if(json["data"]["dash"]["audio"][0]["baseUrl"]!==null){
-                        let rua_download_block = document.createElement("div");
-                        rua_download_block.setAttribute("id","qn-sound");
-                        rua_download_block.classList.add("rua-download-block");
-                        rua_download_block.innerHTML = "<div class='rua-quality-des'>Sound Only</div>";
-                        downloadVideoTray.appendChild(rua_download_block);
-                        downloadBlocks.push(rua_download_block);
-                        downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40+"px";
-                        rua_download_block.onclick = () =>{
-                            wavFile&&json["data"]["timelength"]<3600000?getAudioOnlyWav(json["data"]["dash"]["audio"][0]["baseUrl"], vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid):getAudioOnlyRaw(json["data"]["dash"]["audio"][0]["baseUrl"]);
-                        }
+        fetch("https://api.bilibili.com/x/player/playurl?bvid="+bvid+"&cid="+cid+"&qn=120&fnval=16",{
+            method:"GET",
+            credentials: 'include',
+            body:null
+        })
+        .then(res => res.json())
+        .then(json => {
+            if(json["code"]===0 && json["data"]!==null){
+                if(json["data"]["dash"]["audio"][0]["baseUrl"]!==null){
+                    let rua_download_block = document.createElement("div");
+                    rua_download_block.setAttribute("id","qn-sound");
+                    rua_download_block.classList.add("rua-download-block");
+                    rua_download_block.innerHTML = "<div class='rua-quality-des'>Sound Only</div>";
+                    downloadVideoTray.appendChild(rua_download_block);
+                    downloadBlocks.push(rua_download_block);
+                    downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40+"px";
+                    rua_download_block.onclick = () =>{
+                        wavFile&&json["data"]["timelength"]<3600000?getAudioOnlyWav(json["data"]["dash"]["audio"][0]["baseUrl"], vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid):getAudioOnlyRaw(json["data"]["dash"]["audio"][0]["baseUrl"]);
                     }
                 }
             }
@@ -472,59 +515,6 @@
         function setUint32(data) {
             view.setUint32(pos, data, true);
             pos += 4;
-        }
-    }
-
-    grabVideoInfo();
-    function grabVideoInfo(){
-        pid = pid<0?0:pid;
-        cids = [];
-        vtitle = [];
-        $.ajax({
-            url: "https://api.bilibili.com/x/web-interface/view?"+abv(vid),
-            type: "GET",
-            dataType: "json",
-            json: "callback",
-            xhrFields: {
-                withCredentials: true
-            },
-            success: function (json) {
-
-                if(json["code"]===0){
-                    aid = json["data"]["aid"];
-                    bvid = json["data"]["bvid"];
-                    vtitle.push(json["data"]["title"]);
-                    for (let i = 0; i < json["data"]["pages"].length; i++) {
-                        cids.push(json["data"]["pages"][i]["cid"]);
-                        if(json["data"]["pages"].length>1)vtitle.push(json["data"]["pages"][i]["part"]);
-                    }
-                    getQn(cids[pid]);
-                }
-            }
-        });
-    }
-
-    var obs = new MutationObserver(function (m){
-        m.forEach(function(mutation) {
-            if (mutation.type === "attributes") {
-                if(labStyle.getAttribute("lab-style")!==null){
-                    labFeatures = labStyle.getAttribute("lab-style").split(",");
-                    labFeatures.indexOf("dark")!==-1?darkMode(true):darkMode(false);
-                }else{
-                    darkMode(false);
-                }
-            }
-        });
-    });
-
-    const labStyle = document.documentElement;
-    obs.observe(labStyle,{attributes: true});
-
-    function darkMode(on){
-        if(on){
-            selec.style.background = "#151515";
-        }else{
-            selec.style.removeProperty("background");
         }
     }
 

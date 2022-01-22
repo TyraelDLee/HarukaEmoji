@@ -46,33 +46,28 @@
     }
 
     function getRoomInfo(){
-        $.ajax({
-            url: "https://api.live.bilibili.com/room/v1/Room/room_init?id="+room_id,
-            type: "GET",
-            dataType: "json",
-            json: "callback",
-            xhrFields: {
-                withCredentials: true
-            },
-            success: function (json) {
+        fetch("https://api.live.bilibili.com/room/v1/Room/room_init?id="+room_id,{
+            method:"GET",
+            credentials: 'include',
+            body:null
+        })
+            .then(res => res.json())
+            .then(json => {
                 if(json["code"] === 0){
                     mid = json["data"]["uid"];
                     getMedal(json["data"]["uid"]);
                 }
-            }
-        });
+            });
     }
 
     function getMedal(mid){
-        $.ajax({
-            url: "https://api.live.bilibili.com/xlive/web-ucenter/user/MedalWall?target_id="+uid,
-            type: "GET",
-            dataType: "json",
-            json: "callback",
-            xhrFields: {
-                withCredentials: true
-            },
-            success: function (json) {
+        fetch("https://api.live.bilibili.com/xlive/web-ucenter/user/MedalWall?target_id="+uid,{
+            method:"GET",
+            credentials: 'include',
+            body:null
+        })
+            .then(res => res.json())
+            .then(json => {
                 if(json["code"] === 0){
                     let medalList = json["data"]["list"];
                     for (let i = 0; i < medalList.length; i++) {
@@ -80,8 +75,7 @@
                     }
                     wareMedal(MEDAL_LIST.getByUid(mid), true);
                 }
-            }
-        });
+            });
     }
 
     function wareMedal(medal, upd){
@@ -91,21 +85,14 @@
             madelForm.append("medal_id", medal.MID);
             madelForm.append("csrf", JCT);
             madelForm.append("csrf_token", JCT);
-            $.ajax({
-                url: "https://api.live.bilibili.com/xlive/web-room/v1/fansMedal/wear",
-                type: "POST",
-                data: madelForm,
-                dataType: "JSON",
-                processData: false,
-                contentType: false,
-                cache: false,
-                xhrFields: {
-                    withCredentials: true
-                },
-                success: function (){
-                    console.log("ware medal successful, MID="+medal.MID);
-                    if(upd) c(medal);
-                }
+            fetch("https://api.live.bilibili.com/xlive/web-room/v1/fansMedal/wear",{
+                method:"POST",
+                credentials: 'include',
+                body:madelForm,
+            })
+            .then(res => {
+                console.log("ware medal successful, MID="+medal.MID);
+                if(upd) c(medal);
             });
         }
     }
