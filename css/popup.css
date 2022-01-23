@@ -177,12 +177,8 @@ hr{
     user-select: none;
 
 }
-/*#btn7:hover{*/
-/*    overflow: visible;*/
-/*}*/
 
 #qn-items{
     position: absolute;
     width: 100px;
-    background: #fff;
 }

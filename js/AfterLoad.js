@@ -197,4 +197,115 @@
     window.addEventListener("focus", function (){
         wareMedal(MEDAL_LIST.getByUid(mid),false);
     });
+
+    /**
+     * Recording section
+     * */
+    let startRecording = false;
+    let recordingDuration = 0;
+    let prerecordingDuration = 300;
+    let recorder;
+    const recordBtn = document.createElement("div");
+    const controlBar = document.getElementById("web-player-controller-wrap-el");
+    recordBtn.classList.add("rua-record");
+    const recordDuration = document.createElement("div");
+    recordDuration.classList.add("rua-recording-time");
+
+    const controlBarObserver = new MutationObserver(function (m){
+        m.forEach(function(mutation) {
+            if (mutation.type === "childList") {
+                console.log(mutation.addedNodes.length===0);
+                if(mutation.addedNodes.length===0){
+                    recordBtn.removeEventListener("click", recordingListener);
+                }
+                if(mutation.addedNodes[0]!==undefined&&mutation.addedNodes[0].nodeName==="DIV"){
+                    drawRecording();
+                    recordBtn.addEventListener("click", recordingListener);
+                }
+
+            }
+        });
+    });
+    try{
+        controlBarObserver.observe(controlBar,{
+            childList: true
+        });
+    }catch (e){}
+
+
+    function drawRecording(){
+        updateRecordingInfo();
+        controlBar.getElementsByClassName("right-area")[0].appendChild(recordBtn);
+    }
+
+    function updateRecordingInfo(){
+        recordBtn.innerHTML = "<span class='text'>"+(startRecording?"结束录制":"开始录制")+"</span>";
+        if(startRecording){
+            recordDuration.innerHTML = "<span class='text'>录制时长 "+secondToMinutes(recordingDuration)+"</span>";
+            controlBar.getElementsByClassName("left-area")[0].appendChild(recordDuration);
+        }else{
+            recordDuration.innerHTML = "<span class='text'></span>";
+        }
+    }
+
+    function recordingListener(){
+        startRecording = !startRecording;
+        updateRecordingInfo();
+        console.log("Start recording");
+        if(!startRecording)recorder.stop();
+    }
+    var videoReconnect = new MutationObserver(function (m){
+        m.forEach(function(mutation) {
+            if (mutation.type === "childList") {
+                if(mutation.addedNodes[0]!==undefined&&mutation.addedNodes[0].nodeName==="VIDEO")
+                    recording();
+            }
+        });
+    });
+    try{
+        videoReconnect.observe(document.getElementById("live-player"),{
+            childList: true
+        });
+    }catch (e) {}
+
+    function recording(){
+        const stream = document.getElementById("live-player").getElementsByTagName("video")[0].captureStream(60);
+        var streamChunks = [];
+        console.log(stream);
+        recorder = new MediaRecorder(stream);
+        recorder.ondataavailable = (e) =>{
+            //console.log("data-available");
+            if(e.data.size > 0){
+                if(streamChunks.length >= prerecordingDuration && !startRecording)
+                    streamChunks.splice(0,1);
+                streamChunks.push(e.data);
+                if(startRecording) {
+                    recordingDuration = streamChunks.length;
+                    recordDuration.innerHTML = "<span class='text'>录制时长 "+secondToMinutes(recordingDuration)+"</span>";
+                }
+            }
+            console.log(streamChunks.length);
+        }
+        recorder.onstart = ()=>{
+            console.log("start recording")
+        }
+        recorder.onstop = ()=>{
+            const url = window.URL.createObjectURL(new Blob(streamChunks));
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = "test" + ".mp4";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            recording();
+        }
+        recorder.start(1000);
+    }
+
+    function secondToMinutes(sec){
+        return Math.floor(sec / 60.0) +" : "+(sec % 60<10?"0":"")+sec%60;
+    }
+
 }();

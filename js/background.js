@@ -258,10 +258,11 @@
      * attention: not accept cookie.
      * */
     function queryLivingRoom() {
+        let body = '{"uids": [' + FOLLOWING_LIST.getUIDList().toString()+']}';
         fetch("https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids",{
             method:"POST",
-            credentials: 'omit',
-            body:{"uids": FOLLOWING_LIST.getUIDList()}
+            credentials: "omit",
+            body:body
         })
             .then(res => res.json())
             .then(json => {
@@ -724,16 +725,6 @@
     /**
      * Web traffic control section.
      * */
-    chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
-            let headers = details["requestHeaders"];
-            for (let header in headers) {
-                if (headers[header].name === "Cookie") {
-                    headers[header].value = ""
-                }
-            }
-            return {requestHeaders: details.requestHeaders};
-        }, {urls: ["https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids"]}, ['blocking', "requestHeaders", "extraHeaders"]
-    );
     chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
             let headers = details["requestHeaders"];
             for (let header in headers) {
