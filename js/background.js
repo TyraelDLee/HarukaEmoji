@@ -122,6 +122,45 @@
                     });
 
             }
+            if(request.msg === "requestEncode"){
+                console.log(request.blob);
+                const url = request.blob;
+                const {createFFmpeg, fetchFile} = FFmpeg;
+                const ffmpeg = createFFmpeg({
+                    corePath: "./ffmpeg/ffmpeg-core.js",
+                    log: true,
+                });
+                (async ()=>{
+                    let out;
+                    await ffmpeg.load();
+                    ffmpeg.FS('writeFile', 'video.mp4', await fetchFile(url));
+                    if(request.startTime > 1){
+                        await ffmpeg.run('-i', 'video.mp4', '-ss', request.startTime + '', '-c', 'copy', 'footage.mp4');
+                        await ffmpeg.run('-i', 'footage.mp4', '-threads', '4', '-preset', 'superfast', 'final.mp4');
+                    }else{
+                        await ffmpeg.run('-i', 'video.mp4', '-threads', '4', '-preset', 'superfast', 'final.mp4');
+                    }
+                    out = ffmpeg.FS('readFile', 'final.mp4');
+                    // await ffmpeg.run('-i', 'video.mp4', '-threads', '4', '-preset', 'superfast', 'footage.mp4');
+                    // if(request.startTime>1) {
+                    //     await ffmpeg.run('-i', 'footage.mp4', '-ss', request.startTime + '', '-c', 'copy', 'final.mp4');
+                    //     out = ffmpeg.FS('readFile', 'final.mp4');
+                    // }else{
+                    //     out = ffmpeg.FS('readFile', 'footage.mp4');
+                    // }
+                    window.URL.revokeObjectURL(url);
+                    const dl = URL.createObjectURL(new Blob([out.buffer], { type: 'video/mp4' }));
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = dl;
+                    a.download = request.filename + ".mp4";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(dl);
+                    //sendResponse({res:new Blob([out.buffer], { type: 'video/mp4' })});
+                })();
+            }
             if(request.msg.includes("QNV")){
                 QNV = request.msg.split("?")[1];
                 sendResponse({res:"ok"});

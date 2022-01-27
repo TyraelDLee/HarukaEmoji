@@ -13,6 +13,7 @@
     var mid = "";
     var room_id = window.location["pathname"].replaceAll("/", "").replace("blanc","");
     var exp =new RegExp("^[0-9]*$");
+    const room_title = document.title.replace(" - 哔哩哔哩直播，二次元弹幕直播平台","").replaceAll(" ","");
     chrome.storage.sync.get(["qn"], function(result){qn = result.qn});
     chrome.storage.sync.get(["qnvalue"], function(result){qnv = result.qnvalue});
     chrome.storage.sync.get(["medal"], (result)=>{medalSwitch = result.medal});
@@ -201,10 +202,7 @@
     /**
      * Recording section
      * */
-    let startRecording = false;
-    let recordingDuration = 0;
-    let prerecordingDuration = 300;
-    let recorder;
+    let startRecording = false, stopRecoding = false, recordingDuration = 0, prerecordingDuration = 300, recorder;
     const recordBtn = document.createElement("div");
     const controlBar = document.getElementById("web-player-controller-wrap-el");
     recordBtn.classList.add("rua-record");
@@ -252,9 +250,13 @@
         startRecording = !startRecording;
         updateRecordingInfo();
         console.log("Start recording");
-        if(!startRecording)recorder.stop();
+        if(!startRecording){
+            stopRecoding = true;
+            recorder.stop();
+        }
     }
-    var videoReconnect = new MutationObserver(function (m){
+
+    const videoReconnect = new MutationObserver(function (m){
         m.forEach(function(mutation) {
             if (mutation.type === "childList") {
                 if(mutation.addedNodes[0]!==undefined&&mutation.addedNodes[0].nodeName==="VIDEO")
@@ -269,39 +271,43 @@
     }catch (e) {}
 
     function recording(){
-        const stream = document.getElementById("live-player").getElementsByTagName("video")[0].captureStream(60);
-        var streamChunks = [];
-        console.log(stream);
-        recorder = new MediaRecorder(stream);
-        recorder.ondataavailable = (e) =>{
-            //console.log("data-available");
-            if(e.data.size > 0){
-                if(streamChunks.length >= prerecordingDuration && !startRecording)
-                    streamChunks.splice(0,1);
-                streamChunks.push(e.data);
-                if(startRecording) {
-                    recordingDuration = streamChunks.length;
-                    recordDuration.innerHTML = "<span class='text'>录制时长 "+secondToMinutes(recordingDuration)+"</span>";
+        try{
+            const stream = document.getElementById("live-player").getElementsByTagName("video")[0].captureStream();
+            //not support 60fps yet.
+            let streamChunks = [], recordTime = 0, videotype="";
+            recordingDuration = 0;
+            console.log(stream);
+            recorder = new MediaRecorder(stream);
+            recorder.ondataavailable = (e) =>{
+                console.log(e.data.arrayBuffer());
+                if(e.data.size > 0){
+                    if(streamChunks.length >= prerecordingDuration && !startRecording){
+                        streamChunks.splice(1,1);
+                    }
+                    if (streamChunks.length===0){
+                        videotype = e.data.type;
+                    }
+                    streamChunks.push(e.data);
+                    if(startRecording) {
+                        recordingDuration = streamChunks.length;
+                        recordDuration.innerHTML = "<span class='text'>录制时长 "+secondToMinutes(recordingDuration)+"</span>";
+                    }
+                    recordTime++;
                 }
+                console.log(streamChunks.length);
             }
-            console.log(streamChunks.length);
-        }
-        recorder.onstart = ()=>{
-            console.log("start recording")
-        }
-        recorder.onstop = ()=>{
-            const url = window.URL.createObjectURL(new Blob(streamChunks));
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = "test" + ".mp4";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-            recording();
-        }
-        recorder.start(1000);
+            recorder.onstart = ()=>{
+                console.log("start recording")
+            }
+            recorder.onstop = ()=>{
+                if(stopRecoding){
+                    stopRecoding = false;
+                    chrome.runtime.sendMessage({msg: "requestEncode", blob: window.URL.createObjectURL(new Blob(streamChunks, {'type': videotype})), filename: room_title, startTime: (recordTime - recordingDuration), duration: recordingDuration});
+                }
+                recording();
+            }
+            recorder.start(1000);
+        }catch (e) {}
     }
 
     function secondToMinutes(sec){
