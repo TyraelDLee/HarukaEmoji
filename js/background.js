@@ -108,7 +108,7 @@
                 sendResponse({danmakuContent: danmakuBulider, danmakuPoolSize: request.danmakuObj.length});
             }
             if(request.msg === "requestUserInfo"){
-                fetch("https://api.bilibili.com/x/web-interface/card?mid="+request.mid+"&photo=true", {
+                fetch("https://api.bilibili.com/x/web-interface/card?mid="+request.mid+"&photo=true&requestFrom=rua5", {
                     method:"GET",
                     headers: {'Accept': 'application/json'},
                     credentials: 'include',
@@ -120,7 +120,6 @@
                             sendResponse({response:result["data"]["card"]});
                         }
                     });
-
             }
             if(request.msg === "requestEncode"){
                 console.log(request.blob);
@@ -141,13 +140,6 @@
                         await ffmpeg.run('-i', 'video.mp4', '-threads', '4', '-preset', 'superfast', 'final.mp4');
                     }
                     out = ffmpeg.FS('readFile', 'final.mp4');
-                    // await ffmpeg.run('-i', 'video.mp4', '-threads', '4', '-preset', 'superfast', 'footage.mp4');
-                    // if(request.startTime>1) {
-                    //     await ffmpeg.run('-i', 'footage.mp4', '-ss', request.startTime + '', '-c', 'copy', 'final.mp4');
-                    //     out = ffmpeg.FS('readFile', 'final.mp4');
-                    // }else{
-                    //     out = ffmpeg.FS('readFile', 'footage.mp4');
-                    // }
                     window.URL.revokeObjectURL(url);
                     const dl = URL.createObjectURL(new Blob([out.buffer], { type: 'video/mp4' }));
                     const a = document.createElement('a');
@@ -298,7 +290,7 @@
      * */
     function queryLivingRoom() {
         let body = '{"uids": [' + FOLLOWING_LIST.getUIDList().toString()+']}';
-        fetch("https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids",{
+        fetch("https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids?requestFrom=rua5",{
             method:"POST",
             credentials: "omit",
             body:body
@@ -611,7 +603,7 @@
      * Exchange B coin section.
      * */
     function exchangeBCoin(){
-        fetch("https://api.bilibili.com/x/vip/privilege/receive",{
+        fetch("https://api.bilibili.com/x/vip/privilege/receive?requestFrom=rua5",{
             method:"POST",
             credentials: 'include',
             body:{"type": 1,"csrf":JCT}
@@ -765,14 +757,16 @@
      * Web traffic control section.
      * */
     chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
-            let headers = details["requestHeaders"];
-            for (let header in headers) {
-                if(headers[header].name === "Origin"){
-                    headers[header].value = "https://www.bilibili.com/"
+        let headers = details["requestHeaders"];
+            if(new URLSearchParams(new URL(details["url"])["search"]).get("requestFrom")==="rua5"){
+                for (let header in headers) {
+                    if(headers[header].name === "Origin"){
+                        headers[header].value = "https://www.bilibili.com/"
+                    }
                 }
             }
             return {requestHeaders: details.requestHeaders};
-        }, {urls: ["https://api.bilibili.com/x/vip/privilege/receive", "https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids", "https://api.bilibili.com/x/web-interface/card*"]}, ['blocking', "requestHeaders", "extraHeaders"]
+        }, {urls: ["https://api.bilibili.com/x/vip/privilege/receive*", "https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids*", "https://api.bilibili.com/x/web-interface/card*"]}, ['blocking', "requestHeaders", "extraHeaders"]
     );
     chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
             let headers = details["requestHeaders"];

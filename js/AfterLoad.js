@@ -13,7 +13,14 @@
     var mid = "";
     var room_id = window.location["pathname"].replaceAll("/", "").replace("blanc","");
     var exp =new RegExp("^[0-9]*$");
-    const room_title = document.title.replace(" - 哔哩哔哩直播，二次元弹幕直播平台","").replaceAll(" ","");
+    var room_title = document.title.replace(" - 哔哩哔哩直播，二次元弹幕直播平台","").replaceAll(" ","");
+    !function changTitle (){
+        const memeName = {'21652717': '全世界最好的豹豹', '1603600': '伟大的山猪王星汐Seki陛下', '545':'塔宝', '22486793': '夏鹤1？夏鹤0！', '21775601':'紫色叔叔'};
+        if(memeName[room_id] !== undefined){
+            if (room_title.includes('-')) room_title = room_title.split('-')[0]+'-'+memeName[room_id];
+            else room_title+='-'+memeName[room_id];
+        }
+    }();
     chrome.storage.sync.get(["qn"], function(result){qn = result.qn});
     chrome.storage.sync.get(["qnvalue"], function(result){qnv = result.qnvalue});
     chrome.storage.sync.get(["medal"], (result)=>{medalSwitch = result.medal});
@@ -204,7 +211,7 @@
      * */
     let startRecording = false, stopRecoding = false, recordingDuration = 0, prerecordingDuration = 300, recorder;
     const recordBtn = document.createElement("div");
-    const controlBar = document.getElementById("web-player-controller-wrap-el");
+    let controlBar = document.getElementById("web-player-controller-wrap-el");
     recordBtn.classList.add("rua-record");
     const recordDuration = document.createElement("div");
     recordDuration.classList.add("rua-recording-time");
@@ -212,24 +219,47 @@
     const controlBarObserver = new MutationObserver(function (m){
         m.forEach(function(mutation) {
             if (mutation.type === "childList") {
-                console.log(mutation.addedNodes.length===0);
                 if(mutation.addedNodes.length===0){
+                    console.log("listener cleared");
                     recordBtn.removeEventListener("click", recordingListener);
                 }
                 if(mutation.addedNodes[0]!==undefined&&mutation.addedNodes[0].nodeName==="DIV"){
                     drawRecording();
                     recordBtn.addEventListener("click", recordingListener);
                 }
-
             }
         });
     });
+
+    const videoReconnect = new MutationObserver(function (m){
+        m.forEach(function(mutation) {
+            if (mutation.type === "childList") {
+                console.log(mutation.addedNodes)
+                if(mutation.addedNodes[0]!==undefined&&mutation.addedNodes[0].nodeName==="VIDEO")
+                    recording();
+                if(controlBar===null){
+                    if(mutation.addedNodes[0]!==undefined&&mutation.addedNodes[0].nodeName==="DIV"&&mutation.addedNodes[0].id==="web-player-controller-wrap-el"){
+                        controlBar = mutation.addedNodes[0];
+                        controlBarObserver.observe(controlBar,{
+                            childList: true
+                        });
+                    }
+                }
+            }
+        });
+    });
+
     try{
-        controlBarObserver.observe(controlBar,{
+        // add recorder switch here.
+        if(controlBar!==null){
+            controlBarObserver.observe(controlBar,{
+                childList: true
+            });
+        }
+        videoReconnect.observe(document.getElementById("live-player"),{
             childList: true
         });
-    }catch (e){}
-
+    }catch (e) {}
 
     function drawRecording(){
         updateRecordingInfo();
@@ -256,24 +286,10 @@
         }
     }
 
-    const videoReconnect = new MutationObserver(function (m){
-        m.forEach(function(mutation) {
-            if (mutation.type === "childList") {
-                if(mutation.addedNodes[0]!==undefined&&mutation.addedNodes[0].nodeName==="VIDEO")
-                    recording();
-            }
-        });
-    });
-    try{
-        videoReconnect.observe(document.getElementById("live-player"),{
-            childList: true
-        });
-    }catch (e) {}
-
     function recording(){
         try{
             const stream = document.getElementById("live-player").getElementsByTagName("video")[0].captureStream();
-            //not support 60fps yet.
+            //not support 60fps yet. And for all resolution above 1080p will involve performance issue.
             let streamChunks = [], recordTime = 0, videotype="";
             recordingDuration = 0;
             console.log(stream);
@@ -282,7 +298,7 @@
                 console.log(e.data.arrayBuffer());
                 if(e.data.size > 0){
                     if(streamChunks.length >= prerecordingDuration && !startRecording){
-                        streamChunks.splice(1,1);
+                        streamChunks.splice(1,1);// first chunk contains headers.
                     }
                     if (streamChunks.length===0){
                         videotype = e.data.type;

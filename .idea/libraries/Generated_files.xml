@@ -3,13 +3,10 @@
     <properties>
       <sourceFilesUrls>
         <item url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.min.js" />
-        <item url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.min.min.js" />
         <item url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.worker.min.js" />
-        <item url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.worker.min.min.js" />
-        <item url="file://$PROJECT_DIR$/ffmpeg/ffmpeg.min.min.js" />
-        <item url="file://$PROJECT_DIR$/ffmpeg/ffmpeg.min.min.min.js" />
         <item url="file://$PROJECT_DIR$/js/ADT.min.js" />
         <item url="file://$PROJECT_DIR$/js/AfterLoad.min.js" />
+        <item url="file://$PROJECT_DIR$/js/Lott.min.js" />
         <item url="file://$PROJECT_DIR$/js/Video.min.js" />
         <item url="file://$PROJECT_DIR$/js/VideoHost.min.js" />
         <item url="file://$PROJECT_DIR$/js/WebHost.min.js" />
@@ -22,13 +19,10 @@
     </properties>
     <CLASSES>
       <root url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.min.js" />
-      <root url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.min.min.js" />
       <root url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.worker.min.js" />
-      <root url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.worker.min.min.js" />
-      <root url="file://$PROJECT_DIR$/ffmpeg/ffmpeg.min.min.js" />
-      <root url="file://$PROJECT_DIR$/ffmpeg/ffmpeg.min.min.min.js" />
       <root url="file://$PROJECT_DIR$/js/ADT.min.js" />
       <root url="file://$PROJECT_DIR$/js/AfterLoad.min.js" />
+      <root url="file://$PROJECT_DIR$/js/Lott.min.js" />
       <root url="file://$PROJECT_DIR$/js/Video.min.js" />
       <root url="file://$PROJECT_DIR$/js/VideoHost.min.js" />
       <root url="file://$PROJECT_DIR$/js/WebHost.min.js" />
