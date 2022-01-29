@@ -32,3 +32,18 @@ h1, h2{
 .bottom a{
     text-decoration: none;
 }
+table{
+    text-align: center;
+    border-collapse: collapse;
+    border: 2px solid rgb(200, 200, 200);
+    letter-spacing: 1px;
+}
+
+th, td{
+    padding: 2px 10px;
+    border: 1px solid rgb(190, 190, 190);
+}
+
+thead{
+    background: #eee;
+}

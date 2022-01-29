@@ -134,3 +134,20 @@ rua豹器5.1.0来啦 <br>
 ### ver 4.3
 - 添加了新的表情包。
 - 修正了在活动页面不能正常显示的问题。
+
+
+## 开源组件许可
+### FFmpeg.wasm
+- Offical site: [ffmpegwasm.netlify.app](https://ffmpegwasm.netlify.app/)
+- Copyright (c) FFmpeg.wasm developers and contributors
+- License: [github.com/ffmpegwasm/ffmpeg.wasm-core/blob/n4.3.1-wasm/LICENSE.md](https://github.com/ffmpegwasm/ffmpeg.wasm-core/blob/n4.3.1-wasm/LICENSE.md)
+
+### Protocol Buffers
+- Offical site: [developers.google.com/protocol-buffers](https://developers.google.com/protocol-buffers/)
+- Copyright (c) 2008 Google Inc.
+- License: [github.com/protocolbuffers/protobuf/blob/master/LICENSE](https://github.com/protocolbuffers/protobuf/blob/master/LICENSE)
+
+### CRC crack
+- CRC.js [github.com/bilibili-helper/bilibili-helper-o/blob/master/src/js/libs/crc32.js](https://github.com/bilibili-helper/bilibili-helper-o/blob/master/src/js/libs/crc32.js)
+- Copyright (c) 2020 Zac Yu, ruo
+- License: [github.com/bilibili-helper/bilibili-helper-o/blob/master/LICENSE](https://github.com/bilibili-helper/bilibili-helper-o/blob/master/LICENSE)

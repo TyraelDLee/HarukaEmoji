@@ -10,6 +10,35 @@ hr{
     border:none;
 }
 
+select{
+    padding: 0 2%;
+    border: 0;
+    border-bottom: 2px solid #fb7299;
+    scrollbar-width:thin;
+    outline: none !important;
+}
+
+select::-webkit-scrollbar{
+    width: 6px;
+    height: 6px;
+}
+
+select::-webkit-scrollbar-thumb{
+    border-radius: 6px;
+    background-color: #aaa;
+}
+
+option{
+    text-align: center;
+}
+
+.dropbox{
+    width: 40px;
+    position: absolute;
+    right: -4px;
+    top: 12px;
+}
+
 .bottom{
     text-align: center;
     width: 300px;

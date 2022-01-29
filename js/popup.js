@@ -15,6 +15,10 @@
     const loginInfo = document.getElementById("login");
     const daka = document.getElementById("daka-switch");
     const wav = document.getElementById("wav");
+    const record = document.getElementById("record");
+    const decodeMT = document.getElementById("decodeMT");
+    const prerecord = document.getElementById("prerecord");
+    const preset = document.getElementById("preset");
 
     const qn_table = ["原画", "蓝光","超清","高清","流畅"];
     const qnItem = setting7.getElementsByClassName("qn-i");
@@ -64,6 +68,9 @@
     document.getElementById("readme").addEventListener("click", function (){
         chrome.tabs.create({url: "./readme.html"});
     });
+
+    document.getElementsByClassName("record-manual")[0].addEventListener("click", ()=>{chrome.tabs.create({url: "./readme.html#record"});});
+    document.getElementsByClassName("record-manual")[1].addEventListener("click", ()=>{chrome.tabs.create({url: "./readme.html#record"});});
 
     updateSection.addEventListener("click", ()=>{
         chrome.tabs.create({url:availableLink});
@@ -150,7 +157,72 @@
         chrome.storage.sync.set({"wav": checked}, function (){});
     });
 
-    window.addEventListener("focus", function (){
+    record.addEventListener("change", function (){
+        let checked = this.checked;
+        if(checked){
+            decodeMT.removeAttribute("disabled");
+            prerecord.removeAttribute("disabled");
+            preset.removeAttribute("disabled");
+        }else{
+            decodeMT.setAttribute("disabled","");
+            prerecord.setAttribute("disabled","");
+            preset.setAttribute("disabled","");
+        }
+        chrome.storage.sync.set({"record": checked}, function (){});
+    });
+
+    decodeMT.addEventListener("change", function (){
+        let coreCount = this.value;
+        console.log(coreCount)
+        chrome.storage.sync.set({"decodeThread":coreCount}, function (){});
+    });
+
+    prerecord.addEventListener("change", function (){
+        let value = this.value;
+        console.log(value)
+        chrome.storage.sync.set({"prerecord":value}, function (){});
+    });
+
+    preset.addEventListener("change", function (){
+        let value = this.value;
+        chrome.storage.sync.set({"decodePreset":value}, function (){});
+    });
+
+    function buttonDisabled(checked, obj){
+        if(checked) {
+            obj.removeAttribute("disabled");
+            obj.parentElement.getElementsByTagName("label")[0].classList.remove("btn-disabled");
+        } else{
+            obj.setAttribute("disabled", "true");
+            obj.parentElement.getElementsByTagName("label")[0].classList.add("btn-disabled");
+        }
+    }
+
+    function scrollDisabled(checked, obj){
+        checked?obj.classList.remove("btn-disabled") :obj.classList.add("btn-disabled");
+    }
+
+    function scrollAnim(newPos){
+        newPos*=-18;
+        let currentPos = parseInt(document.getElementById("qn-items").style.marginTop.replace("px",""));
+        let op = currentPos>newPos;
+        if(currentPos - newPos !== 0)
+            scroll();
+        function scroll(){
+            op?currentPos-=1:currentPos+=1;
+            for (let i = 0; i < 5; i++)
+                document.getElementsByClassName("qn-i")[i].style.transform = "rotateX("+(18*i+currentPos)*2.5+"deg)";
+            document.getElementById("qn-items").style.marginTop = currentPos+"px";
+            if(currentPos!==newPos){
+                setTimeout(()=>{scroll();}, 10);
+            }
+        }
+    }
+
+    window.onload = function (){
+        getLatestVer();
+        queryAvaThread();
+
         chrome.storage.sync.get(["notification"], function(result){
             buttonDisabled(result.notification, imageNotice);
             liveNotification.checked = result.notification;});
@@ -190,46 +262,29 @@
 
         chrome.storage.sync.get(["wav"], function (result){
             wav.checked = result.wav;});
-    });
 
-    window.addEventListener("blur", function (){
-        console.log("blur")
-    });
-
-    function buttonDisabled(checked, obj){
-        if(checked) {
-            obj.removeAttribute("disabled");
-            obj.parentElement.getElementsByTagName("label")[0].classList.remove("btn-disabled");
-        } else{
-            obj.setAttribute("disabled", "true");
-            obj.parentElement.getElementsByTagName("label")[0].classList.add("btn-disabled");
-        }
-    }
-
-    function scrollDisabled(checked, obj){
-        checked?obj.classList.remove("btn-disabled") :obj.classList.add("btn-disabled");
-    }
-
-    function scrollAnim(newPos){
-        newPos*=-18;
-        let currentPos = parseInt(document.getElementById("qn-items").style.marginTop.replace("px",""));
-        let op = currentPos>newPos;
-        if(currentPos - newPos !== 0)
-            scroll();
-        function scroll(){
-            op?currentPos-=1:currentPos+=1;
-            for (let i = 0; i < 5; i++)
-                document.getElementsByClassName("qn-i")[i].style.transform = "rotateX("+(18*i+currentPos)*2.5+"deg)";
-            document.getElementById("qn-items").style.marginTop = currentPos+"px";
-            if(currentPos!==newPos){
-                setTimeout(()=>{scroll();}, 10);
+        chrome.storage.sync.get(["record"], function (result){
+            record.checked = result.record;
+            if (!result.record){
+                decodeMT.setAttribute("disabled","");
+                prerecord.setAttribute("disabled","");
+                preset.setAttribute("disabled","");
             }
-        }
+        });
+
+        chrome.storage.sync.get(["decodeThread"], function (result){
+            setDefault(decodeMT.childNodes, result.decodeThread);
+        });
+
+        chrome.storage.sync.get(["prerecord"], function (result){
+            setDefault(prerecord.childNodes, result.prerecord);
+        });
+
+        chrome.storage.sync.get(["decodePreset"], function (result){
+            setDefault(preset.childNodes, result.decodePreset);
+        });
     }
 
-    window.onload = function (){
-        getLatestVer();
-    }
     function getLatestVer(){
         chrome.runtime.sendMessage({msg: "popupfired"});
         chrome.runtime.sendMessage({ msg: "updateStatus" }, function (updateStatus){
@@ -242,5 +297,24 @@
                 updateSection.innerText="";
             }
         });
+    }
+
+    function queryAvaThread(){
+        let seleceHTML = "";
+        for (let i = 1; i < navigator.hardwareConcurrency+1; i++) {
+            seleceHTML+= '<option value="'+i+'">'+i+'</option>';
+        }
+        decodeMT.innerHTML = seleceHTML;
+    }
+
+    function setDefault(object, value){
+        for(let child of object){
+            if(child.nodeName === "OPTION"){
+                if(child.getAttribute("value") !== value+"" && child.getAttribute("selected")==="selected")
+                    child.removeAttribute("selected");
+                if(child.getAttribute("value") === value+"")
+                    child.setAttribute("selected", "selected");
+            }
+        }
     }
 }();

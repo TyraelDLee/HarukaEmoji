@@ -325,7 +325,7 @@
     }
 
     function send(form){
-        fetch("https://api.live.bilibili.com/msg/send", {
+        fetch("https://api.live.bilibili.com/msg/send?requestFrom=rua5", {
             method:"POST",
             credentials: 'include',
             body: form

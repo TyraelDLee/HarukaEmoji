@@ -63,6 +63,71 @@
 
     <h3>移动端</h3>
     <p>下载支持插件的浏览器（如kiwi）并在浏览器安装即可。（暂不支持iOS）</p>
+
+    <h3 id="record">录制直播切片(beta)</h3>
+    rua豹器自5.2.0加入了录制直播切片的功能！<br>
+    支持录制重放，这样就不会错过要录制的片段啦！<br>
+    录制和转码支持ARM架构CPU(在Apple M1 Max上完成了测试)。<br>
+    目前录制经过验证的最大分辨率为1080p。1440p及以上可以录制但可能会造成性能问题（如丢帧、卡顿）。<br>
+    由于MediaRecorder API自身限制，似乎最高只能录制30帧视频(也可能是测试机硬件问题)。<br>
+    由于MediaRecorder视频录制机制，某些视频剪辑软件可能无法直接打开视频(测试软件：Adobe Premiere Pro CC 2017，比较老)。所以在录制完成后会先经过转码，转码完成后将自动下载。<br>
+    转码采用FFmpeg wasm。在默认设置(见下图)下一段5分钟的视频大致需要6~7分钟完成转码*。<br>
+    <div style="width: 100%;">
+        <table style="position: relative; float: right; margin: 50px 250px 0 0">
+            <thead>
+            <tr><th colspan="4">转码性能基准*</th></tr>
+            <tr>
+                <th scope="col">录制时长 (分钟)</th>
+                <th scope="col">质量</th>
+                <th scope="col">转码线程</th>
+                <th scope="col">转码所需时长 (分钟)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr style="background: #ccc;">
+                <td>5</td><td>低</td><td>4</td><td>~2.8</td>
+            </tr>
+            <tr>
+                <td>5</td><td>中</td><td>4</td><td>~6</td>
+            </tr>
+            <tr style="background: #ccc;">
+                <td>5</td><td>高</td><td>4</td><td>~25</td>
+            </tr>
+            <tr>
+                <td>5</td><td>很高</td><td>4</td><td>~105</td>
+            </tr>
+            <tr style="background: #ccc;">
+                <td>5</td><td>低</td><td>8</td><td>~2</td>
+            </tr>
+            <tr>
+                <td>5</td><td>中</td><td>8</td><td>~3.5</td>
+            </tr>
+            <tr style="background: #ccc;">
+                <td>5</td><td>高</td><td>8</td><td>~20</td>
+            </tr>
+            <tr>
+                <td>5</td><td>很高</td><td>8</td><td>~70</td>
+            </tr>
+            </tbody>
+        </table>
+        <img src="./images/popup/recording.PNG" width="25%" height="25%"><br>
+        <div style="font-size: 12px; width: 100%; text-align: right">*所有性能测试都是在Xeon E5 2969v3上完成的，性能比较拉，仅供参考。</div>
+    </div>
+
+    <ul>
+        <li>转码线程：转码时使用的线程数量，线程越多转码越快，但是过多的线程调用会影响系统整体性能，建议不要将此值设置过高。默认：4线程</li>
+        <li>录制重放：录制时会包含开始录制前数分钟的直播内容。该选项需刷新直播间页面后生效。默认：5分钟</li>
+        <li>转码质量：转码的预设质量，质量越高画质也好，但是转码时间也会越长。默认：中</li>
+    </ul>
+    <img src="./images/popup/recordui.png" width="25%" height="25%">
+    <ul>
+        <li>开始/结束录制：打开切片录制功能后在播放器ui，画质旁边就可以找到开始/结束录制按钮，点击即可进行录制/下载切片。</li>
+    </ul>
+    <b style="font-size: 18px">请注意:</b><br>
+    目前更改画质，刷新，重连都会倒是已录制但没有尚未转码的内容丢失。<br>
+    直播结束时或直播间切断时正在录制的内容也不会被保存。<br>
+    所有测试均是在Google Chrome 版本 97.0.4692.99（正式版本） （64 位）上完成的。火狐浏览器可能支持，但是未经测试。
+
     <h2>下载：</h2>
     <a href="https://chrome.google.com/webstore/detail/rua%E8%B1%B9%E5%99%A8/igapngheaefbfhikpbngjgakfnedkchb">chrome插件商店</a><br/>
     <a href="https://github.com/TyraelDLee/HarukaEmoji/releases">GitHub</a>
@@ -162,6 +227,26 @@
     <ul>
         <li>添加了新的表情包。</li>
         <li>修正了在活动页面不能正常显示的问题。</li>
+    </ul>
+
+    <h2>开源组件许可</h2>
+    <h3>FFmpeg.wasm</h3>
+    <ul>
+        <li>Offical site: <a href="https://ffmpegwasm.netlify.app/" target="_blank">ffmpegwasm.netlify.app</a></li>
+        <li>Copyright (c) FFmpeg.wasm developers and contributors</li>
+        <li>License: <a href="https://github.com/ffmpegwasm/ffmpeg.wasm-core/blob/n4.3.1-wasm/LICENSE.md" target="_blank">github.com/ffmpegwasm/ffmpeg.wasm-core/blob/n4.3.1-wasm/LICENSE.md</a></li>
+    </ul>
+    <h3>Protocol Buffers</h3>
+    <ul>
+        <li>Offical site: <a href="https://developers.google.com/protocol-buffers/" target="_blank">developers.google.com/protocol-buffers</a></li>
+        <li>Copyright (c) 2008 Google Inc.</li>
+        <li>License: <a href="https://github.com/protocolbuffers/protobuf/blob/master/LICENSE" target="_blank">github.com/protocolbuffers/protobuf/blob/master/LICENSE</a></li>
+    </ul>
+    <h3>CRC crack</h3>
+    <ul>
+        <li>CRC.js <a href="https://github.com/bilibili-helper/bilibili-helper-o/blob/master/src/js/libs/crc32.js" target="_blank">github.com/bilibili-helper/bilibili-helper-o/blob/master/src/js/libs/crc32.js</a></li>
+        <li>Copyright (c) 2020 Zac Yu, ruo</li>
+        <li>License: <a href="https://github.com/bilibili-helper/bilibili-helper-o/blob/master/LICENSE" target="_blank">github.com/bilibili-helper/bilibili-helper-o/blob/master/LICENSE</a></li>
     </ul>
 </div>
 <div class="bottom">
