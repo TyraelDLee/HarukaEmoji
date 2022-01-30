@@ -112,6 +112,46 @@ FollowingMemberList.prototype.maintainList = function (member){
         this.push(member);
 }
 
+function Notification(rid){
+    this.rid = rid;
+    this.notificationList = [];
+}
+Notification.prototype.add = function (id){
+    this.notificationList.push(id);
+}
+Notification.prototype.clearNotification = function (){
+    for (let i = 0; i < this.notificationList.length; i++) {
+        chrome.notifications.clear(this.notificationList[i]);
+    }
+}
+
+function NotificationList(){
+    this.list = [];
+}
+NotificationList.prototype.push = function (rid, nid){
+    for (let i = 0; i < this.list.length; i++) {
+        if(this.list[i].rid === rid){
+            this.list[i].add(nid);
+            return;
+        }
+    }
+    let n = new Notification(rid);
+    n.add(nid);
+    this.list.push(n);
+}
+NotificationList.prototype.indexOf = function (rid){
+    for (let i = 0; i < this.list.length; i++) {
+        if (this.list[i].rid === rid) return i;
+    }
+    return -1;
+}
+NotificationList.prototype.remove = function (rid){
+    let index = this.indexOf(rid);
+    if(index>-1){
+        this.list[index].clearNotification();
+        this.list.splice(index,1);
+    }
+}
 
 function ImageButton(URL, span){
     this.URL = URL;

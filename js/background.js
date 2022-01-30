@@ -29,6 +29,7 @@
     var P_SESS = SESSDATA;
     var FOLLOWING_LIST = new FollowingMemberList();
     var FOLLOWING_LIST_TEMP = new FollowingMemberList();
+    var NOTIFICATION_LIST = new NotificationList();
     var winIDList = new WindowIDList();
     var p = 0;
 
@@ -322,6 +323,7 @@
             for (let i = 0; i < FOLLOWING_LIST.length(); i++) {
                 if(FOLLOWING_LIST.get(i).ONAIR){
                     if(ON_AIR_LIST.indexOf(FOLLOWING_LIST.get(i))===-1){
+                        NOTIFICATION_LIST.remove(FOLLOWING_LIST.get(i).ROOM_URL);
                         FOLLOWING_LIST.get(i).COVER = undefined;
                         FOLLOWING_LIST.get(i).FACE = undefined;
                         FOLLOWING_LIST.get(i).KEYFRAME = undefined;
@@ -364,6 +366,7 @@
 
     function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face){
         let uid = Math.random();
+        NOTIFICATION_LIST.push(roomUrl, uid+":"+roomUrl);
         let msg = liverName + " 开播啦!\r\n是"+(type===0?"电脑":"手机")+"直播！";
         imageNotificationSwitch?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "https://live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, face, "https://live.bilibili.com/");
     }
