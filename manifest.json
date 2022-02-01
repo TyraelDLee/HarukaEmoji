@@ -1,14 +1,14 @@
 {
   "name": "rua豹器",
   "manifest_version": 2,
-  "version": "5.2.0",
+  "version": "5.2.1",
   "browser_action": {
     "default_popup": "popup.html"
   },
   "description": "rua!",
   "permissions": ["cookies","contextMenus","storage","notifications","webRequest","webRequestBlocking","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "https://*.hdslb.com/*", "https://api.vc.bilibili.com/", "https://tyrael-lee.gitee.io/", "https://tyraeldlee.github.io/", "*://*.bilivideo.com/", "*://*.akamaized.net/"],
   "background": {
-    "scripts": ["js/ADT.js","ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/background.min.js"],
+    "scripts": ["js/ADT.js","js/jquery.js","ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/background.min.js"],
     "persistent": true
   },
   "icons": {
