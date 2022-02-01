@@ -16,6 +16,8 @@ select{
     border-bottom: 2px solid #fb7299;
     scrollbar-width:thin;
     outline: none !important;
+    transition: 0.4s;
+    -webkit-transition: 0.4s;
 }
 
 select::-webkit-scrollbar{

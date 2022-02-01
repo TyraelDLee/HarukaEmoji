@@ -97,7 +97,6 @@
     }
 
     function wareMedal(medal, upd){
-        console.log(medal);
         if(JCT !== "-1" && medalSwitch && medal.MID !== "-1"){
             var madelForm = new FormData();
             madelForm.append("medal_id", medal.MID);
@@ -127,7 +126,6 @@
                 let i =  document.getElementById("control-panel-ctnr-box").getElementsByClassName("medal")[0];
                 if(i!==undefined) i.style.display = "none";
                 let s = document.getElementById("control-panel-ctnr-box").getElementsByClassName("fans-medal-content")[0].innerText;
-                console.log(medal);
                 if(s===undefined || s !== medal.mName)
                     setTimeout(()=>{c(medal)}, 1000);
             },20);
@@ -230,7 +228,6 @@
         m.forEach(function(mutation) {
             if (mutation.type === "childList") {
                 if(mutation.addedNodes.length===0){
-                    console.log("listener cleared");
                     recordBtn.removeEventListener("click", recordingListener);
                 }
                 if(mutation.addedNodes[0]!==undefined&&mutation.addedNodes[0].nodeName==="DIV" && recordEnable){
@@ -297,17 +294,15 @@
     }
 
     function recording(){
-        console.log(prerecordingDuration);
         try{
             const stream = document.getElementById("live-player").getElementsByTagName("video")[0].captureStream();
             //not support 60fps yet. And for all resolution above 1080p will involve performance issue.
             let streamChunks = [], recordTime = 0, videotype="";
             recordingDuration = 0;
-            console.log(stream);
             if(recordEnable){
+                console.log(stream);
                 recorder = new MediaRecorder(stream);
                 recorder.ondataavailable = (e) =>{
-                    console.log(e.data.arrayBuffer());
                     if(e.data.size > 0){
                         if(streamChunks.length >= prerecordingDuration && !startRecording){
                             streamChunks.splice(1,1);// first chunk contains headers.
@@ -322,7 +317,6 @@
                         }
                         recordTime++;
                     }
-                    console.log(streamChunks.length);
                 }
                 recorder.onstart = ()=>{
                     console.log("start recording")
