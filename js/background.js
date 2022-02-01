@@ -555,13 +555,16 @@
      * Exchange B coin section.
      * */
     function exchangeBCoin(){
-        $.ajax({
-            url: "https://api.bilibili.com/x/vip/privilege/receive?requestFrom=rua5",
-            type: "POST",
-            data: {"type": 1,"csrf":JCT},
-            dataType: "json",
-            json: "callback",
-            success: function (json) {
+        let form = new FormData();
+        form.append('type', '1');
+        form.append('csrf', JCT);
+        fetch("https://api.bilibili.com/x/vip/privilege/receive?requestFrom=rua5",{
+            method:"POST",
+            credentials: 'include',
+            body:form
+        })
+            .then(res => res.json())
+            .then(json => {
                 console.log("兑换成功！好耶( •̀ ω •́ )✧");
                 chrome.notifications.create(Math.random()+"", {
                         type: "basic",
@@ -574,31 +577,7 @@
                         },3000);
                     }
                 );
-            },
-            error: function (msg) {
-                errorHandler(queryBcoin, msg);
-            }
-        });
-        // fetch("https://api.bilibili.com/x/vip/privilege/receive?requestFrom=rua5",{
-        //     method:"POST",
-        //     credentials: 'include',
-        //     body:'{type: 1,csrf:'+JCT+'}'
-        // })
-        //     .then(res => res.json())
-        //     .then(json => {
-        //         console.log("兑换成功！好耶( •̀ ω •́ )✧");
-        //         chrome.notifications.create(Math.random()+"", {
-        //                 type: "basic",
-        //                 iconUrl: "./images/abaaba.png",
-        //                 title: "本月大会员的5B币兑换成功！",
-        //                 message:""
-        //             }, function (id) {
-        //                 setTimeout(function (){
-        //                     chrome.notifications.clear(id);
-        //                 },3000);
-        //             }
-        //         );
-        //     }).catch(msg =>{errorHandler(queryBcoin, msg);});
+            }).catch(msg =>{errorHandler(queryBcoin, msg);});
     }
 
     function queryBcoin(){
