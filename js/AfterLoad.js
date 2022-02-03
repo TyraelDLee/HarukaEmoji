@@ -295,7 +295,7 @@
 
     function recording(){
         try{
-            const stream = document.getElementById("live-player").getElementsByTagName("video")[0].captureStream();
+            const stream = document.getElementById("live-player").getElementsByTagName("video")[0].captureStream(60);
             //not support 60fps yet. And for all resolution above 1080p will involve performance issue.
             let streamChunks = [], recordTime = 0, videotype="";
             recordingDuration = 0;

@@ -42,8 +42,8 @@
       <envs />
     </TaskOptions>
     <enabled-global>
-      <option value="CleanCSS" />
       <option value="minify" />
+      <option value="CleanCSS" />
     </enabled-global>
   </component>
 </project>

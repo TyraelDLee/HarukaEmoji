@@ -147,11 +147,17 @@
                     let out;
                     await ffmpeg.load();
                     ffmpeg.FS('writeFile', 'video.mp4', await fetchFile(url));
+                    // if(request.startTime > 1){
+                    //     await ffmpeg.run('-i', 'video.mp4', '-ss', request.startTime + '', '-c', 'copy', 'footage.mp4');
+                    //     await ffmpeg.run('-i', 'footage.mp4', '-threads', decodeThread+'', '-preset', decodePreset, 'final.mp4');
+                    // }else{
+                    //     await ffmpeg.run('-i', 'video.mp4', '-threads', decodeThread+'', '-preset', decodePreset, 'final.mp4');
+                    // }
                     if(request.startTime > 1){
                         await ffmpeg.run('-i', 'video.mp4', '-ss', request.startTime + '', '-c', 'copy', 'footage.mp4');
-                        await ffmpeg.run('-i', 'footage.mp4', '-threads', decodeThread+'', '-preset', decodePreset, 'final.mp4');
+                        await ffmpeg.run('-i', 'footage.mp4', '-c', 'copy', 'final.mp4');
                     }else{
-                        await ffmpeg.run('-i', 'video.mp4', '-threads', decodeThread+'', '-preset', decodePreset, 'final.mp4');
+                        await ffmpeg.run('-i', 'video.mp4', '-c','copy', 'final.mp4');
                     }
                     out = ffmpeg.FS('readFile', 'final.mp4');
                     window.URL.revokeObjectURL(url);
