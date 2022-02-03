@@ -143,9 +143,9 @@
                     // }
                     if(request.startTime > 1){
                         await ffmpeg.run('-i', 'video.mp4', '-ss', request.startTime + '', '-c', 'copy', 'footage.mp4');
-                        await ffmpeg.run('-i', 'footage.mp4', '-c', 'copy', 'final.mp4');
+                        await ffmpeg.run('-i', 'footage.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
                     }else{
-                        await ffmpeg.run('-i', 'video.mp4', '-c','copy', 'final.mp4');
+                        await ffmpeg.run('-i', 'video.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
                     }
                     out = ffmpeg.FS('readFile', 'final.mp4');
                     window.URL.revokeObjectURL(url);

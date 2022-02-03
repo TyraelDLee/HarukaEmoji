@@ -297,7 +297,7 @@
         try{
             const stream = document.getElementById("live-player").getElementsByTagName("video")[0].captureStream(60);
             //not support 60fps yet. And for all resolution above 1080p will involve performance issue.
-            let streamChunks = [], recordTime = 0, videotype="";
+            let streamChunks = [], recordTime = 0, videotype="", recordingSize = 0;//(size unit: MiB 1024^2 Byte)
             recordingDuration = 0;
             if(recordEnable){
                 console.log(stream);
@@ -311,6 +311,8 @@
                             videotype = e.data.type;
                         }
                         streamChunks.push(e.data);
+                        recordingSize += e.data.size / (1024**2);
+                        console.log(recordingSize+"MiB recorded.")
                         if(startRecording) {
                             recordingDuration = streamChunks.length;
                             recordDuration.innerHTML = "<span class='text'>录制时长 "+secondToMinutes(recordingDuration)+"</span>";
@@ -319,7 +321,7 @@
                     }
                 }
                 recorder.onstart = ()=>{
-                    console.log("start recording")
+                    console.log("start recording");
                 }
                 recorder.onstop = ()=>{
                     if(stopRecoding){
