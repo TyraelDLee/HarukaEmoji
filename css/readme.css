@@ -1,3 +1,7 @@
+body{
+    scrollbar-width:thin;
+}
+
 body::-webkit-scrollbar{
     width: 6px;
     height: 6px;

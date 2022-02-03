@@ -33,9 +33,6 @@
     var winIDList = new WindowIDList();
     var p = 0;
 
-    var decodeThread = 4;
-    var decodePreset = 'superfast';
-
     chrome.browserAction.setBadgeBackgroundColor({color: "#00A0FF"});
     chrome.windows.getAll(function (wins){for (let i = 0; i < wins.length; i++) winIDList.push(wins[i].id);});
     chrome.windows.onCreated.addListener(function (win){winIDList.push(win.id);});
@@ -55,8 +52,6 @@
         chrome.storage.sync.set({"hiddenEntry":false}, function (){hiddenEntry = false});
         chrome.storage.sync.set({"daka":true}, function (){dakaSwitch = true});
         chrome.storage.sync.set({"record":true});
-        chrome.storage.sync.set({"decodeThread":4}, function (){decodeThread = 4});
-        chrome.storage.sync.set({"decodePreset": "superfast"}, function (){decodePreset = "superfast"});
         chrome.storage.sync.set({"prerecord":300}, function (){});
         chrome.tabs.create({url: "./readme.html"});
     });
@@ -81,12 +76,6 @@
                 dakaSwitch = newValue;
                 if(dakaSwitch)
                     checkMedalDaka();
-            }
-            if(key === "decodePreset"){
-                decodePreset = newValue;
-            }
-            if(key === "decodeThread"){
-                decodeThread = newValue;
             }
         }
     });
@@ -136,7 +125,6 @@
                     });
             }
             if(request.msg === "requestEncode"){
-                console.log(decodeThread+" "+decodePreset+" ");
                 const url = request.blob;
                 const {createFFmpeg, fetchFile} = FFmpeg;
                 const ffmpeg = createFFmpeg({
@@ -224,9 +212,6 @@
 
         chrome.storage.sync.get(["daka"], (result)=>{
             dakaSwitch = result.daka;});
-
-        chrome.storage.sync.get(["decodeThread"], (result)=>{decodeThread = result.decodeThread});
-        chrome.storage.sync.get(["decodePreset"], (result)=>{decodePreset = result.decodePreset});
     }
 
     /**

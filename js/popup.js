@@ -16,9 +16,7 @@
     const daka = document.getElementById("daka-switch");
     const wav = document.getElementById("wav");
     const record = document.getElementById("record");
-    const decodeMT = document.getElementById("decodeMT");
     const prerecord = document.getElementById("prerecord");
-    const preset = document.getElementById("preset");
 
     const qn_table = ["原画", "蓝光","超清","高清","流畅"];
     const qnItem = setting7.getElementsByClassName("qn-i");
@@ -160,32 +158,17 @@
     record.addEventListener("change", function (){
         let checked = this.checked;
         if(checked){
-            decodeMT.removeAttribute("disabled");
             prerecord.removeAttribute("disabled");
-            preset.removeAttribute("disabled");
         }else{
-            decodeMT.setAttribute("disabled","");
             prerecord.setAttribute("disabled","");
-            preset.setAttribute("disabled","");
         }
         chrome.storage.sync.set({"record": checked}, function (){});
-    });
-
-    decodeMT.addEventListener("change", function (){
-        let coreCount = this.value;
-        console.log(coreCount)
-        chrome.storage.sync.set({"decodeThread":coreCount}, function (){});
     });
 
     prerecord.addEventListener("change", function (){
         let value = this.value;
         console.log(value)
         chrome.storage.sync.set({"prerecord":value}, function (){});
-    });
-
-    preset.addEventListener("change", function (){
-        let value = this.value;
-        chrome.storage.sync.set({"decodePreset":value}, function (){});
     });
 
     function buttonDisabled(checked, obj){
@@ -221,7 +204,6 @@
 
     window.onload = function (){
         getLatestVer();
-        queryAvaThread();
 
         chrome.storage.sync.get(["notification"], function(result){
             buttonDisabled(result.notification, imageNotice);
@@ -265,24 +247,13 @@
 
         chrome.storage.sync.get(["record"], function (result){
             record.checked = result.record;
-            if (!result.record){
-                decodeMT.setAttribute("disabled","");
-                prerecord.setAttribute("disabled","");
-                preset.setAttribute("disabled","");
-            }
-        });
-
-        chrome.storage.sync.get(["decodeThread"], function (result){
-            setDefault(decodeMT.childNodes, result.decodeThread);
+            if (!result.record) prerecord.setAttribute("disabled","");
         });
 
         chrome.storage.sync.get(["prerecord"], function (result){
             setDefault(prerecord.childNodes, result.prerecord);
         });
 
-        chrome.storage.sync.get(["decodePreset"], function (result){
-            setDefault(preset.childNodes, result.decodePreset);
-        });
     }
 
     function getLatestVer(){
@@ -297,14 +268,6 @@
                 updateSection.innerText="";
             }
         });
-    }
-
-    function queryAvaThread(){
-        let seleceHTML = "";
-        for (let i = 1; i < navigator.hardwareConcurrency+1; i++) {
-            seleceHTML+= '<option value="'+i+'">'+i+'</option>';
-        }
-        decodeMT.innerHTML = seleceHTML;
     }
 
     function setDefault(object, value){
