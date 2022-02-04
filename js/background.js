@@ -253,6 +253,7 @@
                     }
                     if (listLength !== 0) getFollowingList();
                 }
+                if(json['code']!==0)errorHandler(getFollowingList, json['code']);
             }).catch(msg =>{p = 0;errorHandler(getFollowingList, msg);});
         }
     }
@@ -289,6 +290,8 @@
                         }
                     }
                     if (ON_AIR_LIST.list.length > 0) updateList(ON_AIR_LIST);
+                }else{
+                    errorHandler(getFollowingList, json['code']);
                 }
             }).catch(msg =>{p = 0;errorHandler(getFollowingList, msg);});
     }
@@ -693,26 +696,6 @@
                     localStorage.setItem("rua_lastDK", "1970-01-01");
                     errorHandler(checkMedalDaka,msg);
                 });
-
-            // $.ajax({
-            //     url: "https://api.live.bilibili.com/xlive/web-ucenter/user/MedalWall?target_id="+UUID,
-            //     type: "GET",
-            //     dataType: "json",
-            //     json: "callback",
-            //     xhrFields: {
-            //         withCredentials: true
-            //     },
-            //     success: function (json) {
-            //         console.log(json["data"]["list"].length+" medal founded.")
-            //         for (let i = 0; i < json["data"]["list"].length; i++)
-            //             medals.push(json["data"]["list"][i]["medal_info"]["target_id"]);
-            //         daka(medals);
-            //     },
-            //     error: function (msg) {
-            //         localStorage.setItem("rua_lastDK", "1970-01-01");
-            //         errorHandler(checkMedalDaka,msg);
-            //     }
-            // });
         }else console.log("No more grab needed.");
     }
 
@@ -753,40 +736,6 @@
                         }).catch(error=>{console.error('Error:', error);});
                     }
                 });
-            // $.ajax({
-            //     url: "https://api.live.bilibili.com/live_user/v1/Master/info?uid="+medals[index],
-            //     type: "GET",
-            //     dataType: "json",
-            //     json: "callback",
-            //     xhrFields: {
-            //         withCredentials: true
-            //     },
-            //     success: function (json) {
-            //         if(json["code"]===0 || json["data"].length>0){
-            //             let DanMuForm = new FormData();
-            //             DanMuForm.append("bubble", "0");
-            //             DanMuForm.append("msg", "打卡");
-            //             DanMuForm.append("color", "16777215");
-            //             DanMuForm.append("mode", "1");
-            //             DanMuForm.append("fontsize", "25");
-            //             DanMuForm.append("rnd", Math.round(Date.now()/1000)+"");
-            //             DanMuForm.append("roomid", json["data"]["room_id"]);
-            //             DanMuForm.append("csrf", JCT);
-            //             DanMuForm.append("csrf_token", JCT);
-            //             fetch("https://api.live.bilibili.com/msg/send?requestFrom=rua5", {
-            //                 method:"POST",
-            //                 credentials: 'include',
-            //                 body: DanMuForm
-            //             }).then(result=>{
-            //                 console.log("打卡成功: https://live.bilibili.com/"+json["data"]["room_id"]);
-            //                 if(index<medals.length){
-            //                     setTimeout(()=>{go()},(Math.random()*5+10)*1000);
-            //                     index++;
-            //                 }
-            //             }).catch(error=>{console.error('Error:', error);});
-            //         }
-            //     }
-            // });
         })();
     }
 
