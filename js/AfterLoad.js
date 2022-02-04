@@ -18,13 +18,23 @@
     var prerecordingDuration = 300;
     var recorder;
 
-    !function changTitle (){
+    function setRoomTitle(){
+        try{
+            const header = document.getElementById('head-info-vm');
+            const title = header.getElementsByClassName('live-title')[0].getElementsByClassName('text')[0].innerText;
+            const name = header.getElementsByClassName('lower-row')[0].getElementsByClassName('left-ctnr')[0].getElementsByTagName('a')[0].innerText;
+            return changTitle(title+"-"+name);
+        }catch (e){}
+        return room_title;
+    }
+    function changTitle (title){
         const memeName = {'21652717': '全世界最好的豹豹', '1603600': '伟大的山猪王星汐Seki陛下', '545':'塔宝', '22486793': '夏鹤1？夏鹤0！', '21775601':'紫色叔叔'};
         if(memeName[room_id] !== undefined){
-            if (room_title.includes('-')) room_title = room_title.split('-')[0]+'-'+memeName[room_id];
-            else room_title+='-'+memeName[room_id];
+            if (title.includes('-')) title = title.split('-')[0]+'-'+memeName[room_id];
+            else title+='-'+memeName[room_id];
         }
-    }();
+        return title;
+    }
     chrome.storage.sync.get(["qn"], function(result){qn = result.qn});
     chrome.storage.sync.get(["qnvalue"], function(result){qnv = result.qnvalue});
     chrome.storage.sync.get(["medal"], (result)=>{medalSwitch = result.medal});
@@ -44,7 +54,7 @@
     (function getUserInfo(){
         chrome.runtime.sendMessage({msg: "get_LoginInfo"}, function (lf) {
             JCT = lf.res.split(",")[0];
-            uid = lf.res.split(",")[2];
+            uid = lf.res.split(",")[1];
         });
     })();
 
@@ -312,7 +322,6 @@
                         }
                         streamChunks.push(e.data);
                         recordingSize += e.data.size / (1024**2);
-                        console.log(recordingSize+"MiB recorded.")
                         if(startRecording) {
                             recordingDuration = streamChunks.length;
                             recordDuration.innerHTML = "<span class='text'>录制时长 "+secondToMinutes(recordingDuration)+"</span>";
@@ -325,8 +334,15 @@
                 }
                 recorder.onstop = ()=>{
                     if(stopRecoding){
+                        const videoBlob = new Blob(streamChunks, {'type': videotype});
+                        const blobURL = window.URL.createObjectURL(videoBlob);
                         stopRecoding = false;
-                        chrome.runtime.sendMessage({msg: "requestEncode", blob: window.URL.createObjectURL(new Blob(streamChunks, {'type': videotype})), filename: room_title, startTime: (recordTime - recordingDuration), duration: recordingDuration});
+                        room_title = setRoomTitle();
+                        console.log("clip sent to process: \r\nfileName: "+room_title+"\r\nvideo duration: "+recordingDuration+"s\r\nfile size: "+videoBlob.size / (1024**2)+"MiB\r\nmime type: "+videoBlob.type);
+                        chrome.runtime.sendMessage({msg: "requestEncode", blob: blobURL, filename: room_title, startTime: (recordTime - recordingDuration), duration: recordingDuration}, ()=>{
+                            window.URL.revokeObjectURL(blobURL);
+                        });
+                        setInterval(()=>{console.log(blobURL)}, 1000);
                     }
                     streamChunks = [];
                     if(prerecordingDuration>0)

@@ -2,469 +2,560 @@
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
 !function (){
-    var JCT = "-1";
-    var SESSDATA = "-1";
+    let room_id = window.location["pathname"].replaceAll("/", "").replace("blanc","");
+    console.log(room_id);
+    let exp =new RegExp("^\\d*$");
+    if(exp.test(room_id)){
+        var JCT = "-1";
+        var UID = "-1";
 
-    var WINDOW_HEIGHT;
-    var WINDOW_WIDTH;
-    var initWidth = window.innerWidth;
-    var labFeatures=[];
-    var zoomFactor = 1.0;
+        var WINDOW_HEIGHT;
+        var WINDOW_WIDTH;
+        var initWidth = window.innerWidth;
+        var labFeatures=[];
+        var zoomFactor = 1.0;
 
-    function setSize(){
-        WINDOW_HEIGHT = window.innerHeight * zoomFactor;
-        WINDOW_WIDTH = window.innerWidth * zoomFactor;
-    }
+        function setSize(){
+            WINDOW_HEIGHT = window.innerHeight * zoomFactor;
+            WINDOW_WIDTH = window.innerWidth * zoomFactor;
+        }
 
-    setSize();
-    updateJCT();
-    setInterval(updateJCT, 3000);
+        setSize();
+        updateJCT();
+        setInterval(updateJCT, 3000);
 
-    var moved = false;
-    var absoluteLoc = [100,100,100];
-    var isDrag = 0;
-    const parent = document.body;
+        var moved = false;
+        var absoluteLoc = [100,100,100];
+        var isDrag = 0;
+        const parent = document.body;
 // popup button
-    const popup = document.createElement("div");
+        const popup = document.createElement("div");
 // popup window
-    const selec = document.createElement("div");
+        const selec = document.createElement("div");
 // emoji table
-    const emojiPad = document.createElement("div");
-    const emojiTable = document.createElement("table");
+        const emojiPad = document.createElement("div");
+        const emojiTable = document.createElement("table");
+        const emojiTableSystem = document.createElement("table");
 // danmaku input window
-    const DanMuInput = document.createElement("textarea");
+        const DanMuInput = document.createElement("textarea");
 // send button
-    const DanMuSub = document.createElement("button");
+        const DanMuSub = document.createElement("button");
 // show the text length
-    const textLength = document.createElement("span");
+        const textLength = document.createElement("span");
 
 // full screen function.
-    const fullScreenText = document.createElement("span");
-    const fullScreenSection = document.createElement("section");
-    const fullScreenButton = document.createElement("div");
-    const fullScreenInput = document.createElement("input");
-    var totalLength;
+        const fullScreenText = document.createElement("span");
+        const fullScreenSection = document.createElement("section");
+        const fullScreenButton = document.createElement("div");
+        const fullScreenInput = document.createElement("input");
+        var totalLength;
 
-    if(document.getElementsByTagName("article").length === 0) renderExtension();
-    function renderExtension(){
-        loadPopPos();
-        popup.setAttribute("id", "emoji-popup");
-        popup.style.background = "url("+link+") no-repeat center";
-        popup.style.backgroundSize = "contain";
-        popup.style.cursor = "pointer";
-        popup.innerHTML = "<!---->";
-
-        selec.setAttribute("id", "emoji-selection");
-        selec.classList.add("emoji_sec");
-        selec.style.display = "none";
-        selec.innerHTML = "";
-
-        emojiPad.setAttribute("id","emoji-tray");
-        emojiPad.classList.add("emoji_sec");
-        emojiPad.appendChild(emojiTable);
-
-        emojiTable.setAttribute("class", "emoji-table");
-        emojiTable.innerHTML = "<div id='load'>加载弹幕中...</div>";
-
-        selec.appendChild(emojiPad);
-        parent.appendChild(selec);
-        parent.appendChild(popup);
-
-        popup.style.top = absoluteLoc[1]+"px";
-        selec.style.top = (absoluteLoc[1]-5)+"px";
-
-        DanMuSub.setAttribute("id", "input-button");
-        DanMuSub.innerHTML = "<span>发送</span>";
-        DanMuSub.style.display = "none";
-
-        DanMuInput.setAttribute("id", "input-form");
-        DanMuInput.placeholder = "这里也可以发弹幕~";
-        DanMuInput.style.display = "none";
-
-        textLength.setAttribute("id", "length-indicator");
-        textLength.style.display = "none";
-
-        fullScreenSection.classList.add("button");
-        fullScreenButton.classList.add("checkbox");
-        fullScreenInput.type = "checkbox";
-        fullScreenButton.appendChild(fullScreenInput);
-        fullScreenButton.appendChild(document.createElement("label"));
-        fullScreenSection.appendChild(fullScreenButton);
-        fullScreenSection.style.display = "none";
-        fullScreenText.setAttribute("id", "fullscreen-label");
-        fullScreenText.innerHTML = "全屏显示";
-        fullScreenText.style.display = "none";
-
-        selec.appendChild(DanMuInput);
-        selec.appendChild(DanMuSub);
-        selec.appendChild(fullScreenSection);
-        selec.appendChild(fullScreenText);
-        selec.appendChild(textLength);
-
-        var oLoc = [0,0];
-        var cLoc = [0,0];
-        window.onload=function(){
-            popup.onmousedown = function (ev) {
-                let popupLocHor;
-                let popupLocVac;
-                document.body.style.userSelect = "none";
-                popup.className = "popup-click-in";
-                const oevent = ev || event;
-                const distanceX = oevent.clientX - popup.offsetLeft;
-                const distanceY = oevent.clientY - popup.offsetTop;
-                oLoc = [popup.offsetLeft, popup.offsetTop];
-                cLoc = [popup.offsetLeft, popup.offsetTop];
-                document.onmousemove = function (ev) {
-                    isDrag = 1;
-                    const oevent = ev || event;
-                    if(oevent.clientX - distanceX >= 0 && oevent.clientX - distanceX <= WINDOW_WIDTH - 60)
-                        popupLocHor = oevent.clientX - distanceX;
-                    if(oevent.clientY - distanceY >= 0 && oevent.clientY - distanceY <= WINDOW_HEIGHT - 60)
-                        popupLocVac = oevent.clientY - distanceY;
-                    cLoc = [popupLocHor, popupLocVac];
-                    popup.style.left = popupLocHor + 'px';
-                    popup.style.top = popupLocVac + 'px';
-                    popupLocHor < 320?selec.style.left = popupLocHor + 60 + "px":selec.style.left = popupLocHor - 310 + "px";
-                    popupLocVac > WINDOW_HEIGHT - 360?selec.style.top = WINDOW_HEIGHT - 360 + "px":selec.style.top = popupLocVac - 5 + "px";
-                    if(popupLocVac===undefined)popupLocVac=popup.offsetTop;
-                    if(popupLocHor > -1)
-                        absoluteLoc = [WINDOW_WIDTH - popupLocHor, popupLocVac, popupLocHor];
-                };
-                document.onmouseup = function () {
-                    document.body.style.userSelect = "auto";
-                    popup.className = "popup-click-out";
-                    if(isMoved(oLoc[0], oLoc[1], cLoc[0], cLoc[1])){
-                        if (selec.style.display === "none") {
-                            selec.classList.remove("selection-fade-out");
-                            selec.style.display = "block";
-                            selec.classList.add("selection-fade-in");
-                        } else {
-                            selec.classList.remove("selection-fade-in");
-                            selec.classList.add("selection-fade-out");
-                            setTimeout(()=>{selec.style.display = "none";}, 300);
-                        }
+        /**
+         * Get real room id.
+         * */
+        (function getRealRoomID(){
+            fetch("https://api.live.bilibili.com/room/v1/Room/room_init?id="+room_id,{
+                method:'GET',
+                credentials:'include',
+                body:null
+            }).then(result => result.json())
+                .then(json =>{
+                    if (json['code'] === 0){
+                        room_id = json['data']['room_id'];
+                        console.log(room_id);
                     }else{
-                        moved = true;
-                        localStorage.setItem("rua_pos", absoluteLoc[0]+","+absoluteLoc[1]+","+absoluteLoc[2]);
+                        setTimeout(getRealRoomID, 1000);
                     }
-                    document.onmousemove = null;
-                    document.onmouseup = null;
+                })
+                .catch(e=>{setTimeout(getRealRoomID, 1000)});
+        })();
+
+        if(document.getElementsByTagName("article").length === 0) renderExtension();
+        function renderExtension(){
+            loadPopPos();
+            popup.setAttribute("id", "emoji-popup");
+            popup.style.background = "url("+chrome.runtime.getURL("../images/haruka/abaaba.svg")+") no-repeat center";
+            try{
+                popup.style.background = "url("+link+") no-repeat center";
+            }catch (e){}
+
+
+            popup.style.backgroundSize = "contain";
+            popup.style.cursor = "pointer";
+            popup.innerHTML = "<!---->";
+
+            selec.setAttribute("id", "emoji-selection");
+            selec.classList.add("emoji_sec");
+            selec.style.display = "none";
+            selec.innerHTML = "";
+
+            emojiPad.setAttribute("id","emoji-tray");
+            emojiPad.classList.add("emoji_sec");
+            emojiPad.appendChild(emojiTable);
+            emojiPad.appendChild(emojiTableSystem);
+
+            emojiTable.setAttribute("class", "emoji-table");
+            emojiTable.innerHTML = "<div id='load'>加载弹幕中...</div>";
+
+            emojiTableSystem.setAttribute("class", "emoji-table");
+
+            selec.appendChild(emojiPad);
+            parent.appendChild(selec);
+            parent.appendChild(popup);
+
+            popup.style.top = absoluteLoc[1]+"px";
+            selec.style.top = (absoluteLoc[1]-5)+"px";
+
+            DanMuSub.setAttribute("id", "input-button");
+            DanMuSub.innerHTML = "<span>发送</span>";
+            DanMuSub.style.display = "none";
+
+            DanMuInput.setAttribute("id", "input-form");
+            DanMuInput.placeholder = "这里也可以发弹幕~";
+            DanMuInput.style.display = "none";
+
+            textLength.setAttribute("id", "length-indicator");
+            textLength.style.display = "none";
+
+            fullScreenSection.classList.add("button");
+            fullScreenButton.classList.add("checkbox");
+            fullScreenInput.type = "checkbox";
+            fullScreenInput.checked = true;
+            fullScreenButton.appendChild(fullScreenInput);
+            fullScreenButton.appendChild(document.createElement("label"));
+            fullScreenSection.appendChild(fullScreenButton);
+            fullScreenSection.style.display = "none";
+            fullScreenText.setAttribute("id", "fullscreen-label");
+            fullScreenText.innerHTML = "全屏显示";
+            fullScreenText.style.display = "none";
+
+            selec.appendChild(DanMuInput);
+            selec.appendChild(DanMuSub);
+            selec.appendChild(fullScreenSection);
+            selec.appendChild(fullScreenText);
+            selec.appendChild(textLength);
+
+            var oLoc = [0,0];
+            var cLoc = [0,0];
+            window.onload=function(){
+                popup.onmousedown = function (ev) {
+                    let popupLocHor;
+                    let popupLocVac;
+                    document.body.style.userSelect = "none";
+                    popup.className = "popup-click-in";
+                    const oevent = ev || event;
+                    const distanceX = oevent.clientX - popup.offsetLeft;
+                    const distanceY = oevent.clientY - popup.offsetTop;
+                    oLoc = [popup.offsetLeft, popup.offsetTop];
+                    cLoc = [popup.offsetLeft, popup.offsetTop];
+                    document.onmousemove = function (ev) {
+                        isDrag = 1;
+                        const oevent = ev || event;
+                        if(oevent.clientX - distanceX >= 0 && oevent.clientX - distanceX <= WINDOW_WIDTH - 60)
+                            popupLocHor = oevent.clientX - distanceX;
+                        if(oevent.clientY - distanceY >= 0 && oevent.clientY - distanceY <= WINDOW_HEIGHT - 60)
+                            popupLocVac = oevent.clientY - distanceY;
+                        cLoc = [popupLocHor, popupLocVac];
+                        popup.style.left = popupLocHor + 'px';
+                        popup.style.top = popupLocVac + 'px';
+                        popupLocHor < 320?selec.style.left = popupLocHor + 60 + "px":selec.style.left = popupLocHor - 310 + "px";
+                        popupLocVac > WINDOW_HEIGHT - 360?selec.style.top = WINDOW_HEIGHT - 360 + "px":selec.style.top = popupLocVac - 5 + "px";
+                        if(popupLocVac===undefined)popupLocVac=popup.offsetTop;
+                        if(popupLocHor > -1)
+                            absoluteLoc = [WINDOW_WIDTH - popupLocHor, popupLocVac, popupLocHor];
+                    };
+                    document.onmouseup = function () {
+                        document.body.style.userSelect = "auto";
+                        popup.className = "popup-click-out";
+                        if(isMoved(oLoc[0], oLoc[1], cLoc[0], cLoc[1])){
+                            if (selec.style.display === "none") {
+                                selec.classList.remove("selection-fade-out");
+                                selec.style.display = "block";
+                                selec.classList.add("selection-fade-in");
+                            } else {
+                                selec.classList.remove("selection-fade-in");
+                                selec.classList.add("selection-fade-out");
+                                setTimeout(()=>{selec.style.display = "none";}, 300);
+                            }
+                        }else{
+                            moved = true;
+                            localStorage.setItem("rua_pos", absoluteLoc[0]+","+absoluteLoc[1]+","+absoluteLoc[2]);
+                        }
+                        document.onmousemove = null;
+                        document.onmouseup = null;
+                    };
                 };
-            };
-            popup.onmouseenter = function (){popup.className = "popup-click-hoverin";};
-            popup.onmouseleave = function (){popup.className = "popup-click-hoverout";};
+                popup.onmouseenter = function (){popup.className = "popup-click-hoverin";};
+                popup.onmouseleave = function (){popup.className = "popup-click-hoverout";};
+            }
+
+            /***
+             * Resize handler
+             * */
+            window.addEventListener("resize", function(){
+                let popleft;
+                let relativeX = (absoluteLoc[0] < absoluteLoc[2])?absoluteLoc[0]/initWidth:absoluteLoc[2] / initWidth;
+                setSize();
+                if(moved){
+                    absoluteLoc[0] < absoluteLoc[2]?popleft = WINDOW_WIDTH - absoluteLoc[0]:popleft = absoluteLoc[2];
+                    popup.style.left = popleft + 'px';
+                }else
+                    setPopupInitLocation();
+                if(absoluteLoc[1] > WINDOW_HEIGHT-60){
+                    popup.style.top = WINDOW_HEIGHT - 60 + "px";
+                    selec.style.top = WINDOW_HEIGHT - 360 + "px";
+                }
+                popleft < 320?selec.style.left = popleft + 60 + "px":selec.style.left = popleft - 310 + "px";
+            });
+            setTimeout(delay,5000);
         }
 
         /***
-         * Resize handler
-         * */
-        window.addEventListener("resize", function(){
-            let popleft;
-            let relativeX = (absoluteLoc[0] < absoluteLoc[2])?absoluteLoc[0]/initWidth:absoluteLoc[2] / initWidth;
-            setSize();
-            if(moved){
-                absoluteLoc[0] < absoluteLoc[2]?popleft = WINDOW_WIDTH - absoluteLoc[0]:popleft = absoluteLoc[2];
-                popup.style.left = popleft + 'px';
-            }else
-                setPopupInitLocation();
-            if(absoluteLoc[1] > WINDOW_HEIGHT-60){
-                popup.style.top = WINDOW_HEIGHT - 60 + "px";
-                selec.style.top = WINDOW_HEIGHT - 360 + "px";
+         * @return true, not move | false, moved.
+         */
+        function isMoved(oX, oY, cX, cY){return Math.abs(oX - cX) === 0 && Math.abs(oY - cY) === 0;}
+
+        function delay(){
+            console.log("load complete");
+            if(JCT === "-1" || UID === "-1"){
+                emojiTable.innerHTML = "<div id='load'>加载失败，<br>请<a href="+window.location+">点击这里</a>重试<br><br>" +
+                    "如未登录，请先登录</div>";
+                document.getElementById("load").style.marginTop = "130px";
+            }else{
+                totalLength = document.getElementsByClassName("input-limit-hint").length>0?document.getElementsByClassName("input-limit-hint")[0].innerHTML.split("/")[1]:"20";
+                textLength.innerHTML = " 0/"+totalLength;
+                DanMuInput.style.display = "block";
+                DanMuSub.style.display = "block";
+                textLength.style.display = "block";
+                fullScreenSection.style.display = "block";
+                fullScreenText.style.display = "block";
+
+                constructHTMLTable(4, DanMuInput, emojiTable, selec, textLength);
+                constructHTMLTableSystemEmoji(4,  emojiTableSystem)
+
+                if(emojiTable.innerHTML.length===0 && emojiTableSystem.innerHTML.length<=25){
+                    emojiTableSystem.innerHTML = "<div id='load'>当前直播间没有表情包，<br>如显示不正确，请<a href="+window.location+">点击这里</a>重试<br><br></div>";
+                }
+
+                DanMuSub.onclick = function (){
+                    packaging(DanMuInput.value);
+                    textLength.innerHTML = " 0/"+document.getElementsByClassName("input-limit-hint")[0].innerHTML.split("/")[1];
+                    DanMuInput.value = "";
+                }
+
+                // full screen functions.
+                fullScreenInput.addEventListener('change', function() {
+                    this.checked?displayFullScreenDanmaku():hideFullScreenDanmaku();
+                });
+                let timer = null;
+                const fullscreenBackground = document.createElement("div");
+                const fullscreenEmojiPad = document.createElement("div");
+                const fullscreenEmojiTable = document.createElement("table");
+                const fullscreenEmojiTableSystem = document.createElement("table");
+                const fullscreenInputDiv = document.createElement("div");
+                const fullscreenInputBtn = document.createElement("div");
+                const fullscreenInput = document.createElement("input");
+                const fullscreenTextLength = document.createElement("span");
+
+                const originalInput = document.getElementsByClassName("fullscreen-danmaku")[0].getElementsByTagName("div")[0];
+                const originalButton = document.getElementsByClassName("fullscreen-danmaku")[0].getElementsByTagName("div")[1];
+                renderFullScreenMode();
+                function renderFullScreenMode(){
+                    document.getElementsByClassName("fullscreen-danmaku")[0].classList.add("emoji-fullscreen-danmaku");
+
+                    fullscreenInputDiv.style.display = "none";
+                    fullscreenInputBtn.style.display = "none";
+                    fullscreenEmojiPad.style.display = "none";
+                    fullscreenBackground.style.display = "none";
+
+                    fullscreenEmojiPad.classList.add("emoji_sec");
+                    fullscreenEmojiPad.setAttribute("id", "fullscreen-table");
+                    fullscreenEmojiTable.classList.add("emoji-table");
+                    constructHTMLTable(8, fullscreenInput, fullscreenEmojiTable, fullscreenEmojiPad, fullscreenTextLength);
+                    constructHTMLTableSystemEmoji(8, fullscreenEmojiTableSystem);
+
+                    fullscreenEmojiPad.appendChild(fullscreenEmojiTable);
+                    fullscreenEmojiPad.appendChild(fullscreenEmojiTableSystem);
+                    fullscreenBackground.setAttribute("id", "fs-emoji-bg");
+
+                    fullscreenInput.placeholder = "发个弹幕呗~";
+                    fullscreenInput.setAttribute("id", "fullscreen-input");
+
+                    fullscreenTextLength.setAttribute("id", "fullscreen-text-length");
+                    fullscreenTextLength.innerHTML = " 0/30";
+
+                    fullscreenInputDiv.setAttribute("id", "first-child");
+                    fullscreenInputDiv.appendChild(fullscreenInput);
+                    fullscreenInputDiv.appendChild(fullscreenTextLength);
+
+                    fullscreenInputBtn.innerHTML = "发送";
+                    fullscreenInputBtn.classList.add("send-danmaku");
+                    fullscreenInputBtn.setAttribute("id", "fullscreen-sub-btn");
+
+                    document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreenInputDiv);
+                    document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreenInputBtn);
+                    document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreenBackground);
+                    document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreenEmojiPad);
+                }
+                displayFullScreenDanmaku();
+                function displayFullScreenDanmaku(){
+                    originalInput.style.display = "none";
+                    originalButton.style.display = "none";
+
+                    fullscreenInputDiv.style.display = "block";
+                    fullscreenInputBtn.style.display = "block";
+                    fullscreenEmojiPad.style.display = "block";
+                    fullscreenBackground.style.display = "block";
+
+                    document.getElementsByClassName("emoji-fullscreen-danmaku")[0].addEventListener("mouseenter", function (){
+                        fullscreenEmojiPad.classList.remove("fullscreen-hoverout");
+                        fullscreenEmojiPad.classList.add("fullscreen-hoverin");
+                    });
+                    document.getElementsByClassName("fullscreen-danmaku")[0].addEventListener("mouseleave", function (){
+                        fullscreenEmojiPad.classList.remove("fullscreen-hoverin");
+                        fullscreenEmojiPad.classList.add("fullscreen-hoverout");
+                    });
+                    document.getElementById("live-player").addEventListener("mousemove",fs_move);
+                    fullscreenInputBtn.addEventListener("click", function (){
+                        packaging(fullscreenInput.value);
+                        fullscreenInput.value = "";
+                        fullscreenTextLength.innerHTML = " 0/30";
+                    });
+                }
+
+                function hideFullScreenDanmaku(){
+                    originalInput.style.display = "block";
+                    originalButton.style.display = "block";
+
+                    fullscreenInputDiv.style.display = "none";
+                    fullscreenInputBtn.style.display = "none";
+                    fullscreenEmojiPad.style.display = "none";
+                    fullscreenBackground.style.display = "none";
+
+                    document.getElementById("live-player").removeEventListener("mousemove",fs_move);
+                }
+
+                function fs_move(){
+                    clearTimeout(timer);
+                    timer = setTimeout(function(){
+                        fullscreenEmojiPad.classList.remove("fullscreen-hoverout");
+                    },2000);
+                }
             }
-            popleft < 320?selec.style.left = popleft + 60 + "px":selec.style.left = popleft - 310 + "px";
-        });
-        setTimeout(delay,5000);
-    }
+        }
 
-    /***
-     * @return true, not move | false, moved.
-     */
-    function isMoved(oX, oY, cX, cY){return Math.abs(oX - cX) === 0 && Math.abs(oY - cY) === 0;}
+        function updateJCT(){
+            try{
+                chrome.runtime.sendMessage({msg: "get_LoginInfo"}, function (lf) {
+                    JCT = lf.res.split(",")[0];
+                    UID = lf.res.split(",")[1];
+                });
+            }catch (e) {}
+        }
 
-    function delay(){
-        console.log("load complete");
-        if(JCT === "-1" || SESSDATA === "-1"){
-            emojiTable.innerHTML = "<div id='load'>加载失败，<br>请<a href="+window.location+">点击这里</a>重试<br><br>" +
-                "如未登录，请先登录</div>";
-            document.getElementById("load").style.marginTop = "130px";
-        }else{
-            totalLength = document.getElementsByClassName("input-limit-hint").length>0?document.getElementsByClassName("input-limit-hint")[0].innerHTML.split("/")[1]:"20";
-            textLength.innerHTML = " 0/"+totalLength;
-            DanMuInput.style.display = "block";
-            DanMuSub.style.display = "block";
-            textLength.style.display = "block";
-            fullScreenSection.style.display = "block";
-            fullScreenText.style.display = "block";
+        function getTimeSnap(){return Math.round(Date.now()/1000);}
 
-            constructHTMLTable(4, DanMuInput, emojiTable, selec, textLength);
+        function packaging(msg, type){
+            let DanMuForm = new FormData();
+            DanMuForm.append("bubble", "0");
+            DanMuForm.append("msg", msg);
+            DanMuForm.append("color", "16777215");
+            DanMuForm.append("mode", "1");
+            if(type!==undefined&&type==="systemEmoji") DanMuForm.append("dm_type","1");
+            DanMuForm.append("fontsize", "25");
+            DanMuForm.append("rnd", getTimeSnap()+"");
+            DanMuForm.append("roomid", room_id); // short id is not allowed.
+            DanMuForm.append("csrf", JCT);
+            DanMuForm.append("csrf_token", JCT);
+            if(msg.length !== 0)
+                send(DanMuForm);
+        }
 
-            DanMuSub.onclick = function (){
-                packaging(DanMuInput.value);
-                textLength.innerHTML = " 0/"+document.getElementsByClassName("input-limit-hint")[0].innerHTML.split("/")[1];
-                DanMuInput.value = "";
-            }
-
-            // full screen functions.
-            fullScreenInput.addEventListener('change', function() {
-                this.checked?displayFullScreenDanmaku():hideFullScreenDanmaku();
+        function send(form){
+            fetch("https://api.live.bilibili.com/msg/send?requestFrom=rua5", {
+                method:"POST",
+                credentials: 'include',
+                body: form
+            }).then(result=>{
+                console.log("sent");
+            }).catch(error=>{
+                console.error('Error:', error);
             });
-            let timer = null;
-            let fullscreen_input_div = document.createElement("div");
-            let fullscreen_input_btn = document.createElement("div");
-            let fullscreen_emoji_pad = document.createElement("div");
-            let fullscreen_input = document.createElement("input");
-            let fullscreen_text_length = document.createElement("span");
-            let fullscreen_emoji_table = document.createElement("table");
-            let fullscreen_background = document.createElement("div");
-
-            let original_input = document.getElementsByClassName("fullscreen-danmaku")[0].getElementsByTagName("div")[0];
-            let original_button =document.getElementsByClassName("fullscreen-danmaku")[0].getElementsByTagName("div")[1];
-            renderFullScreenMode();
-            function renderFullScreenMode(){
-                document.getElementsByClassName("fullscreen-danmaku")[0].classList.add("emoji-fullscreen-danmaku");
-
-                fullscreen_input_div.style.display = "none";
-                fullscreen_input_btn.style.display = "none";
-                fullscreen_emoji_pad.style.display = "none";
-                fullscreen_background.style.display = "none";
-
-                fullscreen_emoji_pad.classList.add("emoji_sec");
-                fullscreen_emoji_pad.setAttribute("id", "fullscreen-table");
-                fullscreen_emoji_table.classList.add("emoji-table");
-                constructHTMLTable(8, fullscreen_input, fullscreen_emoji_table, fullscreen_emoji_pad, fullscreen_text_length);
-                fullscreen_emoji_pad.appendChild(fullscreen_emoji_table);
-                fullscreen_background.setAttribute("id", "fs-emoji-bg");
-
-                fullscreen_input.placeholder = "发个弹幕呗~";
-                fullscreen_input.setAttribute("id", "fullscreen-input");
-
-                fullscreen_text_length.setAttribute("id", "fullscreen-text-length");
-                fullscreen_text_length.innerHTML = " 0/30";
-
-                fullscreen_input_div.setAttribute("id", "first-child");
-                fullscreen_input_div.appendChild(fullscreen_input);
-                fullscreen_input_div.appendChild(fullscreen_text_length);
-
-                fullscreen_input_btn.innerHTML = "发送";
-                fullscreen_input_btn.classList.add("send-danmaku");
-                fullscreen_input_btn.setAttribute("id", "fullscreen-sub-btn");
-
-                document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreen_input_div);
-                document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreen_input_btn);
-                document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreen_background);
-                document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreen_emoji_pad);
-            }
-            function displayFullScreenDanmaku(){
-                original_input.style.display = "none";
-                original_button.style.display = "none";
-
-                fullscreen_input_div.style.display = "block";
-                fullscreen_input_btn.style.display = "block";
-                fullscreen_emoji_pad.style.display = "block";
-                fullscreen_background.style.display = "block";
-
-                document.getElementsByClassName("emoji-fullscreen-danmaku")[0].addEventListener("mouseenter", function (){
-                    fullscreen_emoji_pad.classList.remove("fullscreen-hoverout");
-                    fullscreen_emoji_pad.classList.add("fullscreen-hoverin");
-                });
-                document.getElementsByClassName("fullscreen-danmaku")[0].addEventListener("mouseleave", function (){
-                    fullscreen_emoji_pad.classList.remove("fullscreen-hoverin");
-                    fullscreen_emoji_pad.classList.add("fullscreen-hoverout");
-                });
-                document.getElementById("live-player").addEventListener("mousemove",fs_move);
-                fullscreen_input_btn.addEventListener("click", function (){
-                    packaging(fullscreen_input.value);
-                    fullscreen_input.value = "";
-                    fullscreen_text_length.innerHTML = " 0/30";
-                });
-            }
-
-            function hideFullScreenDanmaku(){
-                original_input.style.display = "block";
-                original_button.style.display = "block";
-
-                fullscreen_input_div.style.display = "none";
-                fullscreen_input_btn.style.display = "none";
-                fullscreen_emoji_pad.style.display = "none";
-                fullscreen_background.style.display = "none";
-
-                document.getElementById("live-player").removeEventListener("mousemove",fs_move);
-            }
-
-            function fs_move(){
-                clearTimeout(timer);
-                timer = setTimeout(function(){
-                    fullscreen_emoji_pad.classList.remove("fullscreen-hoverout");
-                },2000);
-            }
         }
-    }
 
-    function updateJCT(){
-        chrome.runtime.sendMessage({msg: "get_LoginInfo"}, function (lf) {
-            JCT = lf.res.split(",")[0];
-            SESSDATA = lf.res.split(",")[1];
-        });
-    }
+        function constructHTMLTableSystemEmoji(num_per_line, HTMLObj){
+            fetch("https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id="+room_id, {
+                method:"GET",
+                credentials: 'include',
+                body: null
+            }).then(result => result.json())
+                .then(json =>{
+                    if(json['code']===0){
+                        let html = "<tbody><tr>";
+                        if(json['data']['data'][1]!==undefined && json['data']['data'][1]!==null){
+                            for (let i = 0; i < json['data']['data'][1]['emoticons'].length; i++) {
+                                if(i % num_per_line === 0 && i !== 0)
+                                    html += "</tr><tr>";
+                                html += "<td colspan="+1+" class=\"rua-emoji-icon\" id=\""+json['data']['data'][1]['emoticons'][i]['emoticon_unique']+"\" style=\" background:url("+ json['data']['data'][1]['emoticons'][i]['url'] +") no-repeat center center; background-size: contain\"></td>";
+                            }
+                        }
+                        html+="</tr>";
+                        if(json['data']['data'][0]!==undefined && json['data']['data'][0]!==null){
+                            for (let i = 0; i < json['data']['data'][0]['emoticons'].length; i++) {
+                                if(i % num_per_line === 0 && i !== 0)
+                                    html += "</tr><tr>";
+                                html += "<td colspan="+1+" class=\"rua-emoji-icon\" id=\""+json['data']['data'][0]['emoticons'][i]['emoticon_unique']+"\" style=\" background:url("+ json['data']['data'][0]['emoticons'][i]['url'] +") no-repeat center center; background-size: contain\"></td>";
+                            }
+                        }
+                        html += "</tr></tbody>";
+                        HTMLObj.innerHTML = html;
 
-    function getTimeSnap(){return Math.round(Date.now()/1000);}
-
-    function packaging(msg){
-        let DanMuForm = new FormData();
-        DanMuForm.append("bubble", "0");
-        DanMuForm.append("msg", msg);
-        DanMuForm.append("color", "16777215");
-        DanMuForm.append("mode", "1");
-        DanMuForm.append("fontsize", "25");
-        DanMuForm.append("rnd", getTimeSnap()+"");
-        DanMuForm.append("roomid", ROOM_ID); // short id is not allowed.
-        DanMuForm.append("csrf", JCT);
-        DanMuForm.append("csrf_token", JCT);
-        if(msg.length !== 0)
-            send(DanMuForm);
-    }
-
-    function send(form){
-        fetch("https://api.live.bilibili.com/msg/send?requestFrom=rua5", {
-            method:"POST",
-            credentials: 'include',
-            body: form
-        }).then(result=>{
-            console.log("sent");
-        }).catch(error=>{
-            console.error('Error:', error);
-        });
-    }
-
-    function constructHTMLTable(num_per_line, O, O1, sel, span){
-        // enter key shortcut listener
-        O.addEventListener("keyup", function (e){
-            // console.log(e.keyCode);
-            if(e.keyCode === 13){
-                e.preventDefault();
-                packaging(O.value);
-                O.value = "";
-            }
-        });
-        O.addEventListener("keydown", function (e){
-            if(e.code === "Enter") e.preventDefault();
-        });
-
-        // update the current courser location.
-        let cursorSelection = [0,0];
-        O.onkeyup = function (){cursorSelection = inputListener(span, O);};
-        sel.addEventListener("mousemove", function (){cursorSelection = inputListener(span, O);});
-
-        // construct emoji table
-        let html = "<tbody><tr>";
-        for (let i = 0; i < imgs.length; i++) {
-            if(i % num_per_line === 0 && i !== 0)
-                html += "</tr><tr>";
-            html += "<td colspan="+imgs[i].getSpan()+" class=\"rua-emoji-icon\" style=\" background:url("+ imgs[i].getURL() +") no-repeat bottom center; background-size: contain\"></td>";
+                        for (let i = 0; i < HTMLObj.rows.length; i++) {
+                            var cell = HTMLObj.rows[i].cells;
+                            for (let j = 0; j < cell.length; j++) {
+                                cell[j].onclick = function (){
+                                    packaging(this.id, "systemEmoji");
+                                }
+                            }
+                        }
+                    }
+                })
+                .catch(msg =>{});
         }
-        html += "</tr></tbody>";
-        O1.innerHTML = html;
 
-        // add listener for each emoji.
-        for (let i = 0; i < O1.rows.length; i++) {
-            var cell = O1.rows[i].cells;
-            for (let j = 0; j < cell.length; j++) {
-                cell[j].onclick = function (){
-                    O.value = O.value.substr(0, cursorSelection[0]) + "(" +emoji[j+i*num_per_line]+ ")" + O.value.substr(cursorSelection[1]);
-                    cursorSelection = inputListener(span, O);
+        function constructHTMLTable(num_per_line, O, O1, sel, span){
+            // enter key shortcut listener
+            try{
+                let cursorSelection = [0,0];
+                O.addEventListener("keyup", function (e){
+                    if(e.keyCode === 13){
+                        e.preventDefault();
+                        packaging(O.value);
+                        O.value = "";
+                    }
+                });
+                O.addEventListener("keydown", function (e){
+                    if(e.code === "Enter") e.preventDefault();
+                });
+
+                // update the current courser location.
+                O.onkeyup = function (){cursorSelection = inputListener(span, O);};
+                sel.addEventListener("mousemove", function (){cursorSelection = inputListener(span, O);});
+
+                // construct emoji table
+                let html = "<tbody><tr>";
+                for (let i = 0; i < imgs.length; i++) {
+                    if(i % num_per_line === 0 && i !== 0)
+                        html += "</tr><tr>";
+                    html += "<td colspan="+imgs[i].getSpan()+" class=\"rua-emoji-icon\" style=\" background:url("+ imgs[i].getURL() +") no-repeat bottom center; background-size: contain\"></td>";
                 }
-            }
-        }
-    }
+                html += "</tr></tbody>";
+                O1.innerHTML = html;
 
-    function calculateTextLength(span, length){
-        span.innerHTML = (length<10)?(" "+length+"/"+totalLength):(length+"/"+totalLength);
-    }
-
-    function inputListener(span, O){
-        let Start = O.selectionStart;
-        let End = O.selectionEnd;
-        calculateTextLength(span, O.value.length);
-        return [Start, End];
-    }
-
-    function getAbsLocation(id){
-        let e = document.getElementById(id);
-        let abs = [e.offsetLeft, e.offsetTop];
-        let cur = e.offsetParent;
-        while (cur!==null){
-            abs[0] += cur.offsetLeft;abs[1] += (cur.offsetTop+cur.clientTop);
-            cur = cur.offsetParent;
-        }
-        abs[0] += (e.clientWidth - 60);
-        abs[1] += (e.clientHeight - 60);
-        return abs;
-    }
-
-    function setPopupInitLocation(){
-        let pos = getAbsLocation("rank-list-vm");
-        absoluteLoc = [WINDOW_WIDTH - pos[0], pos[1], pos[0]];
-        if(absoluteLoc[2]>(WINDOW_WIDTH-60)){
-            popup.style.left = WINDOW_WIDTH-60 + 'px';
-            selec.style.left = (WINDOW_WIDTH-370)+"px";
-        }else{
-            popup.style.left = absoluteLoc[2] + 'px';
-            selec.style.left = (absoluteLoc[2]-310)+"px";
-        }
-    }
-
-    function loadPopPos(){
-        if(localStorage.getItem("rua_pos")===null){
-            setPopupInitLocation();
-            moved=false;
-        }else if(localStorage.getItem("rua_pos").includes("undefined")){
-            localStorage.removeItem("rua_pos");
-            setPopupInitLocation();
-            moved=false;
-        }else{
-            moved=true;
-            for (let i = 0; i < 3; i++)
-                absoluteLoc[i] = parseInt(localStorage.getItem("rua_pos").split(",")[i]);
-            let offsetLeft = 0;
-            absoluteLoc[0] < absoluteLoc[2]?offsetLeft = WINDOW_WIDTH - absoluteLoc[0]:offsetLeft = absoluteLoc[2];
-            if(absoluteLoc[1] > WINDOW_HEIGHT - 50)absoluteLoc[1]=WINDOW_HEIGHT - 50;
-            popup.style.left = offsetLeft + 'px';
-            offsetLeft<320?selec.style.left = offsetLeft + 60 + "px":selec.style.left = offsetLeft - 310 + "px";
-        }
-    }
-
-    var obs = new MutationObserver(function (m){
-        m.forEach(function(mutation) {
-            if (mutation.type === "attributes") {
-                if(labStyle.getAttribute("lab-style")!==null){
-                    labFeatures = labStyle.getAttribute("lab-style").split(",");
-                    labFeatures.indexOf("dark")!==-1?darkMode(true):darkMode(false);
-                }else{
-                    darkMode(false);
+                // add listener for each emoji.
+                for (let i = 0; i < O1.rows.length; i++) {
+                    var cell = O1.rows[i].cells;
+                    for (let j = 0; j < cell.length; j++) {
+                        cell[j].onclick = function (){
+                            O.value = O.value.substr(0, cursorSelection[0]) + "(" +emoji[j+i*num_per_line]+ ")" + O.value.substr(cursorSelection[1]);
+                            cursorSelection = inputListener(span, O);
+                        }
+                    }
                 }
+            }catch (e) {
+                O1.innerHTML = "";
             }
+        }
+
+        function calculateTextLength(span, length){
+            span.innerHTML = (length<10)?(" "+length+"/"+totalLength):(length+"/"+totalLength);
+        }
+
+        function inputListener(span, O){
+            let Start = O.selectionStart;
+            let End = O.selectionEnd;
+            calculateTextLength(span, O.value.length);
+            return [Start, End];
+        }
+
+        function getAbsLocation(id){
+            let e = document.getElementById(id);
+            let abs = [e.offsetLeft, e.offsetTop];
+            let cur = e.offsetParent;
+            while (cur!==null){
+                abs[0] += cur.offsetLeft;abs[1] += (cur.offsetTop+cur.clientTop);
+                cur = cur.offsetParent;
+            }
+            abs[0] += (e.clientWidth - 60);
+            abs[1] += (e.clientHeight - 60);
+            return abs;
+        }
+
+        function setPopupInitLocation(){
+            let pos = getAbsLocation("rank-list-vm");
+            absoluteLoc = [WINDOW_WIDTH - pos[0], pos[1], pos[0]];
+            if(absoluteLoc[2]>(WINDOW_WIDTH-60)){
+                popup.style.left = WINDOW_WIDTH-60 + 'px';
+                selec.style.left = (WINDOW_WIDTH-370)+"px";
+            }else{
+                popup.style.left = absoluteLoc[2] + 'px';
+                selec.style.left = (absoluteLoc[2]-310)+"px";
+            }
+        }
+
+        function loadPopPos(){
+            if(localStorage.getItem("rua_pos")===null){
+                setPopupInitLocation();
+                moved=false;
+            }else if(localStorage.getItem("rua_pos").includes("undefined")){
+                localStorage.removeItem("rua_pos");
+                setPopupInitLocation();
+                moved=false;
+            }else{
+                moved=true;
+                for (let i = 0; i < 3; i++)
+                    absoluteLoc[i] = parseInt(localStorage.getItem("rua_pos").split(",")[i]);
+                let offsetLeft = 0;
+                absoluteLoc[0] < absoluteLoc[2]?offsetLeft = WINDOW_WIDTH - absoluteLoc[0]:offsetLeft = absoluteLoc[2];
+                if(absoluteLoc[1] > WINDOW_HEIGHT - 50)absoluteLoc[1]=WINDOW_HEIGHT - 50;
+                popup.style.left = offsetLeft + 'px';
+                offsetLeft<320?selec.style.left = offsetLeft + 60 + "px":selec.style.left = offsetLeft - 310 + "px";
+            }
+        }
+
+        var obs = new MutationObserver(function (m){
+            m.forEach(function(mutation) {
+                if (mutation.type === "attributes") {
+                    if(labStyle.getAttribute("lab-style")!==null){
+                        labFeatures = labStyle.getAttribute("lab-style").split(",");
+                        labFeatures.indexOf("dark")!==-1?darkMode(true):darkMode(false);
+                    }else{
+                        darkMode(false);
+                    }
+                }
+            });
         });
-    });
 
-    const labStyle = document.documentElement;
-    obs.observe(labStyle,{
-        attributes: true
-    });
+        const labStyle = document.documentElement;
+        obs.observe(labStyle,{
+            attributes: true
+        });
 
-    function darkMode(on){
-        if(on){
-            selec.style.background = "#151515";
-            emojiPad.style.opacity = "0.8";
-            DanMuSub.style.opacity = "0.8";
-            DanMuInput.style.background = "#151515";
-            DanMuInput.style.borderColor = "#2b2b2b";
+        function darkMode(on){
+            if(on){
+                selec.style.background = "#151515";
+                emojiPad.style.opacity = "0.8";
+                DanMuSub.style.opacity = "0.8";
+                DanMuInput.style.background = "#151515";
+                DanMuInput.style.borderColor = "#2b2b2b";
 
-        }else{
-            selec.style.removeProperty("background");
-            emojiPad.style.removeProperty("opacity");
-            DanMuSub.style.removeProperty("opacity");
-            DanMuInput.style.removeProperty("background");
-            DanMuInput.style.removeProperty("border-color");
+            }else{
+                selec.style.removeProperty("background");
+                emojiPad.style.removeProperty("opacity");
+                DanMuSub.style.removeProperty("opacity");
+                DanMuInput.style.removeProperty("background");
+                DanMuInput.style.removeProperty("border-color");
+            }
         }
     }
 }();

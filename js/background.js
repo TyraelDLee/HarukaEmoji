@@ -16,17 +16,15 @@
     var checkinSwitch = true;
     var imageNotificationSwitch = false;
     var BCOIN = true;
-    var QN = false;
+    var QN = true;
     var QNV = "原画";
     var dynamicPush = false;
     var hiddenEntry = false;
     var dakaSwitch = true;
 
     var UUID = -1;
-    var SESSDATA = -1;
     var JCT = -1;
     var P_UID = UUID;
-    var P_SESS = SESSDATA;
     var FOLLOWING_LIST = new FollowingMemberList();
     var FOLLOWING_LIST_TEMP = new FollowingMemberList();
     var NOTIFICATION_LIST = new NotificationList();
@@ -46,7 +44,7 @@
         chrome.storage.sync.set({"checkIn": true}, function(){checkinSwitch = true;});
         chrome.storage.sync.set({"imageNotice": false}, function(){imageNotificationSwitch = false;});
         chrome.storage.sync.set({"bcoin": true}, function(){BCOIN = true;});
-        chrome.storage.sync.set({"qn": false}, function(){QN = false;});
+        chrome.storage.sync.set({"qn": true}, function(){QN = true;});
         chrome.storage.sync.set({"qnvalue": "原画"}, function(){});
         chrome.storage.sync.set({"dynamicPush":true}, function (){dynamicPush = true});
         chrome.storage.sync.set({"hiddenEntry":false}, function (){hiddenEntry = false});
@@ -89,11 +87,7 @@
                 chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
                     function (jct) {
                         (jct === null) ? JCT = -1 : JCT = jct.value;
-                        chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'SESSDATA'},
-                            function (sd) {
-                                (sd === null) ? SESSDATA = -1 : SESSDATA = sd.value;
-                                sendResponse({res:JCT+","+SESSDATA+","+UUID});
-                            });
+                        sendResponse({res:JCT+","+UUID+","+UUID});
                     });
             }
             if(request.msg === "get_UUID") {sendResponse({res:UUID});}
@@ -125,7 +119,6 @@
                     });
             }
             if(request.msg === "requestEncode"){
-                const url = request.blob;
                 const {createFFmpeg, fetchFile} = FFmpeg;
                 const ffmpeg = createFFmpeg({
                     corePath: "./ffmpeg/ffmpeg-core.js",
@@ -134,13 +127,7 @@
                 (async ()=>{
                     let out;
                     await ffmpeg.load();
-                    ffmpeg.FS('writeFile', 'video.mp4', await fetchFile(url));
-                    // if(request.startTime > 1){
-                    //     await ffmpeg.run('-i', 'video.mp4', '-ss', request.startTime + '', '-c', 'copy', 'footage.mp4');
-                    //     await ffmpeg.run('-i', 'footage.mp4', '-threads', decodeThread+'', '-preset', decodePreset, 'final.mp4');
-                    // }else{
-                    //     await ffmpeg.run('-i', 'video.mp4', '-threads', decodeThread+'', '-preset', decodePreset, 'final.mp4');
-                    // }
+                    ffmpeg.FS('writeFile', 'video.mp4', await fetchFile(request.blob));
                     if(request.startTime > 1){
                         await ffmpeg.run('-i', 'video.mp4', '-ss', request.startTime + '', '-c', 'copy', 'footage.mp4');
                         await ffmpeg.run('-i', 'footage.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
@@ -148,8 +135,8 @@
                         await ffmpeg.run('-i', 'video.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
                     }
                     out = ffmpeg.FS('readFile', 'final.mp4');
-                    window.URL.revokeObjectURL(url);
-                    const dl = URL.createObjectURL(new Blob([out.buffer], { type: 'video/mp4' }));
+                    window.URL.revokeObjectURL(request.blob);
+                    const dl = URL.createObjectURL(new Blob([out.buffer], {type: 'video/mp4'}));
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = dl;
@@ -158,7 +145,6 @@
                     a.click();
                     document.body.removeChild(a);
                     window.URL.revokeObjectURL(dl);
-                    //sendResponse({res:new Blob([out.buffer], { type: 'video/mp4' })});
                 })();
             }
             if(request.msg.includes("QNV")){
@@ -225,7 +211,7 @@
      * url param: vmid->uid, pn->page number.
      * */
     function getFollowingList() {
-        if(UUID !== -1 && SESSDATA !== -1){
+        if(UUID !== -1){
             p++;
             let listLength = 0;
             fetch("https://api.bilibili.com/x/relation/followings?vmid=" + UUID + "&pn=" + p,{
@@ -489,31 +475,27 @@
     function reloadCookies() {
         chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'DedeUserID'},
             function (uid) {
-                chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'SESSDATA'},
-                    function (SD) {
-                        (uid === null) ? UUID = -1 : UUID = uid.value;
-                        (SD === null) ? SESSDATA = -1 : SESSDATA = SD.value;
-                        if ((UUID === -1 || SESSDATA === -1) && UUID !== P_UID && SESSDATA !== P_SESS) {
-                            // if not log in then stop update liver stream info.
-                            console.log("Session info does not exist, liver stream info listener cleared.");
-                            clearInterval(checkin);
-                            clearInterval(exchangeBcoin);
-                            clearInterval(dk)
-                        }
-                        if (UUID !== -1 && SESSDATA !== -1 && UUID !== P_UID && SESSDATA !== P_SESS) {
-                            // log in info changed then load following list and start update liver stream info every 3 min.
-                            console.log("Session info got.");
-                            FOLLOWING_LIST.clearAll(); // initial following list.
-                            p=0;
-                            videoNotify(false);
+                (uid === null) ? UUID = -1 : UUID = uid.value;
+                if ((UUID === -1) && UUID !== P_UID) {
+                    // if not log in then stop update liver stream info.
+                    console.log("Session info does not exist, liver stream info listener cleared.");
+                    clearInterval(checkin);
+                    clearInterval(exchangeBcoin);
+                    clearInterval(dk)
+                }
+                if (UUID !== -1 && UUID !== P_UID) {
+                    // log in info changed then load following list and start update liver stream info every 3 min.
+                    console.log("Session info got.");
+                    FOLLOWING_LIST.clearAll(); // initial following list.
+                    p=0;
+                    videoNotify(false);
 
-                            scheduleCheckIn();
-                            getFollowingList();
-                            // getUnread();
-                            // exchangeVIPCoin();
-                        }
-                        P_UID = UUID;P_SESS = SESSDATA;
-                    });
+                    scheduleCheckIn();
+                    getFollowingList();
+                    // getUnread();
+                    // exchangeVIPCoin();
+                }
+                P_UID = UUID;
             });
         chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
             function (jct) {(jct === null)?JCT=-1:JCT = jct.value;});

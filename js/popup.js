@@ -204,7 +204,7 @@
 
     window.onload = function (){
         getLatestVer();
-
+        updateUID();
         chrome.storage.sync.get(["notification"], function(result){
             buttonDisabled(result.notification, imageNotice);
             liveNotification.checked = result.notification;});
