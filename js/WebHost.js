@@ -391,7 +391,8 @@
             }).then(result => result.json())
                 .then(json =>{
                     if(json['code']===0){
-                        let html = "<tbody><tr>";
+                        let html = "<thead><tr><th colspan='4' class='rua-table-header'>up大表情/系统表情</th></tr></thead>";
+                        html += "<tbody><tr>";
                         if(json['data']['data'][1]!==undefined && json['data']['data'][1]!==null){
                             for (let i = 0; i < json['data']['data'][1]['emoticons'].length; i++) {
                                 if(i % num_per_line === 0 && i !== 0)
@@ -443,7 +444,8 @@
                 sel.addEventListener("mousemove", function (){cursorSelection = inputListener(span, O);});
 
                 // construct emoji table
-                let html = "<tbody><tr>";
+                let html = "<thead><tr><th colspan='4' class='rua-table-header'>弹幕机表情</th></tr></thead>";
+                html += "<tbody><tr>";
                 for (let i = 0; i < imgs.length; i++) {
                     if(i % num_per_line === 0 && i !== 0)
                         html += "</tr><tr>";

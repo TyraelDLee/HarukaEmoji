@@ -95,16 +95,6 @@
     animation-fill-mode: forwards;
 }
 
-#emoji-popup {
-    width: 50px;
-    height: 50px;
-    background-repeat:no-repeat;
-    background-position:center;
-    background-size: 100% 100%;
-    position: fixed;
-    z-index: 9999999;
-}
-
 .emoji_sec{
     text-align: center;
     overflow-y: scroll;
@@ -119,6 +109,26 @@
 .emoji_sec::-webkit-scrollbar-thumb{
     border-radius: 6px;
     background-color: #aaa;
+}
+
+.emoji-table{
+    padding-top: 5px;
+}
+
+.rua-table-header{
+    font-size: 13px;
+    text-align: left;
+    color: #999;
+}
+
+#emoji-popup {
+    width: 50px;
+    height: 50px;
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size: 100% 100%;
+    position: fixed;
+    z-index: 9999999;
 }
 
 #emoji-selection{
