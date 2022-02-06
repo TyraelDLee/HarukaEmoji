@@ -3,7 +3,8 @@
  * */
 !function (){
     let room_id = window.location["pathname"].replaceAll("/", "").replace("blanc","");
-    console.log(room_id);
+    let privilege = 0;
+    let isFan = false;
     let exp =new RegExp("^\\d*$");
     if(exp.test(room_id)){
         var JCT = "-1";
@@ -60,14 +61,26 @@
                 body:null
             }).then(result => result.json())
                 .then(json =>{
-                    if (json['code'] === 0){
+                    if (json['code'] === 0)
                         room_id = json['data']['room_id'];
-                        console.log(room_id);
-                    }else{
+                    else
                         setTimeout(getRealRoomID, 1000);
-                    }
-                })
-                .catch(e=>{setTimeout(getRealRoomID, 1000)});
+
+                }).catch(e=>{setTimeout(getRealRoomID, 1000)});
+        })();
+        (function getUserPrivilege(){
+            fetch("https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?from=0&room_id="+room_id,{
+                method:'GET',
+                credentials:'include',
+                body:null
+            }).then(result => result.json())
+                .then(json =>{
+                    if (json['code'] === 0) {
+                        privilege = json['data']['privilege']['privilege_type'];
+                        isFan = json['data']['relation']['is_in_fansclub'];
+                    }else
+                        setTimeout(getUserPrivilege, 1000);
+                }).catch(e=>{setTimeout(getUserPrivilege, 1000)});
         })();
 
         if(document.getElementsByTagName("article").length === 0) renderExtension();
@@ -231,11 +244,9 @@
                 fullScreenText.style.display = "block";
 
                 constructHTMLTable(4, DanMuInput, emojiTable, selec, textLength);
-                constructHTMLTableSystemEmoji(4,  emojiTableSystem)
+                constructHTMLTableSystemEmoji(4,  emojiTableSystem);
 
-                if(emojiTable.innerHTML.length===0 && emojiTableSystem.innerHTML.length<=25){
-                    emojiTableSystem.innerHTML = "<div id='load'>当前直播间没有表情包，<br>如显示不正确，请<a href="+window.location+">点击这里</a>重试<br><br></div>";
-                }
+
 
                 DanMuSub.onclick = function (){
                     packaging(DanMuInput.value);
@@ -384,6 +395,7 @@
         }
 
         function constructHTMLTableSystemEmoji(num_per_line, HTMLObj){
+            const privilegeSet = {0:"",1:"舰长",2:"提督",3:"总督"};
             fetch("https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id="+room_id, {
                 method:"GET",
                 credentials: 'include',
@@ -391,13 +403,13 @@
             }).then(result => result.json())
                 .then(json =>{
                     if(json['code']===0){
-                        let html = "<thead><tr><th colspan='4' class='rua-table-header'>up大表情/系统表情</th></tr></thead>";
+                        let html = "<thead><tr><th colspan='4' class='rua-table-header'>up大表情 / 系统表情</th></tr></thead>";
                         html += "<tbody><tr>";
                         if(json['data']['data'][1]!==undefined && json['data']['data'][1]!==null){
                             for (let i = 0; i < json['data']['data'][1]['emoticons'].length; i++) {
                                 if(i % num_per_line === 0 && i !== 0)
                                     html += "</tr><tr>";
-                                html += "<td colspan="+1+" class=\"rua-emoji-icon\" id=\""+json['data']['data'][1]['emoticons'][i]['emoticon_unique']+"\" style=\" background:url("+ json['data']['data'][1]['emoticons'][i]['url'] +") no-repeat center center; background-size: contain\"></td>";
+                                html += "<td colspan="+1+" class=\"rua-emoji-icon\" id=\""+json['data']['data'][1]['emoticons'][i]['emoticon_unique']+"\" style=\"background-image:url("+ json['data']['data'][1]['emoticons'][i]['url'] +");\"><div class='rua-emoji-requirement' style='background-color: "+json['data']['data'][1]['emoticons'][i]['unlock_show_color']+";'><div class='rua-emoji-requirement-text'>"+json['data']['data'][1]['emoticons'][i]['unlock_show_text']+"</div></div></td>";
                             }
                         }
                         html+="</tr>";
@@ -405,7 +417,7 @@
                             for (let i = 0; i < json['data']['data'][0]['emoticons'].length; i++) {
                                 if(i % num_per_line === 0 && i !== 0)
                                     html += "</tr><tr>";
-                                html += "<td colspan="+1+" class=\"rua-emoji-icon\" id=\""+json['data']['data'][0]['emoticons'][i]['emoticon_unique']+"\" style=\" background:url("+ json['data']['data'][0]['emoticons'][i]['url'] +") no-repeat center center; background-size: contain\"></td>";
+                                html += "<td colspan="+1+" class=\"rua-emoji-icon\" id=\""+json['data']['data'][0]['emoticons'][i]['emoticon_unique']+"\" style=\"background-image:url("+ json['data']['data'][0]['emoticons'][i]['url'] +");\"><div class='rua-emoji-requirement' style='background-color: "+json['data']['data'][0]['emoticons'][i]['unlock_show_color']+";'><div class='rua-emoji-requirement-text'>"+json['data']['data'][0]['emoticons'][i]['unlock_show_text']+"</div></div></td>";
                             }
                         }
                         html += "</tr></tbody>";
@@ -414,11 +426,15 @@
                         for (let i = 0; i < HTMLObj.rows.length; i++) {
                             var cell = HTMLObj.rows[i].cells;
                             for (let j = 0; j < cell.length; j++) {
-                                cell[j].onclick = function (){
-                                    packaging(this.id, "systemEmoji");
+                                cell[j].onclick = function (e){
+                                    if(e.button === 0)
+                                        packaging(this.id, "systemEmoji");
                                 }
                             }
                         }
+                    }
+                    if(emojiTable.innerHTML.length===0 && emojiTableSystem.innerHTML.length<=25){
+                        emojiTableSystem.innerHTML = "<div id='load'>当前直播间没有表情包，<br>如显示不正确，请<a href="+window.location+">点击这里</a>重试<br><br></div>";
                     }
                 })
                 .catch(msg =>{});
@@ -449,7 +465,7 @@
                 for (let i = 0; i < imgs.length; i++) {
                     if(i % num_per_line === 0 && i !== 0)
                         html += "</tr><tr>";
-                    html += "<td colspan="+imgs[i].getSpan()+" class=\"rua-emoji-icon\" style=\" background:url("+ imgs[i].getURL() +") no-repeat bottom center; background-size: contain\"></td>";
+                    html += "<td colspan="+imgs[i].getSpan()+" class=\"rua-emoji-icon\" style=\"background-image:url("+ imgs[i].getURL() +");\"></td>";
                 }
                 html += "</tr></tbody>";
                 O1.innerHTML = html;
@@ -458,9 +474,11 @@
                 for (let i = 0; i < O1.rows.length; i++) {
                     var cell = O1.rows[i].cells;
                     for (let j = 0; j < cell.length; j++) {
-                        cell[j].onclick = function (){
-                            O.value = O.value.substr(0, cursorSelection[0]) + "(" +emoji[j+i*num_per_line]+ ")" + O.value.substr(cursorSelection[1]);
-                            cursorSelection = inputListener(span, O);
+                        cell[j].onclick = function (e){
+                            if(e.button === 0){
+                                O.value = O.value.substr(0, cursorSelection[0]) + "(" +emoji[j+i*num_per_line]+ ")" + O.value.substr(cursorSelection[1]);
+                                cursorSelection = inputListener(span, O);
+                            }
                         }
                     }
                 }

@@ -5,7 +5,7 @@
 # HarukaEmoji
 rua豹使人快乐，rua了又rua！<br>
 
-rua豹器5.1.0来啦 <br>
+rua豹器5.3.0来啦 <br>
 兼容绝大多数chromium内核浏览器，例如：Opera浏览器，360浏览器，新MS Edge，yandex....。<br>
 现已支持火狐浏览器，见：<a href="https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/">火狐扩展商店</a>
 
@@ -59,6 +59,11 @@ rua豹器5.1.0来啦 <br>
 [火狐扩展商店](https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/)
 
 ## 版本记录
+### ver 5.3
+- 提高了录制直播片段的导出效率。
+- 添加了通用表情及UP大表情的悬浮窗以及全屏下的支持。(支持所有直播间)
+- 修复了一些问题。
+
 ### ver 5.2
 - 添加了快速录制直播片段。
 - 修复了一些问题。

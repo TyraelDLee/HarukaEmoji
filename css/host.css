@@ -8,211 +8,295 @@
 }
 
 @keyframes fade-in {
-    0% {opacity: 0.0}
-    100% {opacity: 1.0}
+    0% {
+        opacity: 0.0
+    }
+    100% {
+        opacity: 1.0
+    }
 }
 
 @keyframes fade-out {
-    0% {opacity: 1.0}
-    100% {opacity: 0.0}
+    0% {
+        opacity: 1.0
+    }
+    100% {
+        opacity: 0.0
+    }
 }
 
 @keyframes click-in {
-    0% {width: 52px; height: 52px; transform: translate(-1px, -1px);}
-    50% {width: 50px; height: 50px; transform: translate(0px, 0px);}
-    100% {width: 46px; height: 46px; transform: translate(2px, 2px);}
+    0% {
+        width: 52px;
+        height: 52px;
+        transform: translate(-1px, -1px);
+    }
+    50% {
+        width: 50px;
+        height: 50px;
+        transform: translate(0px, 0px);
+    }
+    100% {
+        width: 46px;
+        height: 46px;
+        transform: translate(2px, 2px);
+    }
 }
 
 @keyframes click-out {
-    0% {width: 46px; height: 46px; transform: translate(2px, 2px);}
-    50% {width: 50px; height: 50px; transform: translate(0px, 0px);}
-    100% {width: 52px; height: 52px; transform: translate(-1px, -1px);}
+    0% {
+        width: 46px;
+        height: 46px;
+        transform: translate(2px, 2px);
+    }
+    50% {
+        width: 50px;
+        height: 50px;
+        transform: translate(0px, 0px);
+    }
+    100% {
+        width: 52px;
+        height: 52px;
+        transform: translate(-1px, -1px);
+    }
 }
 
 @keyframes hover-in {
-    0% {width: 50px; height: 50px; transform: translate(0px, 0px);}
-    100% {width: 52px; height: 52px; transform: translate(-1px, -1px);}
+    0% {
+        width: 50px;
+        height: 50px;
+        transform: translate(0px, 0px);
+    }
+    100% {
+        width: 52px;
+        height: 52px;
+        transform: translate(-1px, -1px);
+    }
 }
 
 @keyframes hover-out {
-    0% {width: 52px; height: 52px; transform: translate(-1px, -1px);}
-    100% {width: 50px; height: 50px; transform: translate(0px, 0px);}
+    0% {
+        width: 52px;
+        height: 52px;
+        transform: translate(-1px, -1px);
+    }
+    100% {
+        width: 50px;
+        height: 50px;
+        transform: translate(0px, 0px);
+    }
 }
 
 @keyframes fullscreen-hover-in {
-    0% {opacity: 0.1}
-    100% {opacity: 0.8}
+    0% {
+        opacity: 0.1
+    }
+    100% {
+        opacity: 0.8
+    }
 }
 
 @keyframes fullscreen-hover-out {
-    0% {opacity: 0.8}
-    100% {opacity: 0.1}
+    0% {
+        opacity: 0.8
+    }
+    100% {
+        opacity: 0.1
+    }
 }
 
-.selection-fade-in{
+.selection-fade-in {
     animation-name: fade-in;
     animation-duration: 0.3s;
 }
 
-.selection-fade-out{
+.selection-fade-out {
     animation-name: fade-out;
     animation-duration: 0.3s;
 }
 
-.popup-click-hoverin{
+.popup-click-hoverin {
     animation-name: hover-in;
     animation-duration: 0.1s;
     animation-fill-mode: forwards;
 }
 
-.popup-click-hoverout{
+.popup-click-hoverout {
     animation-name: hover-out;
     animation-duration: 0.1s;
     animation-fill-mode: forwards;
 }
 
-.popup-click-in{
+.popup-click-in {
     animation-name: click-in;
     animation-duration: 0.2s;
     animation-fill-mode: forwards;
 }
 
-.popup-click-out{
+.popup-click-out {
     animation-name: click-out;
     animation-duration: 0.2s;
     animation-fill-mode: forwards;
 }
 
-.fullscreen-hoverin{
+.fullscreen-hoverin {
     animation-name: fullscreen-hover-in;
     animation-duration: 0.5s;
     animation-fill-mode: forwards;
 }
 
-.fullscreen-hoverout{
+.fullscreen-hoverout {
     animation-name: fullscreen-hover-out;
     animation-duration: 0.5s;
     animation-fill-mode: forwards;
 }
 
-.emoji_sec{
+.emoji_sec {
     text-align: center;
     overflow-y: scroll;
-    scrollbar-width:thin;
+    scrollbar-width: thin;
 }
 
-.emoji_sec::-webkit-scrollbar{
+.emoji_sec::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 
-.emoji_sec::-webkit-scrollbar-thumb{
+.emoji_sec::-webkit-scrollbar-thumb {
     border-radius: 6px;
     background-color: #aaa;
 }
 
-.emoji-table{
+.emoji-table {
     padding-top: 5px;
 }
 
-.rua-table-header{
+.rua-table-header {
+    user-select: none;
     font-size: 13px;
     text-align: left;
     color: #999;
 }
 
+.rua-emoji-icon{
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    position: relative;
+}
+
+.rua-emoji-requirement {
+    top: 0;
+    right: 0;
+    position: absolute;
+    color: #fff;
+    background-color: #FF6699;
+    border-radius: 2px;
+    font-size: 10px;
+    height: 12px;
+    line-height: 12px;
+    text-align: center;
+    white-space: nowrap;
+    max-width: 80%;
+    user-select: none;
+}
+
+.rua-emoji-requirement-text {
+    transform: scale(.84);
+}
+
 #emoji-popup {
     width: 50px;
     height: 50px;
-    background-repeat:no-repeat;
-    background-position:center;
+    background-repeat: no-repeat;
+    background-position: center;
     background-size: 100% 100%;
     position: fixed;
     z-index: 9999999;
 }
 
-#emoji-selection{
+#emoji-selection {
     width: 300px;
     height: 350px;
     background-color: #fff;
     position: fixed;
     z-index: 9999999;
     border-radius: 12px;
-    margin:0 auto;
+    margin: 0 auto;
     overflow: hidden;
 }
 
-#emoji-selection table{
+#emoji-selection table {
     margin: 0 auto;
 }
 
-#emoji-selection td{
+#emoji-selection td {
     width: 60px;
     height: 60px;
 }
 
-#emoji-tray{
+#emoji-tray {
     width: 300px;
     height: 280px;
 }
 
-#load{
+#load {
     margin-top: 170px;
     text-align: center;
     vertical-align: middle;
 }
 
-#input-form{
+#input-form {
     left: 10px;
     bottom: 5px;
     width: 200px;
     height: 50px;
     resize: none;
     border: 1px solid #AAA;
-    border-radius:5px;
+    border-radius: 5px;
     position: absolute;
     padding: 5px 0 0 5px;
 }
 
-#input-form:focus{
+#input-form:focus {
     outline: none;
     border: 1px solid #00A0FF;
 }
 
-#input-form::-webkit-scrollbar{
+#input-form::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 
-#input-form::-webkit-scrollbar-thumb{
+#input-form::-webkit-scrollbar-thumb {
     border-radius: 6px;
     background-color: #aaa;
 }
 
-#input-button{
+#input-button {
     right: 10px;
     bottom: 5px;
     width: 65px;
     height: 20px;
     border: 0;
     background: #FFD432;
-    border-radius:5px;
+    border-radius: 5px;
     color: #FFF;
     position: absolute;
 }
 
-#input-button:hover{
+#input-button:hover {
     background: #DDB210;
 }
 
-#length-indicator{
+#length-indicator {
     right: 90px;
     bottom: 10px;
     color: #AAA;
     position: absolute;
 }
 
-#fullscreen-table{
+#fullscreen-table {
     width: inherit;
     height: 120px;
     bottom: 40px;
@@ -221,19 +305,19 @@
     position: absolute;
     z-index: 9999999;
     align-items: center;
-    border-radius:5px;
+    border-radius: 5px;
 }
 
-#fullscreen-table table{
+#fullscreen-table table {
     margin: 0 auto;
 }
 
-#fullscreen-table td{
+#fullscreen-table td {
     width: 60px;
     height: 60px;
 }
 
-#fs-emoji-bg{
+#fs-emoji-bg {
     opacity: 0;
     z-index: -1;
     width: inherit;
@@ -241,7 +325,7 @@
     position: absolute;
 }
 
-#fullscreen-input{
+#fullscreen-input {
     height: 100%;
     line-height: initial;
     width: 100%;
@@ -254,18 +338,18 @@
     background: 0 0;
 }
 
-#fullscreen-input::placeholder{
+#fullscreen-input::placeholder {
     color: #fff;
 }
 
-#fullscreen-text-length{
+#fullscreen-text-length {
     color: #d3dadf;
     right: 8px;
     position: absolute;
     user-select: none;
 }
 
-#fullscreen-sub-btn{
+#fullscreen-sub-btn {
     right: 0;
     flex-shrink: 0;
     width: 60px;
@@ -276,7 +360,7 @@
     background-color: #23ade5;
 }
 
-#first-child{
+#first-child {
     flex: 1;
     position: relative;
 }
