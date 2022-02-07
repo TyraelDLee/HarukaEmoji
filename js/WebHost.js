@@ -471,12 +471,12 @@
                 O1.innerHTML = html;
 
                 // add listener for each emoji.
-                for (let i = 0; i < O1.rows.length; i++) {
+                for (let i = 1; i < O1.rows.length; i++) {
                     var cell = O1.rows[i].cells;
                     for (let j = 0; j < cell.length; j++) {
                         cell[j].onclick = function (e){
                             if(e.button === 0){
-                                O.value = O.value.substr(0, cursorSelection[0]) + "(" +emoji[j+i*num_per_line]+ ")" + O.value.substr(cursorSelection[1]);
+                                O.value = O.value.substr(0, cursorSelection[0]) + "(" +emoji[j+(i-1)*num_per_line]+ ")" + O.value.substr(cursorSelection[1]);
                                 cursorSelection = inputListener(span, O);
                             }
                         }

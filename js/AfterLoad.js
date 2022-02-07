@@ -305,7 +305,7 @@
 
     function recording(){
         try{
-            const stream = document.getElementById("live-player").getElementsByTagName("video")[0].captureStream(60);
+            const stream = document.getElementById("live-player").getElementsByTagName("video")[0].captureStream();
             //not support 60fps yet. And for all resolution above 1080p will involve performance issue.
             let streamChunks = [], recordTime = 0, videotype="", recordingSize = 0;//(size unit: MiB 1024^2 Byte)
             recordingDuration = 0;
@@ -339,10 +339,7 @@
                         stopRecoding = false;
                         room_title = setRoomTitle();
                         console.log("clip sent to process: \r\nfileName: "+room_title+"\r\nvideo duration: "+recordingDuration+"s\r\nfile size: "+videoBlob.size / (1024**2)+"MiB\r\nmime type: "+videoBlob.type);
-                        chrome.runtime.sendMessage({msg: "requestEncode", blob: blobURL, filename: room_title, startTime: (recordTime - recordingDuration), duration: recordingDuration}, ()=>{
-                            window.URL.revokeObjectURL(blobURL);
-                        });
-                        setInterval(()=>{console.log(blobURL)}, 1000);
+                        chrome.runtime.sendMessage({msg: "requestEncode", blob: blobURL, filename: room_title, startTime: (recordTime - recordingDuration), duration: recordingDuration});
                     }
                     streamChunks = [];
                     if(prerecordingDuration>0)
