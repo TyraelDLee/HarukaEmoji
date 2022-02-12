@@ -670,8 +670,10 @@
                 .then(res => res.json())
                 .then(json => {
                     console.log(json["data"]["list"].length+" medal founded.")
-                    for (let i = 0; i < json["data"]["list"].length; i++)
-                        medals.push(json["data"]["list"][i]["medal_info"]["target_id"]);
+                    for (let i = 0; i < json["data"]["list"].length; i++){
+                        if(json["data"]["list"][i]["medal_info"]["today_feed"]<100)
+                            medals.push(json["data"]["list"][i]["medal_info"]["target_id"]);
+                    }
                     daka(medals);
                 })
                 .catch(msg => {
