@@ -243,7 +243,7 @@
                 fullScreenSection.style.display = "block";
                 fullScreenText.style.display = "block";
 
-                constructHTMLTable(4, DanMuInput, emojiTable, selec, textLength);
+                constructHTMLTable(4, DanMuInput, emojiTable, textLength);
                 constructHTMLTableSystemEmoji(4,  emojiTableSystem);
 
 
@@ -282,7 +282,7 @@
                     fullscreenEmojiPad.classList.add("emoji_sec");
                     fullscreenEmojiPad.setAttribute("id", "fullscreen-table");
                     fullscreenEmojiTable.classList.add("emoji-table");
-                    constructHTMLTable(8, fullscreenInput, fullscreenEmojiTable, fullscreenEmojiPad, fullscreenTextLength);
+                    constructHTMLTable(8, fullscreenInput, fullscreenEmojiTable, fullscreenTextLength);
                     constructHTMLTableSystemEmoji(8, fullscreenEmojiTableSystem);
 
                     fullscreenEmojiPad.appendChild(fullscreenEmojiTable);
@@ -293,7 +293,7 @@
                     fullscreenInput.setAttribute("id", "fullscreen-input");
 
                     fullscreenTextLength.setAttribute("id", "fullscreen-text-length");
-                    fullscreenTextLength.innerHTML = " 0/30";
+                    fullscreenTextLength.innerHTML = " 0/"+totalLength;
 
                     fullscreenInputDiv.setAttribute("id", "first-child");
                     fullscreenInputDiv.appendChild(fullscreenInput);
@@ -330,7 +330,7 @@
                     fullscreenInputBtn.addEventListener("click", function (){
                         packaging(fullscreenInput.value);
                         fullscreenInput.value = "";
-                        fullscreenTextLength.innerHTML = " 0/30";
+                        fullscreenTextLength.innerHTML = " 0/"+totalLength;
                     });
                 }
 
@@ -403,24 +403,24 @@
             }).then(result => result.json())
                 .then(json =>{
                     if(json['code']===0){
-                        let html = "<thead><tr><th colspan='4' class='rua-table-header'>up大表情 / 系统表情</th></tr></thead>";
-                        html += "<tbody><tr>";
+                        let html = '<thead><tr><th colspan="4" class="rua-table-header">up大表情 / 系统表情</th></tr></thead>';
+                        html += '<tbody><tr>';
                         if(json['data']['data'][1]!==undefined && json['data']['data'][1]!==null){
                             for (let i = 0; i < json['data']['data'][1]['emoticons'].length; i++) {
                                 if(i % num_per_line === 0 && i !== 0)
-                                    html += "</tr><tr>";
-                                html += "<td colspan="+1+" class=\"rua-emoji-icon\" id=\""+json['data']['data'][1]['emoticons'][i]['emoticon_unique']+"\" style=\"background-image:url("+ json['data']['data'][1]['emoticons'][i]['url'] +");\"><div class='rua-emoji-requirement' style='background-color: "+json['data']['data'][1]['emoticons'][i]['unlock_show_color']+";'><div class='rua-emoji-requirement-text'>"+json['data']['data'][1]['emoticons'][i]['unlock_show_text']+"</div></div></td>";
+                                    html += '</tr><tr>';
+                                html += `<td colspan="1" title="${json['data']['data'][1]['emoticons'][i]['emoji']}" class="rua-emoji-icon" id="${json['data']['data'][1]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][1]['emoticons'][i]['url'].replace("http://", "https://")}');"><div class="rua-emoji-requirement" style="'background-color: ${json['data']['data'][1]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][1]['emoticons'][i]['unlock_show_text']}</div></div></td>`;
                             }
                         }
                         html+="</tr>";
                         if(json['data']['data'][0]!==undefined && json['data']['data'][0]!==null){
                             for (let i = 0; i < json['data']['data'][0]['emoticons'].length; i++) {
                                 if(i % num_per_line === 0 && i !== 0)
-                                    html += "</tr><tr>";
-                                html += "<td colspan="+1+" class=\"rua-emoji-icon\" id=\""+json['data']['data'][0]['emoticons'][i]['emoticon_unique']+"\" style=\"background-image:url("+ json['data']['data'][0]['emoticons'][i]['url'] +");\"><div class='rua-emoji-requirement' style='background-color: "+json['data']['data'][0]['emoticons'][i]['unlock_show_color']+";'><div class='rua-emoji-requirement-text'>"+json['data']['data'][0]['emoticons'][i]['unlock_show_text']+"</div></div></td>";
+                                    html += '</tr><tr>';
+                                html += `<td colspan="1" title="${json['data']['data'][0]['emoticons'][i]['emoji']}" class="rua-emoji-icon" id="${json['data']['data'][0]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][0]['emoticons'][i]['url'].replace("http://", "https://")}');"><div class="rua-emoji-requirement" style="'background-color: ${json['data']['data'][0]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][0]['emoticons'][i]['unlock_show_text']}</div></div></td>`;
                             }
                         }
-                        html += "</tr></tbody>";
+                        html += '</tr></tbody>';
                         HTMLObj.innerHTML = html;
 
                         for (let i = 0; i < HTMLObj.rows.length; i++) {
@@ -434,38 +434,48 @@
                         }
                     }
                     if(emojiTable.innerHTML.length===0 && emojiTableSystem.innerHTML.length<=25){
-                        emojiTableSystem.innerHTML = "<div id='load'>当前直播间没有表情包，<br>如显示不正确，请<a href="+window.location+">点击这里</a>重试<br><br></div>";
+                        emojiTableSystem.innerHTML = `<div id="load">当前直播间没有表情包，<br>如显示不正确，请<a href="${window.location}">点击这里</a>重试<br><br></div>`;
                     }
                 })
                 .catch(msg =>{});
         }
 
-        function constructHTMLTable(num_per_line, O, O1, sel, span){
+        let enterLock = true, unlock = true;
+        function constructHTMLTable(num_per_line, O, O1, span){
             // enter key shortcut listener
             try{
                 let cursorSelection = [0,0];
-                O.addEventListener("keyup", function (e){
-                    if(e.keyCode === 13){
+                O.addEventListener('compositionstart', (e)=>{
+                    enterLock = false;
+                    unlock = false;
+                });
+                O.addEventListener('compositionend', (e)=>{
+                    enterLock = true;
+                    console.log('compositionend');
+                });
+                O.addEventListener("keyup", (e)=>{
+                    if(e.keyCode === 13 && unlock){
                         e.preventDefault();
                         packaging(O.value);
                         O.value = "";
                     }
+                    if(enterLock) unlock = true; // unlock enter key when the first key after composition end has been pressed.
+                    cursorSelection = inputListener(span, O);
                 });
-                O.addEventListener("keydown", function (e){
+                O.addEventListener("keydown", (e)=>{
                     if(e.code === "Enter") e.preventDefault();
                 });
 
                 // update the current courser location.
-                O.onkeyup = function (){cursorSelection = inputListener(span, O);};
-                sel.addEventListener("mousemove", function (){cursorSelection = inputListener(span, O);});
+                O.addEventListener("select", (e)=>{cursorSelection = [e.target.selectionStart, e.target.selectionEnd];});
 
                 // construct emoji table
-                let html = "<thead><tr><th colspan='4' class='rua-table-header'>弹幕机表情</th></tr></thead>";
-                html += "<tbody><tr>";
+                let html = '<thead><tr><th colspan="4" class="rua-table-header">弹幕机表情</th></tr></thead>';
+                html += '<tbody><tr>';
                 for (let i = 0; i < imgs.length; i++) {
                     if(i % num_per_line === 0 && i !== 0)
-                        html += "</tr><tr>";
-                    html += "<td colspan="+imgs[i].getSpan()+" class=\"rua-emoji-icon\" style=\"background-image:url("+ imgs[i].getURL() +");\"></td>";
+                        html += '</tr><tr>';
+                    html += `<td colspan="${imgs[i].getSpan()}" title="${emoji[i]}" class="rua-emoji-icon" style="background-image:url('${imgs[i].getURL()}');"></td>`;
                 }
                 html += "</tr></tbody>";
                 O1.innerHTML = html;
@@ -492,10 +502,8 @@
         }
 
         function inputListener(span, O){
-            let Start = O.selectionStart;
-            let End = O.selectionEnd;
             calculateTextLength(span, O.value.length);
-            return [Start, End];
+            return [O.selectionStart, O.selectionEnd];
         }
 
         function getAbsLocation(id){

@@ -21,6 +21,7 @@
     var dynamicPush = false;
     var hiddenEntry = false;
     var dakaSwitch = true;
+    var OSInfo = "";
 
     var UUID = -1;
     var JCT = -1;
@@ -30,6 +31,8 @@
     var NOTIFICATION_LIST = new NotificationList();
     var winIDList = new WindowIDList();
     var p = 0;
+
+    chrome.runtime.getPlatformInfo((info)=>{OSInfo = info.os;});
 
     chrome.browserAction.setBadgeBackgroundColor({color: "#00A0FF"});
     chrome.windows.getAll(function (wins){for (let i = 0; i < wins.length; i++) winIDList.push(wins[i].id);});
@@ -146,6 +149,9 @@
                     document.body.removeChild(a);
                     window.URL.revokeObjectURL(dl);
                 })();
+            }
+            if(request.msg === 'requestOSInfo'){
+                sendResponse({'os':OSInfo});
             }
             if(request.msg.includes("QNV")){
                 QNV = request.msg.split("?")[1];
@@ -713,9 +719,9 @@
                             body: DanMuForm
                         }).then(result=>{
                             console.log("打卡成功: https://live.bilibili.com/"+json["data"]["room_id"]);
-                            if(index<medals.length){
+                            index++;
+                            if(index < medals.length){
                                 setTimeout(()=>{go()},(Math.random()*5+10)*1000);
-                                index++;
                             }
                         }).catch(error=>{console.error('Error:', error);});
                     }

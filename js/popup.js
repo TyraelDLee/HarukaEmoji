@@ -25,6 +25,7 @@
     var qn;
     var UUID = -2;
     var availableLink = "https://gitee.com/tyrael-lee/HarukaEmoji/releases";
+    var os = "";
     function en(e){e.preventDefault()}
     chrome.runtime.connect({ name: "popup" });
     (function ver(){
@@ -76,7 +77,8 @@
 
     liveNotification.addEventListener("change", function (){
         let checked = this.checked;
-        buttonDisabled(this.checked, imageNotice);
+        if(os === 'win')
+            buttonDisabled(this.checked, imageNotice);
         chrome.storage.sync.set({"notification": checked}, function(){
             console.log("notification on:"+checked);
         });
@@ -205,8 +207,16 @@
     window.onload = function (){
         getLatestVer();
         updateUID();
+        chrome.runtime.sendMessage({msg:"requestOSInfo"}, function (result){
+            os = result.os;
+            if (result.os !== 'win'){
+                buttonDisabled(false, imageNotice);
+            }
+        });
+
         chrome.storage.sync.get(["notification"], function(result){
-            buttonDisabled(result.notification, imageNotice);
+            if (os === 'win')
+                buttonDisabled(result.notification, imageNotice);
             liveNotification.checked = result.notification;});
 
         chrome.storage.sync.get(["medal"], function(result){
@@ -253,7 +263,6 @@
         chrome.storage.sync.get(["prerecord"], function (result){
             setDefault(prerecord.childNodes, result.prerecord);
         });
-
     }
 
     function getLatestVer(){
