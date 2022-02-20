@@ -102,9 +102,10 @@
                 for (let i = 0; i < request.danmakuObj.length; i++) {
                     if(request.danmakuObj[i]["progress"]===undefined)
                         request.danmakuObj[i]["progress"] = 0;
-                    danmakuBulider.push(new DanmakuObj(convertMSToS(request.danmakuObj[i]["progress"]), crc.crack(request.danmakuObj[i]["midHash"]), request.danmakuObj[i]["content"]))
+                    danmakuBulider.push(new DanmakuObj(convertMSToS(request.danmakuObj[i]["progress"]), crc.crack(request.danmakuObj[i]["midHash"]), request.danmakuObj[i]["content"], request.danmakuObj[i]["color"], request.danmakuObj[i]["mode"], request.danmakuObj[i]["fontsize"], request.danmakuObj[i]["progress"], request.danmakuObj[i]["weight"]));
                 }
                 danmakuBulider.sort(danmakuBulider.size-1);
+                console.log(danmakuBulider);
                 sendResponse({danmakuContent: danmakuBulider, danmakuPoolSize: request.danmakuObj.length});
             }
             if(request.msg === "requestUserInfo"){

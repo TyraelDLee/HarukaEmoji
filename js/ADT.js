@@ -283,12 +283,19 @@ ReplyPayload.prototype.isOlderThan = function (str){
 }
 
 
-function DanmakuObj(time, mid, content){
+function DanmakuObj(time, mid, content, color, mode, fontsize, ts, weight){
     this.time = time;
     this.mid = mid;
     this.content = content;
     this.name = [];
     this.look = true;
+
+    // for ass download
+    this.color = color;
+    this.mode = mode;
+    this.fontsize = fontsize;
+    this.ts = ts;
+    this.weight = weight;
 }
 DanmakuObj.prototype.setName = function (name){
     this.name = name;
@@ -343,12 +350,12 @@ DanmakuArr.prototype.sort = function (num){
     const buc = [];
     const bucSize = Math.floor((max - min) / num) + 1;
     for (let i = 0; i < this.size; i++) {
-        const index = ~~(this.list[i].time / bucSize);
+        const index = ~~(this.list[i].ts / bucSize);
         !buc[index] && (buc[index] = []);
         buc[index].push(this.list[i]);
         let localSize = buc[index].length;
         while (localSize > 0){
-            if (buc[index][localSize]!==undefined && buc[index][localSize].time < buc[index][localSize - 1].time)
+            if (buc[index][localSize]!==undefined && buc[index][localSize].ts < buc[index][localSize - 1].ts)
                 swap(buc[index], localSize, localSize - 1);
             localSize--;
         }

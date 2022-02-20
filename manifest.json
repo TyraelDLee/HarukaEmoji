@@ -1,7 +1,7 @@
 {
   "name": "rua豹器",
   "manifest_version": 2,
-  "version": "5.3.2",
+  "version": "5.4",
   "browser_action": {
     "default_popup": "popup.html"
   },
@@ -43,7 +43,7 @@
   },{
     "all_frames": true,
     "css": ["css/host.min.css", "css/button.min.css"],
-    "js": ["js/seki.js","js/WebHost.min.js"],
+    "js": ["js/ADT.js","js/seki.js","js/WebHost.min.js"],
     "matches": [ "*://live.bilibili.com/1603600*", "*://live.bilibili.com/record/1603600*","*://live.bilibili.com/blanc/1603600?liteVersion=true"],
     "run_at": "document_end"
   },{
@@ -56,7 +56,7 @@
   },{
     "all_frames": true,
     "css": ["css/host.min.css", "css/button.min.css", "css/videos.min.css"],
-    "js": ["js/protobuf.js", "js/ADT.js", "js/VideoHost.min.js"],
+    "js": ["js/protobuf.js", "js/ADT.js", "js/DanmakuToAss.js", "js/VideoHost.min.js"],
     "matches": ["*://www.bilibili.com/video/*"],
     "run_at": "document_end"
   }],

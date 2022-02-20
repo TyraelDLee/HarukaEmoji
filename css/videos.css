@@ -4,18 +4,23 @@
 }
 
 @keyframes searchIn {
-    0% {transform: translate(20px, 0px); opacity: 0; width: 0}
-    100% {width: 147px; opacity: 1;}
+    0% {transform: translate(180px, 0px); opacity: 0; width: 0}
+    100% {width: 100%; opacity: 1;}
 }
 
 @keyframes searchOut {
-    0% {width: 147px; opacity: 1;}
-    100% {transform: translate(20px, 0px); opacity: 0; width: 0}
+    0% {width: 100%; opacity: 1;}
+    100% {transform: translate(180px, 0px); opacity: 0; width: 0}
 }
 
 #emoji-selection{
     border-radius: 5px;
     box-shadow: #ddd 0 0 5px;
+}
+#rua-input-container{
+    left: 40px;
+    height: 18px;
+    position: relative;
 }
 
 #rua-video-info{
@@ -42,6 +47,8 @@
 }
 
 #rua-danmaku-search-input{
+    position: absolute;
+    width: 0;
     overflow: hidden;
     float: right;
     height: 18px;
@@ -56,6 +63,42 @@
     resize: none;
     outline: none !important;
 }
+
+#rua-danmaku-download{
+    float: right;
+    user-select: none;
+    cursor: pointer;
+    border-radius: 5px;
+    background: #23ade5;
+    color: #fff;
+    margin-right: 5px;
+    padding: 0 8px;
+}
+
+#rua-danmaku-intense{
+    padding: 0 2%;
+    border: 0;
+    border-bottom: 2px solid #23ade5;
+    scrollbar-width:thin;
+    outline: none !important;
+    transition: 0.4s;
+    -webkit-transition: 0.4s;
+}
+
+#rua-danmaku-intense::-webkit-scrollbar{
+    width: 6px;
+    height: 6px;
+}
+
+#rua-danmaku-intense::-webkit-scrollbar-thumb{
+    border-radius: 6px;
+    background-color: #aaa;
+}
+
+#rua-danmaku-intense option{
+    text-align: center;
+}
+
 
 .rua-download-block{
     background: #FB7299;
@@ -132,11 +175,6 @@
 
 #rua-user-host{
     height: 82px;
-}
-
-#rua-danmaku-search-input{
-    width: 0;
-
 }
 
 .rua-user{
