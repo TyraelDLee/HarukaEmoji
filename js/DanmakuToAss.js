@@ -7,23 +7,24 @@ class AssConvert{
         this.resY = resY;
         this.danmaku = undefined;
         this.payload = '';
-        this.dmNormalChannel = [];
-        this.dmTopChannel = [];
-        this.dmDownChannel = [];
-        this.dmRevChannel = [];
-        this.initChannel();
+        this.dmNormalChannel = this.initChannel();
+        this.dmTopChannel = this.initChannel();
+        this.dmDownChannel = this.initChannel();
+        this.dmRevChannel = this.initChannel();
         this.weight = 0;
     }
 
     initChannel(){
+        let arr = []
         for (let i = 0; i < ((this.resY-50) / 25); i++) {
-            this.dmNormalChannel.push(-1);
-            this.dmTopChannel.push(-1);
-            this.dmDownChannel.push(-1);
-            this.dmRevChannel.push(-1);
+            arr.push(-1);
         }
+        return arr;
     }
 
+    /**
+     * Generate ass file header.
+     * */
     genAssTitle(){
         this.title =`[Script Info]
 Title: ${this.title}
@@ -44,45 +45,71 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 `;
     }
 
+    /**
+     * Generate danmaku in ass file.
+     * O(n * m) for non-overlapped layout.
+     * */
     genDanmaku(){
-        for (let i = 0; i < this.danmaku.size; i++) {
+        for (let i = 0; i < this.danmaku.size; i++) {//n
             if (this.danmaku.get(i).weight > this.weight){
-                let Ypos = 25;
-                for (let j = 0; j < this.dmNormalChannel.length; j++) {
-                    if (this.danmaku.get(i).ts > this.dmNormalChannel[j]){
-                        this.dmNormalChannel[j] = this.calculateDMOutTime(this.danmaku.get(i).content, this.danmaku.get(i).ts);
-                        Ypos *= (j+1);
-                        break;
-                    }
-                }
-                let danmakuDir = '';
+                let danmakuDir = '', y;
                 switch (this.danmaku.get(i).mode) {
                     case 4:
                         this.dmexistsTime = 4000;
-
-                        danmakuDir = `\\pos(${this.calculateStringMiddle()},${Ypos})`;
+                        y = this.resY - this.calculateYpos(this.danmaku.get(i), this.dmTopChannel,this.danmaku.get(i).mode);
+                        danmakuDir = `\\pos(${this.calculateStringMiddle()},${y})`;
                         break;
                     case 5:
                         this.dmexistsTime = 4000;
-
-                        danmakuDir = `\\pos(${this.calculateStringMiddle()},${this.resY - Ypos})`;
+                        y = this.calculateYpos(this.danmaku.get(i), this.dmDownChannel,this.danmaku.get(i).mode);
+                        danmakuDir = `\\pos(${this.calculateStringMiddle()},${y})`;
                         break;
                     case 6:
                         this.dmexistsTime = 15000 * (this.resX / 1920);
-
-                        danmakuDir = `\\move(${0 - this.calculateStringLength(this.danmaku.get(i).content)},${Ypos},${this.resX + this.calculateStringLength(this.danmaku.get(i).content)},${Ypos})`;
+                        y = this.calculateYpos(this.danmaku.get(i), this.dmRevChannel,this.danmaku.get(i).mode);
+                        danmakuDir = `\\move(${0 - this.calculateStringLength(this.danmaku.get(i).content)},${y},${this.resX + this.calculateStringLength(this.danmaku.get(i).content)},${y})`;
                         break;
                     default:
                         this.dmexistsTime = 15000 * (this.resX / 1920);
-
-                        danmakuDir = `\\move(${this.resX + this.calculateStringLength(this.danmaku.get(i).content)},${Ypos},${0 - this.calculateStringLength(this.danmaku.get(i).content)},${Ypos})`;
-                        break
+                        y = this.calculateYpos(this.danmaku.get(i), this.dmNormalChannel,this.danmaku.get(i).mode);
+                        danmakuDir = `\\move(${this.resX + this.calculateStringLength(this.danmaku.get(i).content)},${y},${0 - this.calculateStringLength(this.danmaku.get(i).content)},${y})`;
+                        break;
                 }
                 this.payload += `Dialogue: 0,${this.convertMSToS(this.danmaku.get(i).ts)},${this.convertMSToS(this.danmaku.get(i).ts+this.dmexistsTime)},${this.danmaku.get(i).fontsize===18?'DMs':(this.danmaku.get(i).fontsize===25?'DMm':(this.danmaku.get(i).fontsize===32?'DMl':'DMm'))},,20,20,2,,{${danmakuDir}${this.danmaku.get(i).color-1+1===16777215?'':'\\c&H'+this.colorDecToHex(this.danmaku.get(i).color-1+1)}}${this.danmaku.get(i).content}
 `;
             }
         }
     }
+
+    /**
+     * Calculate vertical position
+     * for each danmaku.
+     * */
+    calculateYpos(damnaku, arr, mode){
+        let Ypos = 25;
+        for (let j = 0; j < arr.length; j++) {//m
+            if (damnaku.ts > arr[j]){
+                arr[j] = this.calculateDMOutTime(damnaku.content, damnaku.ts, mode);
+                Ypos *= (j+1);
+                return Ypos;
+            }
+        }
+        switch (mode){
+            case 4:
+                this.dmTopChannel = this.initChannel();
+                break;
+            case 5:
+                this.dmDownChannel = this.initChannel();
+                break;
+            case 6:
+                this.dmRevChannel = this.initChannel();
+                break;
+            default:
+                this.dmNormalChannel = this.initChannel();
+                break;
+        }
+        return 25;
+    };
 
     calculateStringLength(text, fontsize){
         return AssConvert.stringLength(text) * (fontsize===25?6.25:(fontsize===18?4.5:fontsize===32?8:6.25));
@@ -92,14 +119,28 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         return this.resX / 2;
     }
 
-    calculateDMOutTime(text,baseTime){
-        return (this.calculateStringLength(text) + 50) * this.dmexistsTime / this.resY + baseTime;
+    /**
+     * Calculate fully displayed time for
+     * each danmaku. (= the time when channel
+     * is available for next danmaku)
+     * */
+    calculateDMOutTime(text,baseTime, mode){
+        return mode === 4 || mode === 5?baseTime + 4100:Math.ceil((this.calculateStringLength(text) + 50) * this.dmexistsTime / this.resY + baseTime);
     }
 
+    /**
+     * Convert color code from
+     * decimal to hexadecimal
+     * Fixed 6-bit length.
+     * */
     colorDecToHex(color){
         return ('000000'+color.toString(16).toUpperCase()).slice(-6);
     }
 
+    /**
+     * Convert milliseconds timestamp to
+     * h:mm:ss.ms format.
+     * */
     convertMSToS(time){
         let mils = time % 1000;
         mils = ('00'+mils).slice(-2);
@@ -113,8 +154,11 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         return hour+mint+":"+secs+"."+mils;
     }
 
+    /**
+     * Grab result, save it as ass file
+     * and download it.
+     * */
     downloadASS(){
-        //console.log(this.title+this.payload);
         const dl = URL.createObjectURL(new Blob([this.title+this.payload]));
         const a = document.createElement('a');
         a.style.display = 'none';
@@ -126,11 +170,19 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         window.URL.revokeObjectURL(dl);
     }
 
+    /**
+     * Set weight for danmaku.
+     * all danmaku weight which below this weight
+     * will not be processed when this weight set.
+     * */
     setWeight(weight){
         this.danmaku = undefined;
         this.weight = weight;
     }
 
+    /**
+     * Feed grabbed danmaku to this object.
+     * */
     feedDanmaku(danmaku){
         this.danmaku = danmaku;
         this.genDanmaku();
@@ -142,6 +194,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         this.genAssTitle();
     }
 
+    /**
+     * Get string length for used in pixel.
+     * For fontsize 25, use this result * 6.25.
+     * */
     static stringLength(string){
         let length = 0;
         Array.from(string).map(function(char){
