@@ -1,3 +1,6 @@
+/***
+ * Copyright (c) 2021 Tyrael, Y. LI
+ * */
 !function (){
     const currentVersion = chrome.runtime.getManifest().version;
     const versionSection = document.getElementById("version");

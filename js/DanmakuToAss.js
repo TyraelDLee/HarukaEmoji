@@ -1,3 +1,17 @@
+/**
+ * Convert danmaku to ass file
+ * for offline play.
+ *
+ * Currently support danmaku style:
+ * - colour,
+ * - fontsize (18, 25, 32),
+ * - fixed top position,
+ * - fixed bottom position
+ * - right to left,
+ * - left to right.
+ *
+ * Copyright (c) 2021 Tyrael, Y. LI
+ * */
 class AssConvert{
     constructor(resX, resY) {
         this.dmexistsTime = 15000 * (resX / 1920);
@@ -131,10 +145,12 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     /**
      * Convert color code from
      * decimal to hexadecimal
-     * Fixed 6-bit length.
+     * Fixed 6-bit length. but why reverse?
      * */
     colorDecToHex(color){
-        return ('000000'+color.toString(16).toUpperCase()).slice(-6);
+        let hex = ('000000'+color.toString(16).toUpperCase()).slice(-6);
+        hex = hex.slice(4,6)+hex.slice(2,4)+hex.slice(0,2);
+        return hex;
     }
 
     /**
@@ -171,21 +187,21 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     }
 
     /**
+     * Feed grabbed danmaku to this object.
+     * */
+    feedDanmaku(danmaku){
+        this.danmaku = danmaku;
+        this.payload = '';
+        this.genDanmaku();
+    }
+
+    /**
      * Set weight for danmaku.
      * all danmaku weight which below this weight
      * will not be processed when this weight set.
      * */
     setWeight(weight){
-        this.danmaku = undefined;
         this.weight = weight;
-    }
-
-    /**
-     * Feed grabbed danmaku to this object.
-     * */
-    feedDanmaku(danmaku){
-        this.danmaku = danmaku;
-        this.genDanmaku();
     }
 
     setTitle(title){

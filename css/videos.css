@@ -1,3 +1,4 @@
+/*Copyright (c) 2021 Tyrael, Y. LI*/
 @keyframes mousein {
     0% {transform: translate(0px, 50px); opacity: 0}
     100% {transform: translate(0px, 0px); opacity: 1}

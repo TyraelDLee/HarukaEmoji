@@ -1,4 +1,6 @@
-
+/***
+ * Copyright (c) 2021 Tyrael, Y. LI
+ * */
 !function loadComponent(){
     var join = document.getElementsByClassName("particitation-btn")[0];
     var close = document.getElementsByClassName("close-btn")[0];

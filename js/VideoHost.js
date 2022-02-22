@@ -3,6 +3,7 @@
  * */
 !function (){
     const link = chrome.runtime.getURL("../images/haruka/abaaba.svg");
+    const assConvert = new AssConvert(1280, 720);
     var vid = window.location["pathname"].replaceAll("/", "").replace("video","");// id for current page, av or bv.
     var aid = "";
     var bvid = "0";//bv id for current page. convert all id to bv id.
@@ -87,7 +88,7 @@
 
     const downloadTag = document.createElement("div");
     downloadTag.setAttribute("style", "width: 290px; position: fixed; background: #fff");
-    downloadTag.innerHTML = `<div style='float: left; user-select: none; padding-left: 5px'><b>视频下载：</b></div><div id="rua-danmaku-download" style="opacity: 0.8; cursor: not-allowed;">加载中</div><div style="float: right; margin: -2px 10px 0 0"><label for="rua-danmaku-intense"></label><select id="rua-danmaku-intense"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10" selected>10</option></select></div><div style="float: right; margin-right: 5px;">弹幕强度</div></div>`;
+    downloadTag.innerHTML = `<div style='float: left; user-select: none; padding-left: 5px'><b>视频下载：</b></div><div id="rua-danmaku-download" style="opacity: 0.8; cursor: not-allowed;" title="将弹幕保存为ass文件">加载中</div><div style="float: right; margin: -2px 10px 0 0"><label for="rua-danmaku-intense"></label><select id="rua-danmaku-intense"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10" selected>10</option></select></div><div style="float: right; margin-right: 5px;">弹幕强度</div></div>`;
 
     const downloadVideoTray = document.createElement("div");
     downloadVideoTray.setAttribute("style", "margin: 0 0 0 15px;");
@@ -96,8 +97,6 @@
     function calculateStringLength(string){
         return 180 - (string.length * 8);
     }
-
-    let assConvert = new AssConvert(1280, 720);
 
     /**
      * Popup UI render section
