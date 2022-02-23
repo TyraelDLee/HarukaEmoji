@@ -106,7 +106,7 @@
         let checked = this.checked;
         chrome.storage.sync.set({"bcoin": checked}, function (){});
     });
-
+    
     qualitySetting.addEventListener("change", function (){
         qn = this.checked;
         scrollDisabled(this.checked, setting7);
