@@ -5,9 +5,11 @@
         <item url="file://$PROJECT_DIR$/js/ADT.min.js" />
         <item url="file://$PROJECT_DIR$/js/AfterLoad.min.js" />
         <item url="file://$PROJECT_DIR$/js/DanmakuToAss.min.js" />
+        <item url="file://$PROJECT_DIR$/js/DanmakuToAss.min.min.js" />
         <item url="file://$PROJECT_DIR$/js/Lott.min.js" />
         <item url="file://$PROJECT_DIR$/js/Video.min.js" />
         <item url="file://$PROJECT_DIR$/js/VideoHost.min.js" />
+        <item url="file://$PROJECT_DIR$/js/VideoHost.min.min.js" />
         <item url="file://$PROJECT_DIR$/js/WebHost.min.js" />
         <item url="file://$PROJECT_DIR$/js/akane.min.js" />
         <item url="file://$PROJECT_DIR$/js/background.min.js" />
@@ -22,9 +24,11 @@
       <root url="file://$PROJECT_DIR$/js/ADT.min.js" />
       <root url="file://$PROJECT_DIR$/js/AfterLoad.min.js" />
       <root url="file://$PROJECT_DIR$/js/DanmakuToAss.min.js" />
+      <root url="file://$PROJECT_DIR$/js/DanmakuToAss.min.min.js" />
       <root url="file://$PROJECT_DIR$/js/Lott.min.js" />
       <root url="file://$PROJECT_DIR$/js/Video.min.js" />
       <root url="file://$PROJECT_DIR$/js/VideoHost.min.js" />
+      <root url="file://$PROJECT_DIR$/js/VideoHost.min.min.js" />
       <root url="file://$PROJECT_DIR$/js/WebHost.min.js" />
       <root url="file://$PROJECT_DIR$/js/akane.min.js" />
       <root url="file://$PROJECT_DIR$/js/background.min.js" />
