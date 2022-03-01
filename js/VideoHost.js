@@ -486,13 +486,20 @@
     }
 
     function renewSoundDLObj(cid){
-        document.getElementById('qn-dolbyAtmos').removeAttribute("title");
-        document.getElementById('qn-dolbyAtmos').onclick = null;
-        document.getElementById('qn-dolbyAtmos').parentElement.removeChild(document.getElementById('qn-dolbyAtmos'));
-        document.getElementById('qn-sound').removeAttribute("title");
-        document.getElementById('qn-sound').onclick = null;
-        document.getElementById('qn-sound').parentElement.removeChild(document.getElementById('qn-sound'));
-        downloadBlocks.splice(downloadBlocks.length-2,2);
+        let index = 0;
+        if(typeof document.getElementById('qn-dolbyAtmos') !== undefined && document.getElementById('qn-dolbyAtmos') !== null){
+            document.getElementById('qn-dolbyAtmos').removeAttribute("title");
+            document.getElementById('qn-dolbyAtmos').onclick = null;
+            document.getElementById('qn-dolbyAtmos').parentElement.removeChild(document.getElementById('qn-dolbyAtmos'));
+            index = 2;
+        }
+        if(typeof document.getElementById('qn-sound') !== undefined && document.getElementById('qn-sound') !== null){
+            document.getElementById('qn-sound').removeAttribute("title");
+            document.getElementById('qn-sound').onclick = null;
+            document.getElementById('qn-sound').parentElement.removeChild(document.getElementById('qn-sound'));
+            index = 1;
+        }
+        downloadBlocks.splice(downloadBlocks.length-index,index);
         console.log(downloadBlocks);
         getAudioOnly(cid, true, true);
 
