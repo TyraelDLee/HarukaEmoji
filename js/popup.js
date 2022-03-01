@@ -99,7 +99,7 @@
 
     imageNotice.addEventListener("change", function (){
         let checked = this.checked;
-        chrome.storage.sync.set({"imageNotice": checked}, function (){});
+        chrome.storage.local.set({"imageNotice": checked}, function (){});
     });
 
     bCoin.addEventListener("change", function (){

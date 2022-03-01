@@ -339,7 +339,7 @@
                         stopRecoding = false;
                         room_title = setRoomTitle();
                         console.log("clip sent to process: \r\nfileName: "+room_title+"\r\nvideo duration: "+recordingDuration+"s\r\nfile size: "+videoBlob.size / (1024**2)+"MiB\r\nmime type: "+videoBlob.type);
-                        chrome.runtime.sendMessage({msg: "requestEncode", blob: blobURL, filename: room_title, startTime: (recordTime - recordingDuration), duration: recordingDuration});
+                        chrome.runtime.sendMessage({msg: "requestEncode", blob: blobURL, filename: room_title, startTime: (recordTime - recordingDuration), duration: recordingDuration, requestType: 'videoRecord'});
                     }
                     streamChunks = [];
                     if(prerecordingDuration>0)

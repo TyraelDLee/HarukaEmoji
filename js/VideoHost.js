@@ -359,14 +359,14 @@
                     }
                 }
                 downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40 + "px";
-                getAudioOnly(cid);
+                getAudioOnly(cid, true, true);
                 grabDanmaku(cid, aid, 1, getDMSegments(videoDuration));
             }
         });
     }
 
-    function getAudioOnly(cid){
-        fetch("https://api.bilibili.com/x/player/playurl?bvid="+bvid+"&cid="+cid+"&qn=120&fnval=16",{
+    function getAudioOnly(cid, dolby, audio){
+        fetch("https://api.bilibili.com/x/player/playurl?bvid="+bvid+"&cid="+cid+"&qn=120&fnval=272",{
             method:"GET",
             credentials: 'include',
             body:null
@@ -374,16 +374,29 @@
         .then(res => res.json())
         .then(json => {
             if(json["code"]===0 && json["data"]!==null){
-                if(json["data"]["dash"]["audio"][0]["baseUrl"]!==null){
-                    let rua_download_block = document.createElement("div");
-                    rua_download_block.setAttribute("id","qn-sound");
-                    rua_download_block.classList.add("rua-download-block");
-                    rua_download_block.innerHTML = "<div class='rua-quality-des'>Sound Only</div>";
-                    downloadVideoTray.appendChild(rua_download_block);
-                    downloadBlocks.push(rua_download_block);
+                // add dolby atom
+                if(json["data"]["dash"]["dolby"]!==null && dolby){
+                    let rua_download_dolby = document.createElement("div");
+                    rua_download_dolby.setAttribute("id","qn-dolbyAtmos");
+                    rua_download_dolby.classList.add("rua-download-block");
+                    rua_download_dolby.innerHTML = "<div class='rua-quality-des'>杜比全景声</div>";
+                    downloadVideoTray.appendChild(rua_download_dolby);
+                    downloadBlocks.push(rua_download_dolby);
                     downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40+"px";
-                    rua_download_block.onclick = () =>{
-                        wavFile&&json["data"]["timelength"]<3600000?getAudioOnlyWav(json["data"]["dash"]["audio"][0]["baseUrl"], vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid):getAudioOnlyRaw(json["data"]["dash"]["audio"][0]["baseUrl"]);
+                    rua_download_dolby.onclick = () =>{
+                        wavFile&&json["data"]["timelength"]<3600000?getAudioOnlyWav(json["data"]["dash"]["dolby"]["audio"][0]["base_url"], vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid, rua_download_dolby, true):getAudioOnlyRaw(json["data"]["dash"]["dolby"]["audio"][0]["base_url"]);
+                    }
+                }
+                if(json["data"]["dash"]["audio"][0]["base_url"]!==null && audio){
+                    let rua_download_audio = document.createElement("div");
+                    rua_download_audio.setAttribute("id","qn-sound");
+                    rua_download_audio.classList.add("rua-download-block");
+                    rua_download_audio.innerHTML = "<div class='rua-quality-des'>Sound Only</div>";
+                    downloadVideoTray.appendChild(rua_download_audio);
+                    downloadBlocks.push(rua_download_audio);
+                    downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40+"px";
+                    rua_download_audio.onclick = () =>{
+                        wavFile&&json["data"]["timelength"]<3600000?getAudioOnlyWav(json["data"]["dash"]["audio"][0]["base_url"], vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid, rua_download_audio, false):getAudioOnlyRaw(json["data"]["dash"]["audio"][0]["base_url"]);
                     }
                 }
             }
@@ -404,10 +417,9 @@
         document.body.removeChild(a);
     }
 
-    function getAudioOnlyWav(url, fileName, cid){
-        let hostObj = downloadBlocks[downloadBlocks.length-1];
+    function getAudioOnlyWav(url, fileName, cid, hostObj, dolby){
         hostObj.onclick = null;
-        let size=0, get=0;
+        let size=0, get=0, hostItem = hostObj.getElementsByClassName("rua-quality-des")[0].innerText;
         hostObj.removeAttribute("title");
         fetch(url,{
             method:"GET",
@@ -439,27 +451,20 @@
                         }
                     }
                 })
-            ).arrayBuffer();
+            ).blob();
         })
-        .then(arrayBuffer=>{
-            new AudioContext().decodeAudioData(arrayBuffer, (audioBuffer) => {
-                const url = window.URL.createObjectURL(bufferToWave(audioBuffer, audioBuffer.length));
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = fileName + ".wav";
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-                hostObj.removeAttribute("style");
-                hostObj.removeAttribute("title");
-                hostObj.getElementsByClassName("rua-quality-des")[0].innerText = "Sound Only";
-                renewSoundDLObj(hostObj, cid);
-            }).catch(e => {
-                downloadError(hostObj, cid, "请在设置中关闭音频转码后重试。",true);
-            });
-        })
+            .then(blob =>{
+                const blobURL = window.URL.createObjectURL(blob);
+                chrome.runtime.sendMessage({msg: "requestEncode", blob: blobURL, filename: fileName, startTime: -1, duration: -1, requestType: dolby?'dolbyRecord':'audioRecord'}, function (status){
+                    console.log(status.status);
+                    if (status.status === 'ok'){
+                        hostObj.removeAttribute("style");
+                        hostObj.removeAttribute("title");
+                        hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
+                        renewSoundDLObj(cid);
+                    }
+                });
+            })
         .catch(e =>{
             downloadError(hostObj, cid, e.toString(), false);
         });
@@ -476,16 +481,21 @@
         obj.getElementsByClassName("rua-quality-des")[0].innerText = decode?"转码失败":"下载失败";
         obj.onclick = () => {
             obj.onclick = null;
-            renewSoundDLObj(obj, cid);
+            renewSoundDLObj(cid);
         }
     }
 
-    function renewSoundDLObj(obj, cid){
-        obj.removeAttribute("title");
-        obj.onclick = null;
-        downloadBlocks.splice(downloadBlocks.length-1,1);
-        getAudioOnly(cid);
-        obj.parentElement.removeChild(obj);
+    function renewSoundDLObj(cid){
+        document.getElementById('qn-dolbyAtmos').removeAttribute("title");
+        document.getElementById('qn-dolbyAtmos').onclick = null;
+        document.getElementById('qn-dolbyAtmos').parentElement.removeChild(document.getElementById('qn-dolbyAtmos'));
+        document.getElementById('qn-sound').removeAttribute("title");
+        document.getElementById('qn-sound').onclick = null;
+        document.getElementById('qn-sound').parentElement.removeChild(document.getElementById('qn-sound'));
+        downloadBlocks.splice(downloadBlocks.length-2,2);
+        console.log(downloadBlocks);
+        getAudioOnly(cid, true, true);
+
     }
 
     function bufferToWave(audioBuffer, len) {

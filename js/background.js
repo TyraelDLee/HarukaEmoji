@@ -45,7 +45,7 @@
         chrome.storage.sync.set({"notification": true}, function(){notificationPush = true;});
         chrome.storage.sync.set({"medal": true}, function(){});
         chrome.storage.sync.set({"checkIn": true}, function(){checkinSwitch = true;});
-        chrome.storage.sync.set({"imageNotice": false}, function(){imageNotificationSwitch = false;});
+        chrome.storage.local.set({"imageNotice": false}, function(){imageNotificationSwitch = false;});
         chrome.storage.sync.set({"bcoin": true}, function(){BCOIN = true;});
         chrome.storage.sync.set({"qn": true}, function(){QN = true;});
         chrome.storage.sync.set({"qnvalue": "原画"}, function(){});
@@ -129,26 +129,44 @@
                     log: true,
                 });
                 (async ()=>{
-                    let out;
+                    let out, downloadName, dl;
                     await ffmpeg.load();
-                    ffmpeg.FS('writeFile', 'video.mp4', await fetchFile(request.blob));
-                    if(request.startTime > 1){
-                        await ffmpeg.run('-i', 'video.mp4', '-ss', request.startTime + '', '-c', 'copy', 'footage.mp4');
-                        await ffmpeg.run('-i', 'footage.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
-                    }else{
-                        await ffmpeg.run('-i', 'video.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
+                    if(request.requestType === 'videoRecord'){
+                        ffmpeg.FS('writeFile', 'video.mp4', await fetchFile(request.blob));
+                        if(request.startTime > 1){
+                            await ffmpeg.run('-i', 'video.mp4', '-ss', request.startTime + '', '-c', 'copy', 'footage.mp4');
+                            await ffmpeg.run('-i', 'footage.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
+                        }else{
+                            await ffmpeg.run('-i', 'video.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
+                        }
+                        out = ffmpeg.FS('readFile', 'final.mp4');
+                        downloadName = request.filename + ".mp4";
+                        dl = URL.createObjectURL(new Blob([out.buffer], {type: 'video/mp4'}));
                     }
-                    out = ffmpeg.FS('readFile', 'final.mp4');
+                    if(request.requestType === 'audioRecord'){
+                        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob));
+                        await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', 'final.m4a');
+                        out = ffmpeg.FS('readFile', 'final.m4a');
+                        downloadName = request.filename + ".m4a";
+                        dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+                    }
+                    if(request.requestType === 'dolbyRecord'){
+                        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob));
+                        await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', 'final.mp4');
+                        out = ffmpeg.FS('readFile', 'final.mp4');
+                        downloadName = request.filename + ".mp4";
+                        dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+                    }
                     window.URL.revokeObjectURL(request.blob);
-                    const dl = URL.createObjectURL(new Blob([out.buffer], {type: 'video/mp4'}));
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = dl;
-                    a.download = request.filename + ".mp4";
+                    a.download = downloadName;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     window.URL.revokeObjectURL(dl);
+                    sendResponse({'status':'ok'});
                 })();
             }
             if(request.msg === 'requestOSInfo'){
@@ -188,7 +206,7 @@
         chrome.storage.sync.get(["checkIn"], (result)=>{
             checkinSwitch = result.checkIn;});
 
-        chrome.storage.sync.get(["imageNotice"], (result)=>{
+        chrome.storage.local.get(["imageNotice"], (result)=>{
             imageNotificationSwitch = result.imageNotice;});
 
         chrome.storage.sync.get(["bcoin"], (result)=>{
@@ -882,3 +900,5 @@
 //         }
 //     });
 // }
+
+//todo: mp3 transcode
