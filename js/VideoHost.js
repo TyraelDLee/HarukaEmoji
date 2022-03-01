@@ -384,7 +384,7 @@
                     downloadBlocks.push(rua_download_dolby);
                     downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40+"px";
                     rua_download_dolby.onclick = () =>{
-                        wavFile&&json["data"]["timelength"]<3600000?getAudioOnlyWav(json["data"]["dash"]["dolby"]["audio"][0]["base_url"], vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid, rua_download_dolby, true):getAudioOnlyRaw(json["data"]["dash"]["dolby"]["audio"][0]["base_url"]);
+                        getAudioOnlyADV(json["data"]["dash"]["dolby"]["audio"][0]["base_url"], vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid, rua_download_dolby, true);
                     }
                 }
                 if(json["data"]["dash"]["audio"][0]["base_url"]!==null && audio){
@@ -396,7 +396,7 @@
                     downloadBlocks.push(rua_download_audio);
                     downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40+"px";
                     rua_download_audio.onclick = () =>{
-                        wavFile&&json["data"]["timelength"]<3600000?getAudioOnlyWav(json["data"]["dash"]["audio"][0]["base_url"], vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid, rua_download_audio, false):getAudioOnlyRaw(json["data"]["dash"]["audio"][0]["base_url"]);
+                        getAudioOnlyADV(json["data"]["dash"]["audio"][0]["base_url"], vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid, rua_download_audio, false);
                     }
                 }
             }
@@ -417,7 +417,7 @@
         document.body.removeChild(a);
     }
 
-    function getAudioOnlyWav(url, fileName, cid, hostObj, dolby){
+    function getAudioOnlyADV(url, fileName, cid, hostObj, dolby){
         hostObj.onclick = null;
         let size=0, get=0, hostItem = hostObj.getElementsByClassName("rua-quality-des")[0].innerText;
         hostObj.removeAttribute("title");
