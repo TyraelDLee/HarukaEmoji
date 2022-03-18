@@ -5,7 +5,7 @@
 # HarukaEmoji
 rua豹使人快乐，rua了又rua！<br>
 
-rua豹器5.5.0来啦 <br>
+rua豹器5.6来啦 <br>
 兼容绝大多数chromium内核浏览器，例如：Opera浏览器，360浏览器，新MS Edge，yandex....。<br>
 现已支持火狐浏览器，见：<a href="https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/">火狐扩展商店</a>
 
@@ -58,6 +58,10 @@ rua豹器5.5.0来啦 <br>
 [火狐扩展商店](https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/)
 
 ## 版本记录
+### ver 5.6
+- 现在可以缓存HDR视频了。
+- 一些其他改进。
+
 ### ver 5.5
 - 现在缓存音频会自动保存为m4a文件，不需要再手动修改文件名了。
 - 添加了杜比全景声音频下载的功能。（由于封装问题杜比全景声音频会保存为mp4格式）

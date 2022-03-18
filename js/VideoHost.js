@@ -339,8 +339,9 @@
             body:null
         })
         .then(res => res.json())
-        .then(json => {
+        .then(async json => {
             if(json["code"]===0){
+                await getHDR(cid);
                 for (let i = 0; i < json["data"]["durl"].length; i++) {
                     videoDuration += json["data"]["durl"][i]["length"]-1+1;
                 }
@@ -374,183 +375,145 @@
         .then(res => res.json())
         .then(json => {
             if(json["code"]===0 && json["data"]!==null){
-                // add dolby atom
                 if(json["data"]["dash"]["dolby"]!==null && dolby){
-                    let rua_download_dolby = document.createElement("div");
-                    rua_download_dolby.setAttribute("id","qn-dolbyAtmos");
-                    rua_download_dolby.classList.add("rua-download-block");
-                    rua_download_dolby.innerHTML = "<div class='rua-quality-des'>杜比全景声</div>";
-                    downloadVideoTray.appendChild(rua_download_dolby);
-                    downloadBlocks.push(rua_download_dolby);
-                    downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40+"px";
-                    rua_download_dolby.onclick = () =>{
-                        getAudioOnlyADV(json["data"]["dash"]["dolby"]["audio"][0]["base_url"], vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid, rua_download_dolby, true);
-                    }
+                    innerDownloadBlock(cid, 'dolby', '杜比全景声');
                 }
                 if(json["data"]["dash"]["audio"][0]["base_url"]!==null && audio){
-                    let rua_download_audio = document.createElement("div");
-                    rua_download_audio.setAttribute("id","qn-sound");
-                    rua_download_audio.classList.add("rua-download-block");
-                    rua_download_audio.innerHTML = "<div class='rua-quality-des'>Sound Only</div>";
-                    downloadVideoTray.appendChild(rua_download_audio);
-                    downloadBlocks.push(rua_download_audio);
-                    downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40+"px";
-                    rua_download_audio.onclick = () =>{
-                        getAudioOnlyADV(json["data"]["dash"]["audio"][0]["base_url"], vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid, rua_download_audio, false);
-                    }
+                    innerDownloadBlock(cid, 'audio', 'Sound Only');
                 }
             }
         });
     }
 
-    function getAudioOnlyRaw(url){
-        url += "&requestFrom=ruaDL";
-        chrome.runtime.sendMessage({msg:"requestDownload", fileName:(vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]))});
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.target = "_Blank";
-        a.referrerPolicy = "unsafe-url";
-        a.download;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+    function innerDownloadBlock(cid, type, title){
+        const url = [`https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=125&fnval=336`, `https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=120&fnval=272`];
+        let rua_download = document.createElement("div");
+            rua_download.setAttribute("id",`qn-${type}`);
+        rua_download.classList.add("rua-download-block");
+        rua_download.innerHTML = `<div class='rua-quality-des'>${title}</div>`;
+        downloadVideoTray.appendChild(rua_download);
+        downloadBlocks.push(rua_download);
+        downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40+"px";
+        rua_download.onclick = async () =>{
+            let dlURL = [];
+            await fetch(type==='hdr'?url[0]:url[1],{
+                method:'GET',
+                credentials:'include',
+                body:null
+            }).then(res => res.json())
+                .then(json =>{
+                    if(json["code"]===0 && json["data"]!==null){
+                        switch (type) {
+                            case 'hdr':
+                                dlURL[0] = json['data']['dash']['video'][0]['base_url'];
+                                dlURL[1] = json['data']['dash']['dolby']===null?json['data']['dash']['audio'][0]['base_url']:json['data']['dash']['audio'][0]['base_url'];
+                                break;
+                            case 'audio':
+                                dlURL[0] = json["data"]["dash"]["audio"][0]["base_url"]
+                                break;
+                            case 'dolby':
+                                dlURL[0] = json["data"]["dash"]["dolby"]["audio"][0]["base_url"];
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                });
+            await internalDownload(dlURL, vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid, rua_download, type+'Record');
+        }
     }
 
-    function getAudioOnlyADV(url, fileName, cid, hostObj, dolby){
-        hostObj.onclick = null;
-        let size=0, get=0, hostItem = hostObj.getElementsByClassName("rua-quality-des")[0].innerText;
+    async function getHDR(cid){
+        await fetch(`https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=125&fnval=336`,{
+            method:'GET',
+            credentials:'include',
+            body:null
+        }).then(res => res.json())
+            .then(json => {
+                if(json["code"]===0 && json["data"]!==null){
+                    if (json['data']['dash']['video'][0]['id']===125){
+                        innerDownloadBlock(cid, 'hdr', 'HDR');
+                    }
+                }
+            });
+    }
+
+    async function internalDownload(url, fileName, cid, hostObj, requestType){
+        let hostItem = hostObj.getElementsByClassName("rua-quality-des")[0].innerText, blobURL = [];
         hostObj.removeAttribute("title");
-        fetch(url,{
+        blobURL[0] = await dash(url[0], hostObj, cid, hostItem);
+        if(requestType==='hdrRecord')
+            blobURL[1] = await dash(url[1], hostObj, cid, hostItem);
+
+        await chrome.runtime.sendMessage({msg: "requestEncode", blob: blobURL, filename: fileName, startTime: -1, duration: -1, requestType: requestType}, function (status){
+            console.log(status.status);
+            if (status.status === 'ok'){
+                hostObj.removeAttribute("style");
+                hostObj.removeAttribute("title");
+                hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
+                window.URL.revokeObjectURL(blobURL[0]);
+                if(requestType==='hdrRecord')
+                    window.URL.revokeObjectURL(blobURL[1]);
+            }
+        });
+    }
+
+    async function dash(url, hostObj, cid, hostItem){
+        let size=0, get=0;
+        return fetch(url,{
             method:"GET",
             body:null
         })
-        .then(response => {
-            hostObj.getElementsByClassName("rua-quality-des")[0].innerText = "下载中...";
-            size = response.headers.get("Content-Length");
-            return response.body;
-        })
-        .then(body => {
-            const reader = body.getReader();
-            return new Response(
-                new ReadableStream({
-                    start(controller){
-                        return push();
-                        function push() {
-                            return reader.read().then(res => {
-                                const {done, value} = res;
-                                if (done) {
-                                    controller.close();
-                                    hostObj.getElementsByClassName("rua-quality-des")[0].innerText = "转码中...";
-                                }
-                                get += value.length || 0;
-                                setProgress(hostObj, (get/size) * 100);
-                                controller.enqueue(value);
-                                return push();
-                            });
-                        }
-                    }
-                })
-            ).blob();
-        })
-            .then(blob =>{
-                const blobURL = window.URL.createObjectURL(blob);
-                chrome.runtime.sendMessage({msg: "requestEncode", blob: blobURL, filename: fileName, startTime: -1, duration: -1, requestType: dolby?'dolbyRecord':'audioRecord'}, function (status){
-                    console.log(status.status);
-                    if (status.status === 'ok'){
-                        hostObj.removeAttribute("style");
-                        hostObj.removeAttribute("title");
-                        hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
-                        renewSoundDLObj(cid);
-                    }
-                });
+            .then(response => {
+                hostObj.getElementsByClassName("rua-quality-des")[0].innerText = "下载中...";
+                size = response.headers.get("Content-Length");
+                return response.body;
             })
-        .catch(e =>{
-            downloadError(hostObj, cid, e.toString(), false);
-        });
+            .then(body => {
+                const reader = body.getReader();
+                return new Response(
+                    new ReadableStream({
+                        start(controller){
+                            return push();
+                            function push() {
+                                return reader.read().then(res => {
+                                    const {done, value} = res;
+                                    if (done) {
+                                        controller.close();
+                                        hostObj.getElementsByClassName("rua-quality-des")[0].innerText = "转码中...";
+                                    }
+                                    get += value.length || 0;
+                                    setProgress(hostObj, (get/size) * 100);
+                                    controller.enqueue(value);
+                                    return push();
+                                });
+                            }
+                        }
+                    })
+                ).blob();
+            })
+            .then(blob => window.URL.createObjectURL(blob))
+            .catch(e =>{
+                downloadError(hostObj, cid, e.toString(), false, hostItem);
+            });
     }
 
     function setProgress(obj, progress){
         obj.setAttribute("style", "background: linear-gradient(to right, #23ade5 0%, #23ade5 "+progress+"%, #fb7299 "+progress+"%, #fb7299);");
     }
 
-    function downloadError(obj, cid, errMsg, decode){
+    function downloadError(obj, cid, errMsg, decode, hostItem){
         console.log(errMsg);
+        function errorClick(){
+            obj.removeAttribute("style");
+            obj.removeAttribute("title");
+            obj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
+            obj.removeEventListener('click', errorClick);
+        }
         obj.setAttribute("style","background: #ff4650;");
         obj.setAttribute("title",errMsg);
         obj.getElementsByClassName("rua-quality-des")[0].innerText = decode?"转码失败":"下载失败";
-        obj.onclick = () => {
-            obj.onclick = null;
-            renewSoundDLObj(cid);
-        }
-    }
-
-    function renewSoundDLObj(cid){
-        let index = 0;
-        if(typeof document.getElementById('qn-dolbyAtmos') !== undefined && document.getElementById('qn-dolbyAtmos') !== null){
-            document.getElementById('qn-dolbyAtmos').removeAttribute("title");
-            document.getElementById('qn-dolbyAtmos').onclick = null;
-            document.getElementById('qn-dolbyAtmos').parentElement.removeChild(document.getElementById('qn-dolbyAtmos'));
-            index = 2;
-        }
-        if(typeof document.getElementById('qn-sound') !== undefined && document.getElementById('qn-sound') !== null){
-            document.getElementById('qn-sound').removeAttribute("title");
-            document.getElementById('qn-sound').onclick = null;
-            document.getElementById('qn-sound').parentElement.removeChild(document.getElementById('qn-sound'));
-            index = 1;
-        }
-        downloadBlocks.splice(downloadBlocks.length-index,index);
-        console.log(downloadBlocks);
-        getAudioOnly(cid, true, true);
-
-    }
-
-    function bufferToWave(audioBuffer, len) {
-        let length = len * audioBuffer.numberOfChannels * 2 + 44,
-            buffer = new ArrayBuffer(length),
-            view = new DataView(buffer),
-            channels = [], i, sample,
-            offset = 0,
-            pos = 0;
-
-        setUint32(0x46464952);
-        setUint32(length - 8);
-        setUint32(0x45564157);
-        setUint32(0x20746d66);
-        setUint32(16);
-        setUint16(1);
-        setUint16(audioBuffer.numberOfChannels);
-        setUint32(audioBuffer.sampleRate);
-        setUint32(audioBuffer.sampleRate * 2 * audioBuffer.numberOfChannels);
-        setUint16(audioBuffer.numberOfChannels * 2);
-        setUint16(16);
-        setUint32(0x61746164);
-        setUint32(length - pos - 4);
-
-        for(i = 0; i < audioBuffer.numberOfChannels; i++)
-            channels.push(audioBuffer.getChannelData(i));
-
-        while(pos < length) {
-            for(i = 0; i < audioBuffer.numberOfChannels; i++) {
-                sample = Math.max(-1, Math.min(1, channels[i][offset]));
-                sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0;
-                view.setInt16(pos, sample, true);
-                pos += 2;
-            }
-            offset++
-        }
-
-        return new Blob([buffer], {type: "audio/wav"});
-
-        function setUint16(data) {
-            view.setUint16(pos, data, true);
-            pos += 2;
-        }
-
-        function setUint32(data) {
-            view.setUint32(pos, data, true);
-            pos += 4;
-        }
+        obj.addEventListener('click', errorClick);
     }
 
     function download(vid, cid, qn, fileName){
@@ -833,7 +796,7 @@
         return false;
     }
 }();
-
+//todo: hdr download
 
 const dmObj = {
     "nested": {

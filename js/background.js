@@ -144,18 +144,26 @@
                         dl = URL.createObjectURL(new Blob([out.buffer], {type: 'video/mp4'}));
                     }
                     if(request.requestType === 'audioRecord'){
-                        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob));
+                        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
                         await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', 'final.m4a');
                         out = ffmpeg.FS('readFile', 'final.m4a');
                         downloadName = request.filename + ".m4a";
                         dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
                     }
                     if(request.requestType === 'dolbyRecord'){
-                        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob));
+                        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
                         await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', 'final.mp4');
                         out = ffmpeg.FS('readFile', 'final.mp4');
                         downloadName = request.filename + ".mp4";
                         dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+                    }
+                    if(request.requestType === 'hdrRecord'){
+                        ffmpeg.FS('writeFile', 'video.m4s', await fetchFile(request.blob[0]));
+                        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[1]));
+                        await ffmpeg.run('-i', 'video.m4s', '-i', 'audio.m4s', '-map', '0:v', '-map', '1:a','-c', 'copy', 'final.mkv');
+                        out = ffmpeg.FS('readFile', 'final.mkv');
+                        downloadName = request.filename + ".mkv";
+                        dl = URL.createObjectURL(new Blob([out.buffer]));
                     }
                     window.URL.revokeObjectURL(request.blob);
                     const a = document.createElement('a');

@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
 !function (){
-    const qn_table = {"原画":10000, "蓝光HEVC":401, "蓝光":400, "超清HEVC":251, "超清":250,"高清":150,"流畅":80};
+    const qn_table = {"原画PRO":10001, "原画":10000, "蓝光PRO":401, "蓝光":400, "超清PRO":251, "超清":250, "高清":150,"流畅":80};
     var qn;
     var qnv = "原画";
     var medalSwitch;
