@@ -395,31 +395,34 @@
         downloadBlocks.push(rua_download);
         downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40+"px";
         rua_download.onclick = async () =>{
-            let dlURL = [];
-            await fetch(type==='hdr'?url[0]:url[1],{
-                method:'GET',
-                credentials:'include',
-                body:null
-            }).then(res => res.json())
-                .then(json =>{
-                    if(json["code"]===0 && json["data"]!==null){
-                        switch (type) {
-                            case 'hdr':
-                                dlURL[0] = json['data']['dash']['video'][0]['base_url'];
-                                dlURL[1] = json['data']['dash']['dolby']===null?json['data']['dash']['audio'][0]['base_url']:json['data']['dash']['audio'][0]['base_url'];
-                                break;
-                            case 'audio':
-                                dlURL[0] = json["data"]["dash"]["audio"][0]["base_url"]
-                                break;
-                            case 'dolby':
-                                dlURL[0] = json["data"]["dash"]["dolby"]["audio"][0]["base_url"];
-                                break;
-                            default:
-                                break;
+            if(!rua_download.classList.contains('rua-downloading')){
+                rua_download.classList.add('rua-downloading');
+                let dlURL = [];
+                await fetch(type==='hdr'?url[0]:url[1],{
+                    method:'GET',
+                    credentials:'include',
+                    body:null
+                }).then(res => res.json())
+                    .then(json =>{
+                        if(json["code"]===0 && json["data"]!==null){
+                            switch (type) {
+                                case 'hdr':
+                                    dlURL[0] = json['data']['dash']['video'][0]['base_url'];
+                                    dlURL[1] = json['data']['dash']['dolby']===null?json['data']['dash']['audio'][0]['base_url']:json['data']['dash']['audio'][0]['base_url'];
+                                    break;
+                                case 'audio':
+                                    dlURL[0] = json["data"]["dash"]["audio"][0]["base_url"]
+                                    break;
+                                case 'dolby':
+                                    dlURL[0] = json["data"]["dash"]["dolby"]["audio"][0]["base_url"];
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
-                    }
-                });
-            await internalDownload(dlURL, vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid, rua_download, type+'Record');
+                    });
+                await internalDownload(dlURL, vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid, rua_download, type+'Record');
+            }
         }
     }
 
@@ -441,15 +444,16 @@
     async function internalDownload(url, fileName, cid, hostObj, requestType){
         let hostItem = hostObj.getElementsByClassName("rua-quality-des")[0].innerText, blobURL = [];
         hostObj.removeAttribute("title");
-        blobURL[0] = await dash(url[0], hostObj, cid, hostItem);
+        blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'?'视频':'');
         if(requestType==='hdrRecord')
-            blobURL[1] = await dash(url[1], hostObj, cid, hostItem);
+            blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频');
 
         await chrome.runtime.sendMessage({msg: "requestEncode", blob: blobURL, filename: fileName, startTime: -1, duration: -1, requestType: requestType}, function (status){
             console.log(status.status);
             if (status.status === 'ok'){
                 hostObj.removeAttribute("style");
                 hostObj.removeAttribute("title");
+                hostObj.classList.remove('rua-downloading');
                 hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
                 window.URL.revokeObjectURL(blobURL[0]);
                 if(requestType==='hdrRecord')
@@ -458,14 +462,14 @@
         });
     }
 
-    async function dash(url, hostObj, cid, hostItem){
+    async function dash(url, hostObj, cid, hostItem, dispTag){
         let size=0, get=0;
         return fetch(url,{
             method:"GET",
             body:null
         })
             .then(response => {
-                hostObj.getElementsByClassName("rua-quality-des")[0].innerText = "下载中...";
+                hostObj.getElementsByClassName("rua-quality-des")[0].innerText = `下载${dispTag}中...`;
                 size = response.headers.get("Content-Length");
                 return response.body;
             })
@@ -504,6 +508,7 @@
 
     function downloadError(obj, cid, errMsg, decode, hostItem){
         console.log(errMsg);
+        obj.classList.remove('rua-downloading');
         function errorClick(){
             obj.removeAttribute("style");
             obj.removeAttribute("title");
@@ -796,8 +801,6 @@
         return false;
     }
 }();
-//todo: hdr download
-
 const dmObj = {
     "nested": {
         "bilibili": {

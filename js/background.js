@@ -165,7 +165,6 @@
                         downloadName = request.filename + ".mkv";
                         dl = URL.createObjectURL(new Blob([out.buffer]));
                     }
-                    window.URL.revokeObjectURL(request.blob);
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = dl;
