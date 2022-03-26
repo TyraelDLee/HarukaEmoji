@@ -220,7 +220,7 @@
                 }
                 popleft < 320?selec.style.left = popleft + 60 + "px":selec.style.left = popleft - 310 + "px";
             });
-            setTimeout(delay,5000);
+            setTimeout(delay,1000);
         }
 
         /***
@@ -246,8 +246,6 @@
                 constructHTMLTable(4, DanMuInput, emojiTable, textLength);
                 constructHTMLTableSystemEmoji(4,  emojiTableSystem);
 
-
-
                 DanMuSub.onclick = function (){
                     packaging(DanMuInput.value);
                     textLength.innerHTML = " 0/"+document.getElementsByClassName("input-limit-hint")[0].innerHTML.split("/")[1];
@@ -268,9 +266,16 @@
                 const fullscreenInput = document.createElement("input");
                 const fullscreenTextLength = document.createElement("span");
 
-                const originalInput = document.getElementsByClassName("fullscreen-danmaku")[0].getElementsByTagName("div")[0];
-                const originalButton = document.getElementsByClassName("fullscreen-danmaku")[0].getElementsByTagName("div")[1];
-                renderFullScreenMode();
+                let originalInput, originalButton;
+                setTimeout(()=>{
+                    originalInput = document.getElementsByClassName("fullscreen-danmaku")[0].getElementsByTagName("div")[0];
+                    originalButton = document.getElementsByClassName("fullscreen-danmaku")[0].getElementsByTagName("div")[1];
+                    renderFullScreenMode();
+                    displayFullScreenDanmaku();
+                }, 2000);
+
+
+
                 function renderFullScreenMode(){
                     document.getElementsByClassName("fullscreen-danmaku")[0].classList.add("emoji-fullscreen-danmaku");
 
@@ -308,7 +313,7 @@
                     document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreenBackground);
                     document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreenEmojiPad);
                 }
-                displayFullScreenDanmaku();
+
                 function displayFullScreenDanmaku(){
                     originalInput.style.display = "none";
                     originalButton.style.display = "none";
@@ -403,17 +408,25 @@
             }).then(result => result.json())
                 .then(json =>{
                     if(json['code']===0){
-                        let html = '<thead><tr><th colspan="4" class="rua-table-header">up大表情 / 系统表情</th></tr></thead>';
-                        html += '<tbody><tr>';
+                        let html = '';
+                        if(json['data']['data'][2]!==undefined && json['data']['data'][2]!==null){
+                            html = '<thead><tr><th colspan="4" class="rua-table-header">房间专属表情</th></tr></thead><tbody><tr>';
+                            for (let i = 0; i < json['data']['data'][2]['emoticons'].length; i++) {
+                                if(i % num_per_line === 0 && i !== 0)
+                                    html += '</tr><tr>';
+                                html += `<td colspan="1" title="${json['data']['data'][2]['emoticons'][i]['emoji']}" class="rua-emoji-icon" id="${json['data']['data'][2]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][2]['emoticons'][i]['url'].replace("http://", "https://")}');"><div class="rua-emoji-requirement" style="'background-color: ${json['data']['data'][2]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][2]['emoticons'][i]['unlock_show_text']}</div></div></td>`;
+                            }
+                        }
                         if(json['data']['data'][1]!==undefined && json['data']['data'][1]!==null){
+                            html+="</tr></tbody><thead><tr><th colspan='4' class='rua-table-header'>up大表情</th></tr></thead><tbody><tr>";
                             for (let i = 0; i < json['data']['data'][1]['emoticons'].length; i++) {
                                 if(i % num_per_line === 0 && i !== 0)
                                     html += '</tr><tr>';
                                 html += `<td colspan="1" title="${json['data']['data'][1]['emoticons'][i]['emoji']}" class="rua-emoji-icon" id="${json['data']['data'][1]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][1]['emoticons'][i]['url'].replace("http://", "https://")}');"><div class="rua-emoji-requirement" style="'background-color: ${json['data']['data'][1]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][1]['emoticons'][i]['unlock_show_text']}</div></div></td>`;
                             }
                         }
-                        html+="</tr>";
                         if(json['data']['data'][0]!==undefined && json['data']['data'][0]!==null){
+                            html+="</tr></tbody><thead><tr><th colspan='4' class='rua-table-header'>系统表情</th></tr></thead><tbody><tr>";
                             for (let i = 0; i < json['data']['data'][0]['emoticons'].length; i++) {
                                 if(i % num_per_line === 0 && i !== 0)
                                     html += '</tr><tr>';

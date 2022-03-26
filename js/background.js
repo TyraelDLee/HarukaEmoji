@@ -507,26 +507,31 @@
     function reloadCookies() {
         chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'DedeUserID'},
             function (uid) {
-                (uid === null) ? UUID = -1 : UUID = uid.value;
-                if ((UUID === -1) && UUID !== P_UID) {
-                    // if not log in then stop update liver stream info.
-                    console.log("Session info does not exist, liver stream info listener cleared.");
-                    clearInterval(checkin);
-                    clearInterval(exchangeBcoin);
-                    clearInterval(dk)
-                }
-                if (UUID !== -1 && UUID !== P_UID) {
-                    // log in info changed then load following list and start update liver stream info every 3 min.
-                    console.log("Session info got.");
-                    FOLLOWING_LIST.clearAll(); // initial following list.
-                    p=0;
-                    videoNotify(false);
+            console.log(uid.expirationDate+"\r\n"+Date.parse(new Date())/1000);
+                if(uid.expirationDate<Date.parse(new Date())/1000) UUID = -1;
+                else{
+                    (uid === null) ? UUID = -1 : UUID = uid.value;
+                    if ((UUID === -1) && UUID !== P_UID) {
+                        // if not log in then stop update liver stream info.
+                        console.log("Session info does not exist, liver stream info listener cleared.");
+                        clearInterval(checkin);
+                        clearInterval(exchangeBcoin);
+                        clearInterval(dk)
+                    }
+                    if (UUID !== -1 && UUID !== P_UID) {
+                        // log in info changed then load following list and start update liver stream info every 3 min.
+                        console.log("Session info got.");
+                        FOLLOWING_LIST.clearAll(); // initial following list.
+                        p=0;
+                        videoNotify(false);
 
-                    scheduleCheckIn();
-                    getFollowingList();
-                    // getUnread();
-                    // exchangeVIPCoin();
+                        scheduleCheckIn();
+                        getFollowingList();
+                        // getUnread();
+                        // exchangeVIPCoin();
+                    }
                 }
+
                 P_UID = UUID;
             });
         chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
