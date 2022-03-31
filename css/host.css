@@ -183,6 +183,15 @@
     background-repeat: no-repeat;
     background-size: contain;
     position: relative;
+    transition: 0.2s;
+}
+
+.rua-emoji-icon:hover{
+    transform: scale(1.1);
+}
+
+.rua-emoji-icon:active{
+    transform: scale(0.9);
 }
 
 .rua-emoji-requirement {

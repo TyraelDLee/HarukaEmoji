@@ -267,14 +267,13 @@
                 const fullscreenTextLength = document.createElement("span");
 
                 let originalInput, originalButton;
+
                 setTimeout(()=>{
                     originalInput = document.getElementsByClassName("fullscreen-danmaku")[0].getElementsByTagName("div")[0];
                     originalButton = document.getElementsByClassName("fullscreen-danmaku")[0].getElementsByTagName("div")[1];
                     renderFullScreenMode();
                     displayFullScreenDanmaku();
                 }, 2000);
-
-
 
                 function renderFullScreenMode(){
                     document.getElementsByClassName("fullscreen-danmaku")[0].classList.add("emoji-fullscreen-danmaku");
@@ -409,28 +408,14 @@
                 .then(json =>{
                     if(json['code']===0){
                         let html = '';
-                        if(json['data']['data'][2]!==undefined && json['data']['data'][2]!==null){
-                            html = '<thead><tr><th colspan="4" class="rua-table-header">房间专属表情</th></tr></thead><tbody><tr>';
-                            for (let i = 0; i < json['data']['data'][2]['emoticons'].length; i++) {
-                                if(i % num_per_line === 0 && i !== 0)
-                                    html += '</tr><tr>';
-                                html += `<td colspan="1" title="${json['data']['data'][2]['emoticons'][i]['emoji']}" class="rua-emoji-icon" id="${json['data']['data'][2]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][2]['emoticons'][i]['url'].replace("http://", "https://")}');"><div class="rua-emoji-requirement" style="'background-color: ${json['data']['data'][2]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][2]['emoticons'][i]['unlock_show_text']}</div></div></td>`;
-                            }
-                        }
-                        if(json['data']['data'][1]!==undefined && json['data']['data'][1]!==null){
-                            html+="</tr></tbody><thead><tr><th colspan='4' class='rua-table-header'>up大表情</th></tr></thead><tbody><tr>";
-                            for (let i = 0; i < json['data']['data'][1]['emoticons'].length; i++) {
-                                if(i % num_per_line === 0 && i !== 0)
-                                    html += '</tr><tr>';
-                                html += `<td colspan="1" title="${json['data']['data'][1]['emoticons'][i]['emoji']}" class="rua-emoji-icon" id="${json['data']['data'][1]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][1]['emoticons'][i]['url'].replace("http://", "https://")}');"><div class="rua-emoji-requirement" style="'background-color: ${json['data']['data'][1]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][1]['emoticons'][i]['unlock_show_text']}</div></div></td>`;
-                            }
-                        }
-                        if(json['data']['data'][0]!==undefined && json['data']['data'][0]!==null){
-                            html+="</tr></tbody><thead><tr><th colspan='4' class='rua-table-header'>系统表情</th></tr></thead><tbody><tr>";
-                            for (let i = 0; i < json['data']['data'][0]['emoticons'].length; i++) {
-                                if(i % num_per_line === 0 && i !== 0)
-                                    html += '</tr><tr>';
-                                html += `<td colspan="1" title="${json['data']['data'][0]['emoticons'][i]['emoji']}" class="rua-emoji-icon" id="${json['data']['data'][0]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][0]['emoticons'][i]['url'].replace("http://", "https://")}');"><div class="rua-emoji-requirement" style="'background-color: ${json['data']['data'][0]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][0]['emoticons'][i]['unlock_show_text']}</div></div></td>`;
+                        for (let j = 2; j >= 0; j--) {
+                            if(json['data']['data'][j]!==undefined && json['data']['data'][j]!==null){
+                                html += `</tr></tbody><thead><tr><th colspan='4' class='rua-table-header'>${json['data']['data'][j]['pkg_name']}</th></tr></thead><tbody><tr>`;
+                                for (let i = 0; i < json['data']['data'][j]['emoticons'].length; i++) {
+                                    if(i % num_per_line === 0 && i !== 0)
+                                        html += '</tr><tr>';
+                                    html += `<td colspan="1" title="${json['data']['data'][j]['emoticons'][i]['emoji']}" class="rua-emoji-icon" id="${json['data']['data'][j]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][j]['emoticons'][i]['url'].replace("http://", "https://")}');"><div class="rua-emoji-requirement" style="background-color: ${json['data']['data'][j]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][j]['emoticons'][i]['unlock_show_text']}</div></div></td>`;
+                                }
                             }
                         }
                         html += '</tr></tbody>';
