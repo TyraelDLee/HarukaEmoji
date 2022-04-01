@@ -1,146 +1,108 @@
-const ZONEKV = {
-    "直播": "rua_live", "动画": "rua_douga", "番剧": "rua_anime", "国创": "rua_guochuang",
-    "音乐": "rua_music", "舞蹈": "rua_dance", "游戏": "rua_game",
-    "知识": "rua_knowledge", "课堂": "rua_cheese", "科技": "rua_tech",
-    "运动": "rua_sports", "汽车": "rua_car", "生活": "rua_life",
-    "美食": "rua_food", "动物圈": "rua_animal", "鬼畜": "rua_kichiku",
-    "时尚": "rua_fashion", "资讯": "rua_information", "娱乐": "rua_ent",
-    "电影": "rua_movie", "TV剧": "rua_teleplay", "专栏": "rua_read",
-    "影视": "rua_cinephile", "纪录片": "rua_documentary", "漫画": "rua_manga"};
-const ZONEVK = {
-    "rua_live":"直播","rua_douga":"动画","rua_anime":"番剧","rua_guochuang":"国创",
-    "rua_music":"音乐","rua_dance":"舞蹈","rua_game":"游戏",
-    "rua_knowledge":"知识","rua_cheese":"课堂","rua_tech":"科技",
-    "rua_sports":"运动","rua_car":"汽车","rua_life":"生活",
-    "rua_food":"美食","rua_animal":"动物圈","rua_kichiku":"鬼畜",
-    "rua_fashion":"时尚","rua_information":"资讯","rua_ent":"娱乐",
-    "rua_movie":"电影","rua_teleplay":"TV剧","rua_read":"专栏",
-    "rua_cinephile":"影视","rua_documentary":"纪录片","rua_manga":"漫画"};
-const LIST_HOST = document.createElement("div");
-const ZONE_LIST = document.getElementById("elevator").getElementsByClassName("list-box")[0].getElementsByClassName("sortable");
-const sortButton = document.getElementsByClassName("sort")[0];
-const bg = document.getElementsByClassName("bg23")[0];
-const banIcon = "<svg class=\"rua-ban-ic rua-on\" version=\"1.1\" baseProfile=\"full\" width=\"18\" height=\"18\" xmlns=\" http://www.w3.org/2000/svg\" style=\"margin: 3px\"><circle cx=\"50%\" cy=\"50%\" r=\"50%\" fill=\"#FB7299\"></circle><rect x=\"3\" y=\"7\" width=\"12\" height=\"4\" fill=\"white\"></rect><rect x=\"3\" y=\"7\" width=\"12\" height=\"4\" fill=\"white\"></rect></svg>";
+!function (){
+    Array.prototype.popAt = function (element){
+        /**
+         * Pop any specific element in the array.
+         * Instead of pop the last one.
+         * Do nothing if the array does not contain that element.*/
+        if (!this.includes(element))
+            return false;
+        for (let i = 0; i < this.length; i++) {
+            if (element===this[i]){
+                this.splice(i,1);
+                return true;
+            }
+        }
+        return false;
+    }
 
-LIST_HOST.style.position = "absolute";
-LIST_HOST.style.left = "-24px";
-LIST_HOST.style.width = "24px";
-document.getElementById("elevator").getElementsByClassName("list-box")[0].getElementsByTagName("div")[0].appendChild(LIST_HOST);
-bg.style.width = "160px";
+    Array.prototype.pushUnique = function (element){
+        if (!this.includes(element)){
+            this.push(element);
+            return true;
+        }
+        return false;
+    }
 
-setTimeout(loadSetting,200);
-setTimeout(()=>{
-    var obs = new MutationObserver(function (m){
-        m.forEach(function(mutation) {
-            if (mutation.type === "attributes") {
-                let o = JSON.parse(localStorage.getItem("rua_main_hidden"));
-                if(document.getElementById("elevator").classList.contains("edit")){
-                    hideElevator("all", false);
-                }else{
-                    for (let i = 0; i < Object.keys(o).length; i++) {
-                        hideElevator(Object.keys(o)[i], true);
-                        hideBlock(o[Object.keys(o)[i]].replace("rua_","bili_"));
-                    }
+    let catList = {'cat':[]};
+    let catListener = new MutationObserver((m)=>{
+        m.forEach((mutation)=>{
+            if (mutation.type === "childList"){
+                if(mutation.addedNodes[0]!==undefined&&mutation.addedNodes[0].tagName==="DIV"&&mutation.addedNodes[0].className===""){
+                    console.log("find");
+                    getCats(mutation.addedNodes[0]);
                 }
             }
         });
     });
-    obs.observe(document.getElementById("elevator"),{attributes: true});
-},300);
+    let elevatorListener = new MutationObserver((m)=>{
+        m.forEach((mutation)=>{
+            if (mutation.type === "childList"){
+                if(mutation.addedNodes[0]!==undefined&&mutation.addedNodes[0].className==="n-drawer-container"){
+                    getCats(mutation.addedNodes[0].childNodes[1]);
+                    catListener.observe(document.body.getElementsByClassName('n-drawer-container')[0], {childList:true});
+                    elevatorListener.disconnect();
+                }
+            }
+        });
+    });
+    elevatorListener.observe(document.body,{childList:true});
 
-
-document.getElementById("elevator").getElementsByClassName("list-box")[0].getElementsByTagName("div")[0].addEventListener("mouseenter", () => {
-    if (document.getElementById("elevator").classList.contains("edit")) {
-        LIST_HOST.classList.remove("rua-ban-close");
-        LIST_HOST.classList.add("rua-ban-open");
-        for (let i = 0; i < ZONE_LIST.length; i++) {
-            if (ZONEKV[ZONE_LIST[i].innerText.replace(" ", "")] !== undefined) {
-                let b = document.createElement("div");
-                b.setAttribute("id", ZONEKV[ZONE_LIST[i].innerText.replace(" ", "")]);
-                b.setAttribute("class", "rua-ban");
-                b.innerHTML = banIcon;
-                LIST_HOST.appendChild(b);
-                b.addEventListener("click", clickHandler);
+    function getCats(element){
+        if (window.localStorage.getItem('rua-hidden-cats')===null || window.localStorage.getItem('rua-hidden-cats')===undefined)
+            catList = {'cat':[]};
+        else
+            catList = JSON.parse(window.localStorage.getItem('rua-hidden-cats'));
+        let elevator = element.getElementsByClassName('n-drawer')[0].getElementsByClassName('n-drawer-content-wrapper')[0].getElementsByClassName('elevator')[0].getElementsByClassName('elevator-wrap')[0].getElementsByClassName('elevator-list')[0];
+        for (let obj of elevator.childNodes){
+            if (obj.nodeName !== '#text') {
+                obj.getElementsByClassName('elevator-core')[0].innerHTML += `<svg class="icon rua-cross" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" style="fill:#f00;"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="fill:#fff;opacity:0.9;"/><rect x="45" y="25" rx="5" ry="5" width="10" height="50" style="fill:#fff;opacity:0;"/></svg>`;
+                if(window.localStorage.getItem('rua-hidden-cats')!==null && window.localStorage.getItem('rua-hidden-cats')!==undefined && JSON.parse(window.localStorage.getItem('rua-hidden-cats')).cat.includes(obj.getElementsByClassName('elevator-core')[0].getElementsByTagName('span')[0].innerText)){
+                    obj.getElementsByTagName('svg')[1].classList.add('rua-cross-clicked');
+                    obj.getElementsByTagName('svg')[1].getElementsByTagName('circle')[0].style.fill = '#0f0';
+                    obj.getElementsByTagName('svg')[1].getElementsByTagName('rect')[1].style.opacity = '0.9';
+                    obj.getElementsByTagName('span')[0].style.opacity='0.3';
+                }
+                obj.getElementsByTagName('svg')[1].addEventListener('click', ()=>{
+                    if (obj.getElementsByTagName('svg')[1].classList.contains('rua-cross-clicked')){
+                        obj.getElementsByTagName('svg')[1].classList.remove('rua-cross-clicked');
+                        obj.getElementsByTagName('svg')[1].getElementsByTagName('circle')[0].style.fill = '#f00';
+                        obj.getElementsByTagName('svg')[1].getElementsByTagName('rect')[1].style.opacity = '0';
+                        obj.getElementsByTagName('span')[0].style.opacity='1';
+                        catList.cat.popAt(obj.getElementsByClassName('elevator-core')[0].getElementsByTagName('span')[0].innerText);
+                    }
+                    else{
+                        obj.getElementsByTagName('svg')[1].classList.add('rua-cross-clicked');
+                        obj.getElementsByTagName('svg')[1].getElementsByTagName('circle')[0].style.fill = '#0f0';
+                        obj.getElementsByTagName('svg')[1].getElementsByTagName('rect')[1].style.opacity = '0.9';
+                        obj.getElementsByTagName('span')[0].style.opacity='0.3';
+                        catList.cat.pushUnique(obj.getElementsByClassName('elevator-core')[0].getElementsByTagName('span')[0].innerText);
+                    }
+                    window.localStorage.setItem('rua-hidden-cats', JSON.stringify(catList));
+                    for (let obj of document.body.getElementsByClassName('bili-layout')[0].childNodes){
+                        hideCat(obj);
+                    }
+                });
             }
         }
     }
-});
-document.getElementById("elevator").getElementsByClassName("list-box")[0].getElementsByTagName("div")[0].addEventListener("mouseleave", () => {
-    if (document.getElementById("elevator").classList.contains("edit")) {
-        LIST_HOST.classList.remove("rua-ban-open");
-        LIST_HOST.classList.add("rua-ban-close");
-        setTimeout(() => {
-            for (let i = 0; i < LIST_HOST.getElementsByClassName("rua-ban").length; i++) {
-                LIST_HOST.getElementsByClassName("rua-ban")[i].removeEventListener("click", clickHandler);
-                LIST_HOST.removeChild(LIST_HOST.getElementsByClassName("rua-ban")[i]);
+
+    let catMainAreaListener = new MutationObserver((m)=>{
+        m.forEach((mutation)=>{
+            if (mutation.type === "childList"){
+                hideCat(mutation.addedNodes[0]);
             }
-            LIST_HOST.innerHTML = "";
-        }, 200);
-    }
-});
+        });
+    });
+    catMainAreaListener.observe(document.body.getElementsByClassName('bili-layout')[0],{childList:true});
 
-function clickHandler() {
-    hideBlock(this.id.replace("rua_","bili_"));
-    setSeting(ZONEVK[this.id], this.id);
-}
-
-function loadSetting(){
-    if(localStorage.getItem("rua_main_hidden")===null){
-        localStorage.setItem("rua_main_hidden", "{}");
-    }else{
-        let o = JSON.parse(localStorage.getItem("rua_main_hidden"));
-        for (let i = 0; i < Object.keys(o).length; i++) {
-            hideBlock(o[Object.keys(o)[i]].replace("rua_","bili_"));
-            hideElevator(Object.keys(o)[i],true);
-            setDisable(Object.keys(o)[i],true);
-        }
-    }
-}
-
-function setSeting(k,v){
-    let ob = JSON.parse(localStorage.getItem("rua_main_hidden"));
-    if(Object.keys(ob).includes(k)){
-        delete ob[k];
-        showBlock(v.replace("rua_","bili_"));
-        setDisable(k,false);
-    }else{
-        ob[k] = v
-        setDisable(k,true);
-    }
-    localStorage.setItem("rua_main_hidden",JSON.stringify(ob));
-}
-
-function hideBlock(id){
-    document.getElementById(id).classList.remove("rua-display");
-    document.getElementById(id).classList.add("rua-hidden");
-}
-
-function showBlock(id){
-    document.getElementById(id).classList.remove("rua-hidden");
-    document.getElementById(id).classList.add("rua-display");
-}
-
-function hideElevator(context, off){
-    for (let i = 0; i < ZONE_LIST.length; i++) {
-        if(ZONE_LIST[i].innerText.replace(" ", "")===context || context==="all")
-            ZONE_LIST[i].style.display=off?"none":"block";
-    }
-}
-
-function setDisable(k,d){
-    if(d){
-        for (let i = 0; i < ZONE_LIST.length; i++) {
-            if (ZONE_LIST[i].innerText.replace(" ", "").includes(k)) {
-                ZONE_LIST[i].classList.remove("rua-elv-enable");
-                ZONE_LIST[i].classList.add("rua-elv-disable");
+    function hideCat(element){
+        if(element!==undefined&&element.tagName==="SECTION"&&element.className==="bili-grid"){
+            if(JSON.parse(window.localStorage.getItem('rua-hidden-cats')).cat.includes(element.getElementsByTagName('div')[0].getElementsByClassName('area-header')[0].getElementsByClassName('left')[0].getElementsByTagName('a')[0].getAttribute('id'))){
+                element.setAttribute('style', `display:none`);
             }
-        }
-    }else{
-        for (let i = 0; i < ZONE_LIST.length; i++) {
-            if (ZONE_LIST[i].innerText.replace(" ", "")===k) {
-                ZONE_LIST[i].classList.remove("rua-elv-disable");
-                ZONE_LIST[i].classList.add("rua-elv-enable");
+            else {
+                element.setAttribute('style', `display:grid`);
             }
         }
     }
-}
+}();//todo: hide cats;

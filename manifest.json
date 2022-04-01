@@ -59,6 +59,12 @@
     "js": ["js/protobuf.js", "js/ADT.js", "js/DanmakuToAss.js", "js/VideoHost.min.js"],
     "matches": ["*://www.bilibili.com/video/*"],
     "run_at": "document_end"
+  },{
+    "all_frames": true,
+    "css": ["css/bilimain.min.css"],
+    "js": ["js/biliMain.min.js"],
+    "matches": ["*://*.bilibili.com/"],
+    "run_at": "document_end"
   }],
   "web_accessible_resources": ["images/*", "css/*", "js/*", "ffmpeg/*"],
   "content_security_policy": "script-src 'self' 'unsafe-eval' https://api.live.bilibili.com; object-src 'self'"
