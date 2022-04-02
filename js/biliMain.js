@@ -57,11 +57,12 @@
         for (let obj of elevator.childNodes){
             if (obj.nodeName !== '#text') {
                 obj.getElementsByClassName('elevator-core')[0].classList.add('rua-elevator-core');
-                obj.getElementsByClassName('elevator-core')[0].innerHTML += `<svg class="icon rua-cross" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" style="fill:#ff5e57;"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="fill:#fff;opacity:0.9;"/><rect x="45" y="25" rx="5" ry="5" width="10" height="50" style="fill:#fff;opacity:0;"/></svg><div class="rua-click-cover"></div>`;
+                obj.getElementsByClassName('elevator-core')[0].innerHTML += `<svg class="icon rua-cross" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" style="fill:#ff5e57;"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="fill:#fff;opacity:0.9;transform-origin: center;"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="fill:#fff;opacity:0.9;transform-origin: center;"/></svg><div class="rua-click-cover"></div>`;
                 if(window.localStorage.getItem('rua-hidden-cats')!==null && window.localStorage.getItem('rua-hidden-cats')!==undefined && JSON.parse(window.localStorage.getItem('rua-hidden-cats')).cat.includes(obj.getElementsByClassName('elevator-core')[0].getElementsByTagName('span')[0].innerText)){
                     obj.getElementsByTagName('svg')[1].classList.add('rua-cross-clicked');
                     obj.getElementsByTagName('svg')[1].getElementsByTagName('circle')[0].style.fill = '#2bc840';
-                    obj.getElementsByTagName('svg')[1].getElementsByTagName('rect')[1].style.opacity = '0.9';
+                    obj.getElementsByTagName('svg')[1].getElementsByTagName('rect')[0].style.transform = 'rotate(90deg)';
+                    obj.getElementsByTagName('svg')[1].getElementsByTagName('rect')[1].style.transform = 'rotate(180deg)';
                     obj.getElementsByTagName('span')[0].style.opacity='0.3';
                     obj.getElementsByClassName('elevator-core')[0].getElementsByClassName('rua-click-cover')[0].onclick = (e)=>{e.cancelBubble = true};
                 }
@@ -69,7 +70,8 @@
                     if (obj.getElementsByTagName('svg')[1].classList.contains('rua-cross-clicked')){
                         obj.getElementsByTagName('svg')[1].classList.remove('rua-cross-clicked');
                         obj.getElementsByTagName('svg')[1].getElementsByTagName('circle')[0].style.fill = '#ff5e57';
-                        obj.getElementsByTagName('svg')[1].getElementsByTagName('rect')[1].style.opacity = '0';
+                        obj.getElementsByTagName('svg')[1].getElementsByTagName('rect')[0].style.transform = 'rotate(0deg)';
+                        obj.getElementsByTagName('svg')[1].getElementsByTagName('rect')[1].style.transform = 'rotate(0deg)';
                         obj.getElementsByTagName('span')[0].style.opacity='1';
                         catList.cat.popAt(obj.getElementsByClassName('elevator-core')[0].getElementsByTagName('span')[0].innerText);
                         obj.getElementsByClassName('elevator-core')[0].getElementsByClassName('rua-click-cover')[0].onclick = null;
@@ -77,7 +79,8 @@
                     else{
                         obj.getElementsByTagName('svg')[1].classList.add('rua-cross-clicked');
                         obj.getElementsByTagName('svg')[1].getElementsByTagName('circle')[0].style.fill = '#2bc840';
-                        obj.getElementsByTagName('svg')[1].getElementsByTagName('rect')[1].style.opacity = '0.9';
+                        obj.getElementsByTagName('svg')[1].getElementsByTagName('rect')[0].style.transform = 'rotate(90deg)';
+                        obj.getElementsByTagName('svg')[1].getElementsByTagName('rect')[1].style.transform = 'rotate(180deg)';
                         obj.getElementsByTagName('span')[0].style.opacity='0.3';
                         catList.cat.pushUnique(obj.getElementsByClassName('elevator-core')[0].getElementsByTagName('span')[0].innerText);
                         obj.getElementsByClassName('elevator-core')[0].getElementsByClassName('rua-click-cover')[0].onclick = (e)=>{e.cancelBubble = true};
