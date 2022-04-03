@@ -1,7 +1,7 @@
 {
   "name": "rua豹器",
   "manifest_version": 2,
-  "version": "5.7",
+  "version": "5.8",
   "browser_action": {
     "default_popup": "popup.html"
   },
@@ -63,7 +63,7 @@
     "all_frames": true,
     "css": ["css/bilimain.min.css"],
     "js": ["js/biliMain.min.js"],
-    "matches": ["*://*.bilibili.com/"],
+    "matches": ["*://www.bilibili.com/"],
     "run_at": "document_end"
   }],
   "web_accessible_resources": ["images/*", "css/*", "js/*", "ffmpeg/*"],

@@ -507,7 +507,7 @@
     function reloadCookies() {
         chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'DedeUserID'},
             function (uid) {
-                if(uid.expirationDate<Date.parse(new Date())/1000) UUID = -1;
+                if(uid === null || uid.expirationDate === null || uid.expirationDate<Date.parse(new Date())/1000) UUID = -1;
                 else{
                     (uid === null) ? UUID = -1 : UUID = uid.value;
                     if ((UUID === -1) && UUID !== P_UID) {

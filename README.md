@@ -59,6 +59,9 @@ rua豹器5.7来啦 <br>
 [火狐扩展商店](https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/)
 
 ## 版本记录
+### ver 5.8
+- 一些其他改进。
+
 ### ver 5.7
 - 增加了对"房间专属表情"的支持。
 - 增加了新版UI主页分区隐藏的功能。
