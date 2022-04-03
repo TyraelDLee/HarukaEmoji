@@ -63,7 +63,7 @@
     "all_frames": true,
     "css": ["css/bilimain.min.css"],
     "js": ["js/biliMain.min.js"],
-    "matches": ["*://www.bilibili.com/"],
+    "matches": ["*://www.bilibili.com/*"],
     "run_at": "document_end"
   }],
   "web_accessible_resources": ["images/*", "css/*", "js/*", "ffmpeg/*"],

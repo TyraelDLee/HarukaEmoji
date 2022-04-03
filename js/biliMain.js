@@ -23,6 +23,8 @@
         return false;
     }
 
+    console.log(window.location["pathname"].replaceAll('/','').length===0)
+    let isIndex = window.location["pathname"].replaceAll('/','').charAt(0)==='?'||window.location["pathname"].replaceAll('/','').length===0;
     let catList = {'cat':[]};
     let catListener = new MutationObserver((m)=>{
         m.forEach((mutation)=>{
@@ -46,8 +48,27 @@
             }
         });
     });
-    elevatorListener.observe(document.body,{childList:true});
 
+    let catMainAreaListener = new MutationObserver((m)=>{
+        m.forEach((mutation)=>{
+            if (mutation.type === "childList"){
+                hideCat(mutation.addedNodes[0]);
+            }
+        });
+    });
+
+    if(isIndex){
+        elevatorListener.observe(document.body,{childList:true});
+        catMainAreaListener.observe(document.body.getElementsByClassName('bili-layout')[0],{childList:true});
+    }
+
+    /**
+     * Inject the hide / show icons at each category,
+     * Set click event listener to each icon and add
+     * categories to local storage which hidden by users.
+     *
+     * @param element, the parent element of category element.
+     * */
     function getCats(element){
         if (window.localStorage.getItem('rua-hidden-cats')===null || window.localStorage.getItem('rua-hidden-cats')===undefined)
             catList = {'cat':[]};
@@ -95,15 +116,10 @@
         }
     }
 
-    let catMainAreaListener = new MutationObserver((m)=>{
-        m.forEach((mutation)=>{
-            if (mutation.type === "childList"){
-                hideCat(mutation.addedNodes[0]);
-            }
-        });
-    });
-    catMainAreaListener.observe(document.body.getElementsByClassName('bili-layout')[0],{childList:true});
-
+    /**
+     * Get the hide categories choose by users.
+     * And hidden them.
+     * */
     function hideCat(element){
         if(element!==undefined&&element.tagName==="SECTION"&&element.className==="bili-grid"){
             if(JSON.parse(window.localStorage.getItem('rua-hidden-cats')).cat.includes(element.getElementsByTagName('div')[0].getElementsByClassName('area-header')[0].getElementsByClassName('left')[0].getElementsByTagName('a')[0].getAttribute('id'))){
