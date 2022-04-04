@@ -40,6 +40,13 @@ rua豹器5.7来啦 <br>
 
 ## 怎么用
 在b站登录自己的账号后，插件所有功能就会自动运行。
+### 主页分区隐藏
+<p>
+    <img src="https://github.com/TyraelDLee/HarukaEmoji/blob/main/images/popup/mainPageHiddenCat.png" width="70%" height="70%"/>
+</p>
+在新版UI下的分区中只要点击分区旁边的 <svg width="18px" height="18px" viewBox="0 0 100 100" style="position: relative; top: 3px"><circle cx="50" cy="50" r="50" style="fill:#ff5e57;"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="fill:#fff;opacity:0.9;"/></svg> / <svg width="18px" height="18px" viewBox="0 0 100 100" style="position: relative; top: 3px"><circle cx="50" cy="50" r="50" style="fill:#2bc840;"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="fill:#fff;opacity:0.9;"/><rect x="45" y="25" rx="5" ry="5" width="10" height="50" style="fill:#fff;opacity:0.9;"/></svg> 就可以 <b>隐藏 / 显示</b> 分区啦。
+
+
 ### 自定义设置
 单击地址栏右侧插件图标即可打开设置。
 目前可以设置的有：
@@ -60,6 +67,7 @@ rua豹器5.7来啦 <br>
 
 ## 版本记录
 ### ver 5.8
+- 修复了某些情况下主页分区隐藏不生效的问题。
 - 一些其他改进。
 
 ### ver 5.7
