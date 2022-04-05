@@ -3,7 +3,7 @@
  * */
 !function (){
     let room_id = window.location["pathname"].replaceAll("/", "").replace("blanc","");
-    let privilege = 0;
+    let emojiRequiredPrivilege = 0, emojiRequiredMedalLevel = 0, upID = -1;
     let isFan = false;
     let exp =new RegExp("^\\d*$");
     if(exp.test(room_id)){
@@ -54,33 +54,55 @@
         /**
          * Get real room id.
          * */
-        (function getRealRoomID(){
-            fetch("https://api.live.bilibili.com/room/v1/Room/room_init?id="+room_id,{
+        function getRealRoomID(){
+            return fetch("https://api.live.bilibili.com/room/v1/Room/room_init?id="+room_id,{
                 method:'GET',
                 credentials:'include',
                 body:null
             }).then(result => result.json())
                 .then(json =>{
-                    if (json['code'] === 0)
+                    if (json['code'] === 0){
                         room_id = json['data']['room_id'];
+                        upID = json['data']['uid'];
+                    }
                     else
                         setTimeout(getRealRoomID, 1000);
 
                 }).catch(e=>{setTimeout(getRealRoomID, 1000)});
-        })();
-        (function getUserPrivilege(){
-            fetch("https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?from=0&room_id="+room_id,{
+        }
+        (async function getUserPrivilege(){
+            let uid = 0;
+            await getRealRoomID();
+            await fetch("https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?from=0&room_id="+room_id,{
                 method:'GET',
                 credentials:'include',
                 body:null
             }).then(result => result.json())
                 .then(json =>{
                     if (json['code'] === 0) {
-                        privilege = json['data']['privilege']['privilege_type'];
+                        emojiRequiredPrivilege = 4 - json['data']['privilege']['privilege_type'];
+                        uid = json['data']['info']['uid'];
+                        console.log(emojiRequiredPrivilege);
                         isFan = json['data']['relation']['is_in_fansclub'];
+                        totalLength = json['data']['property']['danmu']['length'];
                     }else
                         setTimeout(getUserPrivilege, 1000);
                 }).catch(e=>{setTimeout(getUserPrivilege, 1000)});
+            await fetch("https://api.live.bilibili.com/xlive/web-ucenter/user/MedalWall?target_id="+uid,{
+                method:"GET",
+                credentials: 'include',
+                body:null
+            })
+                .then(res => res.json())
+                .then(json=>{
+                    if(json['code']===0){
+                        for(let medalInfo of json['data']['list']){
+                            if(medalInfo['medal_info']['target_id'] === upID)
+                                emojiRequiredMedalLevel = medalInfo['medal_info']['level'];
+                        }
+                    }
+                })
+                .catch(e=>{});
         })();
 
         if(document.getElementsByTagName("article").length === 0) renderExtension();
@@ -235,7 +257,6 @@
                     "如未登录，请先登录</div>";
                 document.getElementById("load").style.marginTop = "130px";
             }else{
-                totalLength = document.getElementsByClassName("input-limit-hint").length>0?document.getElementsByClassName("input-limit-hint")[0].innerHTML.split("/")[1]:"20";
                 textLength.innerHTML = " 0/"+totalLength;
                 DanMuInput.style.display = "block";
                 DanMuSub.style.display = "block";
@@ -399,7 +420,6 @@
         }
 
         function constructHTMLTableSystemEmoji(num_per_line, HTMLObj){
-            const privilegeSet = {0:"",1:"舰长",2:"提督",3:"总督"};
             fetch("https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id="+room_id, {
                 method:"GET",
                 credentials: 'include',
@@ -410,11 +430,13 @@
                         let html = '';
                         for (let j = 2; j >= 0; j--) {
                             if(json['data']['data'][j]!==undefined && json['data']['data'][j]!==null){
+                                console.log(emojiRequiredMedalLevel);
                                 html += `</tr></tbody><thead><tr><th colspan='4' class='rua-table-header'>${json['data']['data'][j]['pkg_name']}</th></tr></thead><tbody><tr>`;
                                 for (let i = 0; i < json['data']['data'][j]['emoticons'].length; i++) {
+                                    let able = emojiRequiredPrivilege <= json['data']['data'][j]['emoticons'][i]['identity'] && json['data']['data'][j]['emoticons'][i]['unlock_need_level'] <= emojiRequiredMedalLevel;
                                     if(i % num_per_line === 0 && i !== 0)
                                         html += '</tr><tr>';
-                                    html += `<td colspan="1" title="${json['data']['data'][j]['emoticons'][i]['emoji']}" class="rua-emoji-icon" id="${json['data']['data'][j]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][j]['emoticons'][i]['url'].replace("http://", "https://")}');"><div class="rua-emoji-requirement" style="background-color: ${json['data']['data'][j]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][j]['emoticons'][i]['unlock_show_text']}</div></div></td>`;
+                                    html += `<td colspan="1" title="${json['data']['data'][j]['emoticons'][i]['emoji']}" id="${json['data']['data'][j]['emoticons'][i]['emoticon_unique']}"><div  class="rua-emoji-icon ${able?'rua-emoji-icon-active':'rua-emoji-icon-inactive'}" style="width:60px; height:60px; background-image:url('${json['data']['data'][j]['emoticons'][i]['url'].replace("http://", "https://")}');"></div><div class="rua-emoji-requirement" style="background-color: ${json['data']['data'][j]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][j]['emoticons'][i]['unlock_show_text']}</div></div></td>`;
                                 }
                             }
                         }
@@ -424,8 +446,9 @@
                         for (let i = 0; i < HTMLObj.rows.length; i++) {
                             var cell = HTMLObj.rows[i].cells;
                             for (let j = 0; j < cell.length; j++) {
+                                const cellButton = cell[j].getElementsByTagName('div')[0];
                                 cell[j].onclick = function (e){
-                                    if(e.button === 0)
+                                    if(e.button === 0 && cellButton.classList.contains('rua-emoji-icon-active'))
                                         packaging(this.id, "systemEmoji");
                                 }
                             }
@@ -585,3 +608,4 @@
         }
     }
 }();
+//todo: merge AfterLoad and webHost

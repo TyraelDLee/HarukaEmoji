@@ -186,12 +186,16 @@
     transition: 0.2s;
 }
 
-.rua-emoji-icon:hover{
+.rua-emoji-icon-active:hover{
     transform: scale(1.1);
 }
 
-.rua-emoji-icon:active{
+.rua-emoji-icon-active:active{
     transform: scale(0.9);
+}
+
+.rua-emoji-icon-inactive{
+    opacity: 0.3;
 }
 
 .rua-emoji-requirement {
@@ -242,6 +246,7 @@
 #emoji-selection td {
     width: 60px;
     height: 60px;
+    position: relative;
 }
 
 #emoji-tray {
