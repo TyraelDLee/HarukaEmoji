@@ -317,8 +317,22 @@
     }
 
     function getQn(cid){
-        videoInfo.innerHTML = "<b style='user-select: none'>视频ID：</b> "+ "<span>av" + aid + "</span><span style='user-select: none'> / </span><span>"+ bvid + "</span>";
+        videoInfo.innerHTML = `<b style='user-select: none'>视频ID：</b><span>av${aid}</span><span style='user-select: none'> / </span><span>${bvid}</span><span title="复制ID" class="rua-video-info-copy" id="rua-video-info-copy"><svg viewBox="0 0 400 400" width="18" height="18" style="position: absolute" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="400" fill='#aaa' mask='url(#rua-copy-mask)'/><mask id="rua-copy-mask"><rect x='150' y='40' rx="20" ry="20" width="200" height="280" style="fill:#fff" /><rect x="190" y="110" width="120" height="20" fill="black"/><rect x="190" y="160" width="120" height="20" fill="black"/><rect x="190" y="210" width="120" height="20" fill="black"/><rect x='55' y='75' rx="20" ry="20" width="200" height="280" style="fill:#000"/><rect x='50' y='80' rx="20" ry="20" width="200" height="280" style="fill:#fff"/><rect x="90" y="150" width="120" height="20" fill="black"/><rect x="90" y="200" width="120" height="20" fill="black"/><rect x="90" y="250" width="120" height="20" fill="black"/></mask></svg><div id="rua-copy-tips" style="display: none;opacity: 0">视频ID已复制到粘贴板</div></span>`;
         pInfo.innerText = (pid-1+2)+ "p/"+cids.length+"p";
+        document.getElementById('rua-video-info-copy').addEventListener('click', ()=>{
+            document.getElementById('rua-copy-tips').style.display = 'block';
+            setTimeout(()=>{document.getElementById('rua-copy-tips').style.opacity = '1';}, 10);
+            setTimeout(()=>{document.getElementById('rua-copy-tips').style.opacity = '0';},1000);
+            setTimeout(()=>{document.getElementById('rua-copy-tips').style.display = 'none';},1400);
+            navigator.clipboard.writeText(`av号: av${aid}\r\nBV号: ${bvid}\r\ncid: ${cid}`).catch(e=>{
+                const videoInfo = document.createElement('textarea');
+                videoInfo.value = `av号: av${aid}\r\nBV号: ${bvid}\r\ncid: ${cid}`;
+                document.body.appendChild(videoInfo);
+                videoInfo.select();
+                document.execCommand('Copy');
+                videoInfo.remove();
+            });
+        });
         removeListener();
         downloadVideoTray.innerHTML = "";
         videoDuration = 0;

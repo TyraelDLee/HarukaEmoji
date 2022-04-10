@@ -212,3 +212,18 @@
     animation-duration: 0.8s;
     animation-fill-mode: forwards;
 }
+
+.rua-video-info-copy{
+    cursor: pointer;
+}
+
+#rua-copy-tips{
+    position: absolute;
+    left: 50%;
+    z-index: 1;
+    background: #23ade5;
+    color: #fff;
+    border-radius: 5px;
+    width: 150px;
+    transition: 0.4s;
+}
