@@ -10,6 +10,7 @@
         <item url="file://$PROJECT_DIR$/js/VideoHost.min.js" />
         <item url="file://$PROJECT_DIR$/js/WebHost.min.js" />
         <item url="file://$PROJECT_DIR$/js/akane.min.js" />
+        <item url="file://$PROJECT_DIR$/js/audio.min.js" />
         <item url="file://$PROJECT_DIR$/js/background.min.js" />
         <item url="file://$PROJECT_DIR$/js/biliMain.min.js" />
         <item url="file://$PROJECT_DIR$/js/haruka.min.js" />
@@ -28,6 +29,7 @@
       <root url="file://$PROJECT_DIR$/js/VideoHost.min.js" />
       <root url="file://$PROJECT_DIR$/js/WebHost.min.js" />
       <root url="file://$PROJECT_DIR$/js/akane.min.js" />
+      <root url="file://$PROJECT_DIR$/js/audio.min.js" />
       <root url="file://$PROJECT_DIR$/js/background.min.js" />
       <root url="file://$PROJECT_DIR$/js/biliMain.min.js" />
       <root url="file://$PROJECT_DIR$/js/haruka.min.js" />

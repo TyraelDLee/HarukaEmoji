@@ -325,6 +325,7 @@
             setTimeout(()=>{document.getElementById('rua-copy-tips').style.opacity = '0';},1000);
             setTimeout(()=>{document.getElementById('rua-copy-tips').style.display = 'none';},1400);
             navigator.clipboard.writeText(`av号: av${aid}\r\nBV号: ${bvid}\r\ncid: ${cid}`).catch(e=>{
+                console.log('Failed to access clipboard, using execCommand.');
                 const videoInfo = document.createElement('textarea');
                 videoInfo.value = `av号: av${aid}\r\nBV号: ${bvid}\r\ncid: ${cid}`;
                 document.body.appendChild(videoInfo);
@@ -456,13 +457,15 @@
     }
 
     async function internalDownload(url, fileName, cid, hostObj, requestType){
-        let hostItem = hostObj.getElementsByClassName("rua-quality-des")[0].innerText, blobURL = [];
+        let hostItem = hostObj.getElementsByClassName("rua-quality-des")[0].innerText, blobURL = [], audioMeta = {};
         hostObj.removeAttribute("title");
         blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'?'视频':'');
         if(requestType==='hdrRecord')
             blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频');
+        if(requestType==='audioRecord')
+            audioMeta = await getAudioMeta();
 
-        await chrome.runtime.sendMessage({msg: "requestEncode", blob: blobURL, filename: fileName, startTime: -1, duration: -1, requestType: requestType}, function (status){
+        await chrome.runtime.sendMessage({msg: "requestEncode", blob: blobURL, filename: fileName, startTime: -1, duration: -1, requestType: requestType, metadata: audioMeta}, function (status){
             console.log(status.status);
             if (status.status === 'ok'){
                 hostObj.removeAttribute("style");
@@ -474,6 +477,36 @@
                     window.URL.revokeObjectURL(blobURL[1]);
             }
         });
+    }
+
+    async function getAudioMeta(){
+        return fetch(`https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`, {
+            method: 'GET',
+            credentials: 'include',
+            body: null
+        })
+            .then(r => r.json())
+            .then(json=>{
+                if(json["code"]===0 && json["data"]!==null){
+                    let staff = '';
+                    console.log(json['data']['staff'])
+                    if(json['data']['staff'] === null || json['data']['staff'] === undefined)
+                        staff = json['data']['owner']['name'];
+                    else{
+                        for (let up of json['data']['staff']) staff += up['name']+', ';
+                        staff = staff.slice(0, staff.length-2);
+                    }
+                    return {"title":json["data"]["title"], "artist":staff, "year":new Date((json["data"]["pubdate"]-1+1)*1000).getFullYear(), "cover":json["data"]["pic"]};
+                }
+                return null;
+            })
+            .catch(e=>{});
+    }
+
+    function C2U8(string){
+        return string.split('').map(function(c) {
+            return '\\u' + ('0000' + c.charCodeAt(0).toString(16).toUpperCase()).slice(-4);
+        }).join('');
     }
 
     async function dash(url, hostObj, cid, hostItem, dispTag){

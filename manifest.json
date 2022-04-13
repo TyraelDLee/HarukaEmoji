@@ -59,6 +59,12 @@
     "js": ["js/biliMain.min.js"],
     "matches": ["*://www.bilibili.com/*"],
     "run_at": "document_end"
+  },{
+    "all_frames": true,
+    "css": ["css/audio.min.css"],
+    "js": ["js/audio.min.js"],
+    "matches": ["*://www.bilibili.com/audio/*"],
+    "run_at": "document_end"
   }],
   "web_accessible_resources": ["images/*", "css/*", "js/*", "ffmpeg/*"],
   "content_security_policy": "script-src 'self' 'unsafe-eval' https://api.live.bilibili.com; object-src 'self'"
