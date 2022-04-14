@@ -1,16 +1,12 @@
 !function (){
     const link = chrome.runtime.getURL("../images/haruka/abaaba.svg");
-    let aid = window.location["pathname"].replaceAll("/", "").replace("audio","").replaceAll('au',''), UID;
-
+    let auid = window.location["pathname"].replaceAll("/", "").replace("audio","").replaceAll('au',''), UID;
+    let exp =new RegExp("^\\d*$");
     new MutationObserver(()=>{
-        const nvid = window.location["pathname"].replaceAll("/", "").replace("audio","").replaceAll('au','');
-        if(nvid!==null && nvid!==aid){
-            aid = nvid;
-            getDLURL(3)
-                .then(s => {
-                    if (s!=='')
-                        drawDLIcon();
-                });
+        const n_auid = window.location["pathname"].replaceAll("/", "").replace("audio","").replaceAll('au','');
+        if(n_auid!==null && n_auid!==auid && exp.test(n_auid)){
+            auid = n_auid;
+            updateJCT();
         }
     }).observe(document, {subtree: true, childList: true});
 
@@ -19,20 +15,15 @@
         try{
             chrome.runtime.sendMessage({msg: "get_LoginInfo"}, function (lf) {
                 UID = lf.res.split(",")[1];
+                if(exp.test(auid)){
+                    getDLURL(3).then(s => {if (s!==null) drawDLIcon();});
+                }
             });
         }catch (e) {}
     }
 
-    setTimeout(()=>{
-        getDLURL(3)
-            .then(s => {
-                if (s!==null)
-                    drawDLIcon();
-            });
-    }, 1000);
-
     function getDLURL(qn){
-        return fetch(`https://api.bilibili.com/audio/music-service-c/url?songid=${aid}&quality=${qn}&privilege=2&mid=${UID}&platform=web`, {
+        return fetch(`https://api.bilibili.com/audio/music-service-c/url?songid=${auid}&quality=${qn}&privilege=2&mid=${UID}&platform=web`, {
             method: 'GET',
             credentials: 'include',
             body: null
@@ -48,18 +39,18 @@
     }
 
     function drawDLIcon(){
-        //let button = `<div class="song-playbtn" id="rua-download"></div>`;
         if(document.getElementById('rua-download')!== undefined && document.getElementById('rua-download')!== null)
             document.getElementById('rua-download').parentNode.removeChild(document.getElementById('rua-download'));
         let button = document.createElement("div");
         button.setAttribute('id', 'rua-download');
         button.setAttribute('data-v-60025db2','');
         button.classList.add('song-playbtn');
-        button.innerHTML = `<i id="rua-download-icon"><img src="${link}"></i> <span data-v-60025db2 class="song-play" style="margin-left: 0;">下载</span>`;
+        button.innerHTML = `<i id="rua-download-icon"><img src="${link}"></i> <span data-v-60025db2 class="song-play" style="margin-left: 0;">下载</span>`;
         document.getElementsByClassName('share-board')[0].insertBefore(button, document.getElementsByClassName('song-share')[0]);
         button.addEventListener('click', async ()=>{
             if (!button.classList.contains('rua-clicked')){
                 button.classList.add('rua-clicked');
+                button.getElementsByClassName("song-play")[0].innerText = `取流中...`;
                 getDLURL(3)
                     .then(info => {
                         let size=0, get=0;
@@ -68,7 +59,7 @@
                             body:null
                         })
                             .then(response => {
-                                button.getElementsByClassName("song-play")[0].innerText = `下载中...`;
+                                button.getElementsByClassName("song-play")[0].innerText = `下载中...`;
                                 size = response.headers.get("Content-Length");
                                 return response.body;
                             })
@@ -105,7 +96,7 @@
                                 document.body.removeChild(a);
                                 window.URL.revokeObjectURL(obj);
                                 button.setAttribute('style','');
-                                button.getElementsByClassName("song-play")[0].innerText = `下载`;
+                                button.getElementsByClassName("song-play")[0].innerText = `下载`;
                                 button.classList.remove('rua-clicked');
                             })
                             .catch(e =>{});

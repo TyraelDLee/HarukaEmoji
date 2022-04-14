@@ -754,7 +754,7 @@
 
         const controlBtn = document.createElement("div");
         controlBtn.setAttribute("style","position: absolute; top: 2px; left: 280px; width: 14px; height: 14px;");
-        controlBtn.innerHTML = "<svg width=\"14\" height=\"14\"><circle cx=\"7\" cy=\"7\" r=\"7\" fill=\"#f16c59\"/><line class=\"rua-cross\" x1=\"4\" y1=\"4\" x2=\"10.5\" y2=\"10.5\" style=\"stroke:#f16c59;stroke-width:1\"/><line class=\"rua-cross\" x1=\"10.5\" y1=\"4\" x2=\"4\" y2=\"10.5\" style=\"stroke:#f16c59;stroke-width:1\"/></svg>"
+        controlBtn.innerHTML = "<svg width=\"14\" height=\"14\"><circle cx=\"7\" cy=\"7\" r=\"7\" fill=\"#f16c59\"/><line class=\"rua-cross\" x1=\"4\" y1=\"4\" x2=\"10.5\" y2=\"10.5\" style=\"stroke:#ff5e57;stroke-width:1\"/><line class=\"rua-cross\" x1=\"10.5\" y1=\"4\" x2=\"4\" y2=\"10.5\" style=\"stroke:#ff5e57;stroke-width:1\"/></svg>"
 
         controlBar.appendChild(controlBtn);
 
@@ -775,7 +775,7 @@
         }
         controlBtn.onmouseleave = () =>{
             for (let i = 0; i < controlBtn.getElementsByClassName("rua-cross").length; i++) {
-                controlBtn.getElementsByClassName("rua-cross")[i].style.stroke = "#f16c59";
+                controlBtn.getElementsByClassName("rua-cross")[i].style.stroke = "#ff5e57";
             }
         }
         controlBtn.onmousedown = (e) =>{
@@ -792,38 +792,40 @@
         userHost.classList.add("emoji_sec");
         for (let i = 0; i < mid.length; i++) {
             chrome.runtime.sendMessage({msg:"requestUserInfo", mid:mid[i]}, (callback)=>{
-                const user = document.createElement("div");
-                user.setAttribute("class", "rua-user");
-                const face = document.createElement("a");
-                const faceIcon = document.createElement("img");
-                face.href = "https://space.bilibili.com/"+mid[i];
-                face.target = "_Blank";
-                face.setAttribute("class","rua-user-avatar");
-                faceIcon.classList.add("bili-avatar-img");
-                faceIcon.setAttribute("src", callback.response["face"].replace("http://","https://"));
-                face.appendChild(faceIcon);
-                user.appendChild(face);
+                if(callback.response['fans']!==0 || callback.response['friend']!==0){
+                    const user = document.createElement("div");
+                    user.setAttribute("class", "rua-user");
+                    const face = document.createElement("a");
+                    const faceIcon = document.createElement("img");
+                    face.href = "https://space.bilibili.com/"+mid[i];
+                    face.target = "_Blank";
+                    face.setAttribute("class","rua-user-avatar");
+                    faceIcon.classList.add("bili-avatar-img");
+                    faceIcon.setAttribute("src", callback.response["face"].replace("http://","https://"));
+                    face.appendChild(faceIcon);
+                    user.appendChild(face);
 
-                const name = document.createElement("div");
-                name.setAttribute("style", "padding-left: 50px; padding-top: 9px;min-width: 100px;");
-                const nameLink = document.createElement("a");
-                nameLink.href = "https://space.bilibili.com/"+mid[i];
-                nameLink.target = "_Blank";
-                const uname = document.createElement("b");
-                uname.innerText=callback.response["name"];
-                const uid = document.createElement("a");
-                uid.href = "https://space.bilibili.com/"+mid[i];
-                uid.target = "_Blank";
-                uid.innerText = "uid: "+mid[i];
+                    const name = document.createElement("div");
+                    name.setAttribute("style", "padding-left: 50px; padding-top: 9px;min-width: 100px;");
+                    const nameLink = document.createElement("a");
+                    nameLink.href = "https://space.bilibili.com/"+mid[i];
+                    nameLink.target = "_Blank";
+                    const uname = document.createElement("b");
+                    uname.innerText=callback.response["name"];
+                    const uid = document.createElement("a");
+                    uid.href = "https://space.bilibili.com/"+mid[i];
+                    uid.target = "_Blank";
+                    uid.innerText = "uid: "+mid[i];
 
-                const white = document.createElement("br");
-                nameLink.appendChild(uname);
-                name.appendChild(nameLink);
-                name.appendChild(white);
-                name.appendChild(uid);
-                user.appendChild(name);
+                    const white = document.createElement("br");
+                    nameLink.appendChild(uname);
+                    name.appendChild(nameLink);
+                    name.appendChild(white);
+                    name.appendChild(uid);
+                    user.appendChild(name);
 
-                userHost.appendChild(user);
+                    userHost.appendChild(user);
+                }
             });
         }
 

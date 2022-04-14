@@ -1,4 +1,5 @@
 #rua-download{
+    position: relative;
     background: #fb7299;
     margin-left: 10px;
     user-select: none;
@@ -8,13 +9,15 @@
 }
 
 #rua-download-icon{
-    position: relative;
+    position: absolute;
+    left: 15px;
+    top: 11.5px;
 }
 
 #rua-download-icon img{
     height: 25px;
     width: 25px;
     position: absolute;
-    left: -15px;
+    left: 0px;
     top: 0;
 }
