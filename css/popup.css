@@ -214,3 +214,31 @@ option{
     position: absolute;
     width: 100px;
 }
+
+#github-icon{
+    fill: #000;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #292a2d;
+        color: #fff;
+    }
+    .dropbox select{
+        background: #292a2d;
+        color: #fff;
+        border-color: #23ade5;
+    }
+    .button .checkbox input:checked + label {
+        background: #23ade5 !important;
+    }
+    .button .checkbox input:checked + label:after {
+        background: #26afe9 !important;
+    }
+    #btn7 span{
+        color: #23ade5 !important;
+    }
+    #github-icon{
+        fill: #fff;
+    }
+}

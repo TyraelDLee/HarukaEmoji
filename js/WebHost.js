@@ -192,7 +192,8 @@
                     document.getElementById("chat-items").getElementsByClassName("important-prompt-item")[0].style.display = "none";}
         }
 
-        (async function getUserPrivilege(){
+        getUserPrivilege(true);
+        async function getUserPrivilege(renderRequest){
             let uid = 0;
             await getRealRoomID();
             await fetch("https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?from=0&room_id="+room_id,{
@@ -221,14 +222,16 @@
                                 emojiRequiredMedalLevel = medalInfo['medal_info']['level'];
                                 medal_id = medalInfo['medal_info']['medal_id'];
                                 medal_name = medalInfo['medal_info']['medal_name'];
-                                wareMedal(medal_id, medal_name, true);
+                                if(renderRequest)
+                                    wareMedal(medal_id, medal_name, true);
                             }
                         }
                     }
                 })
                 .catch(e=>{});
-            delay();
-        })();
+            if(renderRequest)
+                delay();
+        }
 
         function wareMedal(medal, name, upd){
             if(JCT !== "-1" && medalSwitch && medal !==-1){
@@ -242,7 +245,7 @@
                     body:madelForm,
                 })
                     .then(res => {
-                        console.log("ware medal successful, MID="+name);
+                        console.log("ware medal successful, MID="+medal);
                         if(upd) c(name);
                     });
             }
@@ -265,6 +268,14 @@
                 },20);
             }
         }
+
+        // function revokeListener(element){
+        //     for (let i = 0; i < element.rows.length; i++) {
+        //         let cell = element.rows[i].cells;
+        //         for (let j = 0; j < cell.length; j++)
+        //             cell[j].onclick = null;
+        //     }
+        // }
 
 
         if(document.getElementsByTagName("article").length === 0) renderExtension();
@@ -306,7 +317,7 @@
             DanMuSub.innerHTML = "<span>发送</span>";
             DanMuSub.style.display = "none";
 
-            DanMuInput.setAttribute("id", "input-form");
+            DanMuInput.setAttribute("id", "rua-dm-input-form");
             DanMuInput.placeholder = "这里也可以发弹幕~";
             DanMuInput.style.display = "none";
 
@@ -374,7 +385,8 @@
                                 selec.classList.add("selection-fade-out");
                                 setTimeout(()=>{
                                     selec.style.display = "none";
-                                    document.body.getElementsByClassName('rua-system-emoji-table')[0].innerHTML = '';
+                                    //revokeListener(emojiTableSystem);
+                                    //document.body.getElementsByClassName('rua-system-emoji-table')[0].innerHTML = '';
                                     }, 300);
                             }
                         }else{
@@ -470,6 +482,7 @@
                                         constructHTMLTableSystemEmoji(8, fullscreenEmojiTableSystem);
                                     }else{
                                         fullscreenEmojiTableSystem.innerHTML = '';
+                                        //revokeListener(fullscreenEmojiTableSystem);
                                     }
                                 }
                             }
@@ -596,10 +609,21 @@
                 console.log("sent");
             }).catch(error=>{
                 console.error('Error:', error);
+
             });
         }
 
-        function constructHTMLTableSystemEmoji(num_per_line, HTMLObj){
+        // function sendError(reason){
+        //     let errorBubble = `<div id="rua-err-bubble" style="opacity: 0;"><span>&nbsp;&nbsp;${reason}&nbsp;&nbsp;</span></div>`;
+        //     document.getElementById('emoji-selection').innerHTML += errorBubble;
+        //     setTimeout(()=>{document.getElementById('rua-err-bubble').style.opacity = '1';}, 10);
+        //     setTimeout(()=>{document.getElementById('rua-err-bubble').style.opacity = '0';},1000);
+        //     setTimeout(()=>{document.getElementById('rua-err-bubble').parentNode.removeChild(document.getElementById('rua-err-bubble'))},1400);
+        // }
+
+
+        async function constructHTMLTableSystemEmoji(num_per_line, HTMLObj){
+            await getUserPrivilege(false);
             fetch("https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id="+room_id, {
                 method:"GET",
                 credentials: 'include',

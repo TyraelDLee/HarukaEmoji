@@ -260,7 +260,7 @@
     vertical-align: middle;
 }
 
-#input-form {
+#rua-dm-input-form {
     left: 10px;
     bottom: 5px;
     width: 200px;
@@ -272,17 +272,17 @@
     padding: 5px 0 0 5px;
 }
 
-#input-form:focus {
+#rua-dm-input-form:focus {
     outline: none;
     border: 1px solid #00A0FF;
 }
 
-#input-form::-webkit-scrollbar {
+#rua-dm-input-form::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 
-#input-form::-webkit-scrollbar-thumb {
+#rua-dm-input-form::-webkit-scrollbar-thumb {
     border-radius: 6px;
     background-color: #aaa;
 }
@@ -378,4 +378,18 @@
 #first-child {
     flex: 1;
     position: relative;
+}
+
+#rua-err-bubble{
+    position: absolute;
+    height: 35px;
+    line-height: 35px;
+    font-size: 18px;
+    text-align: center;
+    border-radius: 5px;
+    color: #fff;
+    background: #ff5e57;
+    transition: 0.4s;
+    left: 70px;
+    bottom: 25px;
 }

@@ -377,10 +377,12 @@
     }
 
     function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face){
-        let uid = Math.random();
-        NOTIFICATION_LIST.push(roomUrl, uid+":"+roomUrl);
-        let msg = liverName + " 开播啦!\r\n是"+(type===0?"电脑":"手机")+"直播！";
-        imageNotificationSwitch?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "https://live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, face, "https://live.bilibili.com/");
+        try{
+            let uid = Math.random();
+            NOTIFICATION_LIST.push(roomUrl, uid+":"+roomUrl);
+            let msg = liverName + " 开播啦!\r\n是"+(type===0?"电脑":"手机")+"直播！";
+            imageNotificationSwitch?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "https://live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, face, "https://live.bilibili.com/");
+        }catch (e){}
     }
 
     /**
@@ -911,5 +913,3 @@
 //         }
 //     });
 // }
-
-//todo: mp3 transcode

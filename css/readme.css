@@ -52,3 +52,23 @@ th, td{
 thead{
     background: #eee;
 }
+
+#github-icon{
+    fill: #000;
+}
+
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #292a2d;
+        color: #fff;
+    }
+    #github-icon{
+        fill: #fff;
+    }
+
+    a{
+        color: #8cb4f7;
+    }
+}
+
