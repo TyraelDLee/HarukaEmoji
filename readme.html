@@ -38,33 +38,64 @@
         </li>
         <li>快速录制直播片段 (beta)<br>支持录制重放，默认保留开始录制前5分钟片段，可在设置中设置重放时长</li>
         <li>增加了新版UI主页分区隐藏的功能。</li>
+        <li>添加了音乐播放器页面的下载功能。</li>
     </ul>
     <h2>怎么用</h2>
-    <p>在b站登录自己的账号后，插件所有功能就会自动运行。</p>
+    <p>在b站登录自己的账号后，插件推送类功能就会自动运行。</p>
     <div>
         <h3>主页分区隐藏</h3>
-        <div style="display: flex">
-        <img src="./images/popup/mainPageHiddenCat.PNG" width="70%" height="70%">
-        <div style="margin-top: 20%"><div>在新版UI下的分区中只要点击分区旁边的 <svg width="18px" height="18px" viewBox="0 0 100 100" style="position: relative; top: 3px"><circle cx="50" cy="50" r="50" style="fill:#ff5e57;"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="fill:#fff;opacity:0.9;"/></svg> / <svg width="18px" height="18px" viewBox="0 0 100 100" style="position: relative; top: 3px"><circle cx="50" cy="50" r="50" style="fill:#2bc840;"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="fill:#fff;opacity:0.9;"/><rect x="45" y="25" rx="5" ry="5" width="10" height="50" style="fill:#fff;opacity:0.9;"/></svg> 就可以 <b>隐藏 / 显示</b> 分区啦。</div></div>
+        <div class="img-block">
+            <img class="img-dark" src="./images/readme/home_dark.png" width="70%" height="70%">
+            <img class="img-light" src="./images/readme/home_light.png" width="70%" height="70%">
+            <div>
+                <div>在新版UI下的分区中只要点击分区旁边的 <svg width="18px" height="18px" viewBox="0 0 100 100" style="position: relative; top: 3px"><circle cx="50" cy="50" r="50" style="fill:#ff5e57;"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="fill:#fff;opacity:0.9;"/></svg> / <svg width="18px" height="18px" viewBox="0 0 100 100" style="position: relative; top: 3px"><circle cx="50" cy="50" r="50" style="fill:#2bc840;"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="fill:#fff;opacity:0.9;"/><rect x="45" y="25" rx="5" ry="5" width="10" height="50" style="fill:#fff;opacity:0.9;"/></svg> 就可以 <b>隐藏 / 显示</b> 分区啦。</div>
+            </div>
         </div>
         <h3>自定义设置</h3>
-        <img src="./images/popup/setting.PNG" width="30%" height="30%">
-        <p>单击地址栏右侧插件图标即可打开设置。 目前可以设置的有：</p>
-        <ul>
-            <li>开关通知</li>
-            <li>通知模式（大图/普通）</li>
-            <li>开关自动签到</li>
-            <li>开关自动切换粉丝勋章</li>
-            <li>默认直播画质</li>
-            <li>大会员B币兑换。</li>
-            <li>隐身进入直播间的功能。</li>
-        </ul>
-    </div>
-    <div>
+        <div class="img-block">
+            <img class="img-dark" src="./images/readme/setting_dark.png" width="70%" height="70%">
+            <img class="img-light" src="./images/readme/setting_light.png" width="70%" height="70%">
+            <div>
+                <p>单击地址栏右侧插件图标即可打开设置。 目前可以设置的有：</p>
+                <ul>
+                    <li>开关通知</li>
+                    <li>通知模式（大图/普通）</li>
+                    <li>开关自动签到</li>
+                    <li>开关自动切换粉丝勋章</li>
+                    <li>默认直播画质</li>
+                    <li>大会员B币兑换。</li>
+                    <li>隐身进入直播间的功能。</li>
+                </ul>
+            </div>
+        </div>
         <h3>直播间内悬浮球</h3>
-        <img src="./images/popup/pop.PNG" width="50%" height="50%">
-        <p>默认会出现在这个位置，你也可以把它拖拽到你喜欢的位置。</p>
+        <div class="img-block">
+            <img class="img-dark" src="./images/readme/liveroom_dark.png" width="70%" height="70%">
+            <img class="img-light" src="./images/readme/liveroom_light.png" width="70%" height="70%">
+            <div><p>默认会出现在这个位置，你也可以把它拖拽到你喜欢的位置。</p></div>
+        </div>
+        <h3>视频页悬浮球</h3>
+        <div class="img-block">
+            <img class="img-dark" src="./images/readme/video_dark.png" width="70%" height="70%">
+            <img class="img-light" src="./images/readme/video_light.png" width="70%" height="70%">
+            <div>
+                <p>单击地址栏右侧插件图标即可打开设置。 目前支持的功能的有：</p>
+                <ul>
+                    <li>视频信息</li>
+                    <li>弹幕查询</li>
+                    <li>弹幕下载（ass格式）</li>
+                    <li>弹幕下载强度，与页面内弹幕云屏蔽设置一致，强度下载的越低弹幕越少</li>
+                    <li>视频下载：</li>
+                    <ul>
+                        <li>最高支持HDR，高于1080p的清晰度需要大会员</li>
+                        <li>HDR视频会保存为mkv，其他质量的会保存为原视频文件格式</li>
+                        <li>支持单音频下载</li>
+                    </ul>
+                </ul>
+            </div>
+        </div>
     </div>
+
 
     <h3>移动端</h3>
     <p>下载支持插件的浏览器（如kiwi）并在浏览器安装即可。（暂不支持iOS）</p>
@@ -72,14 +103,13 @@
     <h3 id="record">录制直播切片(beta)</h3>
     rua豹器自5.2.0加入了录制直播切片的功能！<br>
     支持录制重放，这样就不会错过要录制的片段啦！<br>
-    录制和转码支持ARM架构CPU(在Apple M1 Max上完成了测试)。<br>
     目前录制经过验证的最大分辨率为1080p。1440p及以上可以录制但可能会造成性能问题（如丢帧、卡顿）。<br>
     <del>
     由于MediaRecorder API自身限制，似乎最高只能录制30帧视频(也可能是测试机硬件问题)。<br>
     由于MediaRecorder视频录制机制，某些视频剪辑软件可能无法直接打开视频(测试软件：Adobe Premiere Pro CC 2017，比较老)。所以在录制完成后会先经过转码，转码完成后将自动下载。<br>
     转码采用FFmpeg wasm。在默认设置(见下图)下一段5分钟的视频大致需要6~7分钟完成转码。<br><br></del>
     现在视频不再需要转码了，所以导出的所需时间大幅缩短。但是音轨还要转码(因为Pr不支持opus编码)，所以还需要一点时间转码，所需时长大概是录制时长的1/20。<br><br>
-    <img src="./images/popup/recordui.png" width="25%" height="25%">
+    <img src="./images/readme/recordui.png" width="25%" height="25%">
     <ul>
         <li>开始/结束录制：打开切片录制功能后在播放器ui，画质旁边就可以找到开始/结束录制按钮，点击即可进行录制/下载切片。</li>
     </ul>
@@ -247,3 +277,4 @@
 </div>
 </body>
 </html>
+<!--todo: swap images source-->

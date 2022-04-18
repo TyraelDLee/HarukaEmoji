@@ -1,6 +1,7 @@
 /*Copyright (c) 2021 Tyrael, Y. LI*/
 body{
     scrollbar-width:thin;
+    font-family: system-ui, "PingFang SC", STHeiti, sans-serif;
 }
 
 body::-webkit-scrollbar{
@@ -57,18 +58,40 @@ thead{
     fill: #000;
 }
 
+.img-dark{
+    display: none;
+}
+
+.img-light{
+    display: block;
+}
+
+.img-block{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 @media (prefers-color-scheme: dark) {
+    a{
+        color: #8cb4f7;
+    }
+
     body {
         background: #292a2d;
         color: #fff;
     }
+
     #github-icon{
         fill: #fff;
     }
 
-    a{
-        color: #8cb4f7;
+    .img-dark{
+        display: block;
+    }
+
+    .img-light{
+        display: none;
     }
 }
 

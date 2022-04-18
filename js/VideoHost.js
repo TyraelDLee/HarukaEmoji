@@ -389,7 +389,7 @@
         })
         .then(res => res.json())
         .then(json => {
-            if(json["code"]===0 && json["data"]!==null){
+            if(json["code"]===0 && json["data"]!==null && json['data']['dash']!==null && json['data']['dash']!==undefined){
                 if(json["data"]["dash"]["dolby"]!==null && dolby){
                     innerDownloadBlock(cid, 'dolby', '杜比全景声');
                 }
@@ -448,7 +448,7 @@
             body:null
         }).then(res => res.json())
             .then(json => {
-                if(json["code"]===0 && json["data"]!==null){
+                if(json["code"]===0 && json["data"]!==null && json['data']['dash']!==null && json['data']['dash']!==undefined){
                     if (json['data']['dash']['video'][0]['id']===125){
                         innerDownloadBlock(cid, 'hdr', 'HDR');
                     }
