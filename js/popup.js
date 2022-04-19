@@ -17,7 +17,6 @@
     const hiddenEntry = document.getElementById("HiddenEntry");
     const loginInfo = document.getElementById("login");
     const daka = document.getElementById("daka-switch");
-    const wav = document.getElementById("wav");
     const record = document.getElementById("record");
     const prerecord = document.getElementById("prerecord");
 
@@ -155,11 +154,6 @@
         chrome.storage.sync.set({"daka": checked}, function (){});
     });
 
-    wav.addEventListener("change", function (){
-        let checked = this.checked;
-        chrome.storage.sync.set({"wav": checked}, function (){});
-    });
-
     record.addEventListener("change", function (){
         let checked = this.checked;
         if(checked){
@@ -254,9 +248,6 @@
 
         chrome.storage.sync.get(["daka"], function (result){
             daka.checked = result.daka;});
-
-        chrome.storage.sync.get(["wav"], function (result){
-            wav.checked = result.wav;});
 
         chrome.storage.sync.get(["record"], function (result){
             record.checked = result.record;

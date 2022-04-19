@@ -17,13 +17,6 @@
     var danmakuArr = new DanmakuArr();
     var danmakuSearchArr = new DanmakuArr();
     var initPrint = true;
-    var wavFile = false;
-    chrome.storage.sync.get(["wav"], function(result){wavFile = result.wav});
-    chrome.storage.onChanged.addListener(function (changes, namespace) {
-        for (let [key, {oldValue, newValue}] of Object.entries(changes)) {
-            if(key === "wav") wavFile = newValue;
-        }
-    });
 
     var WINDOW_HEIGHT;
     var WINDOW_WIDTH;

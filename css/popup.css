@@ -47,6 +47,8 @@ option{
     text-align: center;
     width: 300px;
     height: 20px;
+    position: absolute;
+    bottom: 0;
 }
 
 .bottom-item{
@@ -83,7 +85,7 @@ option{
 .setting{
     overflow-y: scroll;
     overflow-x: hidden;
-    height: 200px;
+    height: 190px;
     scrollbar-width:thin;
 }
 
@@ -118,12 +120,14 @@ option{
 }
 
 .tooltiptext-top{
-    top: -500% !important;
+    top: unset !important;
+    bottom: 150% !important;
 }
 
 .tooltiptext-top::after{
     top: 100% !important;
-    border-color: #000 transparent transparent transparent !important;
+    bottom: unset !important;
+    border-color: black transparent transparent transparent !important;
 }
 
 .tooltip .tooltiptext::after {
@@ -241,5 +245,9 @@ option{
     }
     #github-icon{
         fill: #fff;
+    }
+
+    :root{
+        --bubble:#fff;
     }
 }
