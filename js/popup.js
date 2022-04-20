@@ -157,7 +157,15 @@
 
     enhancedHidden.addEventListener("change", function (){
         let checked = this.checked;
-        chrome.storage.sync.set({"enhancedHiddenEntry": checked}, function (){});
+        if(checked){
+            hiddenEntry.setAttribute("disabled","");
+            hiddenEntry.parentElement.getElementsByTagName("label")[0].classList.add("btn-disabled");
+        }else{
+            hiddenEntry.removeAttribute('disabled');
+            hiddenEntry.parentElement.getElementsByTagName("label")[0].classList.remove("btn-disabled");
+        }
+        hiddenEntry.checked = this.checked;
+        chrome.storage.sync.set({"enhancedHiddenEntry": checked, "hiddenEntry": checked}, function (){});
     });
 
     record.addEventListener("change", function (){
@@ -256,6 +264,14 @@
             daka.checked = result.daka;});
 
         chrome.storage.sync.get(["enhancedHiddenEntry"], function (result){
+            if (result.enhancedHiddenEntry){
+                hiddenEntry.setAttribute("disabled","");
+                hiddenEntry.checked = result.enhancedHiddenEntry;
+                hiddenEntry.parentElement.getElementsByTagName("label")[0].classList.add("btn-disabled");
+            }else{
+                hiddenEntry.removeAttribute('disable');
+                hiddenEntry.parentElement.getElementsByTagName("label")[0].classList.remove("btn-disabled");
+            }
             enhancedHidden.checked = result.enhancedHiddenEntry;});
 
         chrome.storage.sync.get(["record"], function (result){

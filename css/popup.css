@@ -8,7 +8,7 @@ body{
 hr{
     width: 90%;
     height: 1px;
-    margin-top: 25px;
+    margin-top: 10px;
     border:none;
 }
 
@@ -77,6 +77,10 @@ option{
     position: absolute;
 }
 
+.button:disabled{
+    opacity: 0.5;
+}
+
 .host{
     margin-top: 25px;
     text-align: center;
@@ -85,7 +89,7 @@ option{
 .setting{
     overflow-y: scroll;
     overflow-x: hidden;
-    height: 190px;
+    height: 205px;
     scrollbar-width:thin;
 }
 
