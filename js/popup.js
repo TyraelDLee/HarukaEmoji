@@ -19,6 +19,7 @@
     const daka = document.getElementById("daka-switch");
     const record = document.getElementById("record");
     const prerecord = document.getElementById("prerecord");
+    const enhancedHidden = document.getElementById('enhanced-hidden');
 
     const qn_table = ["原画", "蓝光","超清","高清","流畅"];
     const qnItem = setting7.getElementsByClassName("qn-i");
@@ -154,6 +155,11 @@
         chrome.storage.sync.set({"daka": checked}, function (){});
     });
 
+    enhancedHidden.addEventListener("change", function (){
+        let checked = this.checked;
+        chrome.storage.sync.set({"enhancedHiddenEntry": checked}, function (){});
+    });
+
     record.addEventListener("change", function (){
         let checked = this.checked;
         if(checked){
@@ -248,6 +254,9 @@
 
         chrome.storage.sync.get(["daka"], function (result){
             daka.checked = result.daka;});
+
+        chrome.storage.sync.get(["enhancedHiddenEntry"], function (result){
+            enhancedHidden.checked = result.enhancedHiddenEntry;});
 
         chrome.storage.sync.get(["record"], function (result){
             record.checked = result.record;

@@ -16,7 +16,9 @@
     let recorder;
     let medal_id = -1, medal_name = '';
     let emojiRequiredPrivilege = 0, emojiRequiredMedalLevel = 0, upID = -1, totalLength = 20;
+    let enhancedHiddenEntry = false;
 
+    chrome.storage.sync.get(['enhancedHiddenEntry'],function(result){enhancedHiddenEntry = result.enhancedHiddenEntry});
     chrome.storage.sync.get(["qn"], function(result){qn = result.qn});
     chrome.storage.sync.get(["qnvalue"], function(result){qnv = result.qnvalue});
     chrome.storage.sync.get(["medal"], (result)=>{medalSwitch = result.medal});
@@ -194,21 +196,22 @@
 
         getUserPrivilege(true);
         async function getUserPrivilege(renderRequest){
-            let uid = 0;
+            let uid = document.cookie.replaceAll(' ','').split('DedeUserID')[1].split(';')[0].replaceAll('=','');
             await getRealRoomID();
-            await fetch("https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?from=0&room_id="+room_id,{
-                method:'GET',
-                credentials:'include',
-                body:null
-            }).then(result => result.json())
-                .then(json =>{
-                    if (json['code'] === 0) {
-                        emojiRequiredPrivilege = 4 - json['data']['privilege']['privilege_type'];
-                        uid = json['data']['info']['uid'];
-                        totalLength = json['data']['property']['danmu']['length'];
-                    }else
-                        setTimeout(getUserPrivilege, 1000);
-                }).catch(e=>{setTimeout(getUserPrivilege, 1000)});
+            if (!enhancedHiddenEntry){
+                await fetch("https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?from=0&room_id="+room_id,{
+                    method:'GET',
+                    credentials:'include',
+                    body:null
+                }).then(result => result.json())
+                    .then(json =>{
+                        if (json['code'] === 0) {
+                            emojiRequiredPrivilege = 4 - json['data']['privilege']['privilege_type'];
+                            uid = json['data']['info']['uid'];
+                            totalLength = json['data']['property']['danmu']['length'];
+                        }
+                    }).catch(e=>{setTimeout(getUserPrivilege, 1000)});
+            }
             await fetch("https://api.live.bilibili.com/xlive/web-ucenter/user/MedalWall?target_id="+uid,{
                 method:"GET",
                 credentials: 'include',

@@ -22,7 +22,7 @@
 <div class="setting">
     <div style="font-size: 20px; padding-top: 10px; padding-left: 15px; user-select: none">设置</div>
     <div style="font-size: 16px; padding-top: 10px; padding-left: 25px; user-select: none">直播相关</div>
-    <div class="host" style="margin: 0 25px;height: 160px;">
+    <div class="host" style="margin: 0 25px;height: 200px;">
         <div class="button-host" id="btn1">
             <span class="tooltip">开播通知
                 <span class="tooltiptext tooltiptext-left">开启后会在关注的主播开播后发送通知</span>
@@ -58,7 +58,7 @@
         </div>
         <div class="button-host" id="HiddenEntryBtn">
             <span class="tooltip">隐身进入
-                <span class="tooltiptext tooltiptext-right">隐身进入直播间</span>
+                <span class="tooltiptext tooltiptext-right">隐身进入直播间，此模式只是不在弹幕中显示进入直播间，但是高能榜依然会照常显示</span>
             </span>
             <section class="button">
                 <div class="checkbox">
@@ -108,6 +108,17 @@
             <section class="button">
                 <div class="checkbox">
                     <input type="checkbox" id="daka-switch">
+                    <label></label>
+                </div>
+            </section>
+        </div>
+        <div class="button-host" id="btn10">
+            <span class="tooltip">强力隐身
+                <span class="tooltiptext tooltiptext-left">增强型隐身，此模式下没有人能看到你进入直播间，但是页面弹幕框不能发弹幕，rua豹器弹幕框不受影响</span>
+            </span>
+            <section class="button">
+                <div class="checkbox">
+                    <input type="checkbox" id="enhanced-hidden">
                     <label></label>
                 </div>
             </section>

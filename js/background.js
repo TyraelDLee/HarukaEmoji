@@ -22,6 +22,7 @@
     var hiddenEntry = false;
     var dakaSwitch = true;
     var OSInfo = "";
+    let enhancedHiddenEntry = false;
 
     var UUID = -1;
     var JCT = -1;
@@ -54,6 +55,7 @@
         chrome.storage.sync.set({"daka":true}, function (){dakaSwitch = true});
         chrome.storage.sync.set({"record":true});
         chrome.storage.sync.set({"prerecord":300}, function (){});
+        chrome.storage.sync.set({'enhancedHiddenEntry':false}, function (){})
         chrome.tabs.create({url: "./readme.html"});
     });
 
@@ -73,6 +75,8 @@
                 dynamicPush = newValue;
             if(key === "hiddenEntry")
                 hiddenEntry = newValue;
+            if(key === 'enhancedHiddenEntry')
+                enhancedHiddenEntry = newValue;
             if(key === "daka"){
                 dakaSwitch = newValue;
                 if(dakaSwitch)
@@ -683,6 +687,33 @@
             return hiddenEntry&&!details.url.includes("room_id=2842865")?{redirectUrl: "https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?room_id=2842865&from=0"}:undefined},
         {urls: ["*://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser*"]}, ["blocking"]);
 
+    chrome.webRequest.onBeforeSendHeaders.addListener((details)=>{
+        let headers = details["requestHeaders"];
+        if(enhancedHiddenEntry){
+            for (let header in headers) {
+                if(headers[header].name === "Cookie"){
+                    headers[header].value = ""
+                }
+            }
+        }
+        return {requestHeaders: details.requestHeaders};
+    }, {urls: ["*://api.live.bilibili.com/xlive/web-room/v1/index/getDanmuInfo*",
+            "*://api.live.bilibili.com/room/v1/Room/room_init*",
+            "*://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo*",
+            "*://api.live.bilibili.com/xlive/web-room/v1/index/roomEntryAction",
+            "*://api.live.bilibili.com/xlive/web-room/v1/index/getIpInfo*",
+            "*://api.live.bilibili.com/xlive/web-interface/v1/index/getWebAreaList*",
+            "*://api.live.bilibili.com/relation/v1/Feed/heartBeat*",
+            "*://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?*",
+            "*://api.bilibili.com/x/web-interface/nav*",
+            "*://api.live.bilibili.com/xlive/activity-interface/v1/widgetBanner/GetWidgetBannerList*",
+            "*://api.live.bilibili.com/xlive/web-room/v1/index/getOffLiveList*",
+            "*://api.live.bilibili.com/xlive/lottery-interface/v1/lottery/getLotteryInfoWeb*",
+            "*://api.live.bilibili.com/xlive/web-room/v1/giftPanel/giftData*",
+            "*://api.live.bilibili.com/xlive/web-room/v1/giftPanel/giftConfig*",
+            "*://api.live.bilibili.com/xlive/open-interface/v1/query_resource*",
+            "*://api.live.bilibili.com/xlive/web-room/v1/dM/gethistory*"]}, ['blocking', "requestHeaders", "extraHeaders"]);
+
     chrome.webRequest.onHeadersReceived.addListener((details)=>{
         if(new URLSearchParams(new URL(details["url"])["search"]).get("requestFrom")==="ruaDL"){
             let fileFormat = new URL(details["url"])["pathname"].substr(new URL(details["url"])["pathname"].length-4,4);
@@ -913,3 +944,4 @@
 //         }
 //     });
 // }
+//todo: enhanced hidden entry

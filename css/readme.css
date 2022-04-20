@@ -72,6 +72,10 @@ thead{
     align-items: center;
 }
 
+.info-block{
+    width: 450px;
+}
+
 @media (prefers-color-scheme: dark) {
     a{
         color: #8cb4f7;
