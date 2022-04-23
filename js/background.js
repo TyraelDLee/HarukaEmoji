@@ -473,6 +473,7 @@ class CRC32{
      * cannot load some info.
      * */
     chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+        //importScripts("./../ffmpeg/ffmpeg.min.js","./../ffmpeg/ffmpeg-core.js");
             if(request.msg === "get_LoginInfo"){
                 chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
                     function (jct) {

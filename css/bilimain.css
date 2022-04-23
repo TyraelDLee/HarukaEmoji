@@ -6,7 +6,7 @@
     z-index: 10;
 }
 
-.rua-cross circle, rect{
+.rua-cross circle, .rua-cross rect{
     fill:#fff;
     opacity:0.9;
     transform-origin: center;
