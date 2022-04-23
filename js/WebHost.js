@@ -383,6 +383,7 @@
                                 selec.classList.remove("selection-fade-out");
                                 selec.style.display = "block";
                                 selec.classList.add("selection-fade-in");
+                                DanMuInput.focus();
                             } else {
                                 selec.classList.remove("selection-fade-in");
                                 selec.classList.add("selection-fade-out");

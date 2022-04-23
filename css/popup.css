@@ -44,11 +44,13 @@ option{
 }
 
 .bottom{
+    background: #fff;
     text-align: center;
     width: 300px;
     height: 20px;
     position: absolute;
     bottom: 0;
+    z-index: 50;
 }
 
 .bottom-item{
@@ -237,6 +239,9 @@ option{
         background: #292a2d;
         color: #fff;
         border-color: #23ade5;
+    }
+    .bottom{
+        background: #292a2d;
     }
     .button .checkbox input:checked + label {
         background: #23ade5 !important;

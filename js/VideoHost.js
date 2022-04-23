@@ -616,9 +616,11 @@
             method:"GET",
             credentials: 'include',
             body: null
-        }).then(result=>{
+        })
+            .then(result=>{
             return result.arrayBuffer();
-        }).then(ab=>{
+        })
+            .then(ab=>{
             const u8 = new Uint8Array(ab);
             const root = protobuf.Root.fromJSON(dmObj);
             var DMMessage = root.lookupType("bilibili.community.service.dm.v1.DmSegMobileReply");

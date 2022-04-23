@@ -236,7 +236,7 @@
         chrome.storage.sync.get(["checkIn"], function(result){
             checkIn.checked = result.checkIn;});
 
-        chrome.storage.sync.get(["imageNotice"], function(result){
+        chrome.storage.local.get(["imageNotice"], function(result){
             imageNotice.checked = result.imageNotice;});
 
         chrome.storage.sync.get(["bcoin"], function(result){

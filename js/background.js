@@ -1,6 +1,389 @@
 /***
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
+
+class WindowIDList{
+    constructor() {
+        this.list = [];
+    }
+    push(id){
+        this.remove(id);
+        this.list.push(id);
+    }
+    remove(id){
+        if (this.list.indexOf(id)>-1)
+            this.list.splice(this.list.indexOf(id),1);
+    }
+    getCurrent(){
+        if (this.list.length>0) return this.list[this.list.length-1]; else return -1;
+    }
+    length(){
+        return this.list.length;
+    }
+}
+
+class FollowingMember{
+    constructor(UID, NAME, FACE, COVER, KEYFRAME, ROOM_URL, TITLE) {
+        this.UID = UID;
+        this.NAME = NAME;
+        this.PUSHED = false;
+        this.ONAIR = false;
+        this.FACE = FACE;
+        this.COVER = COVER;
+        this.KEYFRAME = KEYFRAME;
+        this.ROOM_URL = ROOM_URL;
+        this.TITLE = TITLE;
+        this.TYPE = 0;
+    }
+
+    print(){
+        return "uid:"+this.UID + " name:" + this.NAME + " rid:" + this.ROOM_URL +
+            " title:" + this.TITLE;
+    }
+}
+
+class FollowingMemberList{
+    constructor() {
+        this.list = [];
+    }
+
+    push(member){
+        for (let i = 0; i < this.list.length; i++) {
+            if(this.list[i].UID === member.UID)
+                return false;
+        }
+        this.list.push(member);
+        return true;
+    }
+
+    get(index){
+        return this.list[index];
+    }
+
+    getUIDList(){
+        if(this.list.length < 1)
+            return [];
+        let L = [];
+        for (let i = 0; i < this.list.length; i++) L.push(this.list[i].UID);
+        return L;
+    }
+
+    clearAll(){
+        this.list = [];
+    }
+
+    update(members){
+        // intersection
+        this.list = this.list.filter(function (member) {
+            return members.indexOf(member) !== -1;
+        });
+    }
+
+    updateRemove(members){
+        // complementary
+        this.list = this.list.filter(function (member) {
+            return members.indexOf(member) === -1;
+        });
+        return this.list.length > 0;
+    }
+
+    updateStatus(index, bool){
+        this.list[index].PUSHED = bool;
+    }
+
+    updateElementOnAirStatus(o, bool){
+        this.list[this.indexOf(o)] = o;
+        this.list[this.indexOf(o)].ONAIR = bool;
+    }
+
+    length(){
+        return this.list.length;
+    }
+
+    indexOf(member){
+        for (let i = 0; i < this.list.length; i++) {
+            if(member.UID === this.list[i].UID)
+                return i;
+        }
+        return -1;
+    }
+
+    remove(member){
+        let index = this.indexOf(member);
+        if(index > -1)
+            this.list.splice(index,1);
+    }
+
+    print(){
+        let str = this.list.length+" ";
+        for (let i = 0; i < this.list.length; i++) {
+            str += this.list[i].print() + "\r\n";
+        }
+        return str;
+    }
+
+    copy(FMlist){
+        this.list = FMlist.list;
+    }
+
+    maintainList(member){
+        if(this.indexOf(member) !== -1)
+            this.remove(member);
+        else
+            this.push(member);
+    }
+}
+
+class Notification{
+    constructor(rid) {
+        this.rid = rid;
+        this.notificationList = [];
+    }
+
+    add(id){
+        this.notificationList.push(id);
+    }
+
+    clearNotification(){
+        for (let i = 0; i < this.notificationList.length; i++) {
+            chrome.notifications.clear(this.notificationList[i]);
+        }
+    }
+}
+
+class NotificationList{
+    constructor(){
+        this.list = [];
+    }
+    push(rid, nid){
+        for (let i = 0; i < this.list.length; i++) {
+            if(this.list[i].rid === rid){
+                this.list[i].add(nid);
+                return;
+            }
+        }
+        let n = new Notification(rid);
+        n.add(nid);
+        this.list.push(n);
+    }
+    indexOf(rid){
+        for (let i = 0; i < this.list.length; i++) {
+            if (this.list[i].rid === rid) return i;
+        }
+        return -1;
+    }
+    remove(rid){
+        let index = this.indexOf(rid);
+        if(index>-1){
+            this.list[index].clearNotification();
+            this.list.splice(index,1);
+        }
+    }
+}
+
+class DanmakuObj{
+    constructor(time, mid, content, color, mode, fontsize, ts, weight) {
+        this.time = time;
+        this.mid = mid;
+        this.content = content;
+        this.name = [];
+        this.look = true;
+
+        // for ass download
+        this.color = color;
+        this.mode = mode;
+        this.fontsize = fontsize;
+        this.ts = ts;
+        this.weight = weight;
+    }
+
+    setName(name){
+        this.name = name;
+    }
+}
+
+class DanmakuArr{
+    constructor() {
+        this.list = []
+        this.size = 0;
+        this.displaySize = this.size;
+    }
+    push(danmakuObj){
+        this.list.push(danmakuObj);
+        this.size++;
+    }
+
+    concat(danmakuArrObj){
+        this.list = this.list.concat(danmakuArrObj.list);
+        this.size+=danmakuArrObj.size;
+    }
+
+    get(index){
+        return this.list[index];
+    }
+
+    max(){
+        let local_Max = 0;
+        for (let i = 0; i < this.list.length; i++) {
+            if (local_Max < this.list[i].time)
+                local_Max = this.list[i].time;
+        }
+        return local_Max;
+    }
+
+    min(){
+        let local_Min = Number.MAX_VALUE;
+        for (let i = 0; i < this.list.length; i++) {
+            if (local_Min > this.list[i].time)
+                local_Min = this.list[i].time
+        }
+        return local_Min;
+    }
+
+    sort(num){
+        function swap(arr, i, j){
+            const t = arr[i];
+            arr[i] = arr[j];
+            arr[j] = t;
+        }
+        const max = this.max();
+        const min = this.min();
+        const buc = [];
+        const bucSize = Math.floor((max - min) / num) + 1;
+        for (let i = 0; i < this.size; i++) {
+            const index = ~~(this.list[i].ts / bucSize);
+            !buc[index] && (buc[index] = []);
+            buc[index].push(this.list[i]);
+            let localSize = buc[index].length;
+            while (localSize > 0){
+                if (buc[index][localSize]!==undefined && buc[index][localSize].ts < buc[index][localSize - 1].ts)
+                    swap(buc[index], localSize, localSize - 1);
+                localSize--;
+            }
+        }
+        let wrap = [];
+        for (let i = 0; i < buc.length; i++) {
+            buc[i] && ((wrap = wrap.concat(buc[i])));
+        }
+        this.list = wrap;
+    }
+
+    find(content){
+        function convertMark(str){
+            return str.replaceAll(",","，").replaceAll(".","。").replaceAll("?","？").replaceAll("!","！").replaceAll(";","；").replaceAll(":","：").replaceAll("“", "\"").replaceAll("”","\"").replaceAll("(","（").replaceAll(")","）");
+        }
+        let temp = new DanmakuArr();
+        content = convertMark(content);
+        if (content === ""){
+            return this;
+        }else{
+            for (let i = 0; i < this.size; i++) {
+                if (convertMark(this.list[i].content).includes(content))
+                    temp.push(this.list[i]);
+            }
+            return temp;
+        }
+    }
+}
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+     * License, v. 2.0. If a copy of the MPL was not distributed with this
+     * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+     *
+     * Originally from bilibili-helper at https://github.com/bilibili-helper/bilibili-helper-o/blob/master/src/js/libs/crc32.js
+     *
+     * */
+class CRC32{
+    static initCrc32Table(table){
+        for (let i = 0; i < 256; i++) {
+            let currCrc = i;
+            for (let j = 0; j < 8; j++) {
+                if (currCrc & 1) {
+                    currCrc = (currCrc >>> 1) ^ 0xEDB88320;
+                } else {
+                    currCrc >>>= 1;
+                }
+            }
+            table[i] = currCrc;
+        }
+    }
+
+    constructor() {
+        this.crc32Table = new Uint32Array(256);
+        CRC32.initCrc32Table(this.crc32Table);
+        this.rainbowTableHash = new Uint32Array(100000);
+        this.rainbowTableValue = new Uint32Array(100000);
+        let fullHashCache = new Uint32Array(100000),
+            shortHashBuckets = new Uint32Array(65537);
+        // Initialize the rainbow Table
+        for (let i = 0; i < 100000; i++) {
+            let hash = this.compute(i) >>> 0;
+            fullHashCache[i] = hash;
+            shortHashBuckets[hash >>> 16]++;
+        }
+        let runningSum = 0;
+        this.shortHashBucketStarts = shortHashBuckets.map((n) => runningSum += n);
+        for (let i = 0; i < 100000; i++) {
+            let idx = --this.shortHashBucketStarts[fullHashCache[i] >>> 16];
+            this.rainbowTableHash[idx] = fullHashCache[i];
+            this.rainbowTableValue[idx] = i;
+        }
+    }
+
+    compute(input, addPadding = false){
+        let currCrc = 0;
+        for (let digit of input.toString()) {
+            currCrc = this.crc32Update(currCrc, Number(digit));
+        }
+        if (addPadding) {
+            for (let i = 0; i < 5; i++) {
+                currCrc = this.crc32Update(currCrc, 0);
+            }
+        }
+        return currCrc;
+    }
+    crack(hash){
+        let candidates = [];
+        let hashVal = ~Number('0x' + hash) >>> 0;
+        let baseHash = 0xFFFFFFFF;
+
+        for (let digitCount = 1; digitCount < 10; digitCount++) {
+            baseHash = this.crc32Update(baseHash, 0x30); // 0x30: '0'
+            if (digitCount < 6) {
+                // Direct lookup
+                candidates = candidates.concat(this.lookup(hashVal ^ baseHash));
+            } else {
+                // Lookup with prefix
+                let startPrefix = Math.pow(10, digitCount - 6);
+                let endPrefix = Math.pow(10, digitCount - 5);
+
+                for (let prefix = startPrefix; prefix < endPrefix; prefix++) {
+                    for (let postfix of this.lookup(hashVal ^ baseHash ^
+                        this.compute(prefix, true))) {
+                        candidates.push(prefix * 100000 + postfix);
+                    }
+                }
+            }
+        }
+        return candidates;
+    }
+    crc32Update(currCrc, code) {
+        return (currCrc >>> 8) ^ this.crc32Table[(currCrc ^ code) & 0xFF];
+    }
+    lookup(hash) {
+        hash >>>= 0;
+        let candidates = [];
+        let shortHash = hash >>> 16;
+        for (let i = this.shortHashBucketStarts[shortHash];
+             i < this.shortHashBucketStarts[shortHash + 1]; i++) {
+            if (this.rainbowTableHash[i] === hash) {
+                candidates.push(this.rainbowTableValue[i]);
+            }
+        }
+        return candidates;
+    }
+}
+
 !function (){
     const currentVersion = chrome.runtime.getManifest().version;
     const crc = new CRC32();
@@ -513,28 +896,25 @@
     function reloadCookies() {
         chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'DedeUserID'},
             function (uid) {
-                if(uid === null || uid.expirationDate === null || uid.expirationDate<Date.parse(new Date())/1000) UUID = -1;
-                else{
-                    (uid === null) ? UUID = -1 : UUID = uid.value;
-                    if ((UUID === -1) && UUID !== P_UID) {
-                        // if not log in then stop update liver stream info.
-                        console.log("Session info does not exist, liver stream info listener cleared.");
-                        clearInterval(checkin);
-                        clearInterval(exchangeBcoin);
-                        clearInterval(dk)
-                    }
-                    if (UUID !== -1 && UUID !== P_UID) {
-                        // log in info changed then load following list and start update liver stream info every 3 min.
-                        console.log("Session info got.");
-                        FOLLOWING_LIST.clearAll(); // initial following list.
-                        p=0;
-                        videoNotify(false);
+                uid === null || uid.expirationDate === null || uid.expirationDate<Date.parse(new Date())/1000?UUID = -1:UUID = uid.value;
+                if ((UUID === -1) && UUID !== P_UID) {
+                    // if not log in then stop update liver stream info.
+                    console.log("Session info does not exist, liver stream info listener cleared.");
+                    clearInterval(checkin);
+                    clearInterval(exchangeBcoin);
+                    clearInterval(dk);
+                }
+                if (UUID !== -1 && UUID !== P_UID) {
+                    // log in info changed then load following list and start update liver stream info every 3 min.
+                    console.log("Session info got.");
+                    FOLLOWING_LIST.clearAll(); // initial following list.
+                    p=0;
+                    videoNotify(false);
 
-                        scheduleCheckIn();
-                        getFollowingList();
-                        // getUnread();
-                        // exchangeVIPCoin();
-                    }
+                    scheduleCheckIn();
+                    getFollowingList();
+                    // getUnread();
+                    // exchangeVIPCoin();
                 }
 
                 P_UID = UUID;
@@ -557,7 +937,7 @@
 
     /**
      * Handler for network error,
-     * For 412 internal error wait for 15 mins,
+     * For 412 internal error wait for 20 mins,
      * others retry after 20 secs.
      *
      * @param handler, the function which need to be handled.
@@ -566,7 +946,7 @@
     function errorHandler(handler, msg){
         console.log("ERROR found @ "+new Date()+":");
         console.log(msg);
-        (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)?setTimeout(handler, 900000):setTimeout(handler,20000);
+        (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)?setTimeout(handler, 1200000):setTimeout(handler,20000);
     }
 
     /**
