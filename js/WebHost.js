@@ -206,7 +206,7 @@
                 }).then(result => result.json())
                     .then(json =>{
                         if (json['code'] === 0) {
-                            emojiRequiredPrivilege = 4 - json['data']['privilege']['privilege_type'];
+                            emojiRequiredPrivilege = json['data']['privilege']['privilege_type'];
                             uid = json['data']['info']['uid'];
                             totalLength = json['data']['property']['danmu']['length'];
                         }
