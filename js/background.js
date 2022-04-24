@@ -618,6 +618,10 @@ class CRC32{
 
         chrome.storage.sync.get(["daka"], (result)=>{
             dakaSwitch = result.daka;});
+
+        chrome.storage.sync.get(['enhancedHiddenEntry'],(result)=>{
+            enhancedHiddenEntry = result.enhancedHiddenEntry;
+        });
     }
 
     /**
