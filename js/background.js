@@ -3,6 +3,12 @@
  * */
 
 class WindowIDList{
+    static convertFromJSON(object){
+        let o = new WindowIDList();
+        o.list = object.id;
+        return o;
+    }
+
     constructor() {
         this.list = [];
     }
@@ -20,9 +26,28 @@ class WindowIDList{
     length(){
         return this.list.length;
     }
+
+    toJSONObject(){
+        return {'id': this.list};
+    }
 }
 
 class FollowingMember{
+    static convertFromJSON(object){
+        let o = new FollowingMember();
+        o.UID = object.uid;
+        o.NAME = object.name;
+        o.PUSHED = object.pushed;
+        o.ONAIR = object.onair;
+        o.FACE = object.face;
+        o.COVER = object.cover;
+        o.KEYFRAME = object.keyframe;
+        o.ROOM_URL = object.rid;
+        o.TITLE = object.title;
+        o.TYPE = object.type;
+        return o;
+    }
+
     constructor(UID, NAME, FACE, COVER, KEYFRAME, ROOM_URL, TITLE) {
         this.UID = UID;
         this.NAME = NAME;
@@ -37,12 +62,24 @@ class FollowingMember{
     }
 
     print(){
-        return "uid:"+this.UID + " name:" + this.NAME + " rid:" + this.ROOM_URL +
-            " title:" + this.TITLE;
+        return "uid:"+this.UID + " name:" + this.NAME + " rid:" + this.ROOM_URL + " title:" + this.TITLE;
+    }
+
+    toJSONObject(){
+        return {'uid': this.UID, 'name':this.NAME, 'pushed':this.PUSHED, 'onair':this.ONAIR, 'face':this.FACE, 'cover':this.COVER, 'keyframe':this.KEYFRAME, 'rid':this.ROOM_URL, 'title':this.TITLE, 'type':this.TYPE};
     }
 }
 
 class FollowingMemberList{
+    static convertFromJSON(object){
+        let o = new FollowingMemberList();
+        for (let i = 0; i < object; i++) {
+            let m = FollowingMember.convertFromJSON(object[i]);
+            o.push(m);
+        }
+        return o;
+    }
+
     constructor() {
         this.list = [];
     }
@@ -132,9 +169,23 @@ class FollowingMemberList{
         else
             this.push(member);
     }
+
+    toJSONObject(){
+        let obj = {};
+        for (let i = 0; i < this.list.length; i++) {
+            obj[i] = this.list[i].toJSONObject();
+        }
+        return obj;
+    }
 }
 
 class Notification{
+    static convertFromJSON(object){
+        let o = new Notification(object.id);
+        o.notificationList = object.list;
+        return o;
+    }
+
     constructor(rid) {
         this.rid = rid;
         this.notificationList = [];
@@ -149,9 +200,19 @@ class Notification{
             chrome.notifications.clear(this.notificationList[i]);
         }
     }
+
+    toJSONObject(){
+        return {'id': this.rid, 'list': this.notificationList}
+    }
 }
 
 class NotificationList{
+    static convertFromJSON(object){
+        let o = new NotificationList();
+        o.list = object.list;
+        return o;
+    }
+
     constructor(){
         this.list = [];
     }
@@ -178,6 +239,10 @@ class NotificationList{
             this.list[index].clearNotification();
             this.list.splice(index,1);
         }
+    }
+
+    toJSONObject(){
+        return {'list': this.list};
     }
 }
 
@@ -533,7 +598,8 @@ class CRC32{
                     }
                     if(request.requestType === 'audioRecord'){
                         ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
-                        await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', 'final.m4a');
+                        console.log(request.metadata['title']);
+                        await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', '-metadata', `title=${eval('\''+encodeURI(request.metadata.title).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `artist=${eval('\''+encodeURI(request.metadata.artist).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `year=${eval('\''+encodeURI(request.metadata.year).replace(/%/gm, '\\x')+'\'')}`, 'final.m4a');
                         out = ffmpeg.FS('readFile', 'final.m4a');
                         downloadName = request.filename + ".m4a";
                         dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));

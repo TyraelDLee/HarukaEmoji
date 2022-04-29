@@ -197,7 +197,7 @@
         getUserPrivilege(true);
         async function getUserPrivilege(renderRequest){
             let uid = document.cookie.replaceAll(' ','').split('DedeUserID')[1].split(';')[0].replaceAll('=','');
-            await getRealRoomID();
+            if (renderRequest) await getRealRoomID();
             if (!enhancedHiddenEntry){
                 await fetch("https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?from=0&room_id="+room_id,{
                     method:'GET',

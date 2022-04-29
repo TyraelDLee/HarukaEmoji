@@ -17,6 +17,7 @@
         <item url="file://$PROJECT_DIR$/js/popup.min.js" />
         <item url="file://$PROJECT_DIR$/js/pudding.min.js" />
         <item url="file://$PROJECT_DIR$/js/seki.min.js" />
+        <item url="file://$PROJECT_DIR$/js/sw.min.js" />
         <item url="file://$PROJECT_DIR$/js/yuka.min.js" />
       </sourceFilesUrls>
     </properties>
@@ -36,6 +37,7 @@
       <root url="file://$PROJECT_DIR$/js/popup.min.js" />
       <root url="file://$PROJECT_DIR$/js/pudding.min.js" />
       <root url="file://$PROJECT_DIR$/js/seki.min.js" />
+      <root url="file://$PROJECT_DIR$/js/sw.min.js" />
       <root url="file://$PROJECT_DIR$/js/yuka.min.js" />
     </CLASSES>
     <JAVADOC />

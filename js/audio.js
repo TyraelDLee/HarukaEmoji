@@ -45,12 +45,12 @@
         button.setAttribute('id', 'rua-download');
         button.setAttribute('data-v-60025db2','');
         button.classList.add('song-playbtn');
-        button.innerHTML = `<i id="rua-download-icon"><img src="${link}"></i> <span data-v-60025db2 class="song-play" style="margin-left: 0;">下载</span>`;
+        button.innerHTML = `<i id="rua-download-icon"><img src="${link}"></i> <span data-v-60025db2 class="song-play" style="margin-left: 20px;">下载</span>`;
         document.getElementsByClassName('share-board')[0].insertBefore(button, document.getElementsByClassName('song-share')[0]);
         button.addEventListener('click', async ()=>{
             if (!button.classList.contains('rua-clicked')){
                 button.classList.add('rua-clicked');
-                button.getElementsByClassName("song-play")[0].innerText = `取流中...`;
+                button.getElementsByClassName("song-play")[0].innerText = `取流中...`;
                 getDLURL(3)
                     .then(info => {
                         let size=0, get=0;
@@ -59,7 +59,7 @@
                             body:null
                         })
                             .then(response => {
-                                button.getElementsByClassName("song-play")[0].innerText = `下载中...`;
+                                button.getElementsByClassName("song-play")[0].innerText = `下载中...`;
                                 size = response.headers.get("Content-Length");
                                 return response.body;
                             })
@@ -96,7 +96,7 @@
                                 document.body.removeChild(a);
                                 window.URL.revokeObjectURL(obj);
                                 button.setAttribute('style','');
-                                button.getElementsByClassName("song-play")[0].innerText = `下载`;
+                                button.getElementsByClassName("song-play")[0].innerText = `下载`;
                                 button.classList.remove('rua-clicked');
                             })
                             .catch(e =>{});

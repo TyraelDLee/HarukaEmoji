@@ -482,7 +482,6 @@
             .then(json=>{
                 if(json["code"]===0 && json["data"]!==null){
                     let staff = '';
-                    console.log(json['data']['staff'])
                     if(json['data']['staff'] === null || json['data']['staff'] === undefined)
                         staff = json['data']['owner']['name'];
                     else{
