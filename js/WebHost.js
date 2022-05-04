@@ -328,6 +328,7 @@
 
             danmakuSendEErr.setAttribute('id', 'rua-err-bubble');
             danmakuSendEErr.style.display = 'none';
+            danmakuSendEErr.style.opacity = '0';
 
             fullScreenSection.classList.add("button");
             fullScreenButton.classList.add("checkbox");
@@ -616,11 +617,14 @@
                 method:"POST",
                 credentials: 'include',
                 body: form
-            }).then(result=>{
-                console.log("sent");
-                if(result.json()['message']==='f')
-                    sendError('你的弹幕被系统吞了，重试一下吧。');
-            }).catch(error=>{
+            })
+                .then(result=> result.json())
+                .then(result =>{
+                    console.log("sent");
+                    if(result['message'].length!==0)
+                        sendError('你的弹幕被系统吞了，重试一下吧。');
+                })
+                .catch(error=>{
                 console.error('Error:', error);
                 sendError('发送失败');
             });
@@ -632,9 +636,9 @@
             danmakuSendEErr.style.top = `${abs[1]+15}px`;
             danmakuSendEErr.style.display = 'block';
             danmakuSendEErr.innerHTML = `<span>&nbsp;&nbsp;&nbsp;&nbsp;${reason}&nbsp;&nbsp;&nbsp;&nbsp;</span>`;
-            setTimeout(()=>{danmakuSendEErr.style.opacity = '1';}, 10);
-            setTimeout(()=>{danmakuSendEErr.style.opacity = '0';},1000);
-            setTimeout(()=>{danmakuSendEErr.style.display = 'none'},1400);
+            setTimeout(()=>{danmakuSendEErr.style.opacity = '1';}, 400);
+            setTimeout(()=>{danmakuSendEErr.style.opacity = '0';},1400);
+            setTimeout(()=>{danmakuSendEErr.style.display = 'none'},1800);
         }
 
 
@@ -691,7 +695,6 @@
                 });
                 O.addEventListener('compositionend', (e)=>{
                     enterLock = true;
-                    console.log('compositionend');
                 });
                 O.addEventListener("keyup", (e)=>{
                     if(e.keyCode === 13 && unlock){
