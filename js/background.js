@@ -558,7 +558,6 @@ class CRC32{
                     danmakuBulider.push(new DanmakuObj(convertMSToS(request.danmakuObj[i]["progress"]), crc.crack(request.danmakuObj[i]["midHash"]), request.danmakuObj[i]["content"], request.danmakuObj[i]["color"], request.danmakuObj[i]["mode"], request.danmakuObj[i]["fontsize"], request.danmakuObj[i]["progress"], request.danmakuObj[i]["weight"]));
                 }
                 danmakuBulider.sort(danmakuBulider.size-1);
-                console.log(danmakuBulider);
                 sendResponse({danmakuContent: danmakuBulider, danmakuPoolSize: request.danmakuObj.length});
             }
             if(request.msg === "requestUserInfo"){
@@ -598,8 +597,7 @@ class CRC32{
                     }
                     if(request.requestType === 'audioRecord'){
                         ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
-                        console.log(request.metadata['title']);
-                        await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', '-metadata', `title=${eval('\''+encodeURI(request.metadata.title).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `artist=${eval('\''+encodeURI(request.metadata.artist).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `year=${eval('\''+encodeURI(request.metadata.year).replace(/%/gm, '\\x')+'\'')}`, 'final.m4a');
+                        await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', '-metadata', `title=${eval('\''+encodeURI(request.metadata.title).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `artist=${eval('\''+encodeURI(request.metadata.artist).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `year=${request.metadata.year}`, 'final.m4a');
                         out = ffmpeg.FS('readFile', 'final.m4a');
                         downloadName = request.filename + ".m4a";
                         dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
@@ -1156,7 +1154,7 @@ class CRC32{
             "*://api.live.bilibili.com/xlive/web-interface/v1/index/getWebAreaList*",
             "*://api.live.bilibili.com/relation/v1/Feed/heartBeat*",
             "*://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?*",
-            "*://api.bilibili.com/x/web-interface/nav*",
+            //"*://api.bilibili.com/x/web-interface/nav*",
             "*://api.live.bilibili.com/xlive/activity-interface/v1/widgetBanner/GetWidgetBannerList*",
             "*://api.live.bilibili.com/xlive/web-room/v1/index/getOffLiveList*",
             "*://api.live.bilibili.com/xlive/lottery-interface/v1/lottery/getLotteryInfoWeb*",
@@ -1395,4 +1393,3 @@ class CRC32{
 //         }
 //     });
 // }
-//todo: enhanced hidden entry

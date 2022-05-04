@@ -77,6 +77,7 @@
         const fullScreenSection = document.createElement("section");
         const fullScreenButton = document.createElement("div");
         const fullScreenInput = document.createElement("input");
+        const danmakuSendEErr = document.createElement('div');
 
 
         setTimeout(function (){
@@ -309,9 +310,7 @@
 
             emojiTableSystem.setAttribute("class", "rua-system-emoji-table");
 
-            selec.appendChild(emojiPad);
-            parent.appendChild(selec);
-            parent.appendChild(popup);
+
 
             popup.style.top = absoluteLoc[1]+"px";
             selec.style.top = (absoluteLoc[1]-5)+"px";
@@ -326,6 +325,9 @@
 
             textLength.setAttribute("id", "length-indicator");
             textLength.style.display = "none";
+
+            danmakuSendEErr.setAttribute('id', 'rua-err-bubble');
+            danmakuSendEErr.style.display = 'none';
 
             fullScreenSection.classList.add("button");
             fullScreenButton.classList.add("checkbox");
@@ -344,6 +346,11 @@
             selec.appendChild(fullScreenSection);
             selec.appendChild(fullScreenText);
             selec.appendChild(textLength);
+            selec.appendChild(emojiPad);
+
+            parent.appendChild(selec);
+            parent.appendChild(popup);
+            parent.appendChild(danmakuSendEErr);
 
             var oLoc = [0,0];
             var cLoc = [0,0];
@@ -611,19 +618,24 @@
                 body: form
             }).then(result=>{
                 console.log("sent");
+                if(result.json()['message']==='f')
+                    sendError('你的弹幕被系统吞了，重试一下吧。');
             }).catch(error=>{
                 console.error('Error:', error);
-
+                sendError('发送失败');
             });
         }
 
-        // function sendError(reason){
-        //     let errorBubble = `<div id="rua-err-bubble" style="opacity: 0;"><span>&nbsp;&nbsp;${reason}&nbsp;&nbsp;</span></div>`;
-        //     document.getElementById('emoji-selection').innerHTML += errorBubble;
-        //     setTimeout(()=>{document.getElementById('rua-err-bubble').style.opacity = '1';}, 10);
-        //     setTimeout(()=>{document.getElementById('rua-err-bubble').style.opacity = '0';},1000);
-        //     setTimeout(()=>{document.getElementById('rua-err-bubble').parentNode.removeChild(document.getElementById('rua-err-bubble'))},1400);
-        // }
+        function sendError(reason){
+            let abs = getAbsLocation('rua-dm-input-form');
+            danmakuSendEErr.style.left = `${abs[0]-140}px`;
+            danmakuSendEErr.style.top = `${abs[1]+15}px`;
+            danmakuSendEErr.style.display = 'block';
+            danmakuSendEErr.innerHTML = `<span>&nbsp;&nbsp;&nbsp;&nbsp;${reason}&nbsp;&nbsp;&nbsp;&nbsp;</span>`;
+            setTimeout(()=>{danmakuSendEErr.style.opacity = '1';}, 10);
+            setTimeout(()=>{danmakuSendEErr.style.opacity = '0';},1000);
+            setTimeout(()=>{danmakuSendEErr.style.display = 'none'},1400);
+        }
 
 
         async function constructHTMLTableSystemEmoji(num_per_line, HTMLObj){
