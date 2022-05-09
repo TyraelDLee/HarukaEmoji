@@ -625,8 +625,8 @@
                         sendError('你的弹幕被系统吞了，重试一下吧。');
                 })
                 .catch(error=>{
-                console.error('Error:', error);
-                sendError('发送失败');
+                    console.error('Error:', error);
+                    sendError('发送失败');
             });
         }
 

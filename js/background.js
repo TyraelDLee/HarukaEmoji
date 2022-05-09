@@ -1321,7 +1321,8 @@ class CRC32{
     }
 
     function getUTC8Time(){
-        return new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 + 28800000);
+        return new Date(new Date().getTime());
+        //return new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 + 28_800_000);
     }
 
     function setBadge(title, text){
