@@ -716,7 +716,8 @@ class CRC32{
             })
             .then(res => res.json())
             .then(json => {
-                if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
+                if(json['code']!==0)errorHandler(getFollowingList, json['code']);
+                else if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
                     var data = json["data"]["list"];
                     listLength = data.length;
                     for (let i = 0; i < data.length; i++) {
@@ -734,7 +735,7 @@ class CRC32{
                     }
                     if (listLength !== 0) getFollowingList();
                 }
-                if(json['code']!==0)errorHandler(getFollowingList, json['code']);
+
             }).catch(msg =>{p = 0;errorHandler(getFollowingList, msg);});
         }
     }
@@ -1013,7 +1014,7 @@ class CRC32{
 
     /**
      * Handler for network error,
-     * For 412 internal error wait for 20 mins,
+     * For 412 internal error wait for 25 mins,
      * others retry after 20 secs.
      *
      * @param handler, the function which need to be handled.
@@ -1022,7 +1023,7 @@ class CRC32{
     function errorHandler(handler, msg){
         console.log("ERROR found @ "+new Date()+":");
         console.log(msg);
-        (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)?setTimeout(handler, 1200000):setTimeout(handler,20000);
+        (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412 || msg == -412)?setTimeout(handler, 1500000):setTimeout(handler,20000);
     }
 
     /**
