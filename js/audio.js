@@ -51,6 +51,10 @@
             if (!button.classList.contains('rua-clicked')){
                 button.classList.add('rua-clicked');
                 button.getElementsByClassName("song-play")[0].innerText = `取流中...`;
+                let metaObject = await getMeta();
+                const lyricUrl = metaObject['lyrics'];
+                if (lyricUrl !== '')
+                    metaObject['lyrics'] = await getLyrics(lyricUrl);
                 getDLURL(3)
                     .then(info => {
                         let size=0, get=0;
@@ -87,14 +91,21 @@
                             })
                             .then(blob => {
                                 let obj = window.URL.createObjectURL(blob);
-                                const a = document.createElement('a');
-                                a.style.display = 'none';
-                                a.href = obj;
-                                a.download = `${info['title']}${(info['title']+"").includes('.m4a')?'.m4a':'.flac'}`;
-                                document.body.appendChild(a);
-                                a.click();
-                                document.body.removeChild(a);
-                                window.URL.revokeObjectURL(obj);
+                                if(metaObject === -1){
+                                    const a = document.createElement('a');
+                                    a.style.display = 'none';
+                                    a.href = obj;
+                                    a.download = `${info['title']}${(info['title']+"").includes('.m4a')?'.m4a':'.flac'}`;
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    document.body.removeChild(a);
+                                    window.URL.revokeObjectURL(obj);
+
+                                }else{
+                                    chrome.runtime.sendMessage({msg: "requestEncode", blob: obj, filename: metaObject['title'], startTime: -1, duration: -1, requestType: 'songRecord', metadata: metaObject}, function (status){
+                                        console.log(status.status);
+                                    });
+                                }
                                 button.setAttribute('style','');
                                 button.getElementsByClassName("song-play")[0].innerText = `下载`;
                                 button.classList.remove('rua-clicked');
@@ -108,5 +119,31 @@
 
     function setProgress(obj, progress){
         obj.setAttribute("style", "background: linear-gradient(to right, #23ade5 0%, #23ade5 "+progress+"%, #fb7299 "+progress+"%, #fb7299);");
+    }
+
+    function getMeta(){
+        return fetch(`https://www.bilibili.com/audio/music-service-c/web/song/info?sid=${auid}`,{
+            method:'GET',
+            credentials: 'include',
+            body:null
+        })
+            .then(result => result.json())
+            .then(json=>{
+                if(json['code'] === 0){
+                    return {"title":json["data"]["title"], "artist":json['data']['author'], "year":new Date((json["data"]["passtime"]-1+1)*1000).getFullYear(), "cover":json["data"]["cover"], "lyrics": json["data"]["lyric"], "description":json["data"]["intro"]};
+                }else
+                    return -1
+            })
+            .catch(e=>{});
+    }
+
+    function getLyrics(url){
+        return fetch(url.replace("http://","https://"),{
+            method:'GET',
+            credentials:'omit',
+            body:null
+        })
+            .then(result => result.arrayBuffer())
+            .then(body => new TextDecoder().decode(new Uint8Array(body)))
     }
 }();

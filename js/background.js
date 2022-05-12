@@ -617,6 +617,13 @@ class CRC32{
                         downloadName = request.filename + ".mkv";
                         dl = URL.createObjectURL(new Blob([out.buffer]));
                     }
+                    if(request.requestType === 'songRecord'){
+                        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob));
+                        await ffmpeg.run('-i', 'audio.m4s','-c', 'copy', '-metadata', `title=${eval('\''+encodeURI(request.metadata.title).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `artist=${eval('\''+encodeURI(request.metadata.artist).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `description=${eval('\''+encodeURI(request.metadata.description).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `lyrics=${eval('\''+encodeURI(request.metadata.lyrics).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `year=${request.metadata.year}`, 'final.m4a');
+                        out = ffmpeg.FS('readFile', 'final.m4a');
+                        downloadName = request.filename + ".m4a";
+                        dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+                    }
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = dl;
@@ -1321,7 +1328,7 @@ class CRC32{
     }
 
     function getUTC8Time(){
-        return new Date(new Date().getTime());
+        return new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000);
         //return new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 + 28_800_000);
     }
 
