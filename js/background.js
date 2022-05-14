@@ -2,6 +2,9 @@
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
 
+Array.prototype.popupAt = function (T) {
+    return this.splice(this.indexOf(T),1);
+}
 class WindowIDList{
     static convertFromJSON(object){
         let o = new WindowIDList();
@@ -112,7 +115,7 @@ class FollowingMemberList{
     update(members){
         // intersection
         this.list = this.list.filter(function (member) {
-            return members.indexOf(member) !== -1;
+            return members.indexOf(member.UID) !== -1;
         });
     }
 
@@ -504,31 +507,42 @@ class CRC32{
         chrome.storage.sync.set({"record":true});
         chrome.storage.sync.set({"prerecord":300}, function (){});
         chrome.storage.sync.set({'enhancedHiddenEntry':false}, function (){})
+        chrome.storage.sync.set({'unreadSwitch':true}, function (){})
         chrome.tabs.create({url: "./readme.html"});
+        chrome.storage.local.set({'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}'}, function (){});
     });
 
     chrome.storage.onChanged.addListener(function (changes, namespace) {
         for (let [key, {oldValue, newValue}] of Object.entries(changes)) {
-            if(key === "notification") notificationPush = newValue;
-            if(key === "checkIn") {
-                checkinSwitch = newValue;
-                if(checkinSwitch) checkIn();
-            }
-            if(key === "imageNotice")imageNotificationSwitch = newValue;
-            if(key === "bcoin"){
-                BCOIN = newValue;
-                if(BCOIN) queryBcoin();
-            }
-            if(key === "dynamicPush")
-                dynamicPush = newValue;
-            if(key === "hiddenEntry")
-                hiddenEntry = newValue;
-            if(key === 'enhancedHiddenEntry')
-                enhancedHiddenEntry = newValue;
-            if(key === "daka"){
-                dakaSwitch = newValue;
-                if(dakaSwitch)
-                    checkMedalDaka();
+            switch (key) {
+                case 'notification':
+                    notificationPush = newValue;
+                    break;
+                case 'checkIn':
+                    checkinSwitch = newValue;
+                    if(checkinSwitch) checkIn();
+                    break;
+                case 'imageNotice':
+                    imageNotificationSwitch = newValue;
+                    break;
+                case 'bcoin':
+                    BCOIN = newValue;
+                    if(BCOIN) queryBcoin();
+                    break;
+                case 'dynamicPush':
+                    dynamicPush = newValue;
+                    break;
+                case 'hiddenEntry':
+                    hiddenEntry = newValue;
+                    break;
+                case 'enhancedHiddenEntry':
+                    enhancedHiddenEntry = newValue;
+                    break;
+                case 'daka':
+                    dakaSwitch = newValue;
+                    if(dakaSwitch)
+                        checkMedalDaka();
+                    break;
             }
         }
     });
@@ -666,33 +680,19 @@ class CRC32{
     });
 
     function loadSetting(){
-        chrome.storage.sync.get(["notification"], (result)=>{
-            notificationPush = result.notification;});
-
-        chrome.storage.sync.get(["checkIn"], (result)=>{
-            checkinSwitch = result.checkIn;});
+        chrome.storage.sync.get(["notification", "checkIn", "bcoin", "qn", "dynamicPush", "hiddenEntry", "daka", 'enhancedHiddenEntry'], (result)=>{
+            notificationPush = result.notification;
+            checkinSwitch = result.checkIn;
+            BCOIN = result.bcoin;
+            QN = result.qn;
+            dynamicPush = result.dynamicPush;
+            hiddenEntry = result.hiddenEntry;
+            dakaSwitch = result.daka;
+            enhancedHiddenEntry = result.enhancedHiddenEntry;
+        });
 
         chrome.storage.local.get(["imageNotice"], (result)=>{
             imageNotificationSwitch = result.imageNotice;});
-
-        chrome.storage.sync.get(["bcoin"], (result)=>{
-            BCOIN = result.bcoin;});
-
-        chrome.storage.sync.get(["qn"], (result)=>{
-            QN = result.qn;});
-
-        chrome.storage.sync.get(["dynamicPush"], (result)=>{
-            dynamicPush = result.dynamicPush;});
-
-        chrome.storage.sync.get(["hiddenEntry"], (result)=>{
-            hiddenEntry = result.hiddenEntry;});
-
-        chrome.storage.sync.get(["daka"], (result)=>{
-            dakaSwitch = result.daka;});
-
-        chrome.storage.sync.get(['enhancedHiddenEntry'],(result)=>{
-            enhancedHiddenEntry = result.enhancedHiddenEntry;
-        });
     }
 
     /**
@@ -707,36 +707,25 @@ class CRC32{
      * */
     function getFollowingList() {
         if(UUID !== -1){
-            p++;
-            let listLength = 0;
-            fetch("https://api.bilibili.com/x/relation/followings?vmid=" + UUID + "&pn=" + p,{
+            fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=8`,{
                 method:"GET",
                 credentials: 'include',
                 body:null
             })
             .then(res => res.json())
             .then(json => {
-                if(json['code']!==0)errorHandler(getFollowingList, json['code']);
+                if(json['code']!==0)errorHandler(getFollowingList, json['code'], 'getFollowingList()');
                 else if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
-                    var data = json["data"]["list"];
-                    listLength = data.length;
-                    for (let i = 0; i < data.length; i++) {
-                        let member = new FollowingMember(data[i]["mid"], data[i]["uname"]);
-                        FOLLOWING_LIST.push(member); // maintain the global list
-                        FOLLOWING_LIST_TEMP.push(member); // push new to local list(this time only)
-                    }
-                    if (listLength === 0 && FOLLOWING_LIST.length() !== 0) {
-                        // all elements enquired.
-                        p = 0;
-                        FOLLOWING_LIST.update(FOLLOWING_LIST_TEMP); // get intersection of global and local list.
-                        FOLLOWING_LIST_TEMP.clearAll(); // empty local list for next turn.
-                        console.log("Load following list complete. " + FOLLOWING_LIST.length() + " followings found.");
-                        queryLivingRoom();
-                    }
-                    if (listLength !== 0) getFollowingList();
+                    let data = json["data"]["attentions"]['uids'];
+                    data.splice(json["data"]["attentions"]['uids'].indexOf(UUID-1+1),1);
+                    FOLLOWING_LIST.update(data);
+                    for(let uid of data)
+                        FOLLOWING_LIST.push(new FollowingMember(uid, ''));
+                    console.log(`Load following list complete. ${FOLLOWING_LIST.length()} followings found."`);
+                    queryLivingRoom();
                 }
 
-            }).catch(msg =>{p = 0;errorHandler(getFollowingList, msg);});
+            }).catch(msg =>{errorHandler(getFollowingList, msg, 'getFollowingList()');});
         }
     }
 
@@ -773,9 +762,10 @@ class CRC32{
                     }
                     if (ON_AIR_LIST.list.length > 0) updateList(ON_AIR_LIST);
                 }else{
-                    errorHandler(getFollowingList, json['code']);
+                    errorHandler(getFollowingList, json['code'], 'queryLivingRoom()');
                 }
-            }).catch(msg =>{p = 0;errorHandler(getFollowingList, msg);});
+            })
+            .catch(msg =>{errorHandler(getFollowingList, msg, 'queryLivingRoom()');});
     }
 
     /**
@@ -987,7 +977,7 @@ class CRC32{
                     FOLLOWING_LIST.clearAll(); // initial following list.
                     p=0;
                     videoNotify(false);
-
+                    getUnread(true);
                     scheduleCheckIn();
                     getFollowingList();
                     // getUnread();
@@ -1008,7 +998,7 @@ class CRC32{
                 body: null
             }).then(res => {
                     console.log("签到成功 "+new Date().toUTCString())
-                }).catch(msg =>{errorHandler(checkIn, msg);});
+                }).catch(msg =>{errorHandler(checkIn, msg, 'checkIn()');});
         }
     }
 
@@ -1019,10 +1009,11 @@ class CRC32{
      *
      * @param handler, the function which need to be handled.
      * @param msg, the error message.
+     * @param at, the location where this error occurs.
      * */
-    function errorHandler(handler, msg){
+    function errorHandler(handler, msg, at){
         console.log("ERROR found @ "+new Date()+":");
-        console.log(msg);
+        console.log(`${msg} at function ${at}`);
         (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412 || msg == -412)?setTimeout(handler, 1500000):setTimeout(handler,20000);
     }
 
@@ -1052,7 +1043,7 @@ class CRC32{
                         },3000);
                     }
                 );
-            }).catch(msg =>{errorHandler(queryBcoin, msg);});
+            }).catch(msg =>{errorHandler(queryBcoin, msg, 'exchangeBCoin()');});
     }
 
     function queryBcoin(){
@@ -1071,7 +1062,7 @@ class CRC32{
                         else if(json["data"]["list"]["0"]["type"]===1&&json["data"]["list"]["0"]["state"]===1)
                             console.log("这个月的已经兑换过了，好耶！( •̀ ω •́ )✧");
                     }
-                }).catch(msg =>{errorHandler(queryBcoin, msg);});
+                }).catch(msg =>{errorHandler(queryBcoin, msg, 'queryBcoin()');});
         }
     }
 
@@ -1080,7 +1071,7 @@ class CRC32{
      * */
     let dynamic_id_list = [];
     function videoNotify(push){
-        fetch("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid="+UUID+"&type_list=8,512,4097,4098,4099,4100,4101",{
+        fetch("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=8,512,4097,4098,4099,4100,4101",{
             method:"GET",
             credentials: 'include',
             body: null
@@ -1107,7 +1098,7 @@ class CRC32{
                     }
                 }
                 setTimeout(()=>{videoNotify(true)},10000);
-            }).catch(msg =>{errorHandler(videoNotify,msg);});
+            }).catch(msg =>{errorHandler(videoNotify,msg, 'videoNotify()');});
     }
 
     /**
@@ -1204,7 +1195,7 @@ class CRC32{
                 })
                 .catch(msg => {
                     localStorage.setItem("rua_lastDK", "1970-01-01");
-                    errorHandler(checkMedalDaka,msg);
+                    errorHandler(checkMedalDaka,msg,'checkMedalDaka()');
                 });
         }else console.log("No more grab needed.");
     }
@@ -1338,6 +1329,36 @@ class CRC32{
         chrome.browserAction.setBadgeText({text: text});
     }
 
+    function getUnread(init){
+        chrome.storage.local.get(["unreadData"], (result)=>{
+            let unreadData = JSON.parse(result.unreadData);
+            fetch('https://api.bilibili.com/x/msgfeed/unread',{
+                method:'GET',
+                credentials: 'include',
+                body: null
+            })
+                .then(result => result.json())
+                .then(json =>{
+                    if(json.code === 0){
+                        chrome.storage.sync.get(['unreadSwitch'], (r)=>{
+                            if(r.unreadSwitch){
+                                if(!init && (json['data']['at'] - unreadData['at']>0 || json['data']['like'] - unreadData['like']>0 || json['data']['reply'] - unreadData['reply']>0 || json['data']['chat'] - unreadData['chat']>0 || json['data']['sys_msg'] - unreadData['sys_msg']>0)) {
+                                    basicNotification(-276492, "你收到了新的消息:", `${json['data']['at'] - unreadData['at'] > 0 ? json['data']['at'] - unreadData['at'] + '个@' : ''}\r\n${json['data']['like'] - unreadData['like'] > 0 ? json['data']['like'] - unreadData['like'] + '个赞' : ''}\r\n${json['data']['reply'] - unreadData['reply'] > 0 ? json['data']['reply'] - unreadData['reply'] + '个回复' : ''}\r\n${json['data']['chat'] - unreadData['chat'] > 0 ? json['data']['chat'] - unreadData['chat'] + '个私信' : ''}\r\n${json['data']['sys_msg'] - unreadData['sys_msg'] > 0 ? json['data']['sys_msg'] - unreadData['sys_msg'] + '个系统通知' : ''}`, `reply`, '', `https://message.bilibili.com/#/`);
+                                }
+                                unreadData = json.data;
+                                chrome.storage.local.set({"unreadData":JSON.stringify(unreadData)}, ()=>{});
+                            }
+                        });
+                        setTimeout(()=>{getUnread()}, 10000);
+                    }else{
+                        errorHandler(getUnread, json.code, 'getUnread()');
+                    }
+                })
+                .catch(e=>{
+                    errorHandler(getUnread, e, 'getUnread()');
+                });
+        });
+    }
 
 }();
 // function getUnread(){

@@ -20,6 +20,7 @@
     const record = document.getElementById("record");
     const prerecord = document.getElementById("prerecord");
     const enhancedHidden = document.getElementById('enhanced-hidden');
+    const unread = document.getElementById('unreadSwitch');
 
     const qn_table = ["原画", "蓝光","超清","高清","流畅"];
     const qnItem = setting7.getElementsByClassName("qn-i");
@@ -145,6 +146,11 @@
         chrome.storage.sync.set({"dynamicPush": checked}, function (){});
     });
 
+    unread.addEventListener('change', function(){
+        let checked = this.checked;
+        chrome.storage.sync.set({"unreadSwitch":checked}, function (){});
+    })
+
     hiddenEntry.addEventListener("change", function (){
         let checked = this.checked;
         chrome.storage.sync.set({"hiddenEntry": checked}, function (){});
@@ -180,9 +186,9 @@
 
     prerecord.addEventListener("change", function (){
         let value = this.value;
-        console.log(value)
         chrome.storage.sync.set({"prerecord":value}, function (){});
     });
+
 
     function buttonDisabled(checked, obj){
         if(checked) {
@@ -225,45 +231,26 @@
             }
         });
 
-        chrome.storage.sync.get(["notification"], function(result){
+        chrome.storage.sync.get(["notification", "medal", "checkIn", "imageNotice", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord"], function(result){
             if (os === 'win')
                 buttonDisabled(result.notification, imageNotice);
-            liveNotification.checked = result.notification;});
+            liveNotification.checked = result.notification;
+            medal.checked = result.medal;
+            checkIn.checked = result.checkIn;
+            imageNotice.checked = result.imageNotice;
+            bCoin.checked = result.bcoin;
+            dynamicPush.checked = result.dynamicPush;
+            unread.checked = result.unreadSwitch;
+            hiddenEntry.checked = result.hiddenEntry;
+            daka.checked = result.daka;
 
-        chrome.storage.sync.get(["medal"], function(result){
-            medal.checked = result.medal;});
-
-        chrome.storage.sync.get(["checkIn"], function(result){
-            checkIn.checked = result.checkIn;});
-
-        chrome.storage.local.get(["imageNotice"], function(result){
-            imageNotice.checked = result.imageNotice;});
-
-        chrome.storage.sync.get(["bcoin"], function(result){
-            bCoin.checked = result.bcoin;});
-
-        chrome.storage.sync.get(["qn"], function(result){
             qualitySetting.checked = result.qn;
             qn = result.qn;
             scrollDisabled(result.qn, setting7);
-        });
 
-        chrome.storage.sync.get(["qnvalue"], function (result){
             qnvalue = qn_table.indexOf(result.qnvalue);
-            scrollAnim(qnvalue)
-            //document.getElementById("qn-items").style.marginTop = qnvalue*-20+"px";
-        });
+            scrollAnim(qnvalue);
 
-        chrome.storage.sync.get(["dynamicPush"], function (result){
-            dynamicPush.checked = result.dynamicPush;});
-
-        chrome.storage.sync.get(["hiddenEntry"], function (result){
-            hiddenEntry.checked = result.hiddenEntry;});
-
-        chrome.storage.sync.get(["daka"], function (result){
-            daka.checked = result.daka;});
-
-        chrome.storage.sync.get(["enhancedHiddenEntry"], function (result){
             if (result.enhancedHiddenEntry){
                 hiddenEntry.setAttribute("disabled","");
                 hiddenEntry.checked = result.enhancedHiddenEntry;
@@ -272,14 +259,11 @@
                 hiddenEntry.removeAttribute('disable');
                 hiddenEntry.parentElement.getElementsByTagName("label")[0].classList.remove("btn-disabled");
             }
-            enhancedHidden.checked = result.enhancedHiddenEntry;});
+            enhancedHidden.checked = result.enhancedHiddenEntry;
 
-        chrome.storage.sync.get(["record"], function (result){
             record.checked = result.record;
             if (!result.record) prerecord.setAttribute("disabled","");
-        });
 
-        chrome.storage.sync.get(["prerecord"], function (result){
             setDefault(prerecord.childNodes, result.prerecord);
         });
     }
