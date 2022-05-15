@@ -1,10 +1,6 @@
 /***
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
-
-Array.prototype.popupAt = function (T) {
-    return this.splice(this.indexOf(T),1);
-}
 class WindowIDList{
     static convertFromJSON(object){
         let o = new WindowIDList();
@@ -479,10 +475,12 @@ class CRC32{
     var JCT = -1;
     var P_UID = UUID;
     var FOLLOWING_LIST = new FollowingMemberList();
-    var FOLLOWING_LIST_TEMP = new FollowingMemberList();
     var NOTIFICATION_LIST = new NotificationList();
     var winIDList = new WindowIDList();
     var p = 0;
+
+    chrome.storage.local.set({'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}'}, function (){});
+    chrome.storage.local.set({'dynamicList':[]}, ()=>{});
 
     chrome.runtime.getPlatformInfo((info)=>{OSInfo = info.os;});
 
@@ -506,10 +504,10 @@ class CRC32{
         chrome.storage.sync.set({"daka":true}, function (){dakaSwitch = true});
         chrome.storage.sync.set({"record":true});
         chrome.storage.sync.set({"prerecord":300}, function (){});
-        chrome.storage.sync.set({'enhancedHiddenEntry':false}, function (){})
-        chrome.storage.sync.set({'unreadSwitch':true}, function (){})
+        chrome.storage.sync.set({'enhancedHiddenEntry':false}, function (){});
+        chrome.storage.sync.set({'unreadSwitch':true}, function (){});
+        chrome.storage.sync.set({'dynamicSwitch':true}, function (){});
         chrome.tabs.create({url: "./readme.html"});
-        chrome.storage.local.set({'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}'}, function (){});
     });
 
     chrome.storage.onChanged.addListener(function (changes, namespace) {
@@ -540,8 +538,7 @@ class CRC32{
                     break;
                 case 'daka':
                     dakaSwitch = newValue;
-                    if(dakaSwitch)
-                        checkMedalDaka();
+                    if(dakaSwitch) checkMedalDaka();
                     break;
             }
         }
@@ -721,7 +718,7 @@ class CRC32{
                     FOLLOWING_LIST.update(data);
                     for(let uid of data)
                         FOLLOWING_LIST.push(new FollowingMember(uid, ''));
-                    console.log(`Load following list complete. ${FOLLOWING_LIST.length()} followings found."`);
+                    console.log(`Load following list complete. ${FOLLOWING_LIST.length()} followings found.`);
                     queryLivingRoom();
                 }
 
@@ -844,18 +841,18 @@ class CRC32{
      * normal ver.
      *
      * @param uid, a random number for notification id.
-     * @param roomTitle, live room title.
+     * @param title, live room title.
      * @param msg, notification content.
-     * @param roomUrl, part of live URL for click jump to.
+     * @param url, part of live URL for click jump to.
      * @param cover, notification icon, normally will be up's face.
      * @param URLPrefix, "live.bilibili.com/", will be combine with roomUrl to build a full link.
      * */
-    function basicNotification(uid, roomTitle, msg, roomUrl, cover, URLPrefix){
+    function basicNotification(uid, title, msg, url, cover, URLPrefix){
         cover = cover.length==null||cover.length===0?"../images/haruka128.png":cover;
-        chrome.notifications.create(uid+":"+roomUrl, {
+        chrome.notifications.create(uid+":"+url, {
                 type: "basic",
                 iconUrl: cover,
-                title: roomTitle,
+                title: title,
                 message: msg,
                 contextMessage:"rua豹器"
             }, function (id) {notificationClickHandler(id,URLPrefix);}
@@ -978,6 +975,7 @@ class CRC32{
                     p=0;
                     videoNotify(false);
                     getUnread(true);
+                    dynamicNotify(true);
                     scheduleCheckIn();
                     getFollowingList();
                     // getUnread();
@@ -1099,6 +1097,53 @@ class CRC32{
                 }
                 setTimeout(()=>{videoNotify(true)},10000);
             }).catch(msg =>{errorHandler(videoNotify,msg, 'videoNotify()');});
+    }
+
+    function dynamicNotify(push){
+        chrome.storage.local.get(['dynamicList'], (r)=>{
+            let dynamic_id_list = r.dynamicList;
+            fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=1,2,4`,{
+                method:'GET',
+                credentials:'include',
+                body:null
+            })
+                .then(r=>r.json())
+                .then(json=>{
+                    if(json['code']!==0){
+                        errorHandler(dynamicNotify, json['code'], 'dynamicNotify()');
+                    }else{
+                        chrome.storage.sync.get(['dynamicSwitch'], (result=>{
+                            let o = json["data"]["cards"];
+                            for (let i = 0; i < o.length; i++){
+                                let c = JSON.parse(o[i+""]["card"]);
+                                let type = o[i+""]["desc"]["type"];
+                                if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
+                                    if(!push && result.dynamicSwitch){
+                                        switch (type){
+                                            case 1:
+                                                console.log("你关注的up "+c["user"]["uname"]+" 转发了一条新动态 "+c['item']['content']+" see:"+`https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);
+                                                basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["uname"]}  转发了一条新动态`,c['item']['content']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['face'],"https://t.bilibili.com/");
+                                                break;
+                                            case 2:
+                                                console.log("你关注的up "+c["user"]["name"]+" 发了一条新动态 "+c['item']['description']+" see: "+ `https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);
+                                                basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["name"]}  发了一条图片动态`,c['item']['description']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['head_url'],"https://t.bilibili.com/");
+                                                break;
+                                            case 4:
+                                                console.log("你关注的up "+c["user"]["uname"]+" 发了一条新动态 "+c['item']['content']+" see: " + `https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);
+                                                basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["uname"]}  发了一条新动态`,c['item']['content']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['face'],"https://t.bilibili.com/");
+                                                break;
+                                        }
+                                    }
+                                    dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
+                                }
+                            }
+                            chrome.storage.local.set({'dynamicList':dynamic_id_list}, ()=>{});
+                            setTimeout(()=>{dynamicNotify()}, 10000);
+                        }));
+                    }
+                })
+                .catch(e=>{errorHandler(dynamicNotify, e, 'dynamicNotify()')});
+        });
     }
 
     /**
@@ -1361,65 +1406,3 @@ class CRC32{
     }
 
 }();
-// function getUnread(){
-//     let totalUnread = 0;
-//     $.ajax({
-//         url: "https://api.bilibili.com/x/msgfeed/unread",
-//         type: "GET",
-//         dataType: "json",
-//         json: "callback",
-//         success: function (json) {
-//             if (json["code"] === 0){
-//                 if(json["data"]["reply"] > 0)
-//                     setTimeout(function (){getReply("reply",json["data"]["reply"]);},10000);
-//                 if(json["data"]["like"] > 0)
-//                     setTimeout(function (){getReply("like",json["data"]["like"]);},10000);
-//                 console.log("New unread: reply "+json["data"]["reply"]+", like "+json["data"]["like"]+", at "+json["data"]["at"]+", up "+json["data"]["up"]+", sys "+json["data"]["sys_msg"]+" , chat "+json["data"]["chat"]);
-//             }
-//             setTimeout(getUnread, 10000);
-//         },
-//         error: function (msg) {
-//             console.log("ERROR found: "+msg.toString()+" "+new Date());
-//             (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)?setTimeout(getUnread, 900000):setTimeout(getUnread,20000);
-//         }
-//     });
-// }
-//
-// function getReply(type, item){
-//     let link;
-//     if(type==="like")
-//         link = "https://api.bilibili.com/x/msgfeed/like";
-//     if(type==="reply")
-//         link = "https://api.bilibili.com/x/msgfeed/reply";
-//     $.ajax({
-//         url: link,
-//         type: "GET",
-//         dataType: "json",
-//         json: "callback",
-//         success: function (json) {
-//             if (json["code"] === 0){
-//                 for (let i = 0; i < item; i++) {
-//                     let o = type==="reply"?json["data"]["items"]:json["data"]["total"]["items"];
-//                     console.log(o);
-//                     let url = "";
-//                     let msg = "";
-//                     let face = "";
-//                     if(type==="reply"){
-//                         face = o[i+""]["user"]["avatar"].includes("https")?o[i+""]["user"]["avatar"]:o[i+""]["user"]["avatar"].replace("http", "https");
-//                         url = o[i+""]["item"]["uri"]+"#reply"+o[i+""]["item"]["source_id"];
-//                         msg = o[i+""]["user"]["nickname"]+"回复了你的"+o[i+""]["item"]["business"];
-//                     }
-//                     if(type==="like"){
-//                         face = o[i+""]["users"]["0"]["avatar"].includes("https")?o[i+""]["users"]["0"]["avatar"]:o[i+""]["users"]["0"]["avatar"].replace("http", "https");
-//                         url = "https://message.bilibili.com/#/love/"+o[i+""]["id"];
-//                         msg = o[i+""]["users"]["0"]["nickname"]+"给你的"+o[i+""]["item"]["business"]+"点了个赞!";
-//                     }
-//                     messageNotification(Math.random(), url, face, msg);
-//                 }
-//             }
-//         },
-//         error: function (msg) {
-//             console.log(msg.toString())
-//         }
-//     });
-// }

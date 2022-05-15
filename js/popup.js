@@ -21,6 +21,7 @@
     const prerecord = document.getElementById("prerecord");
     const enhancedHidden = document.getElementById('enhanced-hidden');
     const unread = document.getElementById('unreadSwitch');
+    const dynamic = document.getElementById('dynamicSwitch');
 
     const qn_table = ["原画", "蓝光","超清","高清","流畅"];
     const qnItem = setting7.getElementsByClassName("qn-i");
@@ -151,6 +152,11 @@
         chrome.storage.sync.set({"unreadSwitch":checked}, function (){});
     })
 
+    dynamic.addEventListener('change', function(){
+        let checked = this.checked;
+        chrome.storage.sync.set({"dynamicSwitch":checked}, function (){});
+    })
+
     hiddenEntry.addEventListener("change", function (){
         let checked = this.checked;
         chrome.storage.sync.set({"hiddenEntry": checked}, function (){});
@@ -231,7 +237,7 @@
             }
         });
 
-        chrome.storage.sync.get(["notification", "medal", "checkIn", "imageNotice", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord"], function(result){
+        chrome.storage.sync.get(["notification", "medal", "checkIn", "imageNotice", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch"], function(result){
             if (os === 'win')
                 buttonDisabled(result.notification, imageNotice);
             liveNotification.checked = result.notification;
@@ -241,6 +247,7 @@
             bCoin.checked = result.bcoin;
             dynamicPush.checked = result.dynamicPush;
             unread.checked = result.unreadSwitch;
+            dynamic.checked = result.dynamicSwitch;
             hiddenEntry.checked = result.hiddenEntry;
             daka.checked = result.daka;
 
