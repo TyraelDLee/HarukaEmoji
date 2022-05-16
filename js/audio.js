@@ -1,5 +1,7 @@
 !function (){
     const link = chrome.runtime.getURL("../images/haruka/abaaba.svg");
+    const wasmPath = chrome.runtime.getURL('../ffmpeg/ffmpeg-core.wasm');
+
     let auid = window.location["pathname"].replaceAll("/", "").replace("audio","").replaceAll('au',''), UID;
     let exp =new RegExp("^\\d*$");
     new MutationObserver(()=>{
@@ -102,9 +104,10 @@
                                     window.URL.revokeObjectURL(obj);
 
                                 }else{
-                                    chrome.runtime.sendMessage({msg: "requestEncode", blob: obj, filename: metaObject['title'], startTime: -1, duration: -1, requestType: 'songRecord', metadata: metaObject}, function (status){
-                                        console.log(status.status);
-                                    });
+                                    embedMetadata(obj, metaObject,metaObject['title'])
+                                    // chrome.runtime.sendMessage({msg: "requestEncode", blob: obj, filename: metaObject['title'], startTime: -1, duration: -1, requestType: 'songRecord', metadata: metaObject}, function (status){
+                                    //     console.log(status.status);
+                                    // });
                                 }
                                 button.setAttribute('style','');
                                 button.getElementsByClassName("song-play")[0].innerText = `下载`;
@@ -115,6 +118,30 @@
                     .catch(e => {});
             }
         });
+    }
+
+    async function embedMetadata(blob, metadata, filename){
+        let out, downloadName, dl;
+        const {createFFmpeg, fetchFile} = FFmpeg;
+        const ffmpeg = createFFmpeg({
+            corePath: wasmPath,
+            mainName: 'main',
+            log: false,
+        });
+        await ffmpeg.load();
+        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(blob));
+        await ffmpeg.run('-i', 'audio.m4s','-c', 'copy', '-metadata', `title=${eval('\''+encodeURI(metadata.title).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `artist=${eval('\''+encodeURI(metadata.artist).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `description=${eval('\''+encodeURI(metadata.description).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `lyrics=${eval('\''+encodeURI(metadata.lyrics).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `year=${metadata.year}`, 'final.m4a');
+        out = ffmpeg.FS('readFile', 'final.m4a');
+        downloadName = filename + ".m4a";
+        dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = dl;
+        a.download = downloadName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(dl);
     }
 
     function setProgress(obj, progress){

@@ -3,6 +3,7 @@
  * */
 !function (){
     const link = chrome.runtime.getURL("../images/haruka/abaaba.svg");
+    const wasmPath = chrome.runtime.getURL('../ffmpeg/ffmpeg-core.wasm');
     const assConvert = new AssConvert(1280, 720);
     var vid = window.location["pathname"].replaceAll("/", "").replace("video","");// id for current page, av or bv.
     var aid = "";
@@ -458,18 +459,76 @@
         if(requestType==='audioRecord')
             audioMeta = await getAudioMeta();
 
-        await chrome.runtime.sendMessage({msg: "requestEncode", blob: blobURL, filename: fileName, startTime: -1, duration: -1, requestType: requestType, metadata: audioMeta}, function (status){
-            console.log(status.status);
-            if (status.status === 'ok'){
-                hostObj.removeAttribute("style");
-                hostObj.removeAttribute("title");
-                hostObj.classList.remove('rua-downloading');
-                hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
-                window.URL.revokeObjectURL(blobURL[0]);
-                if(requestType==='hdrRecord')
-                    window.URL.revokeObjectURL(blobURL[1]);
-            }
+        encode(blobURL, fileName, requestType, audioMeta).then(r=>{
+            hostObj.removeAttribute("style");
+            hostObj.removeAttribute("title");
+            hostObj.classList.remove('rua-downloading');
+            hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
+            window.URL.revokeObjectURL(blobURL[0]);
+            if (requestType === 'hdrRecord')
+            window.URL.revokeObjectURL(blobURL[1]);
         });
+            // await chrome.runtime.sendMessage({
+            //     msg: "requestEncode",
+            //     blob: blobURL,
+            //     filename: fileName,
+            //     startTime: -1,
+            //     duration: -1,
+            //     requestType: requestType,
+            //     metadata: audioMeta
+            // }, function (status) {
+            //     console.log(status.status);
+            //     if (status.status === 'ok') {
+            //         hostObj.removeAttribute("style");
+            //         hostObj.removeAttribute("title");
+            //         hostObj.classList.remove('rua-downloading');
+            //         hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
+            //         window.URL.revokeObjectURL(blobURL[0]);
+            //         if (requestType === 'hdrRecord')
+            //             window.URL.revokeObjectURL(blobURL[1]);
+            //     }
+            // });
+    }
+
+    async function encode(blob, filename, requestType, metadata){
+        let out, downloadName, dl;
+        const {createFFmpeg, fetchFile} = FFmpeg;
+        const ffmpeg = createFFmpeg({
+            corePath: wasmPath,
+            mainName: 'main',
+            log: false,
+        });
+        await ffmpeg.load();
+        if(requestType === 'audioRecord'){
+            ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(blob[0]));
+            await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', '-metadata', `title=${eval('\''+encodeURI(metadata.title).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `artist=${eval('\''+encodeURI(metadata.artist).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `year=${metadata.year}`, 'final.m4a');
+            out = ffmpeg.FS('readFile', 'final.m4a');
+            downloadName = filename + ".m4a";
+            dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+        }
+        if(requestType === 'dolbyRecord'){
+            ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(blob[0]));
+            await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', 'final.mp4');
+            out = ffmpeg.FS('readFile', 'final.mp4');
+            downloadName = filename + ".mp4";
+            dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+        }
+        if(requestType === 'hdrRecord'){
+            ffmpeg.FS('writeFile', 'video.m4s', await fetchFile(blob[0]));
+            ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(blob[1]));
+            await ffmpeg.run('-i', 'video.m4s', '-i', 'audio.m4s', '-map', '0:v', '-map', '1:a','-c', 'copy', 'final.mkv');
+            out = ffmpeg.FS('readFile', 'final.mkv');
+            downloadName = filename + ".mkv";
+            dl = URL.createObjectURL(new Blob([out.buffer]));
+        }
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = dl;
+        a.download = downloadName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(dl);
     }
 
     async function getAudioMeta(){

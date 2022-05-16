@@ -50,7 +50,7 @@
   },{
     "all_frames": true,
     "css": ["css/host.min.css", "css/button.min.css", "css/videos.min.css"],
-    "js": ["js/protobuf.js", "js/ADT.js", "js/DanmakuToAss.js", "js/VideoHost.min.js"],
+    "js": ["ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/protobuf.js", "js/ADT.js", "js/DanmakuToAss.js", "js/VideoHost.min.js"],
     "matches": ["*://www.bilibili.com/video/*"],
     "run_at": "document_end"
   },{
@@ -62,7 +62,7 @@
   },{
     "all_frames": true,
     "css": ["css/audio.min.css"],
-    "js": ["js/audio.min.js"],
+    "js": ["ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/audio.min.js"],
     "matches": ["*://www.bilibili.com/audio/*"],
     "run_at": "document_end"
   }],

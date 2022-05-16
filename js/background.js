@@ -589,7 +589,7 @@ class CRC32{
                 const {createFFmpeg, fetchFile} = FFmpeg;
                 const ffmpeg = createFFmpeg({
                     corePath: "./ffmpeg/ffmpeg-core.js",
-                    log: true,
+                    log: false,
                 });
                 (async ()=>{
                     let out, downloadName, dl;
@@ -606,35 +606,35 @@ class CRC32{
                         downloadName = request.filename + ".mp4";
                         dl = URL.createObjectURL(new Blob([out.buffer], {type: 'video/mp4'}));
                     }
-                    if(request.requestType === 'audioRecord'){
-                        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
-                        await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', '-metadata', `title=${eval('\''+encodeURI(request.metadata.title).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `artist=${eval('\''+encodeURI(request.metadata.artist).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `year=${request.metadata.year}`, 'final.m4a');
-                        out = ffmpeg.FS('readFile', 'final.m4a');
-                        downloadName = request.filename + ".m4a";
-                        dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
-                    }
-                    if(request.requestType === 'dolbyRecord'){
-                        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
-                        await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', 'final.mp4');
-                        out = ffmpeg.FS('readFile', 'final.mp4');
-                        downloadName = request.filename + ".mp4";
-                        dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
-                    }
-                    if(request.requestType === 'hdrRecord'){
-                        ffmpeg.FS('writeFile', 'video.m4s', await fetchFile(request.blob[0]));
-                        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[1]));
-                        await ffmpeg.run('-i', 'video.m4s', '-i', 'audio.m4s', '-map', '0:v', '-map', '1:a','-c', 'copy', 'final.mkv');
-                        out = ffmpeg.FS('readFile', 'final.mkv');
-                        downloadName = request.filename + ".mkv";
-                        dl = URL.createObjectURL(new Blob([out.buffer]));
-                    }
-                    if(request.requestType === 'songRecord'){
-                        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob));
-                        await ffmpeg.run('-i', 'audio.m4s','-c', 'copy', '-metadata', `title=${eval('\''+encodeURI(request.metadata.title).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `artist=${eval('\''+encodeURI(request.metadata.artist).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `description=${eval('\''+encodeURI(request.metadata.description).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `lyrics=${eval('\''+encodeURI(request.metadata.lyrics).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `year=${request.metadata.year}`, 'final.m4a');
-                        out = ffmpeg.FS('readFile', 'final.m4a');
-                        downloadName = request.filename + ".m4a";
-                        dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
-                    }
+                    // if(request.requestType === 'audioRecord'){
+                    //     ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
+                    //     await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', '-metadata', `title=${eval('\''+encodeURI(request.metadata.title).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `artist=${eval('\''+encodeURI(request.metadata.artist).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `year=${request.metadata.year}`, 'final.m4a');
+                    //     out = ffmpeg.FS('readFile', 'final.m4a');
+                    //     downloadName = request.filename + ".m4a";
+                    //     dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+                    // }
+                    // if(request.requestType === 'dolbyRecord'){
+                    //     ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
+                    //     await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', 'final.mp4');
+                    //     out = ffmpeg.FS('readFile', 'final.mp4');
+                    //     downloadName = request.filename + ".mp4";
+                    //     dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+                    // }
+                    // if(request.requestType === 'hdrRecord'){
+                    //     ffmpeg.FS('writeFile', 'video.m4s', await fetchFile(request.blob[0]));
+                    //     ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[1]));
+                    //     await ffmpeg.run('-i', 'video.m4s', '-i', 'audio.m4s', '-map', '0:v', '-map', '1:a','-c', 'copy', 'final.mkv');
+                    //     out = ffmpeg.FS('readFile', 'final.mkv');
+                    //     downloadName = request.filename + ".mkv";
+                    //     dl = URL.createObjectURL(new Blob([out.buffer]));
+                    // }
+                    // if(request.requestType === 'songRecord'){
+                    //     ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob));
+                    //     await ffmpeg.run('-i', 'audio.m4s','-c', 'copy', '-metadata', `title=${eval('\''+encodeURI(request.metadata.title).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `artist=${eval('\''+encodeURI(request.metadata.artist).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `description=${eval('\''+encodeURI(request.metadata.description).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `lyrics=${eval('\''+encodeURI(request.metadata.lyrics).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `year=${request.metadata.year}`, 'final.m4a');
+                    //     out = ffmpeg.FS('readFile', 'final.m4a');
+                    //     downloadName = request.filename + ".m4a";
+                    //     dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+                    // }
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = dl;
@@ -1176,6 +1176,7 @@ class CRC32{
             return {requestHeaders: details.requestHeaders};
         }, {urls: ["https://api.live.bilibili.com/msg/send*"]}, ['blocking', "requestHeaders", "extraHeaders"]
     );
+
     chrome.webRequest.onBeforeRequest.addListener((details)=>{
             return hiddenEntry&&!enhancedHiddenEntry&&!details.url.includes("room_id=2842865")?{redirectUrl: "https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?room_id=2842865&from=0"}:undefined},
         {urls: ["*://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser*"]}, ["blocking"]);
