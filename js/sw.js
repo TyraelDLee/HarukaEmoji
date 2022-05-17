@@ -3,7 +3,6 @@
  *
  * service worker for mv3
  * */
-importScripts('../ffmpeg/ffmpeg.min.js','../ffmpeg/ffmpeg-core.js', '../ffmpeg/ffmpeg-core.worker.js');
 class WindowIDList{
     static convertFromJSON(object){
         let o = new WindowIDList();
@@ -119,7 +118,7 @@ class FollowingMemberList{
     update(members){
         // intersection
         this.list = this.list.filter(function (member) {
-            return members.indexOf(member) !== -1;
+            return members.indexOf(member.UID) !== -1;
         });
     }
 
@@ -462,23 +461,6 @@ class CRC32{
     }
 }
 
-var hiddenEntry = false;
-let enhancedHiddenEntry = false;
-
-!function (){
-    chrome.storage.local.set({'uuid':-1}, ()=>{});
-    chrome.storage.local.set({'jct':-1}, ()=>{});
-    chrome.storage.local.set({'p_uuid':-1}, ()=>{});
-    chrome.storage.local.set({'updateAvailable':false}, ()=>{});
-    chrome.storage.local.set({'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases"}, ()=>{});
-    chrome.storage.local.set({'downloadFileName':''}, ()=>{});
-    chrome.storage.local.set({"dynamic_id_list": []}, ()=>{});
-    let NOTIFICATION_LIST = new NotificationList();
-    chrome.storage.local.set({'notificationList':NOTIFICATION_LIST.toJSONObject()}, ()=>{});
-    let l = new FollowingMemberList();
-    chrome.storage.local.set({'following_list': l.toJSONObject()}, ()=>{});
-    reloadCookies();
-}();
 chrome.action.setBadgeBackgroundColor({color: "#00A0FF"});
 chrome.windows.getAll(function (wins){
     let winIDList = new WindowIDList();
@@ -512,21 +494,25 @@ chrome.windows.onFocusChanged.addListener(function (wID){
 chrome.runtime.onInstalled.addListener(function (obj){
     // init setting
     chrome.storage.local.get(['rua_lastDK'],(info)=>{
-        chrome.storage.local.set({'rua_lastDK':"1970-01-01"}, ()=>{});
+        console.log(info.rua_lastDK);
+        if (info.rua_lastDK === null || info.rua_lastDK === undefined)
+            chrome.storage.local.set({'rua_lastDK':"1970-01-01"}, ()=>{});
     });
+    chrome.storage.local.set({"imageNotice": false}, function(){});
     chrome.storage.sync.set({"notification": true}, function(){});
     chrome.storage.sync.set({"medal": true}, function(){});
     chrome.storage.sync.set({"checkIn": true}, function(){});
-    chrome.storage.local.set({"imageNotice": false}, function(){});
     chrome.storage.sync.set({"bcoin": true}, function(){});
     chrome.storage.sync.set({"qn": true}, function(){});
     chrome.storage.sync.set({"qnvalue": "原画"}, function(){});
     chrome.storage.sync.set({"dynamicPush":true}, function (){});
-    chrome.storage.sync.set({"hiddenEntry":false}, function (){hiddenEntry = false});
+    chrome.storage.sync.set({"hiddenEntry":false}, function (){});
     chrome.storage.sync.set({"daka":true}, function (){});
     chrome.storage.sync.set({"record":true});
     chrome.storage.sync.set({"prerecord":300}, function (){});
     chrome.storage.sync.set({'enhancedHiddenEntry':false}, function (){})
+    chrome.storage.sync.set({'unreadSwitch':true}, function (){});
+    chrome.storage.sync.set({'dynamicSwitch':true}, function (){});
     chrome.tabs.create({url: "./readme.html"});
 
     /**
@@ -535,6 +521,23 @@ chrome.runtime.onInstalled.addListener(function (obj){
      * no need change for mv3 update.
      * */
     chrome.contextMenus.create({contexts: ["selection", "link"], title: "用bilibili搜索", type: "normal", id:"rua-contextMenu-v3"});
+
+    // local states
+    chrome.alarms.create('checkUpd', {'when':Date.now(), periodInMinutes:60*12});
+    chrome.storage.local.set({'uuid':-1}, ()=>{});
+    chrome.storage.local.set({'jct':-1}, ()=>{});
+    chrome.storage.local.set({'p_uuid':-1}, ()=>{});
+    chrome.storage.local.set({'updateAvailable':false}, ()=>{});
+    chrome.storage.local.set({'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases"}, ()=>{});
+    chrome.storage.local.set({'downloadFileName':''}, ()=>{});
+    chrome.storage.local.set({"dynamic_id_list": []}, ()=>{});
+    chrome.storage.local.set({'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}'}, function (){});
+    chrome.storage.local.set({'dynamicList':[]}, ()=>{});
+    let NOTIFICATION_LIST = new NotificationList();
+    chrome.storage.local.set({'notificationList':NOTIFICATION_LIST.toJSONObject()}, ()=>{});
+    let l = new FollowingMemberList();
+    chrome.storage.local.set({'following_list': l.toJSONObject()}, ()=>{});
+    reloadCookies();
 });
 
 chrome.contextMenus.onClicked.addListener((info)=>{
@@ -545,23 +548,50 @@ chrome.contextMenus.onClicked.addListener((info)=>{
     }
 });
 
+chrome.runtime.onConnect.addListener(function (p){
+    if(p.name==="popup"){
+        p.onDisconnect.addListener(function (){
+            //chrome.storage.sync.set({"qnvalue": QNV}, function (){});
+        });
+    }
+});
+
 chrome.storage.onChanged.addListener(function (changes, namespace) {
     for (let [key, {oldValue, newValue}] of Object.entries(changes)) {
         if(key === "checkIn") {
-            if(newValue) checkIn();
+            if(newValue) checkingIn();
         }
         if(key === "bcoin"){
             if(newValue) queryBcoin();
         }
-        if(key === "hiddenEntry")
-            hiddenEntry = newValue;
-        if(key === 'enhancedHiddenEntry')
-            enhancedHiddenEntry = newValue;
+        if(key === "hiddenEntry"){
+            if (newValue){
+                chrome.declarativeNetRequest.updateEnabledRulesets({
+                    enableRulesetIds: ["redirect"]
+                }, ()=>{});
+            }else{
+                chrome.declarativeNetRequest.updateEnabledRulesets({
+                    disableRulesetIds: ["redirect"]
+                }, ()=>{});
+            }
+        }
+        if(key === 'enhancedHiddenEntry'){
+            if (newValue){
+                chrome.declarativeNetRequest.updateEnabledRulesets({
+                    enableRulesetIds: ["cookieOmit"]
+                }, ()=>{});
+            }else{
+                chrome.declarativeNetRequest.updateEnabledRulesets({
+                    disableRulesetIds: ["cookieOmit"]
+                }, ()=>{});
+            }
+        }
         if(key === "daka"){
             if(newValue)
                 checkMedalDaka();
         }
     }
+
 });
 
 /**
@@ -620,60 +650,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
                     }
                 });
         }
-        if(request.msg === "requestEncode"){
-            const {createFFmpeg, fetchFile} = FFmpeg;
-            const ffmpeg = createFFmpeg({
-                corePath: "./ffmpeg/ffmpeg-core.js",
-                log: true,
-            });
-            (async ()=>{
-                let out, downloadName, dl;
-                await ffmpeg.load();
-                if(request.requestType === 'videoRecord'){
-                    ffmpeg.FS('writeFile', 'video.mp4', await fetchFile(request.blob));
-                    if(request.startTime > 1){
-                        await ffmpeg.run('-i', 'video.mp4', '-ss', request.startTime + '', '-c', 'copy', 'footage.mp4');
-                        await ffmpeg.run('-i', 'footage.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
-                    }else{
-                        await ffmpeg.run('-i', 'video.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
-                    }
-                    out = ffmpeg.FS('readFile', 'final.mp4');
-                    downloadName = request.filename + ".mp4";
-                    dl = URL.createObjectURL(new Blob([out.buffer], {type: 'video/mp4'}));
-                }
-                if(request.requestType === 'audioRecord'){
-                    ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
-                    await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', 'final.m4a');
-                    out = ffmpeg.FS('readFile', 'final.m4a');
-                    downloadName = request.filename + ".m4a";
-                    dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
-                }
-                if(request.requestType === 'dolbyRecord'){
-                    ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
-                    await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', 'final.mp4');
-                    out = ffmpeg.FS('readFile', 'final.mp4');
-                    downloadName = request.filename + ".mp4";
-                    dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
-                }
-                if(request.requestType === 'hdrRecord'){
-                    ffmpeg.FS('writeFile', 'video.m4s', await fetchFile(request.blob[0]));
-                    ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[1]));
-                    await ffmpeg.run('-i', 'video.m4s', '-i', 'audio.m4s', '-map', '0:v', '-map', '1:a','-c', 'copy', 'final.mkv');
-                    out = ffmpeg.FS('readFile', 'final.mkv');
-                    downloadName = request.filename + ".mkv";
-                    dl = URL.createObjectURL(new Blob([out.buffer]));
-                }
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = dl;
-                a.download = downloadName;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(dl);
-                sendResponse({'status':'ok'});
-            })();
-        }
         if(request.msg === 'requestOSInfo'){
             chrome.runtime.getPlatformInfo((info)=>{
                 sendResponse({'os':info.os});
@@ -698,14 +674,6 @@ function convertMSToS(time){
     return hour+mint+":"+secs;
 }
 
-function loadSetting(){
-    chrome.storage.sync.get(["hiddenEntry"], (result)=>{
-        hiddenEntry = result.hiddenEntry;});
-    chrome.storage.sync.get(['enhancedHiddenEntry'],(result)=>{
-        enhancedHiddenEntry = result.enhancedHiddenEntry;
-    });
-}
-
 /**
  * Maintain and updated the following ups info.
  * Non-duplicated and shrank when unfollow someone.
@@ -716,41 +684,31 @@ function loadSetting(){
  * method: GET
  * url param: vmid->uid, pn->page number.
  * */
-function getFollowing(uuid){
-    getFollowingList(uuid, 0);
-}
-function getFollowingList(UUID, p) {
+function getFollowingList(UUID) {
     if(UUID !== -1){
-        p++;
-        let listLength = 0;
-        fetch("https://api.bilibili.com/x/relation/followings?vmid=" + UUID + "&pn=" + p,{
+        fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=8`,{
             method:"GET",
             credentials: 'include',
             body:null
         })
             .then(res => res.json())
             .then(json => {
-                if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
-                    let data = json["data"]["list"];
-                    listLength = data.length;
-                    let list = new FollowingMemberList();
-                    for (let i = 0; i < data.length; i++) {
-                        let member = new FollowingMember(data[i]["mid"], data[i]["uname"]);
-                        list.push(member); // maintain the global list
-                    }
-                    chrome.storage.local.get(['following_list'],(flist)=>{
+                if(json['code']!==0)errorHandler('getNewLive', json['code'], 'getFollowingList()');
+                else if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
+                    let data = json["data"]["attentions"]['uids'];
+                    data.splice(json["data"]["attentions"]['uids'].indexOf(UUID-1+1),1);
+                    chrome.storage.local.get(['following_list'], (flist)=>{
                         let l = FollowingMemberList.convertFromJSON(flist.following_list);
-                        l.concat(list);
+                        l.update(data);
+                        for(let uid of data)
+                            l.push(new FollowingMember(uid, ''));
+                        console.log(`Load following list complete. ${l.length()} followings found.`);
                         chrome.storage.local.set({'following_list':l.toJSONObject()},()=>{});
-                        if (listLength < 50 && l.length() !== 0){
-                            console.log("Load following list complete. " + l.length() + " followings found.");
-                            queryLivingRoom();
-                        }else getFollowingList(UUID, p);
+                        queryLivingRoom();
                     });
-                    if(json['code']!==0)errorHandler(()=>{getFollowingList(UUID, p)}, json['code']);
                 }
             })
-            .catch(msg =>{errorHandler(()=>{getFollowingList(UUID, 0)}, msg);});
+            .catch(msg =>{errorHandler('getNewLive', msg, 'getFollowingList()');});
     }
 }
 
@@ -793,10 +751,10 @@ function queryLivingRoom() {
                     }
                     if (ON_AIR_LIST.list.length > 0) updateList(ON_AIR_LIST);
                 }
-                else errorHandler(()=>{getFollowingList(info.uuid, 0)}, json['code']);
+                else errorHandler('getNewLive', json['code'], 'queryLivingRoom()');
 
             })
-            .catch(msg =>{console.log(msg);errorHandler(()=>{getFollowingList(info.uuid, 0)}, msg);});
+            .catch(msg =>{console.log(msg);errorHandler('getNewLive', msg, 'queryLivingRoom()');});
     });
 }
 
@@ -923,32 +881,6 @@ function imageNotification(uid, roomTitle, msg, roomUrl, cover, face, URLPrefix)
     );
 }
 
-function messageNotification(uid, roomUrl, face, msg){
-    chrome.notifications.create(uid+"", {
-            type: "basic",
-            iconUrl: face,
-            title: msg,
-            message:""
-        }, function (id) {
-            chrome.notifications.onClicked.addListener(function (nid) {
-                if (nid === id) {
-                    chrome.storage.local.get(['winIDList'],(info)=>{
-                        let winIDList = WindowIDList.convertFromJSON(info.winIDList);
-                        chrome.windows.getAll(function (wins){
-                            if(wins.length>0){
-                                chrome.windows.update(winIDList.getCurrent(), {focused: true});
-                                chrome.tabs.create({url: roomUrl});
-                            }else
-                                chrome.windows.create({url: roomUrl});
-                        });
-                    });
-                    chrome.notifications.clear(id);
-                }
-            });
-        }
-    );
-}
-
 /**
  * A handler for notification click event.
  * When click the notification, browser will
@@ -983,7 +915,6 @@ function notificationClickHandler(id, URLPrefix){
 }
 
 //setTimeout(loadSetting, 100);
-chrome.alarms.create('checkUpd', {'when':Date.now(), periodInMinutes:60*12});
 function scheduleCheckIn(){
     chrome.alarms.create('checkIn', {'when':Date.now(), periodInMinutes:60*12});
     chrome.alarms.create('bcoin', {'when':Date.now(), periodInMinutes:60*12});
@@ -1002,14 +933,21 @@ function reloadCookies() {
                 if ((uids.uuid === -1) && uids.uuid !== uids.p_uuid) {
                     // if not log in then stop update liver stream info.
                     console.log("Session info does not exist, liver stream info listener cleared.");
-                    chrome.alarms.clearAll();
+                    chrome.alarms.getAll((alarms)=>{
+                        for(let name of alarms){
+                            console.log(`alarm ${name.name} found`);
+                            if (name.name !== 'checkUpd') chrome.alarms.clear(name.name).then(r=>{console.log(`${name.name} was cleared ${r}`)});
+                        }
+                    })
                 }
                 if (uids.uuid !== -1 && uids.uuid !== uids.p_uuid) {
                     // log in info changed then load following list and start update liver stream info every 3 min.
                     console.log("Session info got.");
-                    getFollowing(uids.uuid);
+                    getFollowingList(uids.uuid);
                     videoNotify(false, uids.uuid);
                     scheduleCheckIn();
+                    getNewUnread(true);
+                    dynamicNotify(true);
                 }
                 chrome.storage.local.set({'p_uuid': uids.uuid},()=>{});
             });
@@ -1028,28 +966,36 @@ chrome.alarms.onAlarm.addListener((alarm)=>{
         reloadCookies();
     }
     if (alarm.name === 'checkUpd'){
-        checkUpd("https://tyrael-lee.gitee.io/harukaemoji/?_=")
+        checkUpdate("https://tyrael-lee.gitee.io/harukaemoji/?_=")
     }
     chrome.storage.local.get(['uuid', 'jct'], (info)=>{
-        if(alarm.name === 'getNewVideo'){
-            videoNotify(true, info.uuid);
-        }
-        if (alarm.name === 'getNewLive'){
-            getFollowing(info.uuid);
-        }
-        if(alarm.name === 'checkIn'){
-            checkIn();
-        }
-        if (alarm.name === 'daka'){
-            checkMedalDaka();
-        }
-        if(alarm.name === 'bcoin'){
-            queryBcoin();
+        switch (alarm.name) {
+            case 'getNewVideo':
+                videoNotify(true, info.uuid);
+                break;
+            case 'getNewLive':
+                getFollowingList(info.uuid);
+                break;
+            case 'checkIn':
+                checkingIn();
+                break;
+            case 'daka':
+                checkMedalDaka();
+                break;
+            case 'bcoin':
+                queryBcoin();
+                break;
+            case 'getNewDynamic':
+                dynamicNotify();
+                break;
+            case 'getUnread':
+                getNewUnread();
+                break;
         }
     });
 });
 
-function checkIn(){
+function checkingIn(){
     chrome.storage.sync.get(["checkIn"], (result)=>{
         if(result.checkIn){
             fetch("https://api.live.bilibili.com/xlive/web-ucenter/v1/sign/DoSign",{
@@ -1058,7 +1004,7 @@ function checkIn(){
                 body: null
             }).then(res => {
                 console.log("签到成功 "+new Date().toUTCString())
-            }).catch(msg =>{errorHandler(checkIn, msg);});
+            }).catch(msg =>{errorHandler('checkIn', msg, 'checkIn()');});
         }
     });
 }
@@ -1070,11 +1016,20 @@ function checkIn(){
  *
  * @param handler, the function which need to be handled.
  * @param msg, the error message.
+ * @param at, the location where this error occurs.
  * */
-function errorHandler(handler, msg){
+function errorHandler(handler, msg, at){
     console.log("ERROR found @ "+new Date()+":");
-    console.log(msg);
-    (typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412)?setTimeout(handler, 1200000):setTimeout(handler,20000);
+    console.log(`${msg} at function ${at}`);
+    if(typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412  || msg == -412){
+        chrome.alarms.clear(handler).then(c =>{
+            chrome.alarms.create(handler, {'when': Date.now()+1500000})
+        });
+    }else{
+        chrome.alarms.clear(handler).then(c =>{
+            chrome.alarms.create(handler, {'when': Date.now()+20000})
+        });
+    }
 }
 
 /**
@@ -1103,7 +1058,7 @@ function exchangeBCoin(JCT){
                     },3000);
                 }
             );
-        }).catch(msg =>{errorHandler(queryBcoin, msg);});
+        }).catch(msg =>{errorHandler('bcoin', msg, 'exchangeBCoin()');});
 }
 
 function queryBcoin(){
@@ -1126,7 +1081,7 @@ function queryBcoin(){
                         else if(json["data"]["list"]["0"]["type"]===1&&json["data"]["list"]["0"]["state"]===1)
                             console.log("这个月的已经兑换过了，好耶！( •̀ ω •́ )✧");
                     }
-                }).catch(msg =>{errorHandler(queryBcoin, msg);});
+                }).catch(msg =>{errorHandler('bcoin', msg, 'queryBcoin()');});
         }
     });
 
@@ -1170,74 +1125,98 @@ function videoNotify(push, UUID){
                 chrome.alarms.clear('getNewVideo').then(a=>{
                     chrome.alarms.create('getNewVideo', {'when':Date.now()+10000});
                 });
-            }).catch(msg =>{errorHandler(()=>{videoNotify(true, UUID)},msg);});
-    })
+            }).catch(msg =>{errorHandler('getNewVideo',msg, 'videoNotify()');});
+    });
+}
 
+function dynamicNotify(push){
+    chrome.storage.local.get(['dynamicList'], (r)=>{
+        let dynamic_id_list = r.dynamicList;
+        fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=1,2,4`,{
+            method:'GET',
+            credentials:'include',
+            body:null
+        })
+            .then(r=>r.json())
+            .then(json=>{
+                if(json['code']!==0){
+                    errorHandler('getNewDynamic', json['code'], 'dynamicNotify()');
+                }else{
+                    chrome.storage.sync.get(['dynamicSwitch'], (result=>{
+                        let o = json["data"]["cards"];
+                        for (let i = 0; i < o.length; i++){
+                            let c = JSON.parse(o[i+""]["card"]);
+                            let type = o[i+""]["desc"]["type"];
+                            if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
+                                if(!push && result.dynamicSwitch){
+                                    switch (type){
+                                        case 1:
+                                            console.log("你关注的up "+c["user"]["uname"]+" 转发了一条新动态 "+c['item']['content']+" see:"+`https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);
+                                            basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["uname"]}  转发了一条新动态`,c['item']['content']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['face'],"https://t.bilibili.com/");
+                                            break;
+                                        case 2:
+                                            console.log("你关注的up "+c["user"]["name"]+" 发了一条新动态 "+c['item']['description']+" see: "+ `https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);
+                                            basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["name"]}  发了一条图片动态`,c['item']['description']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['head_url'],"https://t.bilibili.com/");
+                                            break;
+                                        case 4:
+                                            console.log("你关注的up "+c["user"]["uname"]+" 发了一条新动态 "+c['item']['content']+" see: " + `https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);
+                                            basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["uname"]}  发了一条新动态`,c['item']['content']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['face'],"https://t.bilibili.com/");
+                                            break;
+                                    }
+                                }
+                                dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
+                            }
+                        }
+                        chrome.storage.local.set({'dynamicList':dynamic_id_list}, ()=>{});
+                        chrome.alarms.clear('getNewDynamic').then(a=>{
+                            chrome.alarms.create('getNewDynamic', {'when':Date.now()+10000});
+                        });
+                    }));
+                }
+            })
+            .catch(e=>{errorHandler('getNewDynamic', e, 'dynamicNotify()')});
+    });
+}
+
+function getNewUnread(init){
+    chrome.storage.local.get(["unreadData"], (result)=>{
+        let unreadData = JSON.parse(result.unreadData);
+        fetch('https://api.bilibili.com/x/msgfeed/unread',{
+            method:'GET',
+            credentials: 'include',
+            body: null
+        })
+            .then(result => result.json())
+            .then(json =>{
+                if(json.code === 0){
+                    chrome.storage.sync.get(['unreadSwitch'], (r)=>{
+                        if(r.unreadSwitch){
+                            if(!init && (json['data']['at'] - unreadData['at']>0 || json['data']['like'] - unreadData['like']>0 || json['data']['reply'] - unreadData['reply']>0 || json['data']['chat'] - unreadData['chat']>0 || json['data']['sys_msg'] - unreadData['sys_msg']>0)) {
+                                let msgContent = `${json['data']['at'] - unreadData['at'] > 0 ? json['data']['at'] - unreadData['at'] + '个@, ' : ''}${json['data']['like'] - unreadData['like'] > 0 ? json['data']['like'] - unreadData['like'] + '个赞, ' : ''}${json['data']['reply'] - unreadData['reply'] > 0 ? json['data']['reply'] - unreadData['reply'] + '个回复, ' : ''}${json['data']['chat'] - unreadData['chat'] > 0 ? json['data']['chat'] - unreadData['chat'] + '个私信, ' : ''}${json['data']['sys_msg'] - unreadData['sys_msg'] > 0 ? json['data']['sys_msg'] - unreadData['sys_msg'] + '个系统通知, ' : ''}`;
+                                basicNotification(-276492, "你收到了新的消息:", msgContent.substring(0, msgContent.length-2), `reply`, '', `https://message.bilibili.com/#/`);
+                            }
+                            unreadData = json.data;
+                            chrome.storage.local.set({"unreadData":JSON.stringify(unreadData)}, ()=>{});
+                        }
+                    });
+                    chrome.alarms.clear('getUnread').then(a=>{
+                        chrome.alarms.create('getUnread', {'when':Date.now()+10000});
+                    });
+                }else{
+                    errorHandler('getUnread', json.code, 'getUnread()');
+                }
+            })
+            .catch(e=>{
+                errorHandler('getUnread', e, 'getUnread()');
+            });
+    });
 }
 
 /**
  * Web traffic control section.
  * */
-// chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
-//     let headers = details["requestHeaders"];
-//         if(new URLSearchParams(new URL(details["url"])["search"]).get("requestFrom")==="rua5"){
-//             for (let header in headers) {
-//                 if(headers[header].name === "Origin"){
-//                     headers[header].value = "https://www.bilibili.com/"
-//                 }
-//             }
-//         }
-//         return {requestHeaders: details.requestHeaders};
-//     }, {urls: ["https://api.bilibili.com/x/vip/privilege/receive*", "https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids*", "https://api.bilibili.com/x/web-interface/card*"]}, ['blocking', "requestHeaders", "extraHeaders"]
-// );
-// chrome.webRequest.onBeforeSendHeaders.addListener(function (details) {
-//     let headers = details["requestHeaders"];
-//     if(new URLSearchParams(new URL(details["url"])["search"]).get("requestFrom")==="rua5"){
-//         for (let header in headers) {
-//             if(headers[header].name === "Origin"){
-//                 headers[header].value = "https://live.bilibili.com"
-//             }
-//             if(headers[header].name === "Sec-Fetch-Site")
-//                 headers[header].value = "same-site"
-//         }
-//         details.requestHeaders.push({name: 'Referer', value:'https://live.bilibili.com/'});
-//     }
-//         return {requestHeaders: details.requestHeaders};
-//     }, {urls: ["https://api.live.bilibili.com/msg/send*"]}, ['blocking', "requestHeaders", "extraHeaders"]
-// );
-// chrome.webRequest.onBeforeRequest.addListener( (details)=>{
-//         let hiddenEntry = chrome.storage.sync.get("hiddenEntry").then(t=>{return t.hiddenEntry});
-//
-//         return hiddenEntry&&!enhancedHiddenEntry&&!details.url.includes("room_id=2842865")?{redirectUrl: "https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?room_id=2842865&from=0"}:undefined},
-//     {urls: ["*://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser*"]}, ["blocking"]);
-//
-// chrome.webRequest.onBeforeSendHeaders.addListener((details)=>{
-//     let headers = details["requestHeaders"];
-//     if(enhancedHiddenEntry){
-//         for (let header in headers) {
-//             if(headers[header].name === "Cookie"){
-//                 headers[header].value = ""
-//             }
-//         }
-//     }
-//     return {requestHeaders: details.requestHeaders};
-// }, {urls: ["*://api.live.bilibili.com/xlive/web-room/v1/index/getDanmuInfo*",
-//         "*://api.live.bilibili.com/room/v1/Room/room_init*",
-//         "*://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo*",
-//         "*://api.live.bilibili.com/xlive/web-room/v1/index/roomEntryAction",
-//         "*://api.live.bilibili.com/xlive/web-room/v1/index/getIpInfo*",
-//         "*://api.live.bilibili.com/xlive/web-interface/v1/index/getWebAreaList*",
-//         "*://api.live.bilibili.com/relation/v1/Feed/heartBeat*",
-//         "*://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?*",
-//         "*://api.bilibili.com/x/web-interface/nav*",
-//         "*://api.live.bilibili.com/xlive/activity-interface/v1/widgetBanner/GetWidgetBannerList*",
-//         "*://api.live.bilibili.com/xlive/web-room/v1/index/getOffLiveList*",
-//         "*://api.live.bilibili.com/xlive/lottery-interface/v1/lottery/getLotteryInfoWeb*",
-//         "*://api.live.bilibili.com/xlive/web-room/v1/giftPanel/giftData*",
-//         "*://api.live.bilibili.com/xlive/web-room/v1/giftPanel/giftConfig*",
-//         "*://api.live.bilibili.com/xlive/open-interface/v1/query_resource*",
-//         "*://api.live.bilibili.com/xlive/web-room/v1/dM/gethistory*"]}, ['blocking', "requestHeaders", "extraHeaders"]);
-//
+// id 1: enhanced hidden, 2: hidden, 3: add Origin, 4: send dm
+
 // chrome.webRequest.onHeadersReceived.addListener((details)=>{
 //     if(new URLSearchParams(new URL(details["url"])["search"]).get("requestFrom")==="ruaDL"){
 //         let fileFormat = new URL(details["url"])["pathname"].substr(new URL(details["url"])["pathname"].length-4,4);
@@ -1275,7 +1254,7 @@ function checkMedalDaka(){
                     })
                     .catch(msg => {
                         chrome.storage.local.set({'rua_lastDK':"1970-01-01"}, ()=>{});
-                        errorHandler(checkMedalDaka,msg);
+                        errorHandler('daka',msg, 'checkMedalDaka()');
                     });
             }else console.log("No more grab needed.");
         }));
@@ -1354,7 +1333,7 @@ function findVideo(vid){
 /**
  * Check updated section.
  * */
-function checkUpd(url){
+function checkUpdate(url){
     console.log("checking update at "+(new URL(url)).hostname);
     let latestVersion = chrome.runtime.getManifest().version;
     fetch(url+new Date().getTime(), {
@@ -1380,7 +1359,7 @@ function checkUpd(url){
             }
         })
         .catch(e=>{
-            checkUpd(url.includes("github")?"https://tyrael-lee.gitee.io/harukaemoji/?_=":"https://tyraeldlee.github.io/HarukaEmoji/?_=");
+            checkUpdate(url.includes("github")?"https://tyrael-lee.gitee.io/harukaemoji/?_=":"https://tyraeldlee.github.io/HarukaEmoji/?_=");
     });
 }
 
@@ -1389,7 +1368,8 @@ function isNewerThan(dateOld, dateNew){
 }
 
 function getUTC8Time(){
-    return new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 + 28800000);
+    return new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000);
+    //return new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 + 28800000);
 }
 
 function setBadge(title, text){
@@ -1398,13 +1378,14 @@ function setBadge(title, text){
 }
 
 // This is the service worker for mv3 which some functions are not support yet.
-// Since wasm cannot be loaded in mv3, ffmpeg and related functions are not supported.
-//todo: check in mv3 
+
+//todo: check in mv3 √
 //todo: stream notification mv3 √
 //todo: video update mv3 √
-//todo: b coin mv3
+//todo: b coin mv3 √
 //todo: daka √
-//todo: hidden
-//todo: update check 
+//todo: error handler √
+//todo: update check √
 //todo: context menu √
 //todo: web traffic control
+//todo: hidden

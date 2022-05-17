@@ -1,14 +1,15 @@
 {
   "name": "rua豹器",
-  "manifest_version": 3,
-  "version": "6.0",
-  "description": "rua!",
-  "permissions": ["alarms", "cookies", "contextMenus", "storage", "notifications", "webRequest"],
-  "action": {
+  "manifest_version": 2,
+  "version": "5.10",
+  "browser_action": {
     "default_popup": "popup.html"
   },
+  "description": "rua!",
+  "permissions": ["cookies","contextMenus","storage","notifications","webRequest","webRequestBlocking","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "https://*.hdslb.com/*", "https://api.vc.bilibili.com/", "https://tyrael-lee.gitee.io/", "https://tyraeldlee.github.io/", "*://*.bilivideo.com/", "*://*.akamaized.net/"],
   "background": {
-    "service_worker": "js/sw.js"
+    "scripts": ["ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/background.min.js"],
+    "persistent": true
   },
   "icons": {
     "16": "images/haruka16.png",
@@ -49,7 +50,7 @@
   },{
     "all_frames": true,
     "css": ["css/host.min.css", "css/button.min.css", "css/videos.min.css"],
-    "js": ["js/protobuf.js", "js/ADT.js", "js/DanmakuToAss.js", "js/VideoHost.min.js"],
+    "js": ["ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/protobuf.js", "js/ADT.js", "js/DanmakuToAss.js", "js/VideoHost.min.js"],
     "matches": ["*://www.bilibili.com/video/*"],
     "run_at": "document_end"
   },{
@@ -61,24 +62,10 @@
   },{
     "all_frames": true,
     "css": ["css/audio.min.css"],
-    "js": ["js/audio.min.js"],
+    "js": ["ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/audio.min.js"],
     "matches": ["*://www.bilibili.com/audio/*"],
     "run_at": "document_end"
   }],
-  "web_accessible_resources": [{"resources": ["images/*", "css/*", "js/*"], "matches": ["https://*/*"]}],
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
-  },
-  "host_permissions": [
-    "https://api.live.bilibili.com/*",
-    "https://api.bilibili.com/*",
-    "https://live.bilibili.com/",
-    "https://www.bilibili.com/",
-    "https://*.hdslb.com/*",
-    "https://api.vc.bilibili.com/",
-    "https://tyrael-lee.gitee.io/",
-    "https://tyraeldlee.github.io/",
-    "*://*.bilivideo.com/",
-    "*://*.akamaized.net/"
-  ]
+  "web_accessible_resources": ["images/*", "css/*", "js/*", "ffmpeg/*"],
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://api.live.bilibili.com; object-src 'self'"
 }

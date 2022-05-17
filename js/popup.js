@@ -237,13 +237,13 @@
             }
         });
 
-        chrome.storage.sync.get(["notification", "medal", "checkIn", "imageNotice", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch"], function(result){
+        chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch"], function(result){
             if (os === 'win')
                 buttonDisabled(result.notification, imageNotice);
             liveNotification.checked = result.notification;
             medal.checked = result.medal;
             checkIn.checked = result.checkIn;
-            imageNotice.checked = result.imageNotice;
+
             bCoin.checked = result.bcoin;
             dynamicPush.checked = result.dynamicPush;
             unread.checked = result.unreadSwitch;
@@ -272,6 +272,10 @@
             if (!result.record) prerecord.setAttribute("disabled","");
 
             setDefault(prerecord.childNodes, result.prerecord);
+        });
+
+        chrome.storage.local.get(["imageNotice"], (result)=>{
+            imageNotice.checked = result.imageNotice;
         });
     }
 

@@ -1,0 +1,15 @@
+[
+  {
+    "id": 2,
+    "priority": 1,
+    "action": {
+      "type": "redirect",
+      "redirect": {
+        "url": "https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?room_id=2842865&from=0"
+      }
+    },
+    "condition": {
+      "urlFilter": "api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser*"
+    }
+  }
+]

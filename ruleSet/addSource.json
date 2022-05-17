@@ -1,0 +1,47 @@
+[
+  {
+    "id": 3,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders":[{
+        "header": "Origin",
+        "operation": "set",
+        "value" : "https://www.bilibili.com/"
+      }]
+    },
+    "condition":{
+      "regexFilter": "api\\.bilibili\\.com/x/vip/privilege/receive.*rua5"
+    }
+  },
+  {
+    "id": 31,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders":[{
+        "header": "Origin",
+        "operation": "set",
+        "value" : "https://www.bilibili.com/"
+      }]
+    },
+    "condition":{
+      "regexFilter": "api\\.live\\.bilibili\\.com/room/v1/Room/get_status_info_by_uids.*rua5"
+    }
+  },
+  {
+    "id": 32,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders":[{
+        "header": "Origin",
+        "operation": "set",
+        "value" : "https://www.bilibili.com/"
+      }]
+    },
+    "condition":{
+      "regexFilter": "api\\.bilibili\\.com/x/web-interface/card.*rua5"
+    }
+  }
+]

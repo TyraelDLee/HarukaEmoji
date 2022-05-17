@@ -3,6 +3,7 @@
  * */
 !function (){
     const qn_table = {"原画PRO":10001, "原画":10000, "蓝光PRO":401, "蓝光":400, "超清PRO":251, "超清":250, "高清":150,"流畅":80};
+    const wasmPath = chrome.runtime.getURL('../ffmpeg/ffmpeg-core.wasm');
     let qn;
     let qnv = "原画";
     let medalSwitch;
@@ -962,7 +963,10 @@
                             stopRecoding = false;
                             room_title = setRoomTitle();
                             console.log("clip sent to process: \r\nfileName: "+room_title+"\r\nvideo duration: "+recordingDuration+"s\r\nfile size: "+videoBlob.size / (1024**2)+"MiB\r\nmime type: "+videoBlob.type);
-                            chrome.runtime.sendMessage({msg: "requestEncode", blob: blobURL, filename: room_title, startTime: (recordTime - recordingDuration), duration: recordingDuration, requestType: 'videoRecord'});
+                            encode(blobURL, (recordTime - recordingDuration), room_title).then(r=>{
+                                window.URL.revokeObjectURL(blobURL);
+                            });
+                            // chrome.runtime.sendMessage({msg: "requestEncode", blob: blobURL, filename: room_title, startTime: (recordTime - recordingDuration), duration: recordingDuration, requestType: 'videoRecord'});
                         }
                         streamChunks = [];
                         if(prerecordingDuration>0)
@@ -982,5 +986,33 @@
             return Math.floor(sec / 60.0) +" : "+(sec % 60<10?"0":"")+sec%60;
         }
 
+        async function encode(blob, startTime, fileName){
+            let out, downloadName, dl;
+            const {createFFmpeg, fetchFile} = FFmpeg;
+            const ffmpeg = createFFmpeg({
+                corePath: wasmPath,
+                mainName: 'main',
+                log: false
+            });
+            await ffmpeg.load();
+            ffmpeg.FS('writeFile', 'video.mp4', await fetchFile(blob));
+            if(startTime > 1){
+                await ffmpeg.run('-i', 'video.mp4', '-ss', startTime + '', '-c', 'copy', 'footage.mp4');
+                await ffmpeg.run('-i', 'footage.mp4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
+            }else{
+                await ffmpeg.run('-i', 'video.mp4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
+            }
+            out = ffmpeg.FS('readFile', 'final.mp4');
+            downloadName = fileName + ".mp4";
+            dl = URL.createObjectURL(new Blob([out.buffer], {type: 'video/mp4'}));
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = dl;
+            a.download = downloadName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(dl);
+        }
     }
 }();

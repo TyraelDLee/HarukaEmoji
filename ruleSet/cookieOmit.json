@@ -1,0 +1,274 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "set",
+          "value": ""
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "api\\.live\\.bilibili\\.com/room/v1/Room/room_init*"
+    }
+  },
+  {
+    "id": 11,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "set",
+          "value": ""
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "api\\.live\\.bilibili\\.com/relation/v1/Feed/heartBeat*"
+    }
+  },
+  {
+    "id": 12,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "set",
+          "value": ""
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "api\\.live\\.bilibili\\.com/xlive/web-room/v2/index/getRoomPlayInfo*"
+    }
+  },
+  {
+    "id": 13,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "set",
+          "value": ""
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "api\\.live\\.bilibili\\.com/xlive/web-room/v1/index/getDanmuInfo*"
+    }
+  },
+  {
+    "id": 14,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "set",
+          "value": ""
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "api\\.live\\.bilibili\\.com/xlive/web-room/v1/index/roomEntryAction"
+    }
+  },
+  {
+    "id": 15,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "set",
+          "value": ""
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "api\\.live\\.bilibili\\.com/xlive/web-room/v1/index/getIpInfo*"
+    }
+  },
+  {
+    "id": 16,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "set",
+          "value": ""
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "api\\.live\\.bilibili\\.com/xlive/web-room/v1/index/getInfoByUser*"
+    }
+  },
+  {
+    "id": 17,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "set",
+          "value": ""
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "api\\.live\\.bilibili\\.com/xlive/web-room/v1/index/getOffLiveList*"
+    }
+  },
+  {
+    "id": 18,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "set",
+          "value": ""
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "api\\.live\\.bilibili\\.com/xlive/web-room/v1/giftPanel/giftData*"
+    }
+  },
+  {
+    "id": 19,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "set",
+          "value": ""
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "api\\.live\\.bilibili\\.com/xlive/web-room/v1/giftPanel/giftConfig*"
+    }
+  },
+  {
+    "id": 110,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "set",
+          "value": ""
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "api\\.live\\.bilibili\\.com/xlive/web-room/v1/dM/gethistory*"
+    }
+  },
+  {
+    "id": 111,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "set",
+          "value": ""
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "api\\.live\\.bilibili\\.com/xlive/web-interface/v1/index/getWebAreaList*"
+    }
+  },
+  {
+    "id": 112,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "set",
+          "value": ""
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "api\\.live\\.bilibili\\.com/xlive/activity-interface/v1/widgetBanner/GetWidgetBannerList*"
+    }
+  },
+  {
+    "id": 113,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "set",
+          "value": ""
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "api\\.live\\.bilibili\\.com/xlive/lottery-interface/v1/lottery/getLotteryInfoWeb*"
+    }
+  },
+  {
+    "id": 114,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "set",
+          "value": ""
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "api\\.live\\.bilibili\\.com/xlive/open-interface/v1/query_resource*"
+    }
+  },
+  {
+    "id": 115,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "set",
+          "value": ""
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "api\\.bilibili\\.com/x/web-interface/nav.*"
+    }
+  }
+]
