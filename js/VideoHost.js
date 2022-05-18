@@ -468,26 +468,26 @@
             if (requestType === 'hdrRecord')
             window.URL.revokeObjectURL(blobURL[1]);
         });
-            // await chrome.runtime.sendMessage({
-            //     msg: "requestEncode",
-            //     blob: blobURL,
-            //     filename: fileName,
-            //     startTime: -1,
-            //     duration: -1,
-            //     requestType: requestType,
-            //     metadata: audioMeta
-            // }, function (status) {
-            //     console.log(status.status);
-            //     if (status.status === 'ok') {
-            //         hostObj.removeAttribute("style");
-            //         hostObj.removeAttribute("title");
-            //         hostObj.classList.remove('rua-downloading');
-            //         hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
-            //         window.URL.revokeObjectURL(blobURL[0]);
-            //         if (requestType === 'hdrRecord')
-            //             window.URL.revokeObjectURL(blobURL[1]);
-            //     }
-            // });
+        // await chrome.runtime.sendMessage({
+        //     msg: "requestEncode",
+        //     blob: blobURL,
+        //     filename: fileName,
+        //     startTime: -1,
+        //     duration: -1,
+        //     requestType: requestType,
+        //     metadata: audioMeta
+        // }, function (status) {
+        //     console.log(status.status);
+        //     if (status.status === 'ok') {
+        //         hostObj.removeAttribute("style");
+        //         hostObj.removeAttribute("title");
+        //         hostObj.classList.remove('rua-downloading');
+        //         hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
+        //         window.URL.revokeObjectURL(blobURL[0]);
+        //         if (requestType === 'hdrRecord')
+        //             window.URL.revokeObjectURL(blobURL[1]);
+        //     }
+        // });
     }
 
     async function encode(blob, filename, requestType, metadata){

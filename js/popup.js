@@ -37,7 +37,8 @@
         versionSection.innerHTML = "ver. <i>"+currentVersion+"</i>";
     })();
     function updateUID(){
-        chrome.runtime.sendMessage({ msg: "get_UUID" },function(uid){UUID = uid.res;
+        chrome.runtime.sendMessage({ msg: "get_UUID" },function(uid){
+            UUID = uid.res;
             let logText = "";
             if(UUID === -1){
                 logText = "未登录";

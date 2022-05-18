@@ -966,7 +966,7 @@
                             encode(blobURL, (recordTime - recordingDuration), room_title).then(r=>{
                                 window.URL.revokeObjectURL(blobURL);
                             });
-                            // chrome.runtime.sendMessage({msg: "requestEncode", blob: blobURL, filename: room_title, startTime: (recordTime - recordingDuration), duration: recordingDuration, requestType: 'videoRecord'});
+                            //chrome.runtime.sendMessage({msg: "requestEncode", blob: blobURL, filename: room_title, startTime: (recordTime - recordingDuration), duration: recordingDuration, requestType: 'videoRecord'});
                         }
                         streamChunks = [];
                         if(prerecordingDuration>0)

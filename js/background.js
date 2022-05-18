@@ -585,67 +585,67 @@ class CRC32{
                         }
                     });
             }
-            // if(request.msg === "requestEncode"){
-            //     const {createFFmpeg, fetchFile} = FFmpeg;
-            //     const ffmpeg = createFFmpeg({
-            //         corePath: "./ffmpeg/ffmpeg-core.js",
-            //         log: false,
-            //     });
-            //     (async ()=>{
-            //         let out, downloadName, dl;
-            //         await ffmpeg.load();
-            //         if(request.requestType === 'videoRecord'){
-            //             ffmpeg.FS('writeFile', 'video.mp4', await fetchFile(request.blob));
-            //             if(request.startTime > 1){
-            //                 await ffmpeg.run('-i', 'video.mp4', '-ss', request.startTime + '', '-c', 'copy', 'footage.mp4');
-            //                 await ffmpeg.run('-i', 'footage.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
-            //             }else{
-            //                 await ffmpeg.run('-i', 'video.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
-            //             }
-            //             out = ffmpeg.FS('readFile', 'final.mp4');
-            //             downloadName = request.filename + ".mp4";
-            //             dl = URL.createObjectURL(new Blob([out.buffer], {type: 'video/mp4'}));
-            //         }
-            //         if(request.requestType === 'audioRecord'){
-            //             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
-            //             await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', '-metadata', `title=${eval('\''+encodeURI(request.metadata.title).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `artist=${eval('\''+encodeURI(request.metadata.artist).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `year=${request.metadata.year}`, 'final.m4a');
-            //             out = ffmpeg.FS('readFile', 'final.m4a');
-            //             downloadName = request.filename + ".m4a";
-            //             dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
-            //         }
-            //         if(request.requestType === 'dolbyRecord'){
-            //             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
-            //             await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', 'final.mp4');
-            //             out = ffmpeg.FS('readFile', 'final.mp4');
-            //             downloadName = request.filename + ".mp4";
-            //             dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
-            //         }
-            //         if(request.requestType === 'hdrRecord'){
-            //             ffmpeg.FS('writeFile', 'video.m4s', await fetchFile(request.blob[0]));
-            //             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[1]));
-            //             await ffmpeg.run('-i', 'video.m4s', '-i', 'audio.m4s', '-map', '0:v', '-map', '1:a','-c', 'copy', 'final.mkv');
-            //             out = ffmpeg.FS('readFile', 'final.mkv');
-            //             downloadName = request.filename + ".mkv";
-            //             dl = URL.createObjectURL(new Blob([out.buffer]));
-            //         }
-            //         if(request.requestType === 'songRecord'){
-            //             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob));
-            //             await ffmpeg.run('-i', 'audio.m4s','-c', 'copy', '-metadata', `title=${eval('\''+encodeURI(request.metadata.title).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `artist=${eval('\''+encodeURI(request.metadata.artist).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `description=${eval('\''+encodeURI(request.metadata.description).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `lyrics=${eval('\''+encodeURI(request.metadata.lyrics).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `year=${request.metadata.year}`, 'final.m4a');
-            //             out = ffmpeg.FS('readFile', 'final.m4a');
-            //             downloadName = request.filename + ".m4a";
-            //             dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
-            //         }
-            //         const a = document.createElement('a');
-            //         a.style.display = 'none';
-            //         a.href = dl;
-            //         a.download = downloadName;
-            //         document.body.appendChild(a);
-            //         a.click();
-            //         document.body.removeChild(a);
-            //         window.URL.revokeObjectURL(dl);
-            //         sendResponse({'status':'ok'});
-            //     })();
-            // }
+            if(request.msg === "requestEncode"){
+                const {createFFmpeg, fetchFile} = FFmpeg;
+                const ffmpeg = createFFmpeg({
+                    corePath: "./ffmpeg/ffmpeg-core.js",
+                    log: false,
+                });
+                (async ()=>{
+                    let out, downloadName, dl;
+                    await ffmpeg.load();
+                    if(request.requestType === 'videoRecord'){
+                        ffmpeg.FS('writeFile', 'video.mp4', await fetchFile(request.blob));
+                        if(request.startTime > 1){
+                            await ffmpeg.run('-i', 'video.mp4', '-ss', request.startTime + '', '-c', 'copy', 'footage.mp4');
+                            await ffmpeg.run('-i', 'footage.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
+                        }else{
+                            await ffmpeg.run('-i', 'video.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
+                        }
+                        out = ffmpeg.FS('readFile', 'final.mp4');
+                        downloadName = request.filename + ".mp4";
+                        dl = URL.createObjectURL(new Blob([out.buffer], {type: 'video/mp4'}));
+                    }
+                    if(request.requestType === 'audioRecord'){
+                        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
+                        await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', '-metadata', `title=${utf8Encode(request.metadata.title)}`,'-metadata', `artist=${utf8Encode(request.metadata.artist)}`, '-metadata', `year=${request.metadata.year}`, 'final.m4a');
+                        out = ffmpeg.FS('readFile', 'final.m4a');
+                        downloadName = request.filename + ".m4a";
+                        dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+                    }
+                    if(request.requestType === 'dolbyRecord'){
+                        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
+                        await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', 'final.mp4');
+                        out = ffmpeg.FS('readFile', 'final.mp4');
+                        downloadName = request.filename + ".mp4";
+                        dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+                    }
+                    if(request.requestType === 'hdrRecord'){
+                        ffmpeg.FS('writeFile', 'video.m4s', await fetchFile(request.blob[0]));
+                        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[1]));
+                        await ffmpeg.run('-i', 'video.m4s', '-i', 'audio.m4s', '-map', '0:v', '-map', '1:a','-c', 'copy', 'final.mkv');
+                        out = ffmpeg.FS('readFile', 'final.mkv');
+                        downloadName = request.filename + ".mkv";
+                        dl = URL.createObjectURL(new Blob([out.buffer]));
+                    }
+                    if(request.requestType === 'songRecord'){
+                        ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob));
+                        await ffmpeg.run('-i', 'audio.m4s','-c', 'copy', '-metadata', `title=${utf8Encode(request.metadata.title)}`,'-metadata', `artist=${utf8Encode(request.metadata.artist)}`,'-metadata', `description=${utf8Encode(request.metadata.description)}`, '-metadata', `lyrics=${request.metadata.lyrics}`, '-metadata', `year=${request.metadata.year}`, 'final.m4a');
+                        out = ffmpeg.FS('readFile', 'final.m4a');
+                        downloadName = request.filename + ".m4a";
+                        dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+                    }
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = dl;
+                    a.download = downloadName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(dl);
+                    sendResponse({'status':'ok'});
+                })();
+            }
             if(request.msg === 'requestOSInfo'){
                 sendResponse({'os':OSInfo});
             }
@@ -656,6 +656,16 @@ class CRC32{
             return true;
         }
     );
+
+    function utf8Encode(str){
+        let encoder = new TextEncoder('utf8');
+        let bytes = encoder.encode(str);
+        let result = '';
+        for(let i = 0; i < bytes.length; ++i) {
+            result += String.fromCharCode(bytes[i]);
+        }
+        return result;
+    }
 
     function convertMSToS(time){
         time = time / 1000;
@@ -758,11 +768,9 @@ class CRC32{
                         }
                     }
                     if (ON_AIR_LIST.list.length > 0) updateList(ON_AIR_LIST);
-                }else{
-                    errorHandler(getFollowingList, json['code'], 'queryLivingRoom()');
                 }
             })
-            .catch(msg =>{errorHandler(getFollowingList, msg, 'queryLivingRoom()');});
+            //.catch(msg =>{errorHandler(getFollowingList, msg, 'queryLivingRoom()');});
     }
 
     /**
@@ -810,7 +818,7 @@ class CRC32{
                 }
             }
         }
-        setTimeout(getFollowingList, 10000);
+        //setTimeout(getFollowingList, 10000);
     }
 
     /**
@@ -954,7 +962,7 @@ class CRC32{
                     getUnread(true);
                     dynamicNotify(true);
                     scheduleCheckIn();
-                    getFollowingList();
+                    //getFollowingList();
                 }
 
                 P_UID = UUID;
@@ -1051,22 +1059,33 @@ class CRC32{
         })
             .then(res => res.json())
             .then(json => {
-                if(json["code"] === 0 && dynamicPush){
-                    let o = json["data"]["cards"];
-                    for (let i = 0; i < o.length; i++) {
-                        let c = JSON.parse(o[i+""]["card"]);
-                        let type = o[i+""]["desc"]["type"];
-                        if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
-                            if(push || push === undefined){
-                                if(type === 8){
-                                    console.log("你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！"+c["title"]+" see:"+o[i+""]["desc"]["bvid"]);
-                                    basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], o[i+'']["desc"]["user_profile"]["info"]["face"], "https://b23.tv/");
-                                }else if(type >= 512 && type <= 4101){
-                                    console.log("你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！"+c["index"]+" see:"+c["url"]);
-                                    basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！",c["new_desc"],c["url"].replace("https://www.bilibili.com/",""), c["cover"],"https://www.bilibili.com/");
+                if(json["code"] === 0){
+                    if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
+                        let data = json["data"]["attentions"]['uids'];
+                        data.splice(json["data"]["attentions"]['uids'].indexOf(UUID-1+1),1);
+                        FOLLOWING_LIST.update(data);
+                        for(let uid of data)
+                            FOLLOWING_LIST.push(new FollowingMember(uid, ''));
+                        console.log(`Load following list complete. ${FOLLOWING_LIST.length()} followings found.`);
+                        queryLivingRoom();
+                    }
+                    if(dynamicPush){
+                        let o = json["data"]["cards"];
+                        for (let i = 0; i < o.length; i++) {
+                            let c = JSON.parse(o[i+""]["card"]);
+                            let type = o[i+""]["desc"]["type"];
+                            if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
+                                if(push || push === undefined){
+                                    if(type === 8){
+                                        console.log("你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！"+c["title"]+" see:"+o[i+""]["desc"]["bvid"]);
+                                        basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], o[i+'']["desc"]["user_profile"]["info"]["face"], "https://b23.tv/");
+                                    }else if(type >= 512 && type <= 4101){
+                                        console.log("你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！"+c["index"]+" see:"+c["url"]);
+                                        basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！",c["new_desc"],c["url"].replace("https://www.bilibili.com/",""), c["cover"],"https://www.bilibili.com/");
+                                    }
                                 }
+                                dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
                             }
-                            dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
                         }
                     }
                 }
@@ -1351,9 +1370,9 @@ class CRC32{
     }
 
     function getUnread(init){
-        chrome.storage.local.get(["unreadData"], (result)=>{
+        chrome.storage.local.get(["unreadData"], async (result)=>{
             let unreadData = JSON.parse(result.unreadData);
-            fetch('https://api.bilibili.com/x/msgfeed/unread',{
+            await fetch('https://api.bilibili.com/x/msgfeed/unread',{
                 method:'GET',
                 credentials: 'include',
                 body: null

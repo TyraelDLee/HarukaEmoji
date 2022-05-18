@@ -3,6 +3,7 @@
  *
  * service worker for mv3
  * */
+//importScripts('../ffmpeg/ffmpeg.min.js','../ffmpeg/ffmpeg-core.js', '../ffmpeg/ffmpeg-core.worker.js');
 class WindowIDList{
     static convertFromJSON(object){
         let o = new WindowIDList();
@@ -491,29 +492,16 @@ chrome.windows.onFocusChanged.addListener(function (wID){
         });
     }
 });
-chrome.runtime.onInstalled.addListener(function (obj){
+chrome.runtime.onInstalled.addListener(async function (obj){
     // init setting
-    chrome.storage.local.get(['rua_lastDK'],(info)=>{
+    await chrome.tabs.create({url: "./readme.html"});
+    await chrome.storage.local.get(['rua_lastDK'],(info)=>{
         console.log(info.rua_lastDK);
         if (info.rua_lastDK === null || info.rua_lastDK === undefined)
             chrome.storage.local.set({'rua_lastDK':"1970-01-01"}, ()=>{});
     });
-    chrome.storage.local.set({"imageNotice": false}, function(){});
-    chrome.storage.sync.set({"notification": true}, function(){});
-    chrome.storage.sync.set({"medal": true}, function(){});
-    chrome.storage.sync.set({"checkIn": true}, function(){});
-    chrome.storage.sync.set({"bcoin": true}, function(){});
-    chrome.storage.sync.set({"qn": true}, function(){});
-    chrome.storage.sync.set({"qnvalue": "原画"}, function(){});
-    chrome.storage.sync.set({"dynamicPush":true}, function (){});
-    chrome.storage.sync.set({"hiddenEntry":false}, function (){});
-    chrome.storage.sync.set({"daka":true}, function (){});
-    chrome.storage.sync.set({"record":true});
-    chrome.storage.sync.set({"prerecord":300}, function (){});
-    chrome.storage.sync.set({'enhancedHiddenEntry':false}, function (){})
-    chrome.storage.sync.set({'unreadSwitch':true}, function (){});
-    chrome.storage.sync.set({'dynamicSwitch':true}, function (){});
-    chrome.tabs.create({url: "./readme.html"});
+    await chrome.storage.local.set({"imageNotice": false}, function(){});
+    await chrome.storage.sync.set({"notification": true, "medal": true, "checkIn": true, "bcoin": true, "qn": true, "qnvalue": "原画", "dynamicPush":true, "hiddenEntry":false, "daka":true, "record":true, "prerecord":300, "enhancedHiddenEntry":false, "unreadSwitch":true, "dynamicSwitch":true}, function(){});
 
     /**
      * Context menu section.
@@ -523,21 +511,10 @@ chrome.runtime.onInstalled.addListener(function (obj){
     chrome.contextMenus.create({contexts: ["selection", "link"], title: "用bilibili搜索", type: "normal", id:"rua-contextMenu-v3"});
 
     // local states
+    let NOTIFICATION_LIST = new NotificationList(), l = new FollowingMemberList();
     chrome.alarms.create('checkUpd', {'when':Date.now(), periodInMinutes:60*12});
-    chrome.storage.local.set({'uuid':-1}, ()=>{});
-    chrome.storage.local.set({'jct':-1}, ()=>{});
-    chrome.storage.local.set({'p_uuid':-1}, ()=>{});
-    chrome.storage.local.set({'updateAvailable':false}, ()=>{});
-    chrome.storage.local.set({'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases"}, ()=>{});
-    chrome.storage.local.set({'downloadFileName':''}, ()=>{});
-    chrome.storage.local.set({"dynamic_id_list": []}, ()=>{});
-    chrome.storage.local.set({'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}'}, function (){});
-    chrome.storage.local.set({'dynamicList':[]}, ()=>{});
-    let NOTIFICATION_LIST = new NotificationList();
-    chrome.storage.local.set({'notificationList':NOTIFICATION_LIST.toJSONObject()}, ()=>{});
-    let l = new FollowingMemberList();
-    chrome.storage.local.set({'following_list': l.toJSONObject()}, ()=>{});
-    reloadCookies();
+    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "dynamic_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'dynamicList':[], 'notification_list':NOTIFICATION_LIST.toJSONObject(), 'following_list': l.toJSONObject()}, ()=>{});
+    await reloadCookies();
 });
 
 chrome.contextMenus.onClicked.addListener((info)=>{
@@ -614,12 +591,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
         if(request.msg === "get_UUID") {
             chrome.storage.local.get(['uuid'],(uid)=>{
                 sendResponse({res:uid.uuid});
-            })
+            });
         }
         if(request.msg === "updateStatus") {
             chrome.storage.local.get(['updateAvailable', 'availableBranch'],(info)=>{
                 sendResponse({res:info.updateAvailable, address:info.availableBranch});
-            })
+            });
         }
         if(request.msg === "popupfired"){setBadge("rua豹器", "");}
         if(request.msg === "requestDownload"){
@@ -650,6 +627,67 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
                     }
                 });
         }
+    // if(request.msg === "requestEncode"){
+    //     const {createFFmpeg, fetchFile} = FFmpeg;
+    //     const ffmpeg = createFFmpeg({
+    //         corePath: "./ffmpeg/ffmpeg-core.js",
+    //         log: false,
+    //     });
+    //     (async ()=>{
+    //         let out, downloadName, dl;
+    //         await ffmpeg.load();
+    //         if(request.requestType === 'videoRecord'){
+    //             ffmpeg.FS('writeFile', 'video.mp4', await fetchFile(request.blob));
+    //             if(request.startTime > 1){
+    //                 await ffmpeg.run('-i', 'video.mp4', '-ss', request.startTime + '', '-c', 'copy', 'footage.mp4');
+    //                 await ffmpeg.run('-i', 'footage.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
+    //             }else{
+    //                 await ffmpeg.run('-i', 'video.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
+    //             }
+    //             out = ffmpeg.FS('readFile', 'final.mp4');
+    //             downloadName = request.filename + ".mp4";
+    //             dl = URL.createObjectURL(new Blob([out.buffer], {type: 'video/mp4'}));
+    //         }
+    //         if(request.requestType === 'audioRecord'){
+    //             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
+    //             await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', '-metadata', `title=${utf8Encode(request.metadata.title)}`,'-metadata', `artist=${utf8Encode(request.metadata.artist)}`, '-metadata', `year=${request.metadata.year}`, 'final.m4a');
+    //             out = ffmpeg.FS('readFile', 'final.m4a');
+    //             downloadName = request.filename + ".m4a";
+    //             dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+    //         }
+    //         if(request.requestType === 'dolbyRecord'){
+    //             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
+    //             await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', 'final.mp4');
+    //             out = ffmpeg.FS('readFile', 'final.mp4');
+    //             downloadName = request.filename + ".mp4";
+    //             dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+    //         }
+    //         if(request.requestType === 'hdrRecord'){
+    //             ffmpeg.FS('writeFile', 'video.m4s', await fetchFile(request.blob[0]));
+    //             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[1]));
+    //             await ffmpeg.run('-i', 'video.m4s', '-i', 'audio.m4s', '-map', '0:v', '-map', '1:a','-c', 'copy', 'final.mkv');
+    //             out = ffmpeg.FS('readFile', 'final.mkv');
+    //             downloadName = request.filename + ".mkv";
+    //             dl = URL.createObjectURL(new Blob([out.buffer]));
+    //         }
+    //         if(request.requestType === 'songRecord'){
+    //             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob));
+    //             await ffmpeg.run('-i', 'audio.m4s','-c', 'copy', '-metadata', `title=${utf8Encode(request.metadata.title)}`,'-metadata', `artist=${utf8Encode(request.metadata.artist)}`,'-metadata', `description=${utf8Encode(request.metadata.description)}`, '-metadata', `lyrics=${request.metadata.lyrics}`, '-metadata', `year=${request.metadata.year}`, 'final.m4a');
+    //             out = ffmpeg.FS('readFile', 'final.m4a');
+    //             downloadName = request.filename + ".m4a";
+    //             dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+    //         }
+    //         const a = document.createElement('a');
+    //         a.style.display = 'none';
+    //         a.href = dl;
+    //         a.download = downloadName;
+    //         document.body.appendChild(a);
+    //         a.click();
+    //         document.body.removeChild(a);
+    //         window.URL.revokeObjectURL(dl);
+    //         sendResponse({'status':'ok'});
+    //     })();
+    // }
         if(request.msg === 'requestOSInfo'){
             chrome.runtime.getPlatformInfo((info)=>{
                 sendResponse({'os':info.os});
@@ -662,6 +700,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
         return true;
     }
 );
+
+function utf8Encode(str){
+    let encoder = new TextEncoder('utf8');
+    let bytes = encoder.encode(str);
+    let result = '';
+    for(let i = 0; i < bytes.length; ++i) {
+        result += String.fromCharCode(bytes[i]);
+    }
+    return result;
+}
 
 function convertMSToS(time){
     time = time / 1000;
@@ -723,9 +771,7 @@ function getFollowingList(UUID) {
  * attention: not accept cookie.
  * */
 function queryLivingRoom() {
-    chrome.storage.local.get(['following_list', 'uuid', 'pushed_list'],(info)=>{
-        if (info.pushed_list === null || info.pushed_list === undefined)
-            chrome.storage.local.set({'pushed_list': []},()=>{});
+    chrome.storage.local.get(['following_list', 'uuid'],(info)=>{
         let FOLLOWING_LIST = FollowingMemberList.convertFromJSON(info.following_list);
         let body = '{"uids": [' + FOLLOWING_LIST.getUIDList().toString()+']}';
         fetch("https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids?requestFrom=rua5",{
@@ -751,8 +797,6 @@ function queryLivingRoom() {
                     }
                     if (ON_AIR_LIST.list.length > 0) updateList(ON_AIR_LIST);
                 }
-                else errorHandler('getNewLive', json['code'], 'queryLivingRoom()');
-
             })
             .catch(msg =>{console.log(msg);errorHandler('getNewLive', msg, 'queryLivingRoom()');});
     });
@@ -771,7 +815,7 @@ function queryLivingRoom() {
  * Otherwise, do nothing.
  * */
 function updateList(ON_AIR_LIST){
-    chrome.storage.local.get(['following_list', 'notificationList'],(info)=>{
+    chrome.storage.local.get(['following_list', 'notification_list'],(info)=>{
         let FOLLOWING_LIST = FollowingMemberList.convertFromJSON(info.following_list);
         if(FOLLOWING_LIST.length() > 0){
             for (let i = 0; i < ON_AIR_LIST.length(); i++) {
@@ -781,9 +825,9 @@ function updateList(ON_AIR_LIST){
             for (let i = 0; i < FOLLOWING_LIST.length(); i++) {
                 if(FOLLOWING_LIST.get(i).ONAIR){
                     if(ON_AIR_LIST.indexOf(FOLLOWING_LIST.get(i))===-1){
-                        let NOTIFICATION_LIST = NotificationList.convertFromJSON(info.noticationList);
+                        let NOTIFICATION_LIST = NotificationList.convertFromJSON(info.notification_list);
                         NOTIFICATION_LIST.remove(FOLLOWING_LIST.get(i).ROOM_URL);
-                        chrome.storage.local.set({'notificationList': NOTIFICATION_LIST.toJSONObject()},()=>{});
+                        chrome.storage.local.set({'notification_list': NOTIFICATION_LIST.toJSONObject()},()=>{});
                         FOLLOWING_LIST.get(i).COVER = undefined;
                         FOLLOWING_LIST.get(i).FACE = undefined;
                         FOLLOWING_LIST.get(i).KEYFRAME = undefined;
@@ -811,21 +855,21 @@ function updateList(ON_AIR_LIST){
             chrome.storage.local.set({'following_list':FOLLOWING_LIST.toJSONObject()},()=>{});
         }
     });
-    chrome.alarms.clear('getNewLive').then(a=>{
-        chrome.alarms.create('getNewLive', {'when':Date.now()+10000});
-    });
+    // chrome.alarms.clear('getNewLive').then(a=>{
+    //     chrome.alarms.create('getNewLive', {'when':Date.now()+10000});
+    // });
 }
 
 function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face){
     try{
-        chrome.storage.local.get('notificationList', (info)=>{
+        chrome.storage.local.get('notification_list', (info)=>{
             let uid = Math.random();
-            let NOTIFICATION_LIST = NotificationList.convertFromJSON(info.notificationList);
+            let NOTIFICATION_LIST = NotificationList.convertFromJSON(info.notification_list);
             NOTIFICATION_LIST.push(roomUrl, uid+":"+roomUrl);
-            chrome.storage.local.set({'notificationList':NOTIFICATION_LIST.toJSONObject()},()=>{});
+            chrome.storage.local.set({'notification_list':NOTIFICATION_LIST.toJSONObject()},()=>{});
             let msg = liverName + " 开播啦!\r\n是"+(type===0?"电脑":"手机")+"直播！";
             chrome.storage.local.get(["imageNotice"], (result)=>{
-                result.imageNotice?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "https://live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, face, "https://live.bilibili.com/");
+                result.imageNotice?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, face, "live.bilibili.com/");
             });
         });
 
@@ -845,13 +889,13 @@ function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face
  * */
 function basicNotification(uid, roomTitle, msg, roomUrl, cover, URLPrefix){
     cover = cover.length==null||cover.length===0?"../images/haruka128.png":cover;
-    chrome.notifications.create(uid+":"+roomUrl, {
+    chrome.notifications.create(uid+":"+roomUrl+":"+URLPrefix, {
             type: "basic",
             iconUrl: cover,
             title: roomTitle,
             message: msg,
             contextMessage:"rua豹器"
-        }, function (id) {notificationClickHandler(id,URLPrefix);}
+        }, function (id) {}
     );
 }
 
@@ -870,14 +914,14 @@ function basicNotification(uid, roomTitle, msg, roomUrl, cover, URLPrefix){
 function imageNotification(uid, roomTitle, msg, roomUrl, cover, face, URLPrefix){
     face = face.length==null||face.length===0?"../images/haruka128.png":face;
     cover = cover.length==null||cover.length===0?face:cover;
-    chrome.notifications.create(uid+":"+roomUrl, {
+    chrome.notifications.create(uid+":"+roomUrl+":"+URLPrefix, {
             type: "image",
             iconUrl: face,
             title: roomTitle,
             message: msg,
             imageUrl: cover,
             contextMessage:"rua豹器"
-        }, function (id) {notificationClickHandler(id, URLPrefix);}
+        }, function (id) {}
     );
 }
 
@@ -886,33 +930,25 @@ function imageNotification(uid, roomTitle, msg, roomUrl, cover, face, URLPrefix)
  * When click the notification, browser will
  * open the URL contained in notifications for
  * users.
- *
- * @param id, specific notification id,
- * @param URLPrefix, the url contained in notification is only a part of them
- * includes aid, bid or live room number, prefix will be used for build url.
  * */
-function notificationClickHandler(id, URLPrefix){
-    chrome.notifications.onClicked.addListener(function (nid) {
-        if (nid === id) {
-            chrome.storage.local.get(['winIDList'],(info)=>{
-                let winIDList = WindowIDList.convertFromJSON(info.winIDList);
-                chrome.windows.getAll(function (wins){
-                    if(wins.length>0){
-                        // why google did not fix this bug over 6 years? WTF
-                        // chrome.windows.getLastFocused(function (Lwin){
-                        //     chrome.windows.update(Lwin.id, {focused: true});
-                        //     chrome.tabs.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
-                        // });
-                        chrome.windows.update(winIDList.getCurrent(), {focused: true});/*ensure the browser will always open tabs in the most top window.*/
-                        chrome.tabs.create({url: URLPrefix+nid.split(":")[1]});
-                    }else
-                        chrome.windows.create({url: URLPrefix+nid.split(":")[1]});
-                });
-            });
-            chrome.notifications.clear(id);
-        }
+chrome.notifications.onClicked.addListener(function (nid) {
+    chrome.storage.local.get(['winIDList'],(info)=>{
+        let winIDList = WindowIDList.convertFromJSON(info.winIDList);
+        chrome.windows.getAll(function (wins){
+            if(wins.length>0){
+                // why google did not fix this bug over 6 years? WTF
+                // chrome.windows.getLastFocused(function (Lwin){
+                //     chrome.windows.update(Lwin.id, {focused: true});
+                //     chrome.tabs.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
+                // });
+                chrome.windows.update(winIDList.getCurrent(), {focused: true});/*ensure the browser will always open tabs in the most top window.*/
+                chrome.tabs.create({url: `https://${nid.split(":")[2]}${nid.split(":")[1]}`});
+            }else
+                chrome.windows.create({url: `https://${nid.split(":")[2]}${nid.split(":")[1]}`});
+        });
     });
-}
+    chrome.notifications.clear(nid);
+});
 
 //setTimeout(loadSetting, 100);
 function scheduleCheckIn(){
@@ -943,7 +979,7 @@ function reloadCookies() {
                 if (uids.uuid !== -1 && uids.uuid !== uids.p_uuid) {
                     // log in info changed then load following list and start update liver stream info every 3 min.
                     console.log("Session info got.");
-                    getFollowingList(uids.uuid);
+                    //getFollowingList(uids.uuid);
                     videoNotify(false, uids.uuid);
                     scheduleCheckIn();
                     getNewUnread(true);
@@ -968,14 +1004,17 @@ chrome.alarms.onAlarm.addListener((alarm)=>{
     if (alarm.name === 'checkUpd'){
         checkUpdate("https://tyrael-lee.gitee.io/harukaemoji/?_=")
     }
+    chrome.storage.local.get(null, (key)=>{
+        console.log(key);
+    })
     chrome.storage.local.get(['uuid', 'jct'], (info)=>{
         switch (alarm.name) {
             case 'getNewVideo':
                 videoNotify(true, info.uuid);
                 break;
-            case 'getNewLive':
-                getFollowingList(info.uuid);
-                break;
+            // case 'getNewLive':
+            //     getFollowingList(info.uuid);
+            //     break;
             case 'checkIn':
                 checkingIn();
                 break;
@@ -1093,7 +1132,7 @@ function queryBcoin(){
 function videoNotify(push, UUID){
     chrome.storage.local.get('dynamic_id_list', (info)=>{
         let dynamic_id_list = info.dynamic_id_list;
-        fetch("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid="+UUID+"&type_list=8,512,4097,4098,4099,4100,4101",{
+        fetch("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=8,512,4097,4098,4099,4100,4101",{
             method:"GET",
             credentials: 'include',
             body: null
@@ -1101,25 +1140,41 @@ function videoNotify(push, UUID){
             .then(res => res.json())
             .then(json => {
                 chrome.storage.sync.get(["dynamicPush"], (result)=>{
-                    if(json["code"] === 0 && result.dynamicPush){
-                        let o = json["data"]["cards"];
-                        for (let i = 0; i < o.length; i++) {
-                            let c = JSON.parse(o[i+""]["card"]);
-                            let type = o[i+""]["desc"]["type"];
-                            if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
-                                if(push || push === undefined){
-                                    if(type === 8){
-                                        console.log("你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！"+c["title"]+" see:"+o[i+""]["desc"]["bvid"]);
-                                        basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], o[i+'']["desc"]["user_profile"]["info"]["face"], "https://b23.tv/");
-                                    }else if(type >= 512 && type <= 4101){
-                                        console.log("你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！"+c["index"]+" see:"+c["url"]);
-                                        basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！",c["new_desc"],c["url"].replace("https://www.bilibili.com/",""), c["cover"],"https://www.bilibili.com/");
-                                    }
-                                }
-                                dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
-                            }
+                    if (json['code']!==0) errorHandler('getNewVideo', json['code'], 'videoNotify()');
+                    else if(json["code"] === 0){
+                        if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
+                            let data = json["data"]["attentions"]['uids'];
+                            data.splice(json["data"]["attentions"]['uids'].indexOf(UUID-1+1),1);
+                            chrome.storage.local.get(['following_list'], (flist)=>{
+                                let l = FollowingMemberList.convertFromJSON(flist.following_list);
+                                l.update(data);
+                                for(let uid of data)
+                                    l.push(new FollowingMember(uid, ''));
+                                console.log(`Load following list complete. ${l.length()} followings found.`);
+                                chrome.storage.local.set({'following_list':l.toJSONObject()},()=>{});
+                                queryLivingRoom();
+                            });
                         }
-                        chrome.storage.local.set({"dynamic_id_list": dynamic_id_list}, ()=>{});
+                        if(result.dynamicPush){
+                            let o = json["data"]["cards"];
+                            for (let i = 0; i < o.length; i++) {
+                                let c = JSON.parse(o[i+""]["card"]);
+                                let type = o[i+""]["desc"]["type"];
+                                if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
+                                    if(push || push === undefined){
+                                        if(type === 8){
+                                            console.log("你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！"+c["title"]+" see:"+o[i+""]["desc"]["bvid"]);
+                                            basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], o[i+'']["desc"]["user_profile"]["info"]["face"], "b23.tv/");
+                                        }else if(type >= 512 && type <= 4101){
+                                            console.log("你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！"+c["index"]+" see:"+c["url"]);
+                                            basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！",c["new_desc"],c["url"].replace("https://www.bilibili.com/",""), c["cover"],"www.bilibili.com/");
+                                        }
+                                    }
+                                    dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
+                                }
+                            }
+                            chrome.storage.local.set({"dynamic_id_list": dynamic_id_list}, ()=>{});
+                        }
                     }
                 });
                 chrome.alarms.clear('getNewVideo').then(a=>{
@@ -1152,15 +1207,15 @@ function dynamicNotify(push){
                                     switch (type){
                                         case 1:
                                             console.log("你关注的up "+c["user"]["uname"]+" 转发了一条新动态 "+c['item']['content']+" see:"+`https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);
-                                            basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["uname"]}  转发了一条新动态`,c['item']['content']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['face'],"https://t.bilibili.com/");
+                                            basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["uname"]}  转发了一条新动态`,c['item']['content']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['face'],"t.bilibili.com/");
                                             break;
                                         case 2:
                                             console.log("你关注的up "+c["user"]["name"]+" 发了一条新动态 "+c['item']['description']+" see: "+ `https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);
-                                            basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["name"]}  发了一条图片动态`,c['item']['description']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['head_url'],"https://t.bilibili.com/");
+                                            basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["name"]}  发了一条图片动态`,c['item']['description']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['head_url'],"t.bilibili.com/");
                                             break;
                                         case 4:
                                             console.log("你关注的up "+c["user"]["uname"]+" 发了一条新动态 "+c['item']['content']+" see: " + `https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);
-                                            basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["uname"]}  发了一条新动态`,c['item']['content']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['face'],"https://t.bilibili.com/");
+                                            basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["uname"]}  发了一条新动态`,c['item']['content']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['face'],"t.bilibili.com/");
                                             break;
                                     }
                                 }
@@ -1193,7 +1248,7 @@ function getNewUnread(init){
                         if(r.unreadSwitch){
                             if(!init && (json['data']['at'] - unreadData['at']>0 || json['data']['like'] - unreadData['like']>0 || json['data']['reply'] - unreadData['reply']>0 || json['data']['chat'] - unreadData['chat']>0 || json['data']['sys_msg'] - unreadData['sys_msg']>0)) {
                                 let msgContent = `${json['data']['at'] - unreadData['at'] > 0 ? json['data']['at'] - unreadData['at'] + '个@, ' : ''}${json['data']['like'] - unreadData['like'] > 0 ? json['data']['like'] - unreadData['like'] + '个赞, ' : ''}${json['data']['reply'] - unreadData['reply'] > 0 ? json['data']['reply'] - unreadData['reply'] + '个回复, ' : ''}${json['data']['chat'] - unreadData['chat'] > 0 ? json['data']['chat'] - unreadData['chat'] + '个私信, ' : ''}${json['data']['sys_msg'] - unreadData['sys_msg'] > 0 ? json['data']['sys_msg'] - unreadData['sys_msg'] + '个系统通知, ' : ''}`;
-                                basicNotification(-276492, "你收到了新的消息:", msgContent.substring(0, msgContent.length-2), `reply`, '', `https://message.bilibili.com/#/`);
+                                basicNotification(-276492, "你收到了新的消息:", msgContent.substring(0, msgContent.length-2), `reply`, '', `message.bilibili.com/#/`);
                             }
                             unreadData = json.data;
                             chrome.storage.local.set({"unreadData":JSON.stringify(unreadData)}, ()=>{});
