@@ -350,22 +350,23 @@
         .then(res => res.json())
         .then(async json => {
             if(json["code"]===0){
-                await getHDR(cid);
+                await getHDR8K(cid, 125, 'hdr', 'HDR');
+                await getHDR8K(cid, 127, '8k', '8K 超高清');
                 for (let i = 0; i < json["data"]["durl"].length; i++) {
                     videoDuration += json["data"]["durl"][i]["length"]-1+1;
                 }
-                for (let i = 0; i < json["data"]["accept_quality"].length; i++) {
-                    acceptQn[json["data"]["accept_quality"][i]] = {
-                        "accept_description": json["data"]["accept_description"][i],
-                        "accept_format": json["data"]["accept_format"].split(",")[i]}
+                for (let i = 0; i < json["data"]["support_formats"].length; i++) {
+                    acceptQn[i] = {
+                        "accept_description": json["data"]["support_formats"][i]['new_description'],
+                        "accept_format": json["data"]["support_formats"][i]['quality']}
                     let rua_download_block = document.createElement("div");
-                    rua_download_block.setAttribute("id","qn-"+json["data"]["accept_quality"][i]);
+                    rua_download_block.setAttribute("id","qn-"+acceptQn[i]["accept_format"]);
                     rua_download_block.classList.add("rua-download-block");
-                    rua_download_block.innerHTML = "<div class='rua-quality-des'>"+acceptQn[json["data"]["accept_quality"][i]]["accept_description"]+"</div>";
+                    rua_download_block.innerHTML = "<div class='rua-quality-des'>"+acceptQn[i]["accept_description"]+"</div>";
                     downloadVideoTray.appendChild(rua_download_block);
                     downloadBlocks.push(rua_download_block);
                     rua_download_block.onclick = () =>{
-                        download(bvid, cid, json["data"]["accept_quality"][i], vtitle[0]+(vtitle.length===1?"":vtitle[pid+1])+" "+json["data"]["accept_description"][i]);
+                        download(bvid, cid, json["data"]["accept_quality"][i], vtitle[0]+(vtitle.length===1?"":vtitle[pid+1])+" "+acceptQn[i]["accept_description"]);
                     }
                 }
                 downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40 + "px";
@@ -395,7 +396,7 @@
     }
 
     function innerDownloadBlock(cid, type, title){
-        const url = [`https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=125&fnval=336`, `https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=120&fnval=272`];
+        const url = [`https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=125&fnval=336`, `https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=120&fnval=272`, `https://api.bilibili.com/x/player/playurl?cid=${cid}&bvid=${bvid}&qn=127&fourk=1&fnver=0&fnval=4048`];
         let rua_download = document.createElement("div");
             rua_download.setAttribute("id",`qn-${type}`);
         rua_download.classList.add("rua-download-block");
@@ -407,7 +408,7 @@
             if(!rua_download.classList.contains('rua-downloading')){
                 rua_download.classList.add('rua-downloading');
                 let dlURL = [];
-                await fetch(type==='hdr'?url[0]:url[1],{
+                await fetch(type==='hdr'?url[0]:(type==='8k'?url[2]:url[1]),{
                     method:'GET',
                     credentials:'include',
                     body:null
@@ -425,6 +426,10 @@
                                 case 'dolby':
                                     dlURL[0] = json["data"]["dash"]["dolby"]["audio"][0]["base_url"];
                                     break;
+                                case '8k':
+                                    dlURL[0] = json['data']['dash']['video'][0]['base_url'];
+                                    dlURL[1] = json['data']['dash']['dolby']===null?json['data']['dash']['audio'][0]['base_url']:json['data']['dash']['audio'][0]['base_url'];
+                                    break;
                                 default:
                                     break;
                             }
@@ -435,26 +440,42 @@
         }
     }
 
-    async function getHDR(cid){
-        await fetch(`https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=125&fnval=336`,{
+    async function getHDR8K(cid, qn, type, title){
+        await fetch(`https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=${qn}&fourk=1&fnver=0&fnval=4048`,{
             method:'GET',
             credentials:'include',
             body:null
-        }).then(res => res.json())
+        })
+            .then(res => res.json())
             .then(json => {
                 if(json["code"]===0 && json["data"]!==null && json['data']['dash']!==null && json['data']['dash']!==undefined){
-                    if (json['data']['dash']['video'][0]['id']===125){
-                        innerDownloadBlock(cid, 'hdr', 'HDR');
+                    if (json['data']['dash']['video'][0]['id']===qn){
+                        innerDownloadBlock(cid, type, title);
                     }
                 }
             });
     }
 
+    // async function get8k(cid){
+    //     await fetch(`https://api.bilibili.com/x/player/playurl?cid=${cid}&bvid=${bvid}&qn=127&fourk=1&fnver=0&fnval=4048`,{
+    //         method:'GET',
+    //         credentials:'include',
+    //         body:null
+    //     }).then(res => res.json())
+    //         .then(json => {
+    //             if(json["code"]===0 && json["data"]!==null && json['data']['dash']!==null && json['data']['dash']!==undefined){
+    //                 if (json['data']['dash']['video'][0]['id']===127){
+    //                     innerDownloadBlock(cid, '8k', '超高清 8K');
+    //                 }
+    //             }
+    //         });
+    // }
+
     async function internalDownload(url, fileName, cid, hostObj, requestType){
         let hostItem = hostObj.getElementsByClassName("rua-quality-des")[0].innerText, blobURL = [], audioMeta = {};
         hostObj.removeAttribute("title");
         blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'?'视频':'');
-        if(requestType==='hdrRecord')
+        if(requestType==='hdrRecord' || requestType==='8kRecord')
             blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频');
         if(requestType==='audioRecord')
             audioMeta = await getAudioMeta();
@@ -465,7 +486,7 @@
             hostObj.classList.remove('rua-downloading');
             hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
             window.URL.revokeObjectURL(blobURL[0]);
-            if (requestType === 'hdrRecord')
+            if (requestType === 'hdrRecord' || requestType==='8kRecord')
             window.URL.revokeObjectURL(blobURL[1]);
         });
         // await chrome.runtime.sendMessage({
@@ -513,7 +534,7 @@
             downloadName = filename + ".mp4";
             dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
         }
-        if(requestType === 'hdrRecord'){
+        if(requestType === 'hdrRecord'  || requestType==='8kRecord'){
             ffmpeg.FS('writeFile', 'video.m4s', await fetchFile(blob[0]));
             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(blob[1]));
             await ffmpeg.run('-i', 'video.m4s', '-i', 'audio.m4s', '-map', '0:v', '-map', '1:a','-c', 'copy', 'final.mkv');

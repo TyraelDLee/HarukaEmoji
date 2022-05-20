@@ -840,7 +840,7 @@ class CRC32{
             let uid = Math.random();
             NOTIFICATION_LIST.push(roomUrl, uid+":"+roomUrl);
             let msg = liverName + " 开播啦!\r\n是"+(type===0?"电脑":"手机")+"直播！";
-            imageNotificationSwitch?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "https://live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, face, "https://live.bilibili.com/");
+            imageNotificationSwitch?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, face, "live.bilibili.com/");
         }catch (e){}
     }
 
@@ -857,13 +857,13 @@ class CRC32{
      * */
     function basicNotification(uid, title, msg, url, cover, URLPrefix){
         cover = cover.length==null||cover.length===0?"../images/haruka128.png":cover;
-        chrome.notifications.create(uid+":"+url, {
+        chrome.notifications.create(uid+":"+url+":"+URLPrefix, {
                 type: "basic",
                 iconUrl: cover,
                 title: title,
                 message: msg,
                 contextMessage:"rua豹器"
-            }, function (id) {notificationClickHandler(id,URLPrefix);}
+            }, function (id) {}
         );
     }
 
@@ -882,14 +882,14 @@ class CRC32{
     function imageNotification(uid, roomTitle, msg, roomUrl, cover, face, URLPrefix){
         face = face.length==null||face.length===0?"../images/haruka128.png":face;
         cover = cover.length==null||cover.length===0?face:cover;
-        chrome.notifications.create(uid+":"+roomUrl, {
+        chrome.notifications.create(uid+":"+roomUrl+":"+URLPrefix, {
                 type: "image",
                 iconUrl: face,
                 title: roomTitle,
                 message: msg,
                 imageUrl: cover,
                 contextMessage:"rua豹器"
-            }, function (id) {notificationClickHandler(id, URLPrefix);}
+            }, function (id) {}
         );
     }
 
@@ -903,25 +903,24 @@ class CRC32{
      * @param URLPrefix, the url contained in notification is only a part of them
      * includes aid, bid or live room number, prefix will be used for build url.
      * */
-    function notificationClickHandler(id, URLPrefix){
-        chrome.notifications.onClicked.addListener(function (nid) {
-            if (nid === id) {
-                chrome.windows.getAll(function (wins){
-                    if(wins.length>0){
-                        // why google did not fix this bug over 6 years? WTF
-                        // chrome.windows.getLastFocused(function (Lwin){
-                        //     chrome.windows.update(Lwin.id, {focused: true});
-                        //     chrome.tabs.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
-                        // });
-                        chrome.windows.update(winIDList.getCurrent(), {focused: true});/*ensure the browser will always open tabs in the most top window.*/
-                        chrome.tabs.create({url: URLPrefix+nid.split(":")[1]});
-                    }else
-                        chrome.windows.create({url: URLPrefix+nid.split(":")[1]});
-                });
-                chrome.notifications.clear(id);
-            }
+    chrome.notifications.onClicked.addListener(function (nid) {
+        chrome.storage.local.get(['winIDList'],(info)=>{
+            let winIDList = WindowIDList.convertFromJSON(info.winIDList);
+            chrome.windows.getAll(function (wins){
+                if(wins.length>0){
+                    // why google did not fix this bug over 6 years? WTF
+                    // chrome.windows.getLastFocused(function (Lwin){
+                    //     chrome.windows.update(Lwin.id, {focused: true});
+                    //     chrome.tabs.create({url: "https://live.bilibili.com/"+nid.split(":")[1]});
+                    // });
+                    chrome.windows.update(winIDList.getCurrent(), {focused: true});/*ensure the browser will always open tabs in the most top window.*/
+                    chrome.tabs.create({url: `https://${nid.split(":")[2]}${nid.split(":")[1]}`});
+                }else
+                    chrome.windows.create({url: `https://${nid.split(":")[2]}${nid.split(":")[1]}`});
+            });
         });
-    }
+        chrome.notifications.clear(nid);
+    });
 
     checkUpd("https://tyrael-lee.gitee.io/harukaemoji/?_=");
     setTimeout(loadSetting, 100);
@@ -1078,10 +1077,10 @@ class CRC32{
                                 if(push || push === undefined){
                                     if(type === 8){
                                         console.log("你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！"+c["title"]+" see:"+o[i+""]["desc"]["bvid"]);
-                                        basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], o[i+'']["desc"]["user_profile"]["info"]["face"], "https://b23.tv/");
+                                        basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], o[i+'']["desc"]["user_profile"]["info"]["face"], "b23.tv/");
                                     }else if(type >= 512 && type <= 4101){
                                         console.log("你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！"+c["index"]+" see:"+c["url"]);
-                                        basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！",c["new_desc"],c["url"].replace("https://www.bilibili.com/",""), c["cover"],"https://www.bilibili.com/");
+                                        basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！",c["new_desc"],c["url"].replace("https://www.bilibili.com/",""), c["cover"],"www.bilibili.com/");
                                     }
                                 }
                                 dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
@@ -1116,15 +1115,15 @@ class CRC32{
                                         switch (type){
                                             case 1:
                                                 console.log("你关注的up "+c["user"]["uname"]+" 转发了一条新动态 "+c['item']['content']+" see:"+`https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);
-                                                basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["uname"]}  转发了一条新动态`,c['item']['content']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['face'],"https://t.bilibili.com/");
+                                                basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["uname"]}  转发了一条新动态`,c['item']['content']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['face'],"t.bilibili.com/");
                                                 break;
                                             case 2:
                                                 console.log("你关注的up "+c["user"]["name"]+" 发了一条新动态 "+c['item']['description']+" see: "+ `https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);
-                                                basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["name"]}  发了一条图片动态`,c['item']['description']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['head_url'],"https://t.bilibili.com/");
+                                                basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["name"]}  发了一条图片动态`,c['item']['description']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['head_url'],"t.bilibili.com/");
                                                 break;
                                             case 4:
                                                 console.log("你关注的up "+c["user"]["uname"]+" 发了一条新动态 "+c['item']['content']+" see: " + `https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);
-                                                basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["uname"]}  发了一条新动态`,c['item']['content']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['face'],"https://t.bilibili.com/");
+                                                basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["uname"]}  发了一条新动态`,c['item']['content']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['face'],"t.bilibili.com/");
                                                 break;
                                         }
                                     }
@@ -1382,13 +1381,39 @@ class CRC32{
                     if(json.code === 0){
                         chrome.storage.sync.get(['unreadSwitch'], (r)=>{
                             if(r.unreadSwitch){
-                                if(!init && (json['data']['at'] - unreadData['at']>0 || json['data']['like'] - unreadData['like']>0 || json['data']['reply'] - unreadData['reply']>0 || json['data']['chat'] - unreadData['chat']>0 || json['data']['sys_msg'] - unreadData['sys_msg']>0)) {
-                                    let msgContent = `${json['data']['at'] - unreadData['at'] > 0 ? json['data']['at'] - unreadData['at'] + '个@, ' : ''}${json['data']['like'] - unreadData['like'] > 0 ? json['data']['like'] - unreadData['like'] + '个赞, ' : ''}${json['data']['reply'] - unreadData['reply'] > 0 ? json['data']['reply'] - unreadData['reply'] + '个回复, ' : ''}${json['data']['chat'] - unreadData['chat'] > 0 ? json['data']['chat'] - unreadData['chat'] + '个私信, ' : ''}${json['data']['sys_msg'] - unreadData['sys_msg'] > 0 ? json['data']['sys_msg'] - unreadData['sys_msg'] + '个系统通知, ' : ''}`;
-                                    basicNotification(-276492, "你收到了新的消息:", msgContent.substring(0, msgContent.length-2), `reply`, '', `https://message.bilibili.com/#/`);
+                                if(!init && (json['data']['at'] - unreadData['at']>0 || json['data']['like'] - unreadData['like']>0 || json['data']['reply'] - unreadData['reply']>0 || json['data']['sys_msg'] - unreadData['sys_msg']>0 || json['data']['up'] - unreadData['up']>0)) {
+                                    let msgContent = `${json['data']['at'] - unreadData['at'] > 0 ? json['data']['at'] - unreadData['at'] + '个@, ' : ''}${json['data']['like'] - unreadData['like'] > 0 ? json['data']['like'] - unreadData['like'] + '个赞, ' : ''}${json['data']['reply'] - unreadData['reply'] > 0 ? json['data']['reply'] - unreadData['reply'] + '个回复, ' : ''}${json['data']['sys_msg'] - unreadData['sys_msg'] > 0 ? json['data']['sys_msg'] - unreadData['sys_msg'] + '个系统通知, ' : ''}${json['data']['up'] - unreadData['up'] > 0 ? json['data']['up'] - unreadData['up'] + '个up助手提醒, ' : ''}`;
+                                    chrome.notifications.clear('-276492:reply:message.bilibili.com/#/');
+                                    basicNotification(-276492, "你收到了新的消息:", msgContent.substring(0, msgContent.length-2), `reply`, '', `message.bilibili.com/#/`);
                                 }
                                 unreadData = json.data;
                                 chrome.storage.local.set({"unreadData":JSON.stringify(unreadData)}, ()=>{});
                             }
+                        });
+                    }else{
+                        errorHandler(getUnread, json.code, 'getUnread()');
+                    }
+                })
+                .catch(e=>{
+                    errorHandler(getUnread, e, 'getUnread()');
+                });
+            await fetch('https://api.vc.bilibili.com/session_svr/v1/session_svr/single_unread', {
+                method:'GET',
+                credentials:'include',
+                body:null
+            })
+                .then(r => r.json())
+                .then(json =>{
+                    if (json.code === 0){
+                        chrome.storage.sync.get(['unreadSwitch'], (r)=>{
+                            if(r.unreadSwitch){
+                                if(!init && (json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']) - unreadData['chat'] > 0){
+                                    chrome.notifications.clear('-276491:reply:message.bilibili.com/#/');
+                                    basicNotification(-276491, `你收到了${(json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']) - unreadData['chat']}条新私信`, '', `reply`, '', `message.bilibili.com/#/`);
+                                }
+                            }
+                            unreadData.chat = (json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']);
+                            chrome.storage.local.set({"unreadData":JSON.stringify(unreadData)}, ()=>{});
                         });
                         setTimeout(()=>{getUnread()}, 10000);
                     }else{

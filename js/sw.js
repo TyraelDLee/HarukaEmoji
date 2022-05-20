@@ -798,7 +798,7 @@ function queryLivingRoom() {
                     if (ON_AIR_LIST.list.length > 0) updateList(ON_AIR_LIST);
                 }
             })
-            .catch(msg =>{console.log(msg);errorHandler('getNewLive', msg, 'queryLivingRoom()');});
+            .catch(msg =>{console.log(msg);errorHandler('getNewVideo', msg, 'queryLivingRoom()');});
     });
 }
 
@@ -1234,9 +1234,9 @@ function dynamicNotify(push){
 }
 
 function getNewUnread(init){
-    chrome.storage.local.get(["unreadData"], (result)=>{
+    chrome.storage.local.get(["unreadData"], async (result)=>{
         let unreadData = JSON.parse(result.unreadData);
-        fetch('https://api.bilibili.com/x/msgfeed/unread',{
+        await fetch('https://api.bilibili.com/x/msgfeed/unread',{
             method:'GET',
             credentials: 'include',
             body: null
@@ -1246,19 +1246,45 @@ function getNewUnread(init){
                 if(json.code === 0){
                     chrome.storage.sync.get(['unreadSwitch'], (r)=>{
                         if(r.unreadSwitch){
-                            if(!init && (json['data']['at'] - unreadData['at']>0 || json['data']['like'] - unreadData['like']>0 || json['data']['reply'] - unreadData['reply']>0 || json['data']['chat'] - unreadData['chat']>0 || json['data']['sys_msg'] - unreadData['sys_msg']>0)) {
-                                let msgContent = `${json['data']['at'] - unreadData['at'] > 0 ? json['data']['at'] - unreadData['at'] + '个@, ' : ''}${json['data']['like'] - unreadData['like'] > 0 ? json['data']['like'] - unreadData['like'] + '个赞, ' : ''}${json['data']['reply'] - unreadData['reply'] > 0 ? json['data']['reply'] - unreadData['reply'] + '个回复, ' : ''}${json['data']['chat'] - unreadData['chat'] > 0 ? json['data']['chat'] - unreadData['chat'] + '个私信, ' : ''}${json['data']['sys_msg'] - unreadData['sys_msg'] > 0 ? json['data']['sys_msg'] - unreadData['sys_msg'] + '个系统通知, ' : ''}`;
+                            if(!init && (json['data']['at'] - unreadData['at']>0 || json['data']['like'] - unreadData['like']>0 || json['data']['reply'] - unreadData['reply']>0 || json['data']['sys_msg'] - unreadData['sys_msg']>0 || json['data']['up'] - unreadData['up']>0)) {
+                                let msgContent = `${json['data']['at'] - unreadData['at'] > 0 ? json['data']['at'] - unreadData['at'] + '个@, ' : ''}${json['data']['like'] - unreadData['like'] > 0 ? json['data']['like'] - unreadData['like'] + '个赞, ' : ''}${json['data']['reply'] - unreadData['reply'] > 0 ? json['data']['reply'] - unreadData['reply'] + '个回复, ' : ''}${json['data']['sys_msg'] - unreadData['sys_msg'] > 0 ? json['data']['sys_msg'] - unreadData['sys_msg'] + '个系统通知, ' : ''}${json['data']['up'] - unreadData['up'] > 0 ? json['data']['up'] - unreadData['up'] + '个up助手提醒, ' : ''}`;
+                                chrome.notifications.clear('-276492:reply:message.bilibili.com/#/');
                                 basicNotification(-276492, "你收到了新的消息:", msgContent.substring(0, msgContent.length-2), `reply`, '', `message.bilibili.com/#/`);
                             }
                             unreadData = json.data;
                             chrome.storage.local.set({"unreadData":JSON.stringify(unreadData)}, ()=>{});
                         }
                     });
+                }else{
+                    errorHandler('getUnread', json.code, 'getUnread()');
+                }
+            })
+            .catch(e=>{
+                errorHandler('getUnread', e, 'getUnread()');
+            });
+        await fetch('https://api.vc.bilibili.com/session_svr/v1/session_svr/single_unread', {
+            method:'GET',
+            credentials:'include',
+            body:null
+        })
+            .then(r => r.json())
+            .then(json =>{
+                if (json.code === 0){
+                    chrome.storage.sync.get(['unreadSwitch'], (r)=>{
+                        if(r.unreadSwitch){
+                            if(!init && (json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']) - unreadData['chat'] > 0){
+                                chrome.notifications.clear('-276491:reply:message.bilibili.com/#/');
+                                basicNotification(-276491, `你收到了${(json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']) - unreadData['chat']}条新私信`, '', `reply`, '', `message.bilibili.com/#/`);
+                            }
+                        }
+                        unreadData.chat = (json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']);
+                        chrome.storage.local.set({"unreadData":JSON.stringify(unreadData)}, ()=>{});
+                    });
                     chrome.alarms.clear('getUnread').then(a=>{
                         chrome.alarms.create('getUnread', {'when':Date.now()+10000});
                     });
                 }else{
-                    errorHandler('getUnread', json.code, 'getUnread()');
+                    errorHandler('getUnread', 'getUnread()');
                 }
             })
             .catch(e=>{
@@ -1444,3 +1470,6 @@ function setBadge(title, text){
 //todo: context menu √
 //todo: web traffic control
 //todo: hidden
+
+//the dynamic api discontinue probably due to HTTP2 Protocol Error and Error handler not triggered properly...
+//the alarm cannot be triggered less than 1 minute in packed extensions...
