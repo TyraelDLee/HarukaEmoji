@@ -31,220 +31,6 @@ class WindowIDList{
     }
 }
 
-class FollowingMember{
-    static convertFromJSON(object){
-        let o = new FollowingMember();
-        o.UID = object.uid;
-        o.NAME = object.name;
-        o.PUSHED = object.pushed;
-        o.ONAIR = object.onair;
-        o.FACE = object.face;
-        o.COVER = object.cover;
-        o.KEYFRAME = object.keyframe;
-        o.ROOM_URL = object.rid;
-        o.TITLE = object.title;
-        o.TYPE = object.type;
-        return o;
-    }
-
-    constructor(UID, NAME, FACE, COVER, KEYFRAME, ROOM_URL, TITLE) {
-        this.UID = UID;
-        this.NAME = NAME;
-        this.PUSHED = false;
-        this.ONAIR = false;
-        this.FACE = FACE;
-        this.COVER = COVER;
-        this.KEYFRAME = KEYFRAME;
-        this.ROOM_URL = ROOM_URL;
-        this.TITLE = TITLE;
-        this.TYPE = 0;
-    }
-
-    print(){
-        return "uid:"+this.UID + " name:" + this.NAME + " rid:" + this.ROOM_URL + " title:" + this.TITLE;
-    }
-
-    toJSONObject(){
-        return {'uid': this.UID, 'name':this.NAME, 'pushed':this.PUSHED, 'onair':this.ONAIR, 'face':this.FACE, 'cover':this.COVER, 'keyframe':this.KEYFRAME, 'rid':this.ROOM_URL, 'title':this.TITLE, 'type':this.TYPE};
-    }
-}
-
-class FollowingMemberList{
-    static convertFromJSON(object){
-        let o = new FollowingMemberList();
-        for (let i = 0; i < object; i++) {
-            let m = FollowingMember.convertFromJSON(object[i]);
-            o.push(m);
-        }
-        return o;
-    }
-
-    constructor() {
-        this.list = [];
-    }
-
-    push(member){
-        for (let i = 0; i < this.list.length; i++) {
-            if(this.list[i].UID === member.UID)
-                return false;
-        }
-        this.list.push(member);
-        return true;
-    }
-
-    get(index){
-        return this.list[index];
-    }
-
-    getUIDList(){
-        if(this.list.length < 1)
-            return [];
-        let L = [];
-        for (let i = 0; i < this.list.length; i++) L.push(this.list[i].UID);
-        return L;
-    }
-
-    clearAll(){
-        this.list = [];
-    }
-
-    update(members){
-        // intersection
-        this.list = this.list.filter(function (member) {
-            return members.indexOf(member.UID) !== -1;
-        });
-    }
-
-    updateRemove(members){
-        // complementary
-        this.list = this.list.filter(function (member) {
-            return members.indexOf(member) === -1;
-        });
-        return this.list.length > 0;
-    }
-
-    updateStatus(index, bool){
-        this.list[index].PUSHED = bool;
-    }
-
-    updateElementOnAirStatus(o, bool){
-        this.list[this.indexOf(o)] = o;
-        this.list[this.indexOf(o)].ONAIR = bool;
-    }
-
-    length(){
-        return this.list.length;
-    }
-
-    indexOf(member){
-        for (let i = 0; i < this.list.length; i++) {
-            if(member.UID === this.list[i].UID)
-                return i;
-        }
-        return -1;
-    }
-
-    remove(member){
-        let index = this.indexOf(member);
-        if(index > -1)
-            this.list.splice(index,1);
-    }
-
-    print(){
-        let str = this.list.length+" ";
-        for (let i = 0; i < this.list.length; i++) {
-            str += this.list[i].print() + "\r\n";
-        }
-        return str;
-    }
-
-    copy(FMlist){
-        this.list = FMlist.list;
-    }
-
-    maintainList(member){
-        if(this.indexOf(member) !== -1)
-            this.remove(member);
-        else
-            this.push(member);
-    }
-
-    toJSONObject(){
-        let obj = {};
-        for (let i = 0; i < this.list.length; i++) {
-            obj[i] = this.list[i].toJSONObject();
-        }
-        return obj;
-    }
-}
-
-class Notification{
-    static convertFromJSON(object){
-        let o = new Notification(object.id);
-        o.notificationList = object.list;
-        return o;
-    }
-
-    constructor(rid) {
-        this.rid = rid;
-        this.notificationList = [];
-    }
-
-    add(id){
-        this.notificationList.push(id);
-    }
-
-    clearNotification(){
-        for (let i = 0; i < this.notificationList.length; i++) {
-            chrome.notifications.clear(this.notificationList[i]);
-        }
-    }
-
-    toJSONObject(){
-        return {'id': this.rid, 'list': this.notificationList}
-    }
-}
-
-class NotificationList{
-    static convertFromJSON(object){
-        let o = new NotificationList();
-        o.list = object.list;
-        return o;
-    }
-
-    constructor(){
-        this.list = [];
-    }
-    push(rid, nid){
-        for (let i = 0; i < this.list.length; i++) {
-            if(this.list[i].rid === rid){
-                this.list[i].add(nid);
-                return;
-            }
-        }
-        let n = new Notification(rid);
-        n.add(nid);
-        this.list.push(n);
-    }
-    indexOf(rid){
-        for (let i = 0; i < this.list.length; i++) {
-            if (this.list[i].rid === rid) return i;
-        }
-        return -1;
-    }
-    remove(rid){
-        let index = this.indexOf(rid);
-        if(index>-1){
-            this.list[index].clearNotification();
-            this.list.splice(index,1);
-        }
-    }
-
-    toJSONObject(){
-        return {'list': this.list};
-    }
-}
-
 class DanmakuObj{
     constructor(time, mid, content, color, mode, fontsize, ts, weight) {
         this.time = time;
@@ -474,12 +260,18 @@ class CRC32{
     var UUID = -1;
     var JCT = -1;
     var P_UID = UUID;
-    var FOLLOWING_LIST = new FollowingMemberList();
-    var NOTIFICATION_LIST = new NotificationList();
-    var winIDList = new WindowIDList();
-    var p = 0;
 
+    var winIDList = new WindowIDList();
+
+    let followingList = [];
+    let notificationList = [];
+
+    chrome.notifications.getAll((notifications)=>{
+        for (let k in notifications)
+            chrome.notifications.clear(k);
+    });
     chrome.storage.local.set({'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}'}, function (){});
+    chrome.storage.local.set({'unreadMessage':0}, function (){});
     chrome.storage.local.set({'dynamicList':[]}, ()=>{});
 
     chrome.runtime.getPlatformInfo((info)=>{OSInfo = info.os;});
@@ -712,29 +504,29 @@ class CRC32{
      * method: GET
      * url param: vmid->uid, pn->page number.
      * */
-    function getFollowingList() {
-        if(UUID !== -1){
-            fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=8`,{
-                method:"GET",
-                credentials: 'include',
-                body:null
-            })
-            .then(res => res.json())
-            .then(json => {
-                if(json['code']!==0)errorHandler(getFollowingList, json['code'], 'getFollowingList()');
-                else if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
-                    let data = json["data"]["attentions"]['uids'];
-                    data.splice(json["data"]["attentions"]['uids'].indexOf(UUID-1+1),1);
-                    FOLLOWING_LIST.update(data);
-                    for(let uid of data)
-                        FOLLOWING_LIST.push(new FollowingMember(uid, ''));
-                    console.log(`Load following list complete. ${FOLLOWING_LIST.length()} followings found.`);
-                    queryLivingRoom();
-                }
-
-            }).catch(msg =>{errorHandler(getFollowingList, msg, 'getFollowingList()');});
-        }
-    }
+    // function getFollowingList() {
+    //     if(UUID !== -1){
+    //         fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=8`,{
+    //             method:"GET",
+    //             credentials: 'include',
+    //             body:null
+    //         })
+    //         .then(res => res.json())
+    //         .then(json => {
+    //             if(json['code']!==0)errorHandler(getFollowingList, json['code'], 'getFollowingList()');
+    //             else if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
+    //                 let data = json["data"]["attentions"]['uids'];
+    //                 data.splice(json["data"]["attentions"]['uids'].indexOf(UUID-1+1),1);
+    //                 FOLLOWING_LIST.update(data);
+    //                 for(let uid of data)
+    //                     FOLLOWING_LIST.push(new FollowingMember(uid, ''));
+    //                 console.log(`Load following list complete. ${FOLLOWING_LIST.length()} followings found.`);
+    //                 queryLivingRoom();
+    //             }
+    //
+    //         }).catch(msg =>{errorHandler(getFollowingList, msg, 'getFollowingList()');});
+    //     }
+    // }
 
     /**
      * Check live room status once for all.
@@ -745,8 +537,8 @@ class CRC32{
      * method: POST
      * attention: not accept cookie.
      * */
-    function queryLivingRoom() {
-        let body = '{"uids": [' + FOLLOWING_LIST.getUIDList().toString()+']}';
+    function queryLivingRoom(uids) {
+        let body = '{"uids": [' + uids+']}';
         fetch("https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids?requestFrom=rua5",{
             method:"POST",
             credentials: "omit",
@@ -755,22 +547,34 @@ class CRC32{
             .then(res => res.json())
             .then(json => {
                 if (json["code"] === 0) {
-                    let ON_AIR_LIST = new FollowingMemberList()
                     let data = json["data"];
-                    for (let i = 0; i < FOLLOWING_LIST.getUIDList().length; i++) {
-                        if (data[FOLLOWING_LIST.getUIDList()[i] + ""] !== undefined) {
-                            if (data[FOLLOWING_LIST.getUIDList()[i] + ""]["live_status"] === 1) {
-                                let member = new FollowingMember(data[FOLLOWING_LIST.getUIDList()[i] + ""]["uid"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["uname"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["face"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["cover_from_user"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["keyframe"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["room_id"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["title"]);
-                                member.ONAIR = true;
-                                member.TYPE = data[FOLLOWING_LIST.getUIDList()[i] + ""]["broadcast_type"] === 1 ? 1 : 0;
-                                ON_AIR_LIST.push(member);
+                    chrome.notifications.getAll((n)=>{
+                        for (let k in n){
+                            if (uids.indexOf(k.split(':')[0]-1+1)===-1 && k.split(':')[2]==='live.bilibili.com/'){
+                                chrome.notifications.clear(k);
+                                if (notificationList.indexOf(k.split(':')[1]-1+1)!==-1)
+                                    notificationList.splice(notificationList.indexOf(k.split(':')[1]-1+1),1);
                             }
                         }
-                    }
-                    if (ON_AIR_LIST.list.length > 0) updateList(ON_AIR_LIST);
+                        for (let i = 0; i < uids.length; i++) {
+                            if (data[uids[i]] !== undefined) {
+                                if(data[uids[i]]["live_status"] !== 1 && notificationList.indexOf(data[uids[i]]["room_id"]) !== -1){
+                                    chrome.notifications.clear(`${uids[i]}:${notificationList.indexOf(data[uids[i]]["room_id"])}:live.bilibili.com/`);
+                                    notificationList.splice(notificationList.indexOf(data[uids[i]]["room_id"]),1);
+                                }
+                                if (data[uids[i]]["live_status"] === 1 && notificationList.indexOf(data[uids[i]]["room_id"]) === -1) {
+                                    notificationList.push(data[uids[i]]["room_id"]);
+                                    if(notificationPush) {
+                                        console.log(data[uids[i]]["title"] + " " + data[uids[i]]["uname"]+" "+new Date());
+                                        pushNotificationChrome(data[uids[i]]["title"], data[uids[i]]["uname"], data[uids[i]]["room_id"], data[uids[i]]["cover_from_user"], data[uids[i]]["broadcast_type"] === 1 ? 1 : 0, data[uids[i]]["face"], uids[i]);
+                                    }
+                                }
+                            }
+                        }
+                    });
                 }
             })
-            //.catch(msg =>{errorHandler(getFollowingList, msg, 'queryLivingRoom()');});
+            .catch(msg =>{errorHandler(videoNotify, msg, 'queryLivingRoom()');});
     }
 
     /**
@@ -785,60 +589,44 @@ class CRC32{
      * for that element for next time push.
      * Otherwise, do nothing.
      * */
-    function updateList(ON_AIR_LIST){
-        if(FOLLOWING_LIST.length() > 0){
-            for (let i = 0; i < ON_AIR_LIST.length(); i++) {
-                ON_AIR_LIST.updateStatus(i, FOLLOWING_LIST.get(FOLLOWING_LIST.indexOf(ON_AIR_LIST.get(i))).PUSHED);
-                FOLLOWING_LIST.updateElementOnAirStatus(ON_AIR_LIST.get(i), true);
-            }
-            for (let i = 0; i < FOLLOWING_LIST.length(); i++) {
-                if(FOLLOWING_LIST.get(i).ONAIR){
-                    if(ON_AIR_LIST.indexOf(FOLLOWING_LIST.get(i))===-1){
-                        NOTIFICATION_LIST.remove(FOLLOWING_LIST.get(i).ROOM_URL);
-                        FOLLOWING_LIST.get(i).COVER = undefined;
-                        FOLLOWING_LIST.get(i).FACE = undefined;
-                        FOLLOWING_LIST.get(i).KEYFRAME = undefined;
-                        FOLLOWING_LIST.get(i).ROOM_URL = undefined;
-                        FOLLOWING_LIST.get(i).TITLE = undefined;
-                        FOLLOWING_LIST.updateStatus(i, false);
-                        FOLLOWING_LIST.updateElementOnAirStatus(FOLLOWING_LIST.get(i),false);
-                    }else{
-                        if (!FOLLOWING_LIST.get(i).PUSHED){
-                            FOLLOWING_LIST.updateStatus(i, true);
-                            console.log(FOLLOWING_LIST.get(i).TITLE + " " + FOLLOWING_LIST.get(i).NAME+" "+new Date());
-                            if(notificationPush)
-                                pushNotificationChrome(FOLLOWING_LIST.get(i).TITLE,
-                                    FOLLOWING_LIST.get(i).NAME,
-                                    FOLLOWING_LIST.get(i).ROOM_URL,
-                                    FOLLOWING_LIST.get(i).COVER,
-                                    FOLLOWING_LIST.get(i).TYPE,
-                                    FOLLOWING_LIST.get(i).FACE);
-                        }
-                    }
-                }
-            }
-        }
-        //setTimeout(getFollowingList, 10000);
-    }
+    // function updateList(ON_AIR_LIST){
+    //     if(FOLLOWING_LIST.length() > 0){
+    //         for (let i = 0; i < ON_AIR_LIST.length(); i++) {
+    //             ON_AIR_LIST.updateStatus(i, FOLLOWING_LIST.get(FOLLOWING_LIST.indexOf(ON_AIR_LIST.get(i))).PUSHED);
+    //             FOLLOWING_LIST.updateElementOnAirStatus(ON_AIR_LIST.get(i), true);
+    //         }
+    //         for (let i = 0; i < FOLLOWING_LIST.length(); i++) {
+    //             if(FOLLOWING_LIST.get(i).ONAIR){
+    //                 if(ON_AIR_LIST.indexOf(FOLLOWING_LIST.get(i))===-1){
+    //                     NOTIFICATION_LIST.remove(FOLLOWING_LIST.get(i).ROOM_URL);
+    //                     FOLLOWING_LIST.get(i).COVER = undefined;
+    //                     FOLLOWING_LIST.get(i).FACE = undefined;
+    //                     FOLLOWING_LIST.get(i).KEYFRAME = undefined;
+    //                     FOLLOWING_LIST.get(i).ROOM_URL = undefined;
+    //                     FOLLOWING_LIST.get(i).TITLE = undefined;
+    //                     FOLLOWING_LIST.updateStatus(i, false);
+    //                     FOLLOWING_LIST.updateElementOnAirStatus(FOLLOWING_LIST.get(i),false);
+    //                 }else{
+    //                     if (!FOLLOWING_LIST.get(i).PUSHED){
+    //                         FOLLOWING_LIST.updateStatus(i, true);
+    //                         console.log(FOLLOWING_LIST.get(i).TITLE + " " + FOLLOWING_LIST.get(i).NAME+" "+new Date());
+    //                         if(notificationPush)
+    //                             pushNotificationChrome(FOLLOWING_LIST.get(i).TITLE,
+    //                                 FOLLOWING_LIST.get(i).NAME,
+    //                                 FOLLOWING_LIST.get(i).ROOM_URL,
+    //                                 FOLLOWING_LIST.get(i).COVER,
+    //                                 FOLLOWING_LIST.get(i).TYPE,
+    //                                 FOLLOWING_LIST.get(i).FACE);
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     //setTimeout(getFollowingList, 10000);
+    // }
 
-    /**
-     * Create notification. (Web API ver.)
-     * */
-    function pushNotification(roomTitle, liverName, roomUrl, cover, type) {
-        var notification = new Notification(roomTitle, {
-            icon: cover,
-            body: liverName + " 开播啦!\r\n是"+(type===0?"正常的":"手机")+"直播呦！",
-        });
-        notification.onclick = function (){
-            chrome.tabs.create({url: roomUrl});
-            notification.close();
-        }
-    }
-
-    function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face){
+    function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face, uid){
         try{
-            let uid = Math.random();
-            NOTIFICATION_LIST.push(roomUrl, uid+":"+roomUrl);
             let msg = liverName + " 开播啦!\r\n是"+(type===0?"电脑":"手机")+"直播！";
             imageNotificationSwitch?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, face, "live.bilibili.com/");
         }catch (e){}
@@ -955,8 +743,7 @@ class CRC32{
                 if (UUID !== -1 && UUID !== P_UID) {
                     // log in info changed then load following list and start update liver stream info every 3 min.
                     console.log("Session info got.");
-                    FOLLOWING_LIST.clearAll(); // initial following list.
-                    p=0;
+                    notificationList = []
                     videoNotify(false);
                     getUnread(true);
                     dynamicNotify(true);
@@ -1062,11 +849,8 @@ class CRC32{
                     if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
                         let data = json["data"]["attentions"]['uids'];
                         data.splice(json["data"]["attentions"]['uids'].indexOf(UUID-1+1),1);
-                        FOLLOWING_LIST.update(data);
-                        for(let uid of data)
-                            FOLLOWING_LIST.push(new FollowingMember(uid, ''));
-                        console.log(`Load following list complete. ${FOLLOWING_LIST.length()} followings found.`);
-                        queryLivingRoom();
+                        console.log(`Load following list complete. ${data.length} followings found.`);
+                        queryLivingRoom(data);
                     }
                     if(dynamicPush){
                         let o = json["data"]["cards"];
@@ -1369,7 +1153,7 @@ class CRC32{
     }
 
     function getUnread(init){
-        chrome.storage.local.get(["unreadData"], async (result)=>{
+        chrome.storage.local.get(["unreadData", "unreadMessage"], async (result)=>{
             let unreadData = JSON.parse(result.unreadData);
             await fetch('https://api.bilibili.com/x/msgfeed/unread',{
                 method:'GET',
@@ -1407,13 +1191,12 @@ class CRC32{
                     if (json.code === 0){
                         chrome.storage.sync.get(['unreadSwitch'], (r)=>{
                             if(r.unreadSwitch){
-                                if(!init && (json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']) - unreadData['chat'] > 0){
+                                if(!init && (json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']) - result.unreadMessage > 0){
                                     chrome.notifications.clear('-276491:reply:message.bilibili.com/#/');
-                                    basicNotification(-276491, `你收到了${(json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']) - unreadData['chat']}条新私信`, '', `reply`, '', `message.bilibili.com/#/`);
+                                    basicNotification(-276491, `你收到了${(json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']) - result.unreadMessage}条新私信`, '', `reply`, '', `message.bilibili.com/#/`);
                                 }
                             }
-                            unreadData.chat = (json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']);
-                            chrome.storage.local.set({"unreadData":JSON.stringify(unreadData)}, ()=>{});
+                            chrome.storage.local.set({"unreadMessage":(json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread'])}, ()=>{});
                         });
                         setTimeout(()=>{getUnread()}, 10000);
                     }else{

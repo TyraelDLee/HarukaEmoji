@@ -456,25 +456,10 @@
             });
     }
 
-    // async function get8k(cid){
-    //     await fetch(`https://api.bilibili.com/x/player/playurl?cid=${cid}&bvid=${bvid}&qn=127&fourk=1&fnver=0&fnval=4048`,{
-    //         method:'GET',
-    //         credentials:'include',
-    //         body:null
-    //     }).then(res => res.json())
-    //         .then(json => {
-    //             if(json["code"]===0 && json["data"]!==null && json['data']['dash']!==null && json['data']['dash']!==undefined){
-    //                 if (json['data']['dash']['video'][0]['id']===127){
-    //                     innerDownloadBlock(cid, '8k', '超高清 8K');
-    //                 }
-    //             }
-    //         });
-    // }
-
     async function internalDownload(url, fileName, cid, hostObj, requestType){
         let hostItem = hostObj.getElementsByClassName("rua-quality-des")[0].innerText, blobURL = [], audioMeta = {};
         hostObj.removeAttribute("title");
-        blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'?'视频':'');
+        blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'?'视频':'');
         if(requestType==='hdrRecord' || requestType==='8kRecord')
             blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频');
         if(requestType==='audioRecord')
@@ -584,14 +569,13 @@
             .catch(e=>{});
     }
 
-    function C2U8(string){
-        return string.split('').map(function(c) {
-            return '\\u' + ('0000' + c.charCodeAt(0).toString(16).toUpperCase()).slice(-4);
-        }).join('');
-    }
-
     async function dash(url, hostObj, cid, hostItem, dispTag){
         let size=0, get=0;
+        let db;
+        await createIDB(cid).then(r => {
+            db = r
+        });
+        console.log(typeof db)
         return fetch(url,{
             method:"GET",
             body:null
@@ -614,6 +598,7 @@
                                         controller.close();
                                         hostObj.getElementsByClassName("rua-quality-des")[0].innerText = "转码中...";
                                     }
+                                    //storageIDB(db, value, cid, dispTag);
                                     get += value.length || 0;
                                     setProgress(hostObj, (get/size) * 100);
                                     controller.enqueue(value);
@@ -628,6 +613,41 @@
             .catch(e =>{
                 downloadError(hostObj, cid, e.toString(), false, hostItem);
             });
+    }
+
+    async function createIDB(cid){
+        return new Promise((r, j)=>{
+            let openDB = window.indexedDB.open('ruaVideoDB');
+            let db
+            openDB.onsuccess = (e) =>{
+                db = this.result;
+                r(db);
+            }
+            openDB.onerror = (db) =>{
+                j(null);
+            }
+            openDB.onupgradeneeded = (e)=>{
+                db.createObjectStore(cid+"视频", { autoIncrement: true });
+                db.createObjectStore(cid+"音频", { autoIncrement: true });
+            }
+        });
+    }
+
+    async function storageIDB(db, blob, cid, type){
+        return new Promise((r, j)=>{
+            //try{
+                const write = db.transaction([cid+type+""], 'readwrite');
+                const res = write.objectStore(cid+type).add(new Blob([new Uint8Array(blob).buffer]));
+                res.onsuccess = (e)=>{
+                    r(0);
+                }
+                res.onerror = (e)=>{
+                    j(-1);
+                }
+            // }catch (e){
+            //     console.log(e);
+            // }
+        });
     }
 
     function setProgress(obj, progress){

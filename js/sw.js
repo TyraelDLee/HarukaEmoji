@@ -33,232 +33,6 @@ class WindowIDList{
     }
 }
 
-class FollowingMember{
-    static convertFromJSON(object){
-        let o = new FollowingMember();
-        o.UID = object.uid;
-        o.NAME = object.name;
-        o.PUSHED = object.pushed;
-        o.ONAIR = object.onair;
-        o.FACE = object.face;
-        o.COVER = object.cover;
-        o.KEYFRAME = object.keyframe;
-        o.ROOM_URL = object.rid;
-        o.TITLE = object.title;
-        o.TYPE = object.type;
-        return o;
-    }
-
-    constructor(UID, NAME, FACE, COVER, KEYFRAME, ROOM_URL, TITLE) {
-        this.UID = UID;
-        this.NAME = NAME;
-        this.PUSHED = false;
-        this.ONAIR = false;
-        this.FACE = FACE;
-        this.COVER = COVER;
-        this.KEYFRAME = KEYFRAME;
-        this.ROOM_URL = ROOM_URL;
-        this.TITLE = TITLE;
-        this.TYPE = 0;
-    }
-
-    print(){
-        return "uid:"+this.UID + " name:" + this.NAME + " rid:" + this.ROOM_URL + " title:" + this.TITLE;
-    }
-
-    toJSONObject(){
-        return {'uid': this.UID, 'name':this.NAME, 'pushed':this.PUSHED, 'onair':this.ONAIR, 'face':this.FACE, 'cover':this.COVER, 'keyframe':this.KEYFRAME, 'rid':this.ROOM_URL, 'title':this.TITLE, 'type':this.TYPE};
-    }
-}
-
-class FollowingMemberList{
-    static convertFromJSON(object){
-        let o = new FollowingMemberList();
-        for (let i = 0; i < Object.keys(object).length; i++) {
-            let m = FollowingMember.convertFromJSON(object[i]);
-            o.push(m);
-        }
-        return o;
-    }
-
-    constructor() {
-        this.list = [];
-    }
-
-    push(member){
-        for (let i = 0; i < this.list.length; i++) {
-            if(this.list[i].UID === member.UID)
-                return false;
-        }
-        this.list.push(member);
-        return true;
-    }
-
-    get(index){
-        return this.list[index];
-    }
-
-    concat(list){
-        for (let m of list.list){
-            this.push(m);
-        }
-    }
-
-    getUIDList(){
-        if(this.list.length < 1)
-            return [];
-        let L = [];
-        for (let i = 0; i < this.list.length; i++) L.push(this.list[i].UID);
-        return L;
-    }
-
-    clearAll(){
-        this.list = [];
-    }
-
-    update(members){
-        // intersection
-        this.list = this.list.filter(function (member) {
-            return members.indexOf(member.UID) !== -1;
-        });
-    }
-
-    updateRemove(members){
-        // complementary
-        this.list = this.list.filter(function (member) {
-            return members.indexOf(member) === -1;
-        });
-        return this.list.length > 0;
-    }
-
-    updateStatus(index, bool){
-        this.list[index].PUSHED = bool;
-    }
-
-    updateElementOnAirStatus(o, bool){
-        this.list[this.indexOf(o)] = o;
-        this.list[this.indexOf(o)].ONAIR = bool;
-    }
-
-    length(){
-        return this.list.length;
-    }
-
-    indexOf(member){
-        for (let i = 0; i < this.list.length; i++) {
-            if(member.UID === this.list[i].UID)
-                return i;
-        }
-        return -1;
-    }
-
-    remove(member){
-        let index = this.indexOf(member);
-        if(index > -1)
-            this.list.splice(index,1);
-    }
-
-    print(){
-        let str = this.list.length+" ";
-        for (let i = 0; i < this.list.length; i++) {
-            str += this.list[i].print() + "\r\n";
-        }
-        return str;
-    }
-
-    copy(FMlist){
-        this.list = FMlist.list;
-    }
-
-    maintainList(member){
-        if(this.indexOf(member) !== -1)
-            this.remove(member);
-        else
-            this.push(member);
-    }
-
-    toJSONObject(){
-        let obj = {};
-        for (let i = 0; i < this.list.length; i++) {
-            obj[i] = this.list[i].toJSONObject();
-        }
-        return obj;
-    }
-}
-
-class Notification{
-    static convertFromJSON(object){
-        let o = new Notification(object.id);
-        o.notificationList = object.list;
-        return o;
-    }
-
-    constructor(rid) {
-        this.rid = rid;
-        this.notificationList = [];
-    }
-
-    add(id){
-        this.notificationList.push(id);
-    }
-
-    clearNotification(){
-        for (let i = 0; i < this.notificationList.length; i++) {
-            chrome.notifications.clear(this.notificationList[i]);
-        }
-    }
-
-    toJSONObject(){
-        return {'id': this.rid, 'list': this.notificationList}
-    }
-}
-
-class NotificationList{
-    static convertFromJSON(object){
-        let o = new NotificationList();
-        for (let i = 0; i < Object.keys(object).length; i++) {
-            let m = Notification.convertFromJSON(object[i]);
-            o.push(m);
-        }
-        return o;
-    }
-    constructor(){
-        this.list = [];
-    }
-    push(rid, nid){
-        for (let i = 0; i < this.list.length; i++) {
-            if(this.list[i].rid === rid){
-                this.list[i].add(nid);
-                return;
-            }
-        }
-        let n = new Notification(rid);
-        n.add(nid);
-        this.list.push(n);
-    }
-    indexOf(rid){
-        for (let i = 0; i < this.list.length; i++) {
-            if (this.list[i].rid === rid) return i;
-        }
-        return -1;
-    }
-    remove(rid){
-        let index = this.indexOf(rid);
-        if(index>-1){
-            this.list[index].clearNotification();
-            this.list.splice(index,1);
-        }
-    }
-
-    toJSONObject(){
-        let obj = {};
-        for (let i = 0; i < this.list.length; i++) {
-            obj[i] = this.list[i].toJSONObject();
-        }
-        return obj;
-    }
-}
-
 class DanmakuObj{
     constructor(time, mid, content, color, mode, fontsize, ts, weight) {
         this.time = time;
@@ -494,6 +268,10 @@ chrome.windows.onFocusChanged.addListener(function (wID){
 });
 chrome.runtime.onInstalled.addListener(async function (obj){
     // init setting
+    chrome.notifications.getAll((notifications)=>{
+        for (let k in notifications)
+            chrome.notifications.clear(k);
+    });
     await chrome.tabs.create({url: "./readme.html"});
     await chrome.storage.local.get(['rua_lastDK'],(info)=>{
         console.log(info.rua_lastDK);
@@ -511,9 +289,8 @@ chrome.runtime.onInstalled.addListener(async function (obj){
     chrome.contextMenus.create({contexts: ["selection", "link"], title: "用bilibili搜索", type: "normal", id:"rua-contextMenu-v3"});
 
     // local states
-    let NOTIFICATION_LIST = new NotificationList(), l = new FollowingMemberList();
     chrome.alarms.create('checkUpd', {'when':Date.now(), periodInMinutes:60*12});
-    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "dynamic_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'dynamicList':[], 'notification_list':NOTIFICATION_LIST.toJSONObject(), 'following_list': l.toJSONObject()}, ()=>{});
+    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "dynamic_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0, 'dynamicList':[], 'notificationList':[]}, ()=>{});
     await reloadCookies();
 });
 
@@ -627,67 +404,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
                     }
                 });
         }
-    // if(request.msg === "requestEncode"){
-    //     const {createFFmpeg, fetchFile} = FFmpeg;
-    //     const ffmpeg = createFFmpeg({
-    //         corePath: "./ffmpeg/ffmpeg-core.js",
-    //         log: false,
-    //     });
-    //     (async ()=>{
-    //         let out, downloadName, dl;
-    //         await ffmpeg.load();
-    //         if(request.requestType === 'videoRecord'){
-    //             ffmpeg.FS('writeFile', 'video.mp4', await fetchFile(request.blob));
-    //             if(request.startTime > 1){
-    //                 await ffmpeg.run('-i', 'video.mp4', '-ss', request.startTime + '', '-c', 'copy', 'footage.mp4');
-    //                 await ffmpeg.run('-i', 'footage.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
-    //             }else{
-    //                 await ffmpeg.run('-i', 'video.mp4', '-threads', '4', '-vcodec','copy', '-acodec','aac', 'final.mp4');
-    //             }
-    //             out = ffmpeg.FS('readFile', 'final.mp4');
-    //             downloadName = request.filename + ".mp4";
-    //             dl = URL.createObjectURL(new Blob([out.buffer], {type: 'video/mp4'}));
-    //         }
-    //         if(request.requestType === 'audioRecord'){
-    //             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
-    //             await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', '-metadata', `title=${utf8Encode(request.metadata.title)}`,'-metadata', `artist=${utf8Encode(request.metadata.artist)}`, '-metadata', `year=${request.metadata.year}`, 'final.m4a');
-    //             out = ffmpeg.FS('readFile', 'final.m4a');
-    //             downloadName = request.filename + ".m4a";
-    //             dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
-    //         }
-    //         if(request.requestType === 'dolbyRecord'){
-    //             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[0]));
-    //             await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', 'final.mp4');
-    //             out = ffmpeg.FS('readFile', 'final.mp4');
-    //             downloadName = request.filename + ".mp4";
-    //             dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
-    //         }
-    //         if(request.requestType === 'hdrRecord'){
-    //             ffmpeg.FS('writeFile', 'video.m4s', await fetchFile(request.blob[0]));
-    //             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob[1]));
-    //             await ffmpeg.run('-i', 'video.m4s', '-i', 'audio.m4s', '-map', '0:v', '-map', '1:a','-c', 'copy', 'final.mkv');
-    //             out = ffmpeg.FS('readFile', 'final.mkv');
-    //             downloadName = request.filename + ".mkv";
-    //             dl = URL.createObjectURL(new Blob([out.buffer]));
-    //         }
-    //         if(request.requestType === 'songRecord'){
-    //             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(request.blob));
-    //             await ffmpeg.run('-i', 'audio.m4s','-c', 'copy', '-metadata', `title=${utf8Encode(request.metadata.title)}`,'-metadata', `artist=${utf8Encode(request.metadata.artist)}`,'-metadata', `description=${utf8Encode(request.metadata.description)}`, '-metadata', `lyrics=${request.metadata.lyrics}`, '-metadata', `year=${request.metadata.year}`, 'final.m4a');
-    //             out = ffmpeg.FS('readFile', 'final.m4a');
-    //             downloadName = request.filename + ".m4a";
-    //             dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
-    //         }
-    //         const a = document.createElement('a');
-    //         a.style.display = 'none';
-    //         a.href = dl;
-    //         a.download = downloadName;
-    //         document.body.appendChild(a);
-    //         a.click();
-    //         document.body.removeChild(a);
-    //         window.URL.revokeObjectURL(dl);
-    //         sendResponse({'status':'ok'});
-    //     })();
-    // }
         if(request.msg === 'requestOSInfo'){
             chrome.runtime.getPlatformInfo((info)=>{
                 sendResponse({'os':info.os});
@@ -723,45 +439,6 @@ function convertMSToS(time){
 }
 
 /**
- * Maintain and updated the following ups info.
- * Non-duplicated and shrank when unfollow someone.
- *
- * time O(n)
- *
- * API: https://api.bilibili.com/x/relation/followings
- * method: GET
- * url param: vmid->uid, pn->page number.
- * */
-function getFollowingList(UUID) {
-    if(UUID !== -1){
-        fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=8`,{
-            method:"GET",
-            credentials: 'include',
-            body:null
-        })
-            .then(res => res.json())
-            .then(json => {
-                if(json['code']!==0)errorHandler('getNewLive', json['code'], 'getFollowingList()');
-                else if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
-                    let data = json["data"]["attentions"]['uids'];
-                    data.splice(json["data"]["attentions"]['uids'].indexOf(UUID-1+1),1);
-                    chrome.storage.local.get(['following_list'], (flist)=>{
-                        let l = FollowingMemberList.convertFromJSON(flist.following_list);
-                        l.update(data);
-                        for(let uid of data)
-                            l.push(new FollowingMember(uid, ''));
-                        console.log(`Load following list complete. ${l.length()} followings found.`);
-                        chrome.storage.local.set({'following_list':l.toJSONObject()},()=>{});
-                        queryLivingRoom();
-                    });
-                }
-            })
-            .catch(msg =>{errorHandler('getNewLive', msg, 'getFollowingList()');});
-    }
-}
-
-
-/**
  * Check live room status once for all.
  *
  * time O(n^2), may be quicker
@@ -770,10 +447,10 @@ function getFollowingList(UUID) {
  * method: POST
  * attention: not accept cookie.
  * */
-function queryLivingRoom() {
-    chrome.storage.local.get(['following_list', 'uuid'],(info)=>{
-        let FOLLOWING_LIST = FollowingMemberList.convertFromJSON(info.following_list);
-        let body = '{"uids": [' + FOLLOWING_LIST.getUIDList().toString()+']}';
+function queryLivingRoom(uids) {
+    chrome.storage.local.get(['uuid', 'notificationList'],(info)=>{
+        let notificationList = info.notificationList;
+        let body = '{"uids": [' + uids +']}';
         fetch("https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids?requestFrom=rua5",{
             method:"POST",
             credentials: "omit",
@@ -782,97 +459,50 @@ function queryLivingRoom() {
             .then(res => res.json())
             .then(json => {
                 if (json["code"] === 0) {
-                    let ON_AIR_LIST = new FollowingMemberList();
-                    let FOLLOWING_LIST = FollowingMemberList.convertFromJSON(info.following_list);
                     let data = json["data"];
-                    for (let i = 0; i < FOLLOWING_LIST.getUIDList().length; i++) {
-                        if (data[FOLLOWING_LIST.getUIDList()[i] + ""] !== undefined) {
-                            if (data[FOLLOWING_LIST.getUIDList()[i] + ""]["live_status"] === 1) {
-                                let member = new FollowingMember(data[FOLLOWING_LIST.getUIDList()[i] + ""]["uid"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["uname"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["face"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["cover_from_user"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["keyframe"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["room_id"], data[FOLLOWING_LIST.getUIDList()[i] + ""]["title"]);
-                                member.ONAIR = true;
-                                member.TYPE = data[FOLLOWING_LIST.getUIDList()[i] + ""]["broadcast_type"] === 1 ? 1 : 0;
-                                ON_AIR_LIST.push(member);
+                    chrome.notifications.getAll((n)=>{
+                        console.log(notificationList);
+                        console.log(notificationList.length);
+                        for (let k in n){
+                            if (uids.indexOf(k.split(':')[0]-1+1)===-1 && k.split(':')[2]==='live.bilibili.com/'){
+                                chrome.notifications.clear(k);
+                                if (notificationList.indexOf(k.split(':')[1]-1+1)!==-1)
+                                    notificationList.splice(notificationList.indexOf(k.split(':')[1]-1+1),1);
+                                console.log(notificationList.length);
                             }
                         }
-                    }
-                    if (ON_AIR_LIST.list.length > 0) updateList(ON_AIR_LIST);
+                        for (let i = 0; i < uids.length; i++) {
+                            if (data[uids[i]] !== undefined) {
+                                if(data[uids[i]]["live_status"] !== 1 && notificationList.indexOf(data[uids[i]]["room_id"]) !== -1){
+                                    chrome.notifications.clear(`${uids[i]}:${data[uids[i]]["room_id"]}:live.bilibili.com/`);
+                                    notificationList.splice(notificationList.indexOf(data[uids[i]]["room_id"]),1);
+                                }
+                                if (data[uids[i]]["live_status"] === 1 && notificationList.indexOf(data[uids[i]]["room_id"]) === -1) {
+                                    notificationList.push(data[uids[i]]["room_id"]);
+                                    chrome.storage.sync.get(["notification"], (result)=>{
+                                        if(result.notification) {
+                                            console.log(data[uids[i]]["title"] + " " + data[uids[i]]["uname"] + " " + new Date());
+                                            pushNotificationChrome(data[uids[i]]["title"], data[uids[i]]["uname"], data[uids[i]]["room_id"], data[uids[i]]["cover_from_user"], data[uids[i]]["broadcast_type"] === 1 ? 1 : 0, data[uids[i]]["face"], uids[i]);
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                        chrome.storage.local.set({'notificationList': notificationList}, ()=>{});
+                    });
+
                 }
             })
             .catch(msg =>{console.log(msg);errorHandler('getNewVideo', msg, 'queryLivingRoom()');});
     });
 }
 
-/**
- * Update the following list for notification.
- *
- * time: O(n)
- *
- * If the element in the list not on air last time but
- * on air this time, then push a notification to users.
- * If the element in the list on air last time but
- * not on air this time, then clear the notification info
- * for that element for next time push.
- * Otherwise, do nothing.
- * */
-function updateList(ON_AIR_LIST){
-    chrome.storage.local.get(['following_list', 'notification_list'],(info)=>{
-        let FOLLOWING_LIST = FollowingMemberList.convertFromJSON(info.following_list);
-        if(FOLLOWING_LIST.length() > 0){
-            for (let i = 0; i < ON_AIR_LIST.length(); i++) {
-                ON_AIR_LIST.updateStatus(i, FOLLOWING_LIST.get(FOLLOWING_LIST.indexOf(ON_AIR_LIST.get(i))).PUSHED);
-                FOLLOWING_LIST.updateElementOnAirStatus(ON_AIR_LIST.get(i), true);
-            }
-            for (let i = 0; i < FOLLOWING_LIST.length(); i++) {
-                if(FOLLOWING_LIST.get(i).ONAIR){
-                    if(ON_AIR_LIST.indexOf(FOLLOWING_LIST.get(i))===-1){
-                        let NOTIFICATION_LIST = NotificationList.convertFromJSON(info.notification_list);
-                        NOTIFICATION_LIST.remove(FOLLOWING_LIST.get(i).ROOM_URL);
-                        chrome.storage.local.set({'notification_list': NOTIFICATION_LIST.toJSONObject()},()=>{});
-                        FOLLOWING_LIST.get(i).COVER = undefined;
-                        FOLLOWING_LIST.get(i).FACE = undefined;
-                        FOLLOWING_LIST.get(i).KEYFRAME = undefined;
-                        FOLLOWING_LIST.get(i).ROOM_URL = undefined;
-                        FOLLOWING_LIST.get(i).TITLE = undefined;
-                        FOLLOWING_LIST.updateStatus(i, false);
-                        FOLLOWING_LIST.updateElementOnAirStatus(FOLLOWING_LIST.get(i),false);
-                    }else{
-                        if (!FOLLOWING_LIST.get(i).PUSHED){
-                            FOLLOWING_LIST.updateStatus(i, true);
-                            console.log(FOLLOWING_LIST.get(i).TITLE + " " + FOLLOWING_LIST.get(i).NAME+" "+new Date());
-                            chrome.storage.sync.get(["notification"], (result)=>{
-                                if(result.notification)
-                                    pushNotificationChrome(FOLLOWING_LIST.get(i).TITLE,
-                                        FOLLOWING_LIST.get(i).NAME,
-                                        FOLLOWING_LIST.get(i).ROOM_URL,
-                                        FOLLOWING_LIST.get(i).COVER,
-                                        FOLLOWING_LIST.get(i).TYPE,
-                                        FOLLOWING_LIST.get(i).FACE);
-                            });
-                        }
-                    }
-                }
-            }
-            chrome.storage.local.set({'following_list':FOLLOWING_LIST.toJSONObject()},()=>{});
-        }
-    });
-    // chrome.alarms.clear('getNewLive').then(a=>{
-    //     chrome.alarms.create('getNewLive', {'when':Date.now()+10000});
-    // });
-}
-
-function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face){
+function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face, uid){
     try{
-        chrome.storage.local.get('notification_list', (info)=>{
-            let uid = Math.random();
-            let NOTIFICATION_LIST = NotificationList.convertFromJSON(info.notification_list);
-            NOTIFICATION_LIST.push(roomUrl, uid+":"+roomUrl);
-            chrome.storage.local.set({'notification_list':NOTIFICATION_LIST.toJSONObject()},()=>{});
-            let msg = liverName + " 开播啦!\r\n是"+(type===0?"电脑":"手机")+"直播！";
-            chrome.storage.local.get(["imageNotice"], (result)=>{
-                result.imageNotice?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, face, "live.bilibili.com/");
-            });
+        let msg = liverName + " 开播啦!\r\n是"+(type===0?"电脑":"手机")+"直播！";
+        chrome.storage.local.get(["imageNotice"], (result)=>{
+            result.imageNotice?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, face, "live.bilibili.com/");
         });
-
     }catch (e){}
 }
 
@@ -1145,15 +775,8 @@ function videoNotify(push, UUID){
                         if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
                             let data = json["data"]["attentions"]['uids'];
                             data.splice(json["data"]["attentions"]['uids'].indexOf(UUID-1+1),1);
-                            chrome.storage.local.get(['following_list'], (flist)=>{
-                                let l = FollowingMemberList.convertFromJSON(flist.following_list);
-                                l.update(data);
-                                for(let uid of data)
-                                    l.push(new FollowingMember(uid, ''));
-                                console.log(`Load following list complete. ${l.length()} followings found.`);
-                                chrome.storage.local.set({'following_list':l.toJSONObject()},()=>{});
-                                queryLivingRoom();
-                            });
+                            console.log(`Load following list complete. ${data.length} followings found.`);
+                            queryLivingRoom(data);
                         }
                         if(result.dynamicPush){
                             let o = json["data"]["cards"];
@@ -1272,13 +895,12 @@ function getNewUnread(init){
                 if (json.code === 0){
                     chrome.storage.sync.get(['unreadSwitch'], (r)=>{
                         if(r.unreadSwitch){
-                            if(!init && (json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']) - unreadData['chat'] > 0){
+                            if(!init && (json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']) - result.unreadMessage > 0){
                                 chrome.notifications.clear('-276491:reply:message.bilibili.com/#/');
-                                basicNotification(-276491, `你收到了${(json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']) - unreadData['chat']}条新私信`, '', `reply`, '', `message.bilibili.com/#/`);
+                                basicNotification(-276491, `你收到了${(json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']) - result.unreadMessage}条新私信`, '', `reply`, '', `message.bilibili.com/#/`);
                             }
                         }
-                        unreadData.chat = (json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']);
-                        chrome.storage.local.set({"unreadData":JSON.stringify(unreadData)}, ()=>{});
+                        chrome.storage.local.set({"unreadMessage":(json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread'])}, ()=>{});
                     });
                     chrome.alarms.clear('getUnread').then(a=>{
                         chrome.alarms.create('getUnread', {'when':Date.now()+10000});

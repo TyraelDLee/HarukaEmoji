@@ -1,15 +1,33 @@
 {
   "name": "rua豹器",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "5.10",
-  "browser_action": {
+  "description": "rua!",
+  "declarative_net_request": {
+    "rule_resources": [{
+      "id": "cookieOmit",
+      "enabled": false,
+      "path": "ruleSet/cookieOmit.json"
+    },{
+      "id": "redirect",
+      "enabled": false,
+      "path": "ruleSet/redirect.json"
+    },{
+      "id": "addSource",
+      "enabled": true,
+      "path": "ruleSet/addSource.json"
+    },{
+      "id": "danmakuSource",
+      "enabled": true,
+      "path": "ruleSet/danmakuSource.json"
+    }]
+  },
+  "permissions": ["alarms", "cookies", "contextMenus", "storage", "notifications", "declarativeNetRequest", "declarativeNetRequestFeedback"],
+  "action": {
     "default_popup": "popup.html"
   },
-  "description": "rua!",
-  "permissions": ["cookies","contextMenus","storage","notifications","webRequest","webRequestBlocking","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "https://*.hdslb.com/*", "https://api.vc.bilibili.com/", "https://tyrael-lee.gitee.io/", "https://tyraeldlee.github.io/", "*://*.bilivideo.com/", "*://*.akamaized.net/"],
   "background": {
-    "scripts": ["ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/background.min.js"],
-    "persistent": true
+    "service_worker": "js/sw.min.js"
   },
   "icons": {
     "16": "images/haruka16.png",
@@ -43,14 +61,14 @@
   },{
     "all_frames": true,
     "css": ["css/host.min.css", "css/button.min.css", "css/tips.min.css"],
-    "js": ["ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/WebHost.min.js"],
+    "js": ["js/WebHost.min.js"],
     "matches": [ "*://live.bilibili.com/*", "*://live.bilibili.com/record/*","*://live.bilibili.com/blanc/*?liteVersion=true"],
     "exclude_matches": ["*://live.bilibili.com/21652717*", "*://live.bilibili.com/record/21652717*", "*://live.bilibili.com/blanc/21652717?liteVersion=true","*://live.bilibili.com/21413565*", "*://live.bilibili.com/record/21413565*","*://live.bilibili.com/blanc/21413565?liteVersion=true","*://live.bilibili.com/1603600*", "*://live.bilibili.com/record/1603600*","*://live.bilibili.com/blanc/1603600?liteVersion=true"],
     "run_at": "document_end"
   },{
     "all_frames": true,
     "css": ["css/host.min.css", "css/button.min.css", "css/videos.min.css"],
-    "js": ["ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/protobuf.js", "js/ADT.js", "js/DanmakuToAss.js", "js/VideoHost.min.js"],
+    "js": ["ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/protobuf.js", "js/ADT.js", "js/DanmakuToAss.min.js", "js/VideoHost.min.js"],
     "matches": ["*://www.bilibili.com/video/*"],
     "run_at": "document_end"
   },{
@@ -66,6 +84,20 @@
     "matches": ["*://www.bilibili.com/audio/*"],
     "run_at": "document_end"
   }],
-  "web_accessible_resources": ["images/*", "css/*", "js/*", "ffmpeg/*"],
-  "content_security_policy": "script-src 'self' 'unsafe-eval' https://api.live.bilibili.com; object-src 'self'"
+  "web_accessible_resources": [{"resources": ["images/*", "css/*", "js/*", "ffmpeg/*"], "matches": ["https://*/*"]}],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "host_permissions": [
+    "https://api.live.bilibili.com/*",
+    "https://api.bilibili.com/*",
+    "https://live.bilibili.com/",
+    "https://www.bilibili.com/",
+    "https://*.hdslb.com/*",
+    "https://api.vc.bilibili.com/",
+    "https://tyrael-lee.gitee.io/",
+    "https://tyraeldlee.github.io/",
+    "*://*.bilivideo.com/",
+    "*://*.akamaized.net/"
+  ]
 }
