@@ -68,7 +68,7 @@
   },{
     "all_frames": true,
     "css": ["css/host.min.css", "css/button.min.css", "css/videos.min.css"],
-    "js": ["ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/protobuf.js", "js/ADT.js", "js/DanmakuToAss.min.js", "js/VideoHost.min.js"],
+    "js": ["ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/protobuf.min.js","js/ADT.js", "js/DanmakuToAss.min.js", "js/VideoHost.min.js"],
     "matches": ["*://www.bilibili.com/video/*"],
     "run_at": "document_end"
   },{

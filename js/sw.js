@@ -279,7 +279,7 @@ chrome.runtime.onInstalled.addListener(async function (obj){
             chrome.storage.local.set({'rua_lastDK':"1970-01-01"}, ()=>{});
     });
     await chrome.storage.local.set({"imageNotice": false}, function(){});
-    await chrome.storage.sync.set({"notification": true, "medal": true, "checkIn": true, "bcoin": true, "qn": true, "qnvalue": "原画", "dynamicPush":true, "hiddenEntry":false, "daka":true, "record":true, "prerecord":300, "enhancedHiddenEntry":false, "unreadSwitch":true, "dynamicSwitch":true}, function(){});
+    await chrome.storage.sync.set({"notification": true, "medal": true, "checkIn": true, "bcoin": true, "qn": true, "qnvalue": "原画", "dynamicPush":true, "hiddenEntry":false, "daka":true, "record":false, "prerecord":300, "enhancedHiddenEntry":false, "unreadSwitch":true, "dynamicSwitch":true}, function(){});
 
     /**
      * Context menu section.
@@ -290,8 +290,8 @@ chrome.runtime.onInstalled.addListener(async function (obj){
 
     // local states
     chrome.alarms.create('checkUpd', {'when':Date.now(), periodInMinutes:60*12});
-    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "dynamic_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0, 'dynamicList':[], 'notificationList':[]}, ()=>{});
-    await reloadCookies();
+    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "dynamic_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true}, ()=>{});
+    chrome.alarms.create('getUID_CSRF', {'when': Date.now(), periodInMinutes:0.3});
 });
 
 chrome.contextMenus.onClicked.addListener((info)=>{
@@ -354,6 +354,7 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
  * */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     //importScripts("./../ffmpeg/ffmpeg.min.js","./../ffmpeg/ffmpeg-core.js");
+    console.log(request.msg);
         if(request.msg === "get_LoginInfo"){
             chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
                 function (jct) {
@@ -493,7 +494,7 @@ function queryLivingRoom(uids) {
 
                 }
             })
-            .catch(msg =>{console.log(msg);errorHandler('getNewVideo', msg, 'queryLivingRoom()');});
+            .catch(msg =>{console.log(msg);errorHandler('getNewVideos', msg, 'queryLivingRoom()');});
     });
 }
 
@@ -609,11 +610,10 @@ function reloadCookies() {
                 if (uids.uuid !== -1 && uids.uuid !== uids.p_uuid) {
                     // log in info changed then load following list and start update liver stream info every 3 min.
                     console.log("Session info got.");
-                    //getFollowingList(uids.uuid);
-                    videoNotify(false, uids.uuid);
+                    chrome.alarms.create('getNewVideos',{'when': Date.now(), periodInMinutes: 0.2});
+                    chrome.alarms.create('getNewUnreads', {'when': Date.now()+1000, periodInMinutes: 0.2});
+                    chrome.alarms.create('getNewDynamics', {'when': Date.now()+2000, periodInMinutes: 0.2});
                     scheduleCheckIn();
-                    getNewUnread(true);
-                    dynamicNotify(true);
                 }
                 chrome.storage.local.set({'p_uuid': uids.uuid},()=>{});
             });
@@ -621,9 +621,6 @@ function reloadCookies() {
 
     chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
         function (jct) {(jct === null)?chrome.storage.local.set({'jct':-1}, ()=>{}):chrome.storage.local.set({'jct':jct.value}, ()=>{})});
-    chrome.alarms.clear('getUID_CSRF').then(c =>{
-        chrome.alarms.create('getUID_CSRF', {'when': Date.now()+20000})
-    });
 }
 
 chrome.alarms.onAlarm.addListener((alarm)=>{
@@ -634,17 +631,20 @@ chrome.alarms.onAlarm.addListener((alarm)=>{
     if (alarm.name === 'checkUpd'){
         checkUpdate("https://tyrael-lee.gitee.io/harukaemoji/?_=")
     }
-    chrome.storage.local.get(null, (key)=>{
-        console.log(key);
-    })
+    // chrome.storage.local.get(null, (key)=>{
+    //     console.log(key);
+    // })
     chrome.storage.local.get(['uuid', 'jct'], (info)=>{
         switch (alarm.name) {
-            case 'getNewVideo':
-                videoNotify(true, info.uuid);
+            case 'getNewVideos':
+                videoNotify(null, info.uuid);
                 break;
-            // case 'getNewLive':
-            //     getFollowingList(info.uuid);
-            //     break;
+            case 'getNewUnreads':
+                getNewUnread();
+                break;
+            case 'getNewDynamics':
+                dynamicNotify();
+                break;
             case 'checkIn':
                 checkingIn();
                 break;
@@ -653,12 +653,6 @@ chrome.alarms.onAlarm.addListener((alarm)=>{
                 break;
             case 'bcoin':
                 queryBcoin();
-                break;
-            case 'getNewDynamic':
-                dynamicNotify();
-                break;
-            case 'getUnread':
-                getNewUnread();
                 break;
         }
     });
@@ -690,13 +684,20 @@ function checkingIn(){
 function errorHandler(handler, msg, at){
     console.log("ERROR found @ "+new Date()+":");
     console.log(`${msg} at function ${at}`);
+    if (handler.includes('Dynamic')){
+        chrome.storage.local.set({'dynamicInit':true},()=>{});
+    }else if (handler.includes('Video')){
+        chrome.storage.local.set({'videoInit':true},()=>{});
+    }else if (handler.includes('Unread')){
+        chrome.storage.local.set({'unreadInit':true},()=>{});
+    }
     if(typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412  || msg == -412){
         chrome.alarms.clear(handler).then(c =>{
-            chrome.alarms.create(handler, {'when': Date.now()+1500000})
+            chrome.alarms.create(handler, {'when': Date.now()+1500000, periodInMinutes:0.6});
         });
     }else{
         chrome.alarms.clear(handler).then(c =>{
-            chrome.alarms.create(handler, {'when': Date.now()+20000})
+            chrome.alarms.create(handler, {'when': Date.now()+20000, periodInMinutes:0.6});
         });
     }
 }
@@ -759,8 +760,8 @@ function queryBcoin(){
 /**
  * Check and notify dynamic update section.
  * */
-function videoNotify(push, UUID){
-    chrome.storage.local.get('dynamic_id_list', (info)=>{
+function videoNotify(UUID){
+    chrome.storage.local.get(['dynamic_id_list', 'videoInit'], (info)=>{
         let dynamic_id_list = info.dynamic_id_list;
         fetch("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=8,512,4097,4098,4099,4100,4101",{
             method:"GET",
@@ -770,7 +771,7 @@ function videoNotify(push, UUID){
             .then(res => res.json())
             .then(json => {
                 chrome.storage.sync.get(["dynamicPush"], (result)=>{
-                    if (json['code']!==0) errorHandler('getNewVideo', json['code'], 'videoNotify()');
+                    if (json['code']!==0) errorHandler('getNewVideos', json['code'], 'videoNotify()');
                     else if(json["code"] === 0){
                         if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
                             let data = json["data"]["attentions"]['uids'];
@@ -783,32 +784,29 @@ function videoNotify(push, UUID){
                             for (let i = 0; i < o.length; i++) {
                                 let c = JSON.parse(o[i+""]["card"]);
                                 let type = o[i+""]["desc"]["type"];
-                                if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
-                                    if(push || push === undefined){
-                                        if(type === 8){
-                                            console.log("你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！"+c["title"]+" see:"+o[i+""]["desc"]["bvid"]);
-                                            basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], o[i+'']["desc"]["user_profile"]["info"]["face"], "b23.tv/");
-                                        }else if(type >= 512 && type <= 4101){
-                                            console.log("你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！"+c["index"]+" see:"+c["url"]);
-                                            basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！",c["new_desc"],c["url"].replace("https://www.bilibili.com/",""), c["cover"],"www.bilibili.com/");
-                                        }
+                                if(!info.videoInit && !dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
+                                    if(type === 8){
+                                        console.log("你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！"+c["title"]+" see:"+o[i+""]["desc"]["bvid"]);
+                                        basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], o[i+'']["desc"]["user_profile"]["info"]["face"], "b23.tv/");
+                                    }else if(type >= 512 && type <= 4101){
+                                        console.log("你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！"+c["index"]+" see:"+c["url"]);
+                                        basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！",c["new_desc"],c["url"].replace("https://www.bilibili.com/",""), c["cover"],"www.bilibili.com/");
                                     }
-                                    dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
                                 }
+                                dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
                             }
                             chrome.storage.local.set({"dynamic_id_list": dynamic_id_list}, ()=>{});
                         }
                     }
+                    chrome.storage.local.set({'videoInit': false}, ()=>{});
                 });
-                chrome.alarms.clear('getNewVideo').then(a=>{
-                    chrome.alarms.create('getNewVideo', {'when':Date.now()+10000});
-                });
-            }).catch(msg =>{errorHandler('getNewVideo',msg, 'videoNotify()');});
+            }).catch(msg =>{errorHandler('getNewVideos',msg, 'videoNotify()');});
+
     });
 }
 
-function dynamicNotify(push){
-    chrome.storage.local.get(['dynamicList'], (r)=>{
+function dynamicNotify(){
+    chrome.storage.local.get(['dynamicList', 'dynamicInit'], (r)=>{
         let dynamic_id_list = r.dynamicList;
         fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=1,2,4`,{
             method:'GET',
@@ -818,7 +816,7 @@ function dynamicNotify(push){
             .then(r=>r.json())
             .then(json=>{
                 if(json['code']!==0){
-                    errorHandler('getNewDynamic', json['code'], 'dynamicNotify()');
+                    errorHandler('getNewDynamics', json['code'], 'dynamicNotify()');
                 }else{
                     chrome.storage.sync.get(['dynamicSwitch'], (result=>{
                         let o = json["data"]["cards"];
@@ -826,7 +824,7 @@ function dynamicNotify(push){
                             let c = JSON.parse(o[i+""]["card"]);
                             let type = o[i+""]["desc"]["type"];
                             if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
-                                if(!push && result.dynamicSwitch){
+                                if(!r.dynamicInit && result.dynamicSwitch){
                                     switch (type){
                                         case 1:
                                             console.log("你关注的up "+c["user"]["uname"]+" 转发了一条新动态 "+c['item']['content']+" see:"+`https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);
@@ -846,18 +844,16 @@ function dynamicNotify(push){
                             }
                         }
                         chrome.storage.local.set({'dynamicList':dynamic_id_list}, ()=>{});
-                        chrome.alarms.clear('getNewDynamic').then(a=>{
-                            chrome.alarms.create('getNewDynamic', {'when':Date.now()+10000});
-                        });
                     }));
                 }
+                chrome.storage.local.set({'dynamicInit': false},()=>{});
             })
-            .catch(e=>{errorHandler('getNewDynamic', e, 'dynamicNotify()')});
+            .catch(e=>{errorHandler('getNewDynamics', e, 'dynamicNotify()')});
     });
 }
 
-function getNewUnread(init){
-    chrome.storage.local.get(["unreadData"], async (result)=>{
+function getNewUnread(){
+    chrome.storage.local.get(["unreadData", "unreadInit"], async (result)=>{
         let unreadData = JSON.parse(result.unreadData);
         await fetch('https://api.bilibili.com/x/msgfeed/unread',{
             method:'GET',
@@ -869,7 +865,7 @@ function getNewUnread(init){
                 if(json.code === 0){
                     chrome.storage.sync.get(['unreadSwitch'], (r)=>{
                         if(r.unreadSwitch){
-                            if(!init && (json['data']['at'] - unreadData['at']>0 || json['data']['like'] - unreadData['like']>0 || json['data']['reply'] - unreadData['reply']>0 || json['data']['sys_msg'] - unreadData['sys_msg']>0 || json['data']['up'] - unreadData['up']>0)) {
+                            if(!result.unreadInit && (json['data']['at'] - unreadData['at']>0 || json['data']['like'] - unreadData['like']>0 || json['data']['reply'] - unreadData['reply']>0 || json['data']['sys_msg'] - unreadData['sys_msg']>0 || json['data']['up'] - unreadData['up']>0)) {
                                 let msgContent = `${json['data']['at'] - unreadData['at'] > 0 ? json['data']['at'] - unreadData['at'] + '个@, ' : ''}${json['data']['like'] - unreadData['like'] > 0 ? json['data']['like'] - unreadData['like'] + '个赞, ' : ''}${json['data']['reply'] - unreadData['reply'] > 0 ? json['data']['reply'] - unreadData['reply'] + '个回复, ' : ''}${json['data']['sys_msg'] - unreadData['sys_msg'] > 0 ? json['data']['sys_msg'] - unreadData['sys_msg'] + '个系统通知, ' : ''}${json['data']['up'] - unreadData['up'] > 0 ? json['data']['up'] - unreadData['up'] + '个up助手提醒, ' : ''}`;
                                 chrome.notifications.clear('-276492:reply:message.bilibili.com/#/');
                                 basicNotification(-276492, "你收到了新的消息:", msgContent.substring(0, msgContent.length-2), `reply`, '', `message.bilibili.com/#/`);
@@ -879,11 +875,11 @@ function getNewUnread(init){
                         }
                     });
                 }else{
-                    errorHandler('getUnread', json.code, 'getUnread()');
+                    errorHandler('getNewUnreads', json.code, 'getUnread()');
                 }
             })
             .catch(e=>{
-                errorHandler('getUnread', e, 'getUnread()');
+                errorHandler('getNewUnreads', e, 'getUnread()');
             });
         await fetch('https://api.vc.bilibili.com/session_svr/v1/session_svr/single_unread', {
             method:'GET',
@@ -895,15 +891,12 @@ function getNewUnread(init){
                 if (json.code === 0){
                     chrome.storage.sync.get(['unreadSwitch'], (r)=>{
                         if(r.unreadSwitch){
-                            if(!init && (json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']) - result.unreadMessage > 0){
+                            if(!result.unreadInit && (json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']) - result.unreadMessage > 0){
                                 chrome.notifications.clear('-276491:reply:message.bilibili.com/#/');
                                 basicNotification(-276491, `你收到了${(json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread']) - result.unreadMessage}条新私信`, '', `reply`, '', `message.bilibili.com/#/`);
                             }
                         }
                         chrome.storage.local.set({"unreadMessage":(json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread'])}, ()=>{});
-                    });
-                    chrome.alarms.clear('getUnread').then(a=>{
-                        chrome.alarms.create('getUnread', {'when':Date.now()+10000});
                     });
                 }else{
                     errorHandler('getUnread', 'getUnread()');
@@ -912,6 +905,7 @@ function getNewUnread(init){
             .catch(e=>{
                 errorHandler('getUnread', e, 'getUnread()');
             });
+        chrome.storage.local.set({'unreadInit': false},()=>{});
     });
 }
 

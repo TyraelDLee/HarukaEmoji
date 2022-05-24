@@ -67,5 +67,5 @@
     "run_at": "document_end"
   }],
   "web_accessible_resources": ["images/*", "css/*", "js/*", "ffmpeg/*"],
-  "content_security_policy": "script-src 'self' 'unsafe-eval' https://api.live.bilibili.com; object-src 'self'"
+  "content_security_policy": "script-src 'self' https://api.live.bilibili.com; object-src 'self'"
 }

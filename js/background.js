@@ -294,7 +294,7 @@ class CRC32{
         chrome.storage.sync.set({"dynamicPush":true}, function (){dynamicPush = true});
         chrome.storage.sync.set({"hiddenEntry":false}, function (){hiddenEntry = false});
         chrome.storage.sync.set({"daka":true}, function (){dakaSwitch = true});
-        chrome.storage.sync.set({"record":true});
+        chrome.storage.sync.set({"record":false});
         chrome.storage.sync.set({"prerecord":300}, function (){});
         chrome.storage.sync.set({'enhancedHiddenEntry':false}, function (){});
         chrome.storage.sync.set({'unreadSwitch':true}, function (){});
