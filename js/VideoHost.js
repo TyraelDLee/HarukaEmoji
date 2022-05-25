@@ -461,43 +461,41 @@
     }
 
     async function internalDownload(url, fileName, cid, hostObj, requestType){
-        let hostItem = hostObj.getElementsByClassName("rua-quality-des")[0].innerText, blobURL = [], audioMeta = {};
-        hostObj.removeAttribute("title");
-        blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'?'视频':'');
-        if(requestType==='hdrRecord' || requestType==='8kRecord')
-            blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频');
-        if(requestType==='audioRecord')
-            audioMeta = await getAudioMeta();
-
-        encode(blobURL, fileName, requestType, audioMeta).then(r=>{
-            hostObj.removeAttribute("style");
-            hostObj.removeAttribute("title");
-            hostObj.classList.remove('rua-downloading');
-            hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
-            window.URL.revokeObjectURL(blobURL[0]);
-            if (requestType === 'hdrRecord' || requestType==='8kRecord')
-            window.URL.revokeObjectURL(blobURL[1]);
+        let controller = new AbortController();
+        let fileSize = 0, hostItem = hostObj.getElementsByClassName("rua-quality-des")[0].innerText, blobURL = [], audioMeta = {};
+        await fetch(url[0], {
+            method:"GET",
+            body: null,
+            signal:controller.signal
+        }).then(response => {
+            fileSize = response.headers.get("Content-Length");
+            controller.abort();
         });
-        // await chrome.runtime.sendMessage({
-        //     msg: "requestEncode",
-        //     blob: blobURL,
-        //     filename: fileName,
-        //     startTime: -1,
-        //     duration: -1,
-        //     requestType: requestType,
-        //     metadata: audioMeta
-        // }, function (status) {
-        //     console.log(status.status);
-        //     if (status.status === 'ok') {
-        //         hostObj.removeAttribute("style");
-        //         hostObj.removeAttribute("title");
-        //         hostObj.classList.remove('rua-downloading');
-        //         hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
-        //         window.URL.revokeObjectURL(blobURL[0]);
-        //         if (requestType === 'hdrRecord')
-        //             window.URL.revokeObjectURL(blobURL[1]);
-        //     }
-        // });
+        hostObj.getElementsByClassName("rua-quality-des")[0].innerText = `取流中...`;
+        if(fileSize < 1.5 * 1024 * 1024 * 1024){
+            hostObj.removeAttribute("title");
+            blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'?'视频':'');
+            if(requestType==='hdrRecord' || requestType==='8kRecord')
+                blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频');
+            if(requestType==='audioRecord')
+                audioMeta = await getAudioMeta();
+
+            encode(blobURL, fileName, requestType, audioMeta).then(r=>{
+                hostObj.removeAttribute("style");
+                hostObj.removeAttribute("title");
+                hostObj.classList.remove('rua-downloading');
+                hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
+                window.URL.revokeObjectURL(blobURL[0]);
+                if (requestType === 'hdrRecord' || requestType==='8kRecord')
+                    window.URL.revokeObjectURL(blobURL[1]);
+            });
+        }else{
+            hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
+            chrome.runtime.sendMessage({msg:"requestDownload", url: url[0], fileName:fileName+".mp4"}, (callback)=>{
+                if(requestType==='hdrRecord' || requestType==='8kRecord')
+                    chrome.runtime.sendMessage({msg:"requestDownload", url: url[1], fileName:fileName+"-audio.m4a"},(c)=>{});
+            });
+        }
     }
 
     async function encode(blob, filename, requestType, metadata){
@@ -575,7 +573,6 @@
 
     async function dash(url, hostObj, cid, hostItem, dispTag){
         let size=0, get=0;
-        //db.allocObjectStorage('video');
         return fetch(url,{
             method:"GET",
             body:null
@@ -684,16 +681,7 @@
     }
 
     function downloadSegments(durl, fileName, currentLocation, totalSize){
-        chrome.runtime.sendMessage({msg:"requestDownload", url: durl[currentLocation]["url"], fileName:(fileName+(durl.length===1?"":"_p"+currentLocation))+new URL(durl[currentLocation]["url"])["pathname"].toString().substring(new URL(durl[currentLocation]["url"])["pathname"].toString().length-4,new URL(durl[currentLocation]["url"])["pathname"].toString().length)});
-        // const a = document.createElement('a');
-        // document.body.appendChild(a);
-        // a.style.display = 'none';
-        // a.href = url;
-        // a.target = "_Blank";
-        // a.referrerPolicy = "unsafe-url";
-        // a.download;
-        // a.click();
-        // document.body.removeChild(a);
+        chrome.runtime.sendMessage({msg:"requestDownload", url: durl[currentLocation]["url"], fileName:(fileName+(durl.length===1?"":"_p"+currentLocation))+new URL(durl[currentLocation]["url"])["pathname"].toString().substring(new URL(durl[currentLocation]["url"])["pathname"].toString().length-4,new URL(durl[currentLocation]["url"])["pathname"].toString().length)},(callback)=>{});
         currentLocation=currentLocation+1;
         if(currentLocation<totalSize){
             setTimeout(()=>{

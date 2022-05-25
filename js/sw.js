@@ -380,7 +380,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
         if(request.msg === "popupfired"){setBadge("rua豹器", "");}
         if(request.msg === "requestDownload"){
             chrome.downloads.download({filename: request.fileName, url: request.url},()=>{});
-
+            sendResponse({res:'ok'});
         }
         if(request.msg === "requestDanmaku"){
             let danmakuBulider = new DanmakuArr(), crc = new CRC32();
