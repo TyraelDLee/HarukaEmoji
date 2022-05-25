@@ -684,17 +684,16 @@
     }
 
     function downloadSegments(durl, fileName, currentLocation, totalSize){
-        const url = durl[currentLocation]["url"]+"&requestFrom=ruaDL";
-        chrome.runtime.sendMessage({msg:"requestDownload", fileName:(fileName+(durl.length===1?"":"_p"+currentLocation))});
-        const a = document.createElement('a');
-        document.body.appendChild(a);
-        a.style.display = 'none';
-        a.href = url;
-        a.target = "_Blank";
-        a.referrerPolicy = "unsafe-url";
-        a.download;
-        a.click();
-        document.body.removeChild(a);
+        chrome.runtime.sendMessage({msg:"requestDownload", url: durl[currentLocation]["url"], fileName:(fileName+(durl.length===1?"":"_p"+currentLocation))+new URL(durl[currentLocation]["url"])["pathname"].toString().substring(new URL(durl[currentLocation]["url"])["pathname"].toString().length-4,new URL(durl[currentLocation]["url"])["pathname"].toString().length)});
+        // const a = document.createElement('a');
+        // document.body.appendChild(a);
+        // a.style.display = 'none';
+        // a.href = url;
+        // a.target = "_Blank";
+        // a.referrerPolicy = "unsafe-url";
+        // a.download;
+        // a.click();
+        // document.body.removeChild(a);
         currentLocation=currentLocation+1;
         if(currentLocation<totalSize){
             setTimeout(()=>{

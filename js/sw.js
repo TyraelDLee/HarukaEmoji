@@ -290,7 +290,8 @@ chrome.runtime.onInstalled.addListener(async function (obj){
 
     // local states
     chrome.alarms.create('checkUpd', {'when':Date.now(), periodInMinutes:60*12});
-    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "dynamic_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true}, ()=>{});
+    chrome.alarms.create('renewDakaList', {'when':Date.now(), periodInMinutes:15});
+    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "dynamic_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[]}, ()=>{});
     chrome.alarms.create('getUID_CSRF', {'when': Date.now(), periodInMinutes:0.3});
 });
 
@@ -378,7 +379,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
         }
         if(request.msg === "popupfired"){setBadge("rua豹器", "");}
         if(request.msg === "requestDownload"){
-            chrome.storage.local.set({'downloadFileName':request.fileName},()=>{});
+            chrome.downloads.download({filename: request.fileName, url: request.url},()=>{});
+
         }
         if(request.msg === "requestDanmaku"){
             let danmakuBulider = new DanmakuArr(), crc = new CRC32();
@@ -582,10 +584,10 @@ chrome.notifications.onClicked.addListener(function (nid) {
 });
 
 //setTimeout(loadSetting, 100);
-function scheduleCheckIn(){
-    chrome.alarms.create('checkIn', {'when':Date.now(), periodInMinutes:60*12});
-    chrome.alarms.create('bcoin', {'when':Date.now(), periodInMinutes:60*12});
-    chrome.alarms.create('daka', {'when':Date.now(), periodInMinutes: 60});
+function scheduleCheckIn(shift){
+    chrome.alarms.create('checkIn', {'when':Date.now()+shift, periodInMinutes:60*12});
+    chrome.alarms.create('bcoin', {'when':Date.now()+1000+shift, periodInMinutes:60*12});
+    chrome.alarms.create('daka', {'when':Date.now()+2000+shift, periodInMinutes:60*6});
 }
 
 /**
@@ -603,7 +605,7 @@ function reloadCookies() {
                     chrome.alarms.getAll((alarms)=>{
                         for(let name of alarms){
                             console.log(`alarm ${name.name} found`);
-                            if (name.name !== 'checkUpd') chrome.alarms.clear(name.name).then(r=>{console.log(`${name.name} was cleared ${r}`)});
+                            if (name.name !== 'checkUpd' && name.name!=='renewDakaList') chrome.alarms.clear(name.name).then(r=>{console.log(`${name.name} was cleared ${r}`)});
                         }
                     })
                 }
@@ -613,7 +615,7 @@ function reloadCookies() {
                     chrome.alarms.create('getNewVideos',{'when': Date.now(), periodInMinutes: 0.2});
                     chrome.alarms.create('getNewUnreads', {'when': Date.now()+1000, periodInMinutes: 0.2});
                     chrome.alarms.create('getNewDynamics', {'when': Date.now()+2000, periodInMinutes: 0.2});
-                    scheduleCheckIn();
+                    scheduleCheckIn(3000);
                 }
                 chrome.storage.local.set({'p_uuid': uids.uuid},()=>{});
             });
@@ -631,9 +633,6 @@ chrome.alarms.onAlarm.addListener((alarm)=>{
     if (alarm.name === 'checkUpd'){
         checkUpdate("https://tyrael-lee.gitee.io/harukaemoji/?_=")
     }
-    // chrome.storage.local.get(null, (key)=>{
-    //     console.log(key);
-    // })
     chrome.storage.local.get(['uuid', 'jct'], (info)=>{
         switch (alarm.name) {
             case 'getNewVideos':
@@ -653,6 +652,9 @@ chrome.alarms.onAlarm.addListener((alarm)=>{
                 break;
             case 'bcoin':
                 queryBcoin();
+                break;
+            case 'renewDakaList':
+                renewDakaList();
                 break;
         }
     });
@@ -910,28 +912,19 @@ function getNewUnread(){
 }
 
 /**
- * Web traffic control section.
- * */
-// id 1: enhanced hidden, 2: hidden, 3: add Origin, 4: send dm
-
-// chrome.webRequest.onHeadersReceived.addListener((details)=>{
-//     if(new URLSearchParams(new URL(details["url"])["search"]).get("requestFrom")==="ruaDL"){
-//         let fileFormat = new URL(details["url"])["pathname"].substr(new URL(details["url"])["pathname"].length-4,4);
-//         if(fileFormat === ".m4s") fileFormat = ".mp3";
-//         chrome.storage.local.get(['downloadFileName'],(info)=>{
-//             details.responseHeaders.push({name:"Content-Disposition", value:"attachment; filename=\""+info.downloadFileName+fileFormat+"\"; filename*=\"UTF-8''"+info.downloadFileName+fileFormat+"\""});
-//         });
-//     }
-//     return {responseHeaders: details.responseHeaders};
-// }, {urls: ["*://*.bilivideo.com/upgcxcode/*", "*://*.akamaized.net/upgcxcode/*"]}, ["responseHeaders", 'blocking']);
-
-/**
  * Live room check in section.
  * */
+function renewDakaList(){
+    chrome.storage.local.get(['rua_lastDK'], (info)=>{
+        if (isNewerThan(info.rua_lastDK.split("-"), (getUTC8Time().getFullYear()+"-"+getUTC8Time().getMonth()+"-"+getUTC8Time().getDate()).split("-"))){
+            chrome.storage.local.set({'dakaUid':[]}, ()=>{});
+        }
+    })
+}
 function checkMedalDaka(){
     chrome.storage.sync.get(["daka"], (result)=>{
         console.log("Grabbing medal info");
-        chrome.storage.local.get(['rua_lastDK', 'jct', 'uuid'], (info=>{
+        chrome.storage.local.get(['rua_lastDK', 'jct', 'uuid', 'dakaUid'], (info=>{
             if(result.daka && (info.rua_lastDK===null || isNewerThan(info.rua_lastDK.split("-"), (getUTC8Time().getFullYear()+"-"+getUTC8Time().getMonth()+"-"+getUTC8Time().getDate()).split("-")))){
                 let medals = [];
                 chrome.storage.local.set({'rua_lastDK':getUTC8Time().getFullYear()+"-"+getUTC8Time().getMonth()+"-"+getUTC8Time().getDate()}, ()=>{});
@@ -942,9 +935,10 @@ function checkMedalDaka(){
                 })
                     .then(res => res.json())
                     .then(json => {
-                        console.log(json["data"]["list"].length+" medal founded.")
+                        console.log(json["data"]["list"].length+" medal founded.");
+                        console.log(info.dakaUid);
                         for (let i = 0; i < json["data"]["list"].length; i++){
-                            if(json["data"]["list"][i]["medal_info"]["today_feed"]<100)
+                            if(info.dakaUid.indexOf(json["data"]["list"][i]["medal_info"]["target_id"])===-1)
                                 medals.push(json["data"]["list"][i]["medal_info"]["target_id"]);
                         }
                         daka(medals, info.jct);
@@ -990,6 +984,11 @@ function daka(medals, JCT){
                         body: DanMuForm
                     }).then(result=>{
                         console.log("打卡成功: https://live.bilibili.com/"+json["data"]["room_id"]);
+                        chrome.storage.local.get('dakaUid', (r)=>{
+                            let list = r.dakaUid;
+                            list.push(medals[index]);
+                            chrome.storage.local.set({'dakaUid':list},()=>{});
+                        })
                         index++;
                         if(index < medals.length){
                             setTimeout(()=>{go()},(Math.random()*5+10)*1000);
@@ -1066,6 +1065,7 @@ function isNewerThan(dateOld, dateNew){
 
 function getUTC8Time(){
     return new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000);
+    // 早8点后才是新的一天。
     //return new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 + 28800000);
 }
 
@@ -1074,7 +1074,7 @@ function setBadge(title, text){
     chrome.action.setBadgeText({text: text});
 }
 
-// This is the service worker for mv3 which some functions are not support yet.
+// This is the service worker for mv3 which some functions may not support yet.
 
 //todo: check in mv3 √
 //todo: stream notification mv3 √
@@ -1084,8 +1084,5 @@ function setBadge(title, text){
 //todo: error handler √
 //todo: update check √
 //todo: context menu √
-//todo: web traffic control
-//todo: hidden
-
-//the dynamic api discontinue probably due to HTTP2 Protocol Error and Error handler not triggered properly...
-//the alarm cannot be triggered less than 1 minute in packed extensions...
+//todo: web traffic control, no needed anymore
+//todo: hidden √

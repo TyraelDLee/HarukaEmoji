@@ -4,6 +4,8 @@
 
     let auid = window.location["pathname"].replaceAll("/", "").replace("audio","").replaceAll('au',''), UID;
     let exp =new RegExp("^\\d*$");
+    if (exp.test(auid))
+        updateJCT();
     new MutationObserver(()=>{
         const n_auid = window.location["pathname"].replaceAll("/", "").replace("audio","").replaceAll('au','');
         if(n_auid!==null && n_auid!==auid && exp.test(n_auid)){
@@ -12,7 +14,6 @@
         }
     }).observe(document, {subtree: true, childList: true});
 
-    updateJCT();
     function updateJCT(){
         try{
             chrome.runtime.sendMessage({msg: "get_LoginInfo"}, function (lf) {

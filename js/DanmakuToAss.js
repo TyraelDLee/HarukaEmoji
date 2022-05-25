@@ -61,7 +61,11 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
     /**
      * Generate danmaku in ass file.
-     * O(n * m) for non-overlapped layout.
+     * O(n * m) for non-overlapped layout. n for number of danmaku items,
+     * m is the number of items can show without overlap at same time,
+     * which is depends on video frame height, if the height is constant
+     * then m is constant.
+     * Due to the font size, currently m is a constant 27, hence O(n)
      * */
     genDanmaku(){
         for (let i = 0; i < this.danmaku.size; i++) {//n

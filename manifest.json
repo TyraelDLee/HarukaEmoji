@@ -22,7 +22,7 @@
       "path": "ruleSet/danmakuSource.json"
     }]
   },
-  "permissions": ["alarms", "cookies", "contextMenus", "storage", "notifications", "declarativeNetRequest", "declarativeNetRequestFeedback"],
+  "permissions": ["alarms", "cookies", "contextMenus", "storage", "notifications", "declarativeNetRequest", "declarativeNetRequestFeedback", "downloads"],
   "action": {
     "default_popup": "popup.html"
   },
