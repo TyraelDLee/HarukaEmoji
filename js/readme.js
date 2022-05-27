@@ -1,7 +1,7 @@
 !function (){
     const iconHost = document.getElementById('rua-icon-host'), icon = document.getElementById('rua-icon'), iconNav = document.getElementById('rua-nav');
     let color = window.matchMedia('(prefers-color-scheme: dark)').matches?'0,0,0':'255,255,255';
-    console.log(window.matchMedia('(prefers-color-scheme: dark)').matches);
+
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
         color = event.matches?'0,0,0':'255,255,255';
         let alpha = iconHost.style.backgroundColor.replace("rgba(0, 0, 0, ","").replace("rgba(255, 255, 255, ","").replace(")","");
@@ -32,8 +32,12 @@
         });
     }
 
+    icon.addEventListener("click", ()=>{
+        goto(0,600);
+    });
+
     function goto(id, duration) {
-        const start = document.documentElement.scrollTop, end = getAbsHeight(id);
+        const start = document.documentElement.scrollTop, end = typeof id==="number"?id:getAbsHeight(id);
         anime(0);
         function anime(step){
             document.documentElement.scrollTop=start+bezier(.17, .89, .45, 1,step/100) * (end-start);

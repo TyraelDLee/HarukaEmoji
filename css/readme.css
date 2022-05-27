@@ -106,6 +106,10 @@ thead{
     fill: #000;
 }
 
+#rua-icon{
+    cursor: pointer;
+}
+
 @media (prefers-color-scheme: dark) {
     a{
         color: #8cb4f7;
