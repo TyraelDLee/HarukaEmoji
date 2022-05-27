@@ -16,11 +16,11 @@
         <item url="file://$PROJECT_DIR$/js/audio.min.js" />
         <item url="file://$PROJECT_DIR$/js/background.min.js" />
         <item url="file://$PROJECT_DIR$/js/biliMain.min.js" />
-        <item url="file://$PROJECT_DIR$/js/danmakuProtobuf.min.js" />
         <item url="file://$PROJECT_DIR$/js/haruka.min.js" />
         <item url="file://$PROJECT_DIR$/js/popup.min.js" />
         <item url="file://$PROJECT_DIR$/js/protobuf.min.js" />
         <item url="file://$PROJECT_DIR$/js/pudding.min.js" />
+        <item url="file://$PROJECT_DIR$/js/readme.min.js" />
         <item url="file://$PROJECT_DIR$/js/seki.min.js" />
         <item url="file://$PROJECT_DIR$/js/sw.min.js" />
         <item url="file://$PROJECT_DIR$/js/yuka.min.js" />
@@ -41,11 +41,11 @@
       <root url="file://$PROJECT_DIR$/js/audio.min.js" />
       <root url="file://$PROJECT_DIR$/js/background.min.js" />
       <root url="file://$PROJECT_DIR$/js/biliMain.min.js" />
-      <root url="file://$PROJECT_DIR$/js/danmakuProtobuf.min.js" />
       <root url="file://$PROJECT_DIR$/js/haruka.min.js" />
       <root url="file://$PROJECT_DIR$/js/popup.min.js" />
       <root url="file://$PROJECT_DIR$/js/protobuf.min.js" />
       <root url="file://$PROJECT_DIR$/js/pudding.min.js" />
+      <root url="file://$PROJECT_DIR$/js/readme.min.js" />
       <root url="file://$PROJECT_DIR$/js/seki.min.js" />
       <root url="file://$PROJECT_DIR$/js/sw.min.js" />
       <root url="file://$PROJECT_DIR$/js/yuka.min.js" />

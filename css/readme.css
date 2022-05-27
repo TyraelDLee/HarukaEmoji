@@ -23,21 +23,6 @@ h1, h2{
     border-bottom: 1px solid hsla(210,18%,87%,1);
 }
 
-.bottom{
-    margin: 0 75px 75px 75px;
-    height: 20px;
-}
-
-.bottom div{
-    cursor: pointer;
-    position: relative;
-    float: left;
-    margin: 0 5px;
-}
-
-.bottom a{
-    text-decoration: none;
-}
 table{
     text-align: center;
     border-collapse: collapse;
@@ -54,8 +39,20 @@ thead{
     background: #eee;
 }
 
-#github-icon{
-    fill: #000;
+.bottom{
+    margin: 0 75px 75px 75px;
+    height: 20px;
+}
+
+.bottom div{
+    cursor: pointer;
+    position: relative;
+    float: left;
+    margin: 0 5px;
+}
+
+.bottom a{
+    text-decoration: none;
 }
 
 .img-dark{
@@ -76,6 +73,39 @@ thead{
     width: 450px;
 }
 
+#rua-icon-host{
+    z-index: 99;
+    top:0;
+    left:0;
+    width: 100%;
+    backdrop-filter: saturate(180%) blur(20px);
+    background-color: rgba(255,255,255,0);
+    position: fixed;
+}
+
+#rua-nav{
+    display: flex;
+    position: absolute;
+    top: 0;
+    right: 75px;
+    color: #fff;
+    text-align: center;
+    line-height: 90px;
+    transition: 0.4s;
+    opacity: 0;
+}
+
+#rua-nav a{
+    text-decoration: none;
+    color: #000;
+    margin: 0 12px;
+    cursor: pointer;
+}
+
+#github-icon{
+    fill: #000;
+}
+
 @media (prefers-color-scheme: dark) {
     a{
         color: #8cb4f7;
@@ -86,16 +116,20 @@ thead{
         color: #fff;
     }
 
-    #github-icon{
-        fill: #fff;
-    }
-
     .img-dark{
         display: block;
     }
 
     .img-light{
         display: none;
+    }
+
+    #rua-nav a{
+        color: #fff;
+    }
+
+    #github-icon{
+        fill: #fff;
     }
 }
 

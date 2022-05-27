@@ -274,7 +274,7 @@ chrome.runtime.onInstalled.addListener(async function (obj){
     });
     await chrome.tabs.create({url: "./readme.html"});
     await chrome.storage.local.get(['rua_lastDK'],(info)=>{
-        console.log(info.rua_lastDK);
+        console.log(info.rua_lastDK)
         if (info.rua_lastDK === null || info.rua_lastDK === undefined)
             chrome.storage.local.set({'rua_lastDK':"1970-01-01"}, ()=>{});
     });
@@ -290,7 +290,6 @@ chrome.runtime.onInstalled.addListener(async function (obj){
 
     // local states
     chrome.alarms.create('checkUpd', {'when':Date.now(), periodInMinutes:60*12});
-    chrome.alarms.create('renewDakaList', {'when':Date.now(), periodInMinutes:15});
     await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "dynamic_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[]}, ()=>{});
     chrome.alarms.create('getUID_CSRF', {'when': Date.now(), periodInMinutes:0.3});
 });
@@ -355,7 +354,6 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
  * */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     //importScripts("./../ffmpeg/ffmpeg.min.js","./../ffmpeg/ffmpeg-core.js");
-    console.log(request.msg);
         if(request.msg === "get_LoginInfo"){
             chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
                 function (jct) {
@@ -390,7 +388,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
                 danmakuBulider.push(new DanmakuObj(convertMSToS(request.danmakuObj[i]["progress"]), crc.crack(request.danmakuObj[i]["midHash"]), request.danmakuObj[i]["content"], request.danmakuObj[i]["color"], request.danmakuObj[i]["mode"], request.danmakuObj[i]["fontsize"], request.danmakuObj[i]["progress"], request.danmakuObj[i]["weight"]));
             }
             danmakuBulider.sort(danmakuBulider.size-1);
-            console.log(danmakuBulider);
             sendResponse({danmakuContent: danmakuBulider, danmakuPoolSize: request.danmakuObj.length});
         }
         if(request.msg === "requestUserInfo"){
@@ -464,14 +461,11 @@ function queryLivingRoom(uids) {
                 if (json["code"] === 0) {
                     let data = json["data"];
                     chrome.notifications.getAll((n)=>{
-                        console.log(notificationList);
-                        console.log(notificationList.length);
                         for (let k in n){
                             if (uids.indexOf(k.split(':')[0]-1+1)===-1 && k.split(':')[2]==='live.bilibili.com/'){
                                 chrome.notifications.clear(k);
                                 if (notificationList.indexOf(k.split(':')[1]-1+1)!==-1)
                                     notificationList.splice(notificationList.indexOf(k.split(':')[1]-1+1),1);
-                                console.log(notificationList.length);
                             }
                         }
                         for (let i = 0; i < uids.length; i++) {
@@ -496,7 +490,7 @@ function queryLivingRoom(uids) {
 
                 }
             })
-            .catch(msg =>{console.log(msg);errorHandler('getNewVideos', msg, 'queryLivingRoom()');});
+            .catch(msg =>{errorHandler('getNewVideos', msg, 'queryLivingRoom()');});
     });
 }
 
@@ -605,7 +599,7 @@ function reloadCookies() {
                     chrome.alarms.getAll((alarms)=>{
                         for(let name of alarms){
                             console.log(`alarm ${name.name} found`);
-                            if (name.name !== 'checkUpd' && name.name!=='renewDakaList') chrome.alarms.clear(name.name).then(r=>{console.log(`${name.name} was cleared ${r}`)});
+                            if (name.name !== 'checkUpd') chrome.alarms.clear(name.name).then(r=>{console.log(`${name.name} was cleared ${r}`)});
                         }
                     })
                 }
@@ -626,17 +620,17 @@ function reloadCookies() {
 }
 
 chrome.alarms.onAlarm.addListener((alarm)=>{
-    console.log(alarm.name);
+    console.log(alarm.name)
     if (alarm.name === 'getUID_CSRF'){
         reloadCookies();
     }
     if (alarm.name === 'checkUpd'){
         checkUpdate("https://tyrael-lee.gitee.io/harukaemoji/?_=")
     }
-    chrome.storage.local.get(['uuid', 'jct'], (info)=>{
+    chrome.storage.local.get(['uuid', 'jct', "dakaUid"], (info)=>{
         switch (alarm.name) {
             case 'getNewVideos':
-                videoNotify(null, info.uuid);
+                videoNotify(info.uuid);
                 break;
             case 'getNewUnreads':
                 getNewUnread();
@@ -653,8 +647,8 @@ chrome.alarms.onAlarm.addListener((alarm)=>{
             case 'bcoin':
                 queryBcoin();
                 break;
-            case 'renewDakaList':
-                renewDakaList();
+            case 'dakaRoom':
+                daka(info.dakaUid, info.jct);
                 break;
         }
     });
@@ -668,7 +662,7 @@ function checkingIn(){
                 credentials: 'include',
                 body: null
             }).then(res => {
-                console.log("签到成功 "+new Date().toUTCString())
+                console.log("签到成功 "+new Date().toUTCString());
             }).catch(msg =>{errorHandler('checkIn', msg, 'checkIn()');});
         }
     });
@@ -686,6 +680,10 @@ function checkingIn(){
 function errorHandler(handler, msg, at){
     console.log("ERROR found @ "+new Date()+":");
     console.log(`${msg} at function ${at}`);
+    let minutes = 0.2;
+    if(handler.includes('checkIn') || handler.includes('bcoin')) minutes = 60 * 12;
+    else if(handler.includes('daka')) minutes = 60 * 6;
+    else minutes = 0.2;
     if (handler.includes('Dynamic')){
         chrome.storage.local.set({'dynamicInit':true},()=>{});
     }else if (handler.includes('Video')){
@@ -695,11 +693,11 @@ function errorHandler(handler, msg, at){
     }
     if(typeof msg["responseJSON"] !== "undefined" && msg["responseJSON"]["code"] === -412  || msg == -412){
         chrome.alarms.clear(handler).then(c =>{
-            chrome.alarms.create(handler, {'when': Date.now()+1500000, periodInMinutes:0.6});
+            chrome.alarms.create(handler, {'when': Date.now()+1500000, periodInMinutes: minutes});
         });
     }else{
         chrome.alarms.clear(handler).then(c =>{
-            chrome.alarms.create(handler, {'when': Date.now()+20000, periodInMinutes:0.6});
+            chrome.alarms.create(handler, {'when': Date.now()+20000, periodInMinutes: minutes});
         });
     }
 }
@@ -914,13 +912,6 @@ function getNewUnread(){
 /**
  * Live room check in section.
  * */
-function renewDakaList(){
-    chrome.storage.local.get(['rua_lastDK'], (info)=>{
-        if (isNewerThan(info.rua_lastDK.split("-"), (getUTC8Time().getFullYear()+"-"+getUTC8Time().getMonth()+"-"+getUTC8Time().getDate()).split("-"))){
-            chrome.storage.local.set({'dakaUid':[]}, ()=>{});
-        }
-    })
-}
 function checkMedalDaka(){
     chrome.storage.sync.get(["daka"], (result)=>{
         console.log("Grabbing medal info");
@@ -936,12 +927,14 @@ function checkMedalDaka(){
                     .then(res => res.json())
                     .then(json => {
                         console.log(json["data"]["list"].length+" medal founded.");
-                        console.log(info.dakaUid);
+                        console.log(info.dakaUid)
                         for (let i = 0; i < json["data"]["list"].length; i++){
                             if(info.dakaUid.indexOf(json["data"]["list"][i]["medal_info"]["target_id"])===-1)
                                 medals.push(json["data"]["list"][i]["medal_info"]["target_id"]);
                         }
-                        daka(medals, info.jct);
+                        chrome.storage.local.set({'dakaUid': medals}, ()=>{
+                            chrome.alarms.create('dakaRoom', {'when':Date.now(), periodInMinutes:1});
+                        });
                     })
                     .catch(msg => {
                         chrome.storage.local.set({'rua_lastDK':"1970-01-01"}, ()=>{});
@@ -951,16 +944,17 @@ function checkMedalDaka(){
         }));
 
     });
-
 }
 
 /**
  * Send damaku to each live room.
  * */
-function daka(medals, JCT){
-    let index = 0;
-    (function go(){
-        fetch("https://api.live.bilibili.com/live_user/v1/Master/info?uid="+medals[index], {
+function daka(dakaUid, jct){
+    if (dakaUid.length===0){
+        chrome.alarms.clear('dakaRoom',()=>{});
+    }else{
+        console.log(dakaUid);
+        fetch("https://api.live.bilibili.com/live_user/v1/Master/info?uid="+dakaUid[0], {
             method:"GET",
             credentials: 'include',
             body: null
@@ -976,27 +970,21 @@ function daka(medals, JCT){
                     DanMuForm.append("fontsize", "25");
                     DanMuForm.append("rnd", Math.round(Date.now()/1000)+"");
                     DanMuForm.append("roomid", json["data"]["room_id"]);
-                    DanMuForm.append("csrf", JCT);
-                    DanMuForm.append("csrf_token", JCT);
+                    DanMuForm.append("csrf", jct);
+                    DanMuForm.append("csrf_token", jct);
                     fetch("https://api.live.bilibili.com/msg/send?requestFrom=rua5", {
                         method:"POST",
                         credentials: 'include',
                         body: DanMuForm
                     }).then(result=>{
                         console.log("打卡成功: https://live.bilibili.com/"+json["data"]["room_id"]);
-                        chrome.storage.local.get('dakaUid', (r)=>{
-                            let list = r.dakaUid;
-                            list.push(medals[index]);
-                            chrome.storage.local.set({'dakaUid':list},()=>{});
-                        })
-                        index++;
-                        if(index < medals.length){
-                            setTimeout(()=>{go()},(Math.random()*5+10)*1000);
-                        }
+                        let list = dakaUid;
+                        list.splice(0,1);
+                        chrome.storage.local.set({'dakaUid':dakaUid.splice(0,1)},()=>{}); // check here
                     }).catch(error=>{console.error('Error:', error);});
                 }
             });
-    })();
+    }
 }
 
 /**
