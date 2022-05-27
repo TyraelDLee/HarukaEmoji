@@ -30,7 +30,8 @@
         });
     });
     try{
-        noWin.observe(document.getElementsByClassName('main-part')[0],{
+        noWin.observe(
+            [0],{
             childList: true
         });
     }catch (e) {}

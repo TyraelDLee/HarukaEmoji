@@ -69,4 +69,37 @@
         let y = 3 * b * T * Math.pow((1 - T),2) + 3 * d * Math.pow(T,2)* (1 - T) + Math.pow(T, 3);
         return y;
     }
+
+    icon.addEventListener("mouseenter", ()=>{
+        svga(Math.floor(Math.random()*2+1));
+    });
+    icon.addEventListener("mouseout", ()=>{
+        svga(0);
+    });
+
+    function svga(dir){
+        let frame = icon.getElementsByTagName('img')[0].getAttribute('frame')-1+1;
+        switch (dir) {
+            case 0:
+                animation(frame, 13);
+                break;
+            case 1:
+                animation(frame, 1);
+                break;
+            case 2:
+                animation(frame, 25);
+                break;
+        }
+    }
+
+    function animation(frame, stop){
+        icon.getElementsByTagName('img')[0].setAttribute('frame', frame+"");
+        icon.getElementsByTagName('img')[0].src = `./images/svga/${frame}.svg`;
+        if (frame!==stop){
+            setTimeout(()=>{
+                frame<stop?frame++:frame--
+                animation(frame, stop);
+            }, 20);
+        }
+    }
 }();
