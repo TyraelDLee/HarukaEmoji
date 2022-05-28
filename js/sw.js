@@ -915,7 +915,7 @@ function getNewUnread(){
 function checkMedalDaka(){
     chrome.storage.sync.get(["daka"], (result)=>{
         console.log("Grabbing medal info");
-        chrome.storage.local.get(['rua_lastDK', 'jct', 'uuid', 'dakaUid'], (info=>{
+        chrome.storage.local.get(['rua_lastDK', 'uuid', 'dakaUid'], (info=>{
             if(result.daka && (info.rua_lastDK===null || isNewerThan(info.rua_lastDK.split("-"), (getUTC8Time().getFullYear()+"-"+getUTC8Time().getMonth()+"-"+getUTC8Time().getDate()).split("-")))){
                 let medals = [];
                 chrome.storage.local.set({'rua_lastDK':getUTC8Time().getFullYear()+"-"+getUTC8Time().getMonth()+"-"+getUTC8Time().getDate()}, ()=>{});
@@ -929,11 +929,11 @@ function checkMedalDaka(){
                         console.log(json["data"]["list"].length+" medal founded.");
                         console.log(info.dakaUid)
                         for (let i = 0; i < json["data"]["list"].length; i++){
-                            if(info.dakaUid.indexOf(json["data"]["list"][i]["medal_info"]["target_id"])===-1)
+                            if(info.dakaUid.indexOf(json["data"]["list"][i]["medal_info"]["target_id"])===-1 && json["data"]["list"][i]["medal_info"]["today_feed"]<100)
                                 medals.push(json["data"]["list"][i]["medal_info"]["target_id"]);
                         }
                         chrome.storage.local.set({'dakaUid': medals}, ()=>{
-                            chrome.alarms.create('dakaRoom', {'when':Date.now(), periodInMinutes:1});
+                            chrome.alarms.create('dakaRoom', {'when':Date.now(), periodInMinutes:0.1});
                         });
                     })
                     .catch(msg => {
@@ -980,7 +980,7 @@ function daka(dakaUid, jct){
                         console.log("打卡成功: https://live.bilibili.com/"+json["data"]["room_id"]);
                         let list = dakaUid;
                         list.splice(0,1);
-                        chrome.storage.local.set({'dakaUid':dakaUid.splice(0,1)},()=>{}); // check here
+                        chrome.storage.local.set({'dakaUid':list},()=>{}); // check here
                     }).catch(error=>{console.error('Error:', error);});
                 }
             });
@@ -1074,3 +1074,13 @@ function setBadge(title, text){
 //todo: context menu √
 //todo: web traffic control, no needed anymore
 //todo: hidden √
+//todo: mock Android app request.
+
+// AppKey: 1d8b6e7d45233436
+// SecretKey: 560c52ccd288fed045859ed18bffd973
+// sign=MD5(queryString+SK) maybe.
+// User-Agent: Mozilla/5.0 BiliDroid/6.72.0 (bbcallen@gmail.com) os/android model/MuMu mobi_app/android build?6720300 channel/bili innerVer/6720300 osVer/6.0.1 network/2
+
+
+// live dm api: api.live.bilibili.com/xlive/app-room/v1/dM/sendmsg?access_key= &actionKey=appkey&appkey=1d8b6e7d45233436&build=6720300&c_locale=zh_CN&channel=bili&device=android&disable_rcmd=0&mobi_app=android&platform=android&s_locale=zh_CN&statistics={"appId":1,"platform":3,"version":"6.72.0","abtest":""}&ts= &sign=
+// live share api: api.bilibili.com/x/share/placard body form: access_key appkey=1d8b6e7d45233436 build=6720300 buvid c_locale=zh_CN channel=bili device=MuMu disable_rcmd=0 image_exists=0 materials={ } mobi_app=android oid=2 platform=android s_locale=zh_CN share_id= share_origin= share_session_id= sid= spm_id= statstics={"appId":1,"platform":3,"version":"6.72.0","abtest":""} template_id=11 ts= sign=
