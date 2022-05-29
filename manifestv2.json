@@ -6,7 +6,7 @@
     "default_popup": "popup.html"
   },
   "description": "rua!",
-  "permissions": ["cookies","contextMenus","storage","notifications","webRequest","webRequestBlocking","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "https://*.hdslb.com/*", "https://api.vc.bilibili.com/", "https://tyrael-lee.gitee.io/", "https://tyraeldlee.github.io/", "*://*.bilivideo.com/", "*://*.akamaized.net/"],
+  "permissions": ["cookies","contextMenus","downloads","storage","notifications","webRequest","webRequestBlocking","https://api.live.bilibili.com/*","https://api.bilibili.com/*", "https://live.bilibili.com/", "https://www.bilibili.com/", "https://*.hdslb.com/*", "https://api.vc.bilibili.com/", "https://tyrael-lee.gitee.io/", "https://tyraeldlee.github.io/", "*://*.bilivideo.com/", "*://*.akamaized.net/"],
   "background": {
     "scripts": ["ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/background.min.js"],
     "persistent": true

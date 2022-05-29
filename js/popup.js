@@ -22,6 +22,7 @@
     const enhancedHidden = document.getElementById('enhanced-hidden');
     const unread = document.getElementById('unreadSwitch');
     const dynamic = document.getElementById('dynamicSwitch');
+    const logo = document.getElementById('logo');
 
     const qn_table = ["原画", "蓝光","超清","高清","流畅"];
     const qnItem = setting7.getElementsByClassName("qn-i");
@@ -304,4 +305,11 @@
             }
         }
     }
+
+    logo.addEventListener("mouseenter", ()=>{
+        svga(logo,Math.floor(Math.random()*2+1));
+    });
+    logo.addEventListener("mouseout", ()=>{
+        svga(logo,0);
+    });
 }();

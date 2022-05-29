@@ -352,7 +352,10 @@ class CRC32{
             if(request.msg === "get_UUID") {sendResponse({res:UUID});}
             if(request.msg === "updateStatus") {sendResponse({res:updateAvailable, address:availableBranch});}
             if(request.msg === "popupfired"){setBadge("rua豹器", "");}
-            if(request.msg === "requestDownload"){downloadFileName = request.fileName;}
+            if(request.msg === "requestDownload"){
+                chrome.downloads.download({filename: request.fileName, url: request.url},()=>{});
+                sendResponse({res:'ok'});
+            }
             if(request.msg === "requestDanmaku"){
                 let danmakuBulider = new DanmakuArr();
                 for (let i = 0; i < request.danmakuObj.length; i++) {

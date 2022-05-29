@@ -17,7 +17,7 @@
             iconHost.style.height = `90px`;
             iconHost.style.backgroundColor = `rgba(${color},0.72)`;
             (color==='0,0,0')?iconHost.style.borderBottom = 'none':iconHost.style.borderBottom = '1px solid #aaa';
-        }else{
+        }else {
             icon.setAttribute('style', `transform: translate(${leftPosition}px, 0px); height: ${(350-document.documentElement.scrollTop*scrollRatio)}px; width: ${(350-document.documentElement.scrollTop*scrollRatio)}px;`);
             iconHost.style.height = `${(350-document.documentElement.scrollTop * scrollRatio)-10}px`;
             //iconHost.style.backgroundColor = `rgba(${color},${(document.documentElement.scrollTop*scrollRatio/250) * 0.72})`;
@@ -71,35 +71,9 @@
     }
 
     icon.addEventListener("mouseenter", ()=>{
-        svga(Math.floor(Math.random()*2+1));
+        svga(icon.getElementsByTagName('img')[0],Math.floor(Math.random()*2+1));
     });
     icon.addEventListener("mouseout", ()=>{
-        svga(0);
+        svga(icon.getElementsByTagName('img')[0],0);
     });
-
-    function svga(dir){
-        let frame = icon.getElementsByTagName('img')[0].getAttribute('frame')-1+1;
-        switch (dir) {
-            case 0:
-                animation(frame, 13);
-                break;
-            case 1:
-                animation(frame, 1);
-                break;
-            case 2:
-                animation(frame, 25);
-                break;
-        }
-    }
-
-    function animation(frame, stop){
-        icon.getElementsByTagName('img')[0].setAttribute('frame', frame+"");
-        icon.getElementsByTagName('img')[0].src = `./images/svga/${frame}.svg`;
-        if (frame!==stop){
-            setTimeout(()=>{
-                frame<stop?frame++:frame--
-                animation(frame, stop);
-            }, 20);
-        }
-    }
 }();

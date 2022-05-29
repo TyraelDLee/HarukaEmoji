@@ -36,7 +36,7 @@
         }
     });
 
-    if(exp.test(room_id) && room_id.length > 0){
+    if(exp.test(room_id) && room_id.length > 0 && room_id.charAt(room_id.length-1)!=='#'){
         var UID = "-1";
 
         var WINDOW_HEIGHT;
@@ -820,13 +820,16 @@
                 DanMuSub.style.opacity = "0.8";
                 DanMuInput.style.background = "#151515";
                 DanMuInput.style.borderColor = "#2b2b2b";
-
+                DanMuInput.style.color = "#fff";
+                fullScreenText.style.color = "#fff";
             }else{
                 selec.style.removeProperty("background");
                 emojiPad.style.removeProperty("opacity");
                 DanMuSub.style.removeProperty("opacity");
                 DanMuInput.style.removeProperty("background");
                 DanMuInput.style.removeProperty("border-color");
+                DanMuInput.style.removeProperty("color");
+                fullScreenText.style.removeProperty("color");
             }
         }
 

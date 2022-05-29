@@ -7,8 +7,7 @@
       "requestHeaders": [
         {
           "header": "Cookie",
-          "operation": "set",
-          "value": ""
+          "operation": "remove"
         }
       ]
     },
@@ -24,8 +23,7 @@
       "requestHeaders": [
         {
           "header": "Cookie",
-          "operation": "set",
-          "value": ""
+          "operation": "remove"
         }
       ]
     },
@@ -41,8 +39,7 @@
       "requestHeaders": [
         {
           "header": "Cookie",
-          "operation": "set",
-          "value": ""
+          "operation": "remove"
         }
       ]
     },
@@ -58,8 +55,7 @@
       "requestHeaders": [
         {
           "header": "Cookie",
-          "operation": "set",
-          "value": ""
+          "operation": "remove"
         }
       ]
     },
@@ -75,8 +71,7 @@
       "requestHeaders": [
         {
           "header": "Cookie",
-          "operation": "set",
-          "value": ""
+          "operation": "remove"
         }
       ]
     },
@@ -92,8 +87,7 @@
       "requestHeaders": [
         {
           "header": "Cookie",
-          "operation": "set",
-          "value": ""
+          "operation": "remove"
         }
       ]
     },
@@ -109,8 +103,7 @@
       "requestHeaders": [
         {
           "header": "Cookie",
-          "operation": "set",
-          "value": ""
+          "operation": "remove"
         }
       ]
     },
@@ -126,8 +119,7 @@
       "requestHeaders": [
         {
           "header": "Cookie",
-          "operation": "set",
-          "value": ""
+          "operation": "remove"
         }
       ]
     },
@@ -143,8 +135,7 @@
       "requestHeaders": [
         {
           "header": "Cookie",
-          "operation": "set",
-          "value": ""
+          "operation": "remove"
         }
       ]
     },
@@ -160,8 +151,7 @@
       "requestHeaders": [
         {
           "header": "Cookie",
-          "operation": "set",
-          "value": ""
+          "operation": "remove"
         }
       ]
     },
@@ -177,8 +167,7 @@
       "requestHeaders": [
         {
           "header": "Cookie",
-          "operation": "set",
-          "value": ""
+          "operation": "remove"
         }
       ]
     },
@@ -194,8 +183,7 @@
       "requestHeaders": [
         {
           "header": "Cookie",
-          "operation": "set",
-          "value": ""
+          "operation": "remove"
         }
       ]
     },
@@ -211,8 +199,7 @@
       "requestHeaders": [
         {
           "header": "Cookie",
-          "operation": "set",
-          "value": ""
+          "operation": "remove"
         }
       ]
     },
@@ -228,8 +215,7 @@
       "requestHeaders": [
         {
           "header": "Cookie",
-          "operation": "set",
-          "value": ""
+          "operation": "remove"
         }
       ]
     },
@@ -245,8 +231,7 @@
       "requestHeaders": [
         {
           "header": "Cookie",
-          "operation": "set",
-          "value": ""
+          "operation": "remove"
         }
       ]
     },
@@ -262,8 +247,7 @@
       "requestHeaders": [
         {
           "header": "Cookie",
-          "operation": "set",
-          "value": ""
+          "operation": "remove"
         }
       ]
     },

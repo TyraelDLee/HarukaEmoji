@@ -192,9 +192,10 @@ option{
 }
 
 #logo{
-    width: 35%;
-    height: 35%;
+    width: 200px;
+    height: 200px;
     cursor: pointer;
+    margin: -30px;
 }
 
 #version{

@@ -9,6 +9,7 @@
         <item url="file://$PROJECT_DIR$/js/DanmakuToAss.min.js" />
         <item url="file://$PROJECT_DIR$/js/IDBFactor.min.js" />
         <item url="file://$PROJECT_DIR$/js/Lott.min.js" />
+        <item url="file://$PROJECT_DIR$/js/SVGA.min.js" />
         <item url="file://$PROJECT_DIR$/js/Video.min.js" />
         <item url="file://$PROJECT_DIR$/js/VideoHost.min.js" />
         <item url="file://$PROJECT_DIR$/js/WebHost.min.js" />
@@ -16,6 +17,7 @@
         <item url="file://$PROJECT_DIR$/js/audio.min.js" />
         <item url="file://$PROJECT_DIR$/js/background.min.js" />
         <item url="file://$PROJECT_DIR$/js/biliMain.min.js" />
+        <item url="file://$PROJECT_DIR$/js/cipher.min.js" />
         <item url="file://$PROJECT_DIR$/js/haruka.min.js" />
         <item url="file://$PROJECT_DIR$/js/popup.min.js" />
         <item url="file://$PROJECT_DIR$/js/protobuf.min.js" />
@@ -34,6 +36,7 @@
       <root url="file://$PROJECT_DIR$/js/DanmakuToAss.min.js" />
       <root url="file://$PROJECT_DIR$/js/IDBFactor.min.js" />
       <root url="file://$PROJECT_DIR$/js/Lott.min.js" />
+      <root url="file://$PROJECT_DIR$/js/SVGA.min.js" />
       <root url="file://$PROJECT_DIR$/js/Video.min.js" />
       <root url="file://$PROJECT_DIR$/js/VideoHost.min.js" />
       <root url="file://$PROJECT_DIR$/js/WebHost.min.js" />
@@ -41,6 +44,7 @@
       <root url="file://$PROJECT_DIR$/js/audio.min.js" />
       <root url="file://$PROJECT_DIR$/js/background.min.js" />
       <root url="file://$PROJECT_DIR$/js/biliMain.min.js" />
+      <root url="file://$PROJECT_DIR$/js/cipher.min.js" />
       <root url="file://$PROJECT_DIR$/js/haruka.min.js" />
       <root url="file://$PROJECT_DIR$/js/popup.min.js" />
       <root url="file://$PROJECT_DIR$/js/protobuf.min.js" />

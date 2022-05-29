@@ -1,0 +1,60 @@
+[
+  {
+    "id": 5,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders":[{
+        "header": "user-agent",
+        "operation": "set",
+        "value" : "Mozilla/5.0 BiliDroid/6.72.0 (bbcallen@gmail.com) os/android model/MuMu mobi_app/android build?6720300 channel/bili innerVer/6720300 osVer/6.0.1 network/2"
+      },{
+        "header": "accept-encoding",
+        "operation": "set",
+        "value" : "gzip"
+      },{
+        "header": "cookie",
+        "operation": "remove"
+      },{
+        "header": "origin",
+        "operation": "remove"
+      },{
+        "header": "refer",
+        "operation": "remove"
+      },{
+        "header": "sec-ch-ua",
+        "operation": "remove"
+      },{
+        "header": "sec-ch-ua-mobile",
+        "operation": "remove"
+      },{
+        "header": "sec-ch-ua-platform",
+        "operation": "remove"
+      },{
+        "header": "sec-fetch-dest",
+        "operation": "remove"
+      },{
+        "header": "sec-fetch-mode",
+        "operation": "remove"
+      },{
+        "header": "sec-fetch-site",
+        "operation": "remove"
+      },{
+        "header": "content-type",
+        "operation": "remove"
+      },{
+        "header": "accept-language",
+        "operation": "remove"
+      },{
+        "header": "accept",
+        "operation": "remove"
+      },{
+        "header": "content-length",
+        "operation": "remove"
+      }]
+    },
+    "condition":{
+      "regexFilter": "api\\.live\\.bilibili\\.com/xlive/app-room/v1/dM/sendmsg*"
+    }
+  }
+]
