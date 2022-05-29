@@ -91,7 +91,7 @@ option{
 .setting{
     overflow-y: scroll;
     overflow-x: hidden;
-    height: 205px;
+    height: 185px;
     scrollbar-width:thin;
 }
 
@@ -192,8 +192,8 @@ option{
 }
 
 #logo{
-    width: 200px;
-    height: 200px;
+    width: 175px;
+    height: 175px;
     cursor: pointer;
     margin: -30px;
 }
