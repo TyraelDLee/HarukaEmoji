@@ -214,7 +214,7 @@
 
     function isMoved(oX, oY, cX, cY){return Math.abs(oX - cX) === 0 && Math.abs(oY - cY) === 0;}
 
-    function getAbsLocation(id){
+    function getAbsLocation(id, offsetX, offsetY){
         let e = document.getElementById(id);
         let abs = [e.offsetLeft, e.offsetTop];
         let cur = e.offsetParent;
@@ -222,13 +222,13 @@
             abs[0] += cur.offsetLeft;abs[1] += (cur.offsetTop+cur.clientTop);
             cur = cur.offsetParent;
         }
-        abs[0] += (e.clientWidth - 60);
-        abs[1] += (e.clientHeight - 60);
+        abs[0] += (e.clientWidth + offsetX);
+        abs[1] += (e.clientHeight + offsetY);
         return abs;
     }
 
     function setPopupInitLocation(){
-        let pos = getAbsLocation("danmukuBox");
+        let pos = getAbsLocation("danmukuBox", -60, -60);
         absoluteLoc = [WINDOW_WIDTH - pos[0], pos[1], pos[0]];
         if(absoluteLoc[2]>(WINDOW_WIDTH-60)){
             popup.style.left = WINDOW_WIDTH-60 + 'px';
@@ -314,23 +314,31 @@
         });
     }
 
+    function copy(string, tips, tipsLocation, offsetX, offsetY){
+        const copyTips = document.createElement('div');
+        copyTips.setAttribute('id', 'rua-copy-tips');
+        copyTips.setAttribute('style', `opacity: 0; display: block; left: ${getAbsLocation(tipsLocation, offsetX, offsetY)[0]}px; top: ${getAbsLocation(tipsLocation, offsetX, offsetY)[1]}px;`);
+        copyTips.innerText = tips;
+        document.getElementById('app').appendChild(copyTips);
+        setTimeout(()=>{copyTips.style.opacity = '1';}, 10);
+        setTimeout(()=>{copyTips.style.opacity = '0';},1000);
+        setTimeout(()=>{copyTips.style.display = 'none';document.getElementById('app').removeChild(copyTips);},1400);
+        navigator.clipboard.writeText(string).catch(e=>{
+            console.log('Failed to access clipboard, using execCommand.');
+            const videoInfo = document.createElement('textarea');
+            videoInfo.value = string;
+            document.body.appendChild(videoInfo);
+            videoInfo.select();
+            document.execCommand('Copy');
+            videoInfo.remove();
+        });
+    }
+
     function getQn(cid){
-        videoInfo.innerHTML = `<b style='user-select: none'>视频ID：</b><span>av${aid}</span><span style='user-select: none'> / </span><span>${bvid}</span><span title="复制ID" class="rua-video-info-copy" id="rua-video-info-copy"><svg viewBox="0 0 400 400" width="18" height="18" style="position: absolute" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="400" fill='#aaa' mask='url(#rua-copy-mask)'/><mask id="rua-copy-mask"><rect x='150' y='40' rx="20" ry="20" width="200" height="280" style="fill:#fff" /><rect x="190" y="110" width="120" height="20" fill="black"/><rect x="190" y="160" width="120" height="20" fill="black"/><rect x="190" y="210" width="120" height="20" fill="black"/><rect x='55' y='75' rx="20" ry="20" width="200" height="280" style="fill:#000"/><rect x='50' y='80' rx="20" ry="20" width="200" height="280" style="fill:#fff"/><rect x="90" y="150" width="120" height="20" fill="black"/><rect x="90" y="200" width="120" height="20" fill="black"/><rect x="90" y="250" width="120" height="20" fill="black"/></mask></svg><div id="rua-copy-tips" style="display: none;opacity: 0">视频ID已复制到粘贴板</div></span>`;
+        videoInfo.innerHTML = `<b style='user-select: none'>视频ID：</b><span>av${aid}</span><span style='user-select: none'> / </span><span>cid:${cid}</span><span title="复制ID" class="rua-video-info-copy" id="rua-video-info-copy"><svg viewBox="0 0 400 400" width="18" height="18" style="position: absolute" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="400" fill='#aaa' mask='url(#rua-copy-mask)'/><mask id="rua-copy-mask"><rect x='150' y='40' rx="20" ry="20" width="200" height="280" style="fill:#fff" /><rect x="190" y="110" width="120" height="20" fill="black"/><rect x="190" y="160" width="120" height="20" fill="black"/><rect x="190" y="210" width="120" height="20" fill="black"/><rect x='55' y='75' rx="20" ry="20" width="200" height="280" style="fill:#000"/><rect x='50' y='80' rx="20" ry="20" width="200" height="280" style="fill:#fff"/><rect x="90" y="150" width="120" height="20" fill="black"/><rect x="90" y="200" width="120" height="20" fill="black"/><rect x="90" y="250" width="120" height="20" fill="black"/></mask></svg></span>`;
         pInfo.innerText = (pid-1+2)+ "p/"+cids.length+"p";
         document.getElementById('rua-video-info-copy').addEventListener('click', ()=>{
-            document.getElementById('rua-copy-tips').style.display = 'block';
-            setTimeout(()=>{document.getElementById('rua-copy-tips').style.opacity = '1';}, 10);
-            setTimeout(()=>{document.getElementById('rua-copy-tips').style.opacity = '0';},1000);
-            setTimeout(()=>{document.getElementById('rua-copy-tips').style.display = 'none';},1400);
-            navigator.clipboard.writeText(`av号: av${aid}\r\nBV号: ${bvid}\r\ncid: ${cid}`).catch(e=>{
-                console.log('Failed to access clipboard, using execCommand.');
-                const videoInfo = document.createElement('textarea');
-                videoInfo.value = `av号: av${aid}\r\nBV号: ${bvid}\r\ncid: ${cid}`;
-                document.body.appendChild(videoInfo);
-                videoInfo.select();
-                document.execCommand('Copy');
-                videoInfo.remove();
-            });
+            copy(`av号: av${aid}\r\nBV号: ${bvid}\r\ncid: ${cid}`, '视频ID已复制到粘贴板', 'rua-video-info-copy', -75, 18);
         });
         removeListener();
         downloadVideoTray.innerHTML = "";
@@ -802,6 +810,7 @@
         const div = document.createElement("div");
         const spanTime = document.createElement("span");
         const spanContent = document.createElement("span");
+        const spanCopy = document.createElement("span");
         const timearr = time.split(":");
         const timetable = [1,60,3600];
         let jumpTo = 0;
@@ -819,15 +828,21 @@
         spanContent.classList.add("rua-danmaku");
         spanContent.innerText=content;
         div.appendChild(spanContent);
+        spanCopy.classList.add("rua-danmaku-copy");
+        spanCopy.innerText="复制";
+        div.appendChild(spanCopy);
 
-        div.onmousedown = function (e){
+        spanContent.onmousedown = function (e){
             if(e.button === 0)
                 drawUserInfoDanmaku(document.body, mid, selec.style.left.replace("px","")-1+1,e.clientY-140, index);
+        }
+        spanCopy.onmousedown = function (e){
+            copy(spanContent.innerText, '弹幕已复制到粘贴板', `rua-danmaku-${index}`, -200, -18);
         }
         return div;
     }
 
-    function drawUserInfoDanmaku(parent, mid, posX, posY, index){
+    async function drawUserInfoDanmaku(parent, mid, posX, posY, index){
         const bg = document.createElement("div");
         bg.setAttribute("class", "rua-danmaku-user-info");
         bg.setAttribute("style", "top:"+posY+"px;"+"left:"+posX+"px;")
@@ -876,57 +891,60 @@
         const userHost = document.createElement("div");
         userHost.setAttribute("id", "rua-user-host");
         userHost.classList.add("emoji_sec");
-        for (let i = 0; i < mid.length; i++) {
-            chrome.runtime.sendMessage({msg:"requestUserInfo", mid:mid[i]}, (callback)=>{
-                if(callback.response['fans']!==0 || callback.response['friend']!==0){
-                    const user = document.createElement("div");
-                    user.setAttribute("class", "rua-user");
-                    const face = document.createElement("a");
-                    const faceIcon = document.createElement("img");
-                    face.href = "https://space.bilibili.com/"+mid[i];
-                    face.target = "_Blank";
-                    face.setAttribute("class","rua-user-avatar");
-                    faceIcon.classList.add("bili-avatar-img");
-                    faceIcon.setAttribute("src", callback.response["face"].replace("http://","https://"));
-                    face.appendChild(faceIcon);
-                    user.appendChild(face);
 
-                    const name = document.createElement("div");
-                    name.setAttribute("style", "padding-left: 50px; padding-top: 9px;min-width: 100px;");
-                    const nameLink = document.createElement("a");
-                    nameLink.href = "https://space.bilibili.com/"+mid[i];
-                    nameLink.target = "_Blank";
-                    const uname = document.createElement("b");
-                    uname.innerText=callback.response["name"];
-                    const uid = document.createElement("a");
-                    uid.href = "https://space.bilibili.com/"+mid[i];
-                    uid.target = "_Blank";
-                    uid.innerText = "uid: "+mid[i];
+        chrome.runtime.sendMessage({msg:'requestCrackUID', mid:mid}, r=>{
+            for (let i = 0; i < r.response.length; i++) {
+                chrome.runtime.sendMessage({msg:"requestUserInfo", mid:r.response[i]}, (callback)=>{
+                    if(callback.response['fans']!==0 || callback.response['friend']!==0){
+                        const user = document.createElement("div");
+                        user.setAttribute("class", "rua-user");
+                        const face = document.createElement("a");
+                        const faceIcon = document.createElement("img");
+                        face.href = "https://space.bilibili.com/"+r.response[i];
+                        face.target = "_Blank";
+                        face.setAttribute("class","rua-user-avatar");
+                        faceIcon.classList.add("bili-avatar-img");
+                        faceIcon.setAttribute("src", callback.response["face"].replace("http://","https://"));
+                        face.appendChild(faceIcon);
+                        user.appendChild(face);
 
-                    const white = document.createElement("br");
-                    nameLink.appendChild(uname);
-                    name.appendChild(nameLink);
-                    name.appendChild(white);
-                    name.appendChild(uid);
-                    user.appendChild(name);
+                        const name = document.createElement("div");
+                        name.setAttribute("style", "padding-left: 50px; padding-top: 9px;min-width: 100px;");
+                        const nameLink = document.createElement("a");
+                        nameLink.href = "https://space.bilibili.com/"+r.response[i];
+                        nameLink.target = "_Blank";
+                        const uname = document.createElement("b");
+                        uname.innerText=callback.response["name"];
+                        const uid = document.createElement("a");
+                        uid.href = "https://space.bilibili.com/"+r.response[i];
+                        uid.target = "_Blank";
+                        uid.innerText = "uid: "+r.response[i];
 
-                    userHost.appendChild(user);
-                }
-            });
-        }
+                        const white = document.createElement("br");
+                        nameLink.appendChild(uname);
+                        name.appendChild(nameLink);
+                        name.appendChild(white);
+                        name.appendChild(uid);
+                        user.appendChild(name);
 
-        div.appendChild(controlBar);
-        div.appendChild(userHost);
+                        userHost.appendChild(user);
+                    }
+                });
+            }
 
-        bg.appendChild(div);
-        parent.appendChild(bg);
-        document.getElementById("app").onmousedown = () =>{
-            controlBtn.onmouseenter = null;
-            controlBtn.onmouseleave = null;
-            controlBtn.onmousedown = null;
-            document.getElementById("app").onmousedown = null;
-            parent.removeChild(bg);
-        }
+            div.appendChild(controlBar);
+            div.appendChild(userHost);
+
+            bg.appendChild(div);
+            parent.appendChild(bg);
+            document.getElementById("app").onmousedown = () =>{
+                controlBtn.onmouseenter = null;
+                controlBtn.onmouseleave = null;
+                controlBtn.onmousedown = null;
+                document.getElementById("app").onmousedown = null;
+                parent.removeChild(bg);
+            }
+        });
     }
 
     function findId(DOMObj, className, idName){

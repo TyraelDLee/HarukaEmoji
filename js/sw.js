@@ -381,14 +381,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
             sendResponse({res:'ok'});
         }
         if(request.msg === "requestDanmaku"){
-            let danmakuBulider = new DanmakuArr(), crc = new CRC32();
+            let danmakuBulider = new DanmakuArr();
             for (let i = 0; i < request.danmakuObj.length; i++) {
                 if(request.danmakuObj[i]["progress"]===undefined)
                     request.danmakuObj[i]["progress"] = 0;
-                danmakuBulider.push(new DanmakuObj(convertMSToS(request.danmakuObj[i]["progress"]), crc.crack(request.danmakuObj[i]["midHash"]), request.danmakuObj[i]["content"], request.danmakuObj[i]["color"], request.danmakuObj[i]["mode"], request.danmakuObj[i]["fontsize"], request.danmakuObj[i]["progress"], request.danmakuObj[i]["weight"]));
+                danmakuBulider.push(new DanmakuObj(convertMSToS(request.danmakuObj[i]["progress"]), request.danmakuObj[i]["midHash"], request.danmakuObj[i]["content"], request.danmakuObj[i]["color"], request.danmakuObj[i]["mode"], request.danmakuObj[i]["fontsize"], request.danmakuObj[i]["progress"], request.danmakuObj[i]["weight"]));
             }
             danmakuBulider.sort(danmakuBulider.size-1);
             sendResponse({danmakuContent: danmakuBulider, danmakuPoolSize: request.danmakuObj.length});
+        }
+        if(request.msg === "requestCrackUID"){
+            sendResponse({response:new CRC32().crack(request.mid)});
         }
         if(request.msg === "requestUserInfo"){
             fetch("https://api.bilibili.com/x/web-interface/card?mid="+request.mid+"&photo=true&requestFrom=rua5", {

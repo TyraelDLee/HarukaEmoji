@@ -1,4 +1,9 @@
 /*Copyright (c) 2021 Tyrael, Y. LI*/
+:root{
+    --bili-blue: #23ADE5;
+    --bili-pink: #FB7299;
+    --bili-pink-a70: rgba(251, 114, 153, 0.7);
+}
 @keyframes mousein {
     0% {transform: translate(0px, 50px); opacity: 0}
     100% {transform: translate(0px, 0px); opacity: 1}
@@ -70,7 +75,7 @@
     user-select: none;
     cursor: pointer;
     border-radius: 5px;
-    background: #23ade5;
+    background: var(--bili-blue);
     color: #fff;
     margin-right: 5px;
     padding: 0 8px;
@@ -79,7 +84,7 @@
 #rua-danmaku-intense{
     padding: 0 2%;
     border: 0;
-    border-bottom: 2px solid #23ade5;
+    border-bottom: 2px solid var(--bili-blue);
     scrollbar-width:thin;
     outline: none !important;
     transition: 0.4s;
@@ -103,7 +108,7 @@
 
 .rua-download-block{
     border-radius: 5px;
-    background: #FB7299;
+    background: var(--bili-pink);
     height: 30px;
     width: 80px;
     float: left;
@@ -118,7 +123,7 @@
 }
 
 .rua-danmaku{
-    width: 240px;
+    width: 205px;
     padding: 0 5px;
     text-overflow:ellipsis;
     white-space: nowrap;
@@ -138,6 +143,22 @@
 .rua-danmaku-content:hover{
     background: #ffebee;
 }
+
+.rua-danmaku-content:hover .rua-danmaku-copy{
+    background: #ffebee;
+    color: var(--bili-pink);
+    opacity: 1;
+}
+
+.rua-danmaku-copy{
+    cursor: pointer;
+    opacity: 0;
+}
+
+/*.rua-danmaku-copy:hover{*/
+/*    color: var(--bili-blue);*/
+/*    opacity: 1;*/
+/*}*/
 
 .rua-danmaku-time{
     min-width: 45px;
@@ -219,11 +240,11 @@
 
 #rua-copy-tips{
     position: absolute;
-    left: 50%;
-    z-index: 1;
-    background: #23ade5;
+    z-index: 10000000;
+    background: var(--bili-blue);
     color: #fff;
     border-radius: 5px;
     width: 150px;
     transition: 0.4s;
+    text-align: center;
 }

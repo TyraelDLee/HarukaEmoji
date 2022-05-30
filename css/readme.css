@@ -84,7 +84,7 @@ thead{
 }
 
 #rua-nav{
-    display: flex;
+    display: none;
     position: absolute;
     top: 0;
     right: 75px;

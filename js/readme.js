@@ -11,6 +11,7 @@
     icon.style.transform = `translate(${(iconHost.clientWidth-350)/2}px, 0px)`;
     document.getElementsByTagName('body')[0].onscroll = function (e){
         let scrollRatio = 1.5, leftPosition = ((iconHost.clientWidth-350)/2)-scrollRatio*(document.documentElement.scrollTop/250 * (iconHost.clientWidth-350)/2)*0.9;
+        (document.documentElement.scrollTop>170)?iconNav.style.display = 'flex' : iconNav.style.display = 'none';
         (document.documentElement.scrollTop>180)?iconNav.style.opacity = '1' : iconNav.style.opacity = '0';
         if (document.documentElement.scrollTop*scrollRatio>=250) {
             icon.setAttribute('style', `transform: translate(60px, 0px); height: 100px; width:100px;`);
