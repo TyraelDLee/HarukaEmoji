@@ -603,7 +603,6 @@
                                         controller.close();
                                         hostObj.getElementsByClassName("rua-quality-des")[0].innerText = "转码中...";
                                     }
-                                    //storageIDB(db, value, cid, dispTag);
                                     get += value.length || 0;
                                     setProgress(hostObj, (get/size) * 100);
                                     controller.enqueue(value);
@@ -618,41 +617,6 @@
             .catch(e =>{
                 downloadError(hostObj, cid, e.toString(), false, hostItem);
             });
-    }
-    //
-    // async function createIDB(cid){
-    //     return new Promise((r, j)=>{
-    //         let openDB = window.indexedDB.open('ruaVideoDB');
-    //         let db
-    //         openDB.onsuccess = (e) =>{
-    //             db = this.result;
-    //             r(db);
-    //         }
-    //         openDB.onerror = (db) =>{
-    //             j(null);
-    //         }
-    //         openDB.onupgradeneeded = (e)=>{
-    //             db.createObjectStore(cid+"视频", { autoIncrement: true });
-    //             db.createObjectStore(cid+"音频", { autoIncrement: true });
-    //         }
-    //     });
-    // }
-
-    async function storageIDB(db, blob, cid, type){
-        return new Promise((r, j)=>{
-            //try{
-                const write = db.transaction([cid+type+""], 'readwrite');
-                const res = write.objectStore(cid+type).add(new Blob([new Uint8Array(blob).buffer]));
-                res.onsuccess = (e)=>{
-                    r(0);
-                }
-                res.onerror = (e)=>{
-                    j(-1);
-                }
-            // }catch (e){
-            //     console.log(e);
-            // }
-        });
     }
 
     function setProgress(obj, progress){
@@ -837,7 +801,7 @@
                 drawUserInfoDanmaku(document.body, mid, selec.style.left.replace("px","")-1+1,e.clientY-140, index);
         }
         spanCopy.onmousedown = function (e){
-            copy(spanContent.innerText, '弹幕已复制到粘贴板', `rua-danmaku-${index}`, -200, -18);
+            copy(spanContent.innerText, '弹幕已复制到粘贴板', `rua-danmaku-${index}`, -200, -danmakuTray.scrollTop-18);
         }
         return div;
     }
@@ -895,7 +859,7 @@
         chrome.runtime.sendMessage({msg:'requestCrackUID', mid:mid}, r=>{
             for (let i = 0; i < r.response.length; i++) {
                 chrome.runtime.sendMessage({msg:"requestUserInfo", mid:r.response[i]}, (callback)=>{
-                    if(callback.response['fans']!==0 || callback.response['friend']!==0){
+                    if(callback.response['fans']!==0 || callback.response['friend']!==0 || typeof r.response !=='undefined'){
                         const user = document.createElement("div");
                         user.setAttribute("class", "rua-user");
                         const face = document.createElement("a");

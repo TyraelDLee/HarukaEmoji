@@ -353,7 +353,6 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
  * cannot load some info.
  * */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-    //importScripts("./../ffmpeg/ffmpeg.min.js","./../ffmpeg/ffmpeg-core.js");
         if(request.msg === "get_LoginInfo"){
             chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
                 function (jct) {
@@ -362,8 +361,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
                         sendResponse({res:info.jct+","+info.uuid+","+info.uuid});
                     });
                 });
-            chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
-                function (jct) {(jct === null)?chrome.storage.local.set({'jct':-1}, ()=>{}):chrome.storage.local.set({'jct':jct.value}, ()=>{})});
+            // chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
+            //     function (jct) {(jct === null)?chrome.storage.local.set({'jct':-1}, ()=>{}):chrome.storage.local.set({'jct':jct.value}, ()=>{})});
         }
         if(request.msg === "get_UUID") {
             chrome.storage.local.get(['uuid'],(uid)=>{
