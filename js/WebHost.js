@@ -624,6 +624,8 @@
                     console.log("sent");
                     if(result['message'].length!==0)
                         sendError('你的弹幕被系统吞了，重试一下吧。');
+                    else if(result['message']==='你所在的地区暂无法发言')
+                        sendError('你所在的地区暂无法发言');
                 })
                 .catch(error=>{
                     console.error('Error:', error);
