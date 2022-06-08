@@ -151,7 +151,6 @@
             temp[i][0] = middlePoint[0] + middlePoint[1] - locations[i][1];
             temp[i][1] = middlePoint[1] - middlePoint[0] + locations[i][0];
         }
-        console.log(locations)
         if (!invalidRotate(temp)) {
             location[locations[0][0]][locations[0][1]] = 0;
             location[locations[1][0]][locations[1][1]] = 0;
