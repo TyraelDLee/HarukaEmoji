@@ -1021,18 +1021,18 @@ function findVideo(vid){
  * */
 function checkUpdate(url){
     console.log("checking update at "+(new URL(url)).hostname);
-    let latestVersion = chrome.runtime.getManifest().version;
+    let latestVersion = chrome.runtime.getManifest().version.split('.');
     fetch(url+new Date().getTime(), {
         method:'GET',
         credentials: 'omit',
         body:null
     }).then(t=>t.text())
         .then(text=>{
-            if (text !== null && (/<title>(.*?)<\/title>/m).exec(text) !== null) {
-                if(latestVersion !== (/<title>(.*?)<\/title>/m).exec(text)[1]){
-                    latestVersion = (/<title>(.*?)<\/title>/m).exec(text)[1];
-                    if(latestVersion!==chrome.runtime.getManifest().version){
-                        console.log("A newer version found: "+latestVersion);
+            if (text !== null && (/<meta name="current-version" content="(.*?)">/m).exec(text) !== null) {
+                if(latestVersion !== (/<meta name="current-version" content="(.*?)">/m).exec(text)[1]){
+                    latestVersion = (/<meta name="current-version" content="(.*?)">/m).exec(text)[1].split('.');
+                    if(latestVersion[0]-0>chrome.runtime.getManifest().version.split('.')[0]-0||latestVersion[0]-0>=chrome.runtime.getManifest().version.split('.')[0]-0 && latestVersion[1]-0>chrome.runtime.getManifest().version.split('.')[1]-0){
+                        console.log(`A newer version found: ${latestVersion[0]}.${latestVersion[1]}`);
                         chrome.storage.local.set({'updateAvailable':true},()=>{});
                         chrome.storage.local.set({'availableBranch':new URL(url).hostname.includes("github")?"https://github.com/TyraelDLee/HarukaEmoji/releases/latest":"https://gitee.com/tyrael-lee/HarukaEmoji/releases"},()=>{});
                         setBadge("rua豹器 有更新可用", "1");
@@ -1045,6 +1045,7 @@ function checkUpdate(url){
             }
         })
         .catch(e=>{
+            console.log(e)
             checkUpdate(url.includes("github")?"https://tyrael-lee.gitee.io/harukaemoji/?_=":"https://tyraeldlee.github.io/HarukaEmoji/?_=");
     });
 }
