@@ -2,6 +2,7 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/docs/js/readme.min.js" />
         <item url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.min.js" />
         <item url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.worker.min.js" />
         <item url="file://$PROJECT_DIR$/js/ADT.min.js" />
@@ -29,6 +30,7 @@
       </sourceFilesUrls>
     </properties>
     <CLASSES>
+      <root url="file://$PROJECT_DIR$/docs/js/readme.min.js" />
       <root url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.min.js" />
       <root url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.worker.min.js" />
       <root url="file://$PROJECT_DIR$/js/ADT.min.js" />
