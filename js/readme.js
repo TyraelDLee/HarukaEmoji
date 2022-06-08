@@ -40,6 +40,7 @@
         else{
             click++;
             if (click===5){
+                click=0;
                 const jump = document.createElement('a');
                 jump.href = 'Tetris.html';
                 jump.style.display = 'none';

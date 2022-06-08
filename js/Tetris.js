@@ -34,7 +34,7 @@
                 if (shape[i][j] === 1) {
                     let x = i, y = 3 + j;
                     const img = document.createElement('img');
-                    img.src = "../images/svga/13.svg";
+                    img.src = "images/svga/13.svg";
                     img.classList.add('block-img');
                     img.setAttribute('frame', '13');
                     img.setAttribute('moving', '1');
@@ -302,5 +302,4 @@
         if (updateDown(1) && !isLose()) clearLine();
     }, speed);
 })();
-//todo: rotate.
 //todo: HI mark.
