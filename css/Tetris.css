@@ -1,25 +1,17 @@
 body{
-    scrollbar-width:thin;
     font-family: system-ui, "PingFang SC", STHeiti, sans-serif;
     overflow: hidden;
 }
 
 main{
-    /*display: flex;*/
-    /*justify-content: center;*/
     margin: 0 auto;
     position: relative;
-
+    user-select: none;
 }
 
 img{
     position: absolute;
 }
-.game-board-col{
-    border: 1px solid #fff;
-}
-
-
 
 @media (prefers-color-scheme: dark) {
     body {

@@ -33,8 +33,21 @@
         });
     }
 
+    let click = 0;
     icon.addEventListener("click", ()=>{
-        goto(0,600);
+        if (document.documentElement.scrollTop>0)
+            goto(0,600);
+        else{
+            click++;
+            if (click===5){
+                const jump = document.createElement('a');
+                jump.href = 'Tetris.html';
+                jump.style.display = 'none';
+                document.body.appendChild(jump);
+                jump.click();
+                document.body.removeChild(jump);
+            }
+        }
     });
 
     function goto(id, duration) {
