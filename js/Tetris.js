@@ -291,6 +291,20 @@
                     clearLine();
                 }
                 break;
+            case 'KeyW':
+                rotate();
+                break;
+            case 'KeyA':
+                updateLR(-1);
+                break;
+            case 'KeyD':
+                updateLR(1);
+                break;
+            case 'KeyS':
+                if (updateDown(1) && !isLose()) {
+                    clearLine();
+                }
+                break;
         }
     });
 

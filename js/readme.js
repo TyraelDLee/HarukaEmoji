@@ -51,6 +51,23 @@
         }
     });
 
+    icon.addEventListener('touchend',()=>{
+        if (document.documentElement.scrollTop>0)
+            goto(0,600);
+        else{
+            click++;
+            if (click===5){
+                click=0;
+                const jump = document.createElement('a');
+                jump.href = 'Tetris.html';
+                jump.style.display = 'none';
+                document.body.appendChild(jump);
+                jump.click();
+                document.body.removeChild(jump);
+            }
+        }
+    });
+
     function goto(id, duration) {
         const start = document.documentElement.scrollTop, end = typeof id==="number"?id:getAbsHeight(id);
         anime(0);

@@ -290,7 +290,7 @@ chrome.runtime.onInstalled.addListener(async function (obj){
 
     // local states
     chrome.alarms.create('checkUpd', {'when':Date.now(), periodInMinutes:60*12});
-    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "dynamic_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[]}, ()=>{});
+    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "dynamic_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0/*'{"biz_msg_follow_unread":0,"biz_msg_unfollow_unread":0,"dustbin_push_msg":0,"dustbin_unread":0,"follow_unread":0,"unfollow_push_msg":0,"unfollow_unread":0}'*/, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[]}, ()=>{});
     chrome.alarms.create('getUID_CSRF', {'when': Date.now(), periodInMinutes:0.3});
 });
 
@@ -855,7 +855,7 @@ function dynamicNotify(){
 }
 
 function getNewUnread(){
-    chrome.storage.local.get(["unreadData", "unreadInit"], async (result)=>{
+    chrome.storage.local.get(["unreadData", "unreadInit", "unreadMessage"], async (result)=>{
         let unreadData = JSON.parse(result.unreadData);
         await fetch('https://api.bilibili.com/x/msgfeed/unread',{
             method:'GET',
@@ -1081,7 +1081,7 @@ function setBadge(title, text){
 
 // AppKey: 1d8b6e7d45233436
 // SecretKey: 560c52ccd288fed045859ed18bffd973
-// sign=MD5(queryString+SK) maybe.
+// sign=MD5(queryString+SK).
 // User-Agent: Mozilla/5.0 BiliDroid/6.72.0 (bbcallen@gmail.com) os/android model/MuMu mobi_app/android build?6720300 channel/bili innerVer/6720300 osVer/6.0.1 network/2
 
 

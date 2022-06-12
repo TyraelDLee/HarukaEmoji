@@ -105,11 +105,16 @@
                 }).catch(e=>{setTimeout(getRealRoomID, 1000)});
         }
 
+        /**
+         * Set quality.
+         *
+         * @param {string} qn the quality string.
+         * */
         function q(qn){
             let e = document.createEvent("MouseEvents");
             e.initEvent("mousemove", false, false);
             if(document.getElementById("live-player") === undefined || document.getElementById("live-player").getElementsByClassName("web-player-controller-wrap").length===undefined||document.getElementById("live-player").getElementsByClassName("web-player-controller-wrap").length===0)
-                setTimeout(q,200);
+                setTimeout(()=>{q(qn)},200);
             else{
                 let v = document.getElementById("live-player");
                 let s = v.getElementsByClassName("web-player-controller-wrap");
@@ -674,8 +679,10 @@
                             for (let j = 0; j < cell.length; j++) {
                                 const cellButton = cell[j].getElementsByTagName('div')[0];
                                 cell[j].onclick = function (e){
-                                    if(e.button === 0 && cellButton.classList.contains('rua-emoji-icon-active'))
+                                    if(e.button === 0 && cellButton.classList.contains('rua-emoji-icon-active')){
+                                        DanMuInput.focus();
                                         packaging(this.id, "systemEmoji");
+                                    }
                                 }
                             }
                         }
