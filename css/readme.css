@@ -78,10 +78,13 @@ thead{
     top:0;
     left:0;
     width: 100%;
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
     background-color: rgba(255,255,255,0);
     position: fixed;
+}
+
+.rua-icon-top{
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
 
 #rua-nav{
