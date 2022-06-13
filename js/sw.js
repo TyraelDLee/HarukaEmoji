@@ -443,11 +443,11 @@ function convertMSToS(time){
 /**
  * Check live room status once for all.
  *
- * time O(n^2), may be quicker
- *
  * API: https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids
  * method: POST
  * attention: not accept cookie.
+ *
+ * @param {array} uids the group of followed uid.
  * */
 function queryLivingRoom(uids) {
     chrome.storage.local.get(['uuid', 'notificationList'],(info)=>{
@@ -650,7 +650,7 @@ chrome.alarms.onAlarm.addListener((alarm)=>{
                 queryBcoin();
                 break;
             case 'dakaRoom':
-                daka(info.dakaUid, info.jct);
+                daka(info.dakaUid, info.jct, "打卡");
                 break;
         }
     });
@@ -761,6 +761,8 @@ function queryBcoin(){
 
 /**
  * Check and notify dynamic update section.
+ *
+ * new video part.
  * */
 function videoNotify(UUID){
     chrome.storage.local.get(['dynamic_id_list', 'videoInit'], (info)=>{
@@ -796,6 +798,8 @@ function videoNotify(UUID){
                                     }
                                 }
                                 dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
+                                if(dynamic_id_list.length>30)
+                                    dynamic_id_list.splice(0,1);
                             }
                             chrome.storage.local.set({"dynamic_id_list": dynamic_id_list}, ()=>{});
                         }
@@ -807,6 +811,12 @@ function videoNotify(UUID){
     });
 }
 
+/**
+ * Check and notify dynamic update section.
+ *
+ * new dynamic part. Basically as same as above but with different types in the API link,
+ * and different callback cards.
+ * */
 function dynamicNotify(){
     chrome.storage.local.get(['dynamicList', 'dynamicInit'], (r)=>{
         let dynamic_id_list = r.dynamicList;
@@ -842,7 +852,10 @@ function dynamicNotify(){
                                             break;
                                     }
                                 }
+
                                 dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
+                                if(dynamic_id_list.length>30)
+                                    dynamic_id_list.splice(0,1);
                             }
                         }
                         chrome.storage.local.set({'dynamicList':dynamic_id_list}, ()=>{});
@@ -854,6 +867,9 @@ function dynamicNotify(){
     });
 }
 
+/**
+ * Check the new unread message and push a notification.
+ **/
 function getNewUnread(){
     chrome.storage.local.get(["unreadData", "unreadInit", "unreadMessage"], async (result)=>{
         let unreadData = JSON.parse(result.unreadData);
@@ -949,9 +965,13 @@ function checkMedalDaka(){
 }
 
 /**
- * Send damaku to each live room.
+ * Send damaku to all live rooms you are following.
+ *
+ * @param {array} dakaUid the group of uid which is following, for query the true(long) room id.
+ * @param {string} jct the csrf token.
+ * @param {string} dkMsg the context to send.
  * */
-function daka(dakaUid, jct){
+function daka(dakaUid, jct, dkMsg){
     if (dakaUid.length===0){
         chrome.alarms.clear('dakaRoom',()=>{});
     }else{
@@ -966,7 +986,7 @@ function daka(dakaUid, jct){
                 if(json["code"]===0 || json["data"].length>0){
                     let DanMuForm = new FormData();
                     DanMuForm.append("bubble", "0");
-                    DanMuForm.append("msg", "打卡");
+                    DanMuForm.append("msg", dkMsg);
                     DanMuForm.append("color", "16777215");
                     DanMuForm.append("mode", "1");
                     DanMuForm.append("fontsize", "25");
@@ -991,18 +1011,24 @@ function daka(dakaUid, jct){
 
 /**
  * Analysis selected text is a/bv id or not.
+ *
+ * @param {string} videoTag the selected context in the context menu.
+ * @return {boolean} is an a/bv number or not.
  * */
-async function legalVideoLink(str){
+async function legalVideoLink(videoTag){
     let headB = "AaBb";
     let headE = "Vv";
-    if(headB.includes(str.charAt(0)) && headE.includes(str.charAt(1))){
-        return headB.substr(0,2).includes(str.charAt(0))?await findVideo("aid="+str.substr(2,str.length-1)):await findVideo("bvid="+str);
+    if(headB.includes(videoTag.charAt(0)) && headE.includes(videoTag.charAt(1))){
+        return headB.substr(0,2).includes(videoTag.charAt(0))?await findVideo("aid="+videoTag.substr(2,videoTag.length-1)):await findVideo("bvid="+videoTag);
     }
     return false;
 }
 
 /**
- * Query selected a/bv id is exist or not.
+ * Query selected a/bv id is exists or not.
+ *
+ * @param {string} vid the video tag/id.
+ * @return {Promise} contain result for that video is exists or not.
  * */
 function findVideo(vid){
     return fetch("https://api.bilibili.com/x/web-interface/view?"+vid, {

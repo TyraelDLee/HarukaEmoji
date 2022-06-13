@@ -56,11 +56,6 @@
         }
     });
 
-    icon.addEventListener('touchend',()=>{
-        if (document.documentElement.scrollTop>0)
-            goto(0,600);
-    });
-
     function goto(id, duration) {
         const start = document.documentElement.scrollTop, end = typeof id==="number"?id:getAbsHeight(id);
         anime(0);
@@ -99,6 +94,12 @@
         svga(icon.getElementsByTagName('img')[0],Math.floor(Math.random()*2+1));
     });
     icon.addEventListener("mouseout", ()=>{
+        svga(icon.getElementsByTagName('img')[0],0);
+    });
+    icon.addEventListener("touchstart", ()=>{
+        svga(icon.getElementsByTagName('img')[0],Math.floor(Math.random()*2+1));
+    });
+    icon.addEventListener("touchend", ()=>{
         svga(icon.getElementsByTagName('img')[0],0);
     });
 }();
