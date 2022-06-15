@@ -852,9 +852,8 @@ function dynamicNotify(){
                                             break;
                                     }
                                 }
-
                                 dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
-                                if(dynamic_id_list.length>30)
+                                if(dynamic_id_list.length>40)
                                     dynamic_id_list.splice(0,1);
                             }
                         }
