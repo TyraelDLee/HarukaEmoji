@@ -739,8 +739,9 @@
                     for (let j = 0; j < cell.length; j++) {
                         cell[j].onclick = function (e){
                             if(e.button === 0){
-                                O.value = O.value.substr(0, cursorSelection[0]) + "(" +emoji[j+(i-1)*num_per_line]+ ")" + O.value.substr(cursorSelection[1]);
+                                O.value = O.value.substr(0, cursorSelection[0]) + imgs[j+(i-1)*num_per_line].left +emoji[j+(i-1)*num_per_line]+ imgs[j+(i-1)*num_per_line].right + O.value.substr(cursorSelection[1]);
                                 cursorSelection = inputListener(span, O);
+                                DanMuInput.focus();
                             }
                         }
                     }

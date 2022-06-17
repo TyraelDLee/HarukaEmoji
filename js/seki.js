@@ -8,4 +8,4 @@ const SRC = "../images/seki/";
 const emoji = ["寄", "猪跑", "山猪跑", "七跑", "彩猪", "七玉", "开枪", "开炮", "摆"];
 
 const link = chrome.runtime.getURL("../images/seki/七跑.webp");
-var imgs = [];for (let i = 0; i < emoji.length; i++)imgs.push(new ImageButton(chrome.runtime.getURL(SRC+emoji[i]+".webp"), 1));
+var imgs = [];for (let i = 0; i < emoji.length; i++)imgs.push(new ImageButton(chrome.runtime.getURL(SRC+emoji[i]+".webp"), 1, '(', ')'));

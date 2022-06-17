@@ -3,9 +3,11 @@
  *
  * Abstract Data Type class.
  * */
-function ImageButton(URL, span){
+function ImageButton(URL, span, left, right){
     this.URL = URL;
     this.span = span;
+    this.left = left;
+    this.right = right;
 }
 
 ImageButton.prototype.getURL = function (){

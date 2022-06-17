@@ -116,6 +116,10 @@
     cursor: pointer;
 }
 
+.rua-download-block-disabled{
+    opacity: 0.8 !important;
+}
+
 .rua-quality-des{
     color: #fff;
     padding-top: 6px;

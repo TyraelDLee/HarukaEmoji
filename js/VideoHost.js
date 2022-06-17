@@ -28,6 +28,9 @@
     var initWidth = window.innerWidth;
     var labFeatures=[];
     var zoomFactor = 1.0;
+
+    let vipStatus = null;
+
     new MutationObserver(()=>{
         const p = new URLSearchParams(window.location["search"]).get("p")-1;
         const nvid = window.location["pathname"].replaceAll("/", "").replace("video","");
@@ -362,6 +365,9 @@
         .then(res => res.json())
         .then(async json => {
             if(json["code"]===0){
+                await chrome.runtime.sendMessage({ msg: "get_LoginStatus" }, function (vip){
+                    vipStatus = vip;
+                });
                 await getHDR8K(cid, 125, 'hdr', 'HDR');
                 await getHDR8K(cid, 127, '8k', '8K 超高清');
                 for (let i = 0; i < json["data"]["durl"].length; i++) {
@@ -375,10 +381,13 @@
                     rua_download_block.setAttribute("id","qn-"+acceptQn[i]["accept_format"]);
                     rua_download_block.classList.add("rua-download-block");
                     rua_download_block.innerHTML = "<div class='rua-quality-des'>"+acceptQn[i]["accept_description"]+"</div>";
+                    if((!vipStatus.login && (acceptQn[i]["accept_format"]-0)>63)||(vipStatus.login && vipStatus.vip===0 && (acceptQn[i]["accept_format"]-0)>80))
+                        rua_download_block.classList.add("rua-download-block-disabled");
                     downloadVideoTray.appendChild(rua_download_block);
                     downloadBlocks.push(rua_download_block);
                     rua_download_block.onclick = () =>{
-                        download(bvid, cid, json["data"]["accept_quality"][i], vtitle[0]+(vtitle.length===1?"":vtitle[pid+1])+" "+acceptQn[i]["accept_description"]);
+                        if (!rua_download_block.classList.contains("rua-download-block-disabled"))
+                            download(bvid, cid, json["data"]["accept_quality"][i], vtitle[0]+(vtitle.length===1?"":vtitle[pid+1])+" "+acceptQn[i]["accept_description"]);
                     }
                 }
                 downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40 + "px";

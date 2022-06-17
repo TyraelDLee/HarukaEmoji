@@ -349,7 +349,7 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
 });
 
 /**
- * Communicate with content script, since content script
+ * Communicate with content scripts, since content scripts
  * cannot load some info.
  * */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
@@ -361,12 +361,27 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
                         sendResponse({res:info.jct+","+info.uuid+","+info.uuid});
                     });
                 });
-            // chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'bili_jct'},
-            //     function (jct) {(jct === null)?chrome.storage.local.set({'jct':-1}, ()=>{}):chrome.storage.local.set({'jct':jct.value}, ()=>{})});
         }
         if(request.msg === "get_UUID") {
             chrome.storage.local.get(['uuid'],(uid)=>{
                 sendResponse({res:uid.uuid});
+            });
+        }
+        if(request.msg === 'get_LoginStatus'){
+            chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'DedeUserID'},(uid)=>{
+                if (uid === null || uid === undefined)
+                    sendResponse({login:false, vip:0});
+                else{
+                    fetch(`https://api.bilibili.com/x/space/acc/info?mid=${uid.value}`,{
+                        method: 'GET',
+                        credentials: 'include',
+                        body: null
+                    })
+                        .then(res=>res.json())
+                        .then(result=>{
+                            result["code"]===0 && result["data"]!==null?sendResponse({login:true, vip:result["data"]['vip']['type']}):sendResponse({login:true, vip:1});
+                        });
+                }
             });
         }
         if(request.msg === "updateStatus") {
@@ -418,16 +433,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
         return true;
     }
 );
-
-function utf8Encode(str){
-    let encoder = new TextEncoder('utf8');
-    let bytes = encoder.encode(str);
-    let result = '';
-    for(let i = 0; i < bytes.length; ++i) {
-        result += String.fromCharCode(bytes[i]);
-    }
-    return result;
-}
 
 function convertMSToS(time){
     time = time / 1000;
@@ -509,12 +514,12 @@ function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face
  * Create notification. (Web Extension API ver.)
  * normal ver.
  *
- * @param uid, a random number for notification id.
- * @param roomTitle, live room title.
- * @param msg, notification content.
- * @param roomUrl, part of live URL for click jump to.
- * @param cover, notification icon, normally will be up's face.
- * @param URLPrefix, "live.bilibili.com/", will be combine with roomUrl to build a full link.
+ * @param {number} uid, a random number for notification id.
+ * @param {string} roomTitle, live room title.
+ * @param {string} msg, notification content.
+ * @param {string} roomUrl, part of live URL for click jump to.
+ * @param {string} cover, notification icon, normally will be up's face.
+ * @param {string} URLPrefix, "live.bilibili.com/", will be combined with roomUrl to build a full link.
  * */
 function basicNotification(uid, roomTitle, msg, roomUrl, cover, URLPrefix){
     cover = cover.length==null||cover.length===0?"../images/haruka128.png":cover;
@@ -532,13 +537,13 @@ function basicNotification(uid, roomTitle, msg, roomUrl, cover, URLPrefix){
  * Create notification. (Web Extension API ver.)
  * image ver.
  *
- * @param uid, a random number for notification id.
- * @param roomTitle, live room title.
- * @param msg, notification content.
- * @param roomUrl, part of live URL for click jump to.
- * @param cover, notification content image, normally will be live room face.
- * @param face, notification icon, normally will be up's face.
- * @param URLPrefix, "live.bilibili.com/", will be combine with roomUrl to build a full link.
+ * @param {number} uid, a random number for notification id.
+ * @param {string} roomTitle, live room title.
+ * @param {string} msg, notification content.
+ * @param {string} roomUrl, part of live URL for click jump to.
+ * @param {string} cover, notification content image, normally will be live room face.
+ * @param {string} face, notification icon, normally will be up's face.
+ * @param {string} URLPrefix, "live.bilibili.com/", will be combined with roomUrl to build a full link.
  * */
 function imageNotification(uid, roomTitle, msg, roomUrl, cover, face, URLPrefix){
     face = face.length==null||face.length===0?"../images/haruka128.png":face;
@@ -622,7 +627,7 @@ function reloadCookies() {
 }
 
 chrome.alarms.onAlarm.addListener((alarm)=>{
-    console.log(alarm.name)
+    //console.log(alarm.name)
     if (alarm.name === 'getUID_CSRF'){
         reloadCookies();
     }
@@ -840,15 +845,15 @@ function dynamicNotify(){
                                     switch (type){
                                         case 1:
                                             console.log("你关注的up "+c["user"]["uname"]+" 转发了一条新动态 "+c['item']['content']+" see:"+`https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);
-                                            basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["uname"]}  转发了一条新动态`,c['item']['content']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['face'],"t.bilibili.com/");
+                                            basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["uname"]} 转发了一条动态`,c['item']['content']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['face'],"t.bilibili.com/");
                                             break;
                                         case 2:
                                             console.log("你关注的up "+c["user"]["name"]+" 发了一条新动态 "+c['item']['description']+" see: "+ `https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);
-                                            basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["name"]}  发了一条图片动态`,c['item']['description']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['head_url'],"t.bilibili.com/");
+                                            basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["name"]} 发了一条图片动态`,c['item']['description']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['head_url'],"t.bilibili.com/");
                                             break;
                                         case 4:
                                             console.log("你关注的up "+c["user"]["uname"]+" 发了一条新动态 "+c['item']['content']+" see: " + `https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);
-                                            basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["uname"]}  发了一条新动态`,c['item']['content']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['face'],"t.bilibili.com/");
+                                            basicNotification(o[i+""]["desc"]["dynamic_id"], `你关注的up ${c["user"]["uname"]} 发了一条新动态`,c['item']['content']+"", o[i+""]["desc"]["dynamic_id_str"], c["user"]['face'],"t.bilibili.com/");
                                             break;
                                     }
                                 }
@@ -1012,7 +1017,7 @@ function daka(dakaUid, jct, dkMsg){
  * Analysis selected text is a/bv id or not.
  *
  * @param {string} videoTag the selected context in the context menu.
- * @return {boolean} is an a/bv number or not.
+ * @return {Promise} is an a/bv number or not.
  * */
 async function legalVideoLink(videoTag){
     let headB = "AaBb";
@@ -1070,7 +1075,7 @@ function checkUpdate(url){
             }
         })
         .catch(e=>{
-            console.log(e)
+            console.log(e);
             checkUpdate(url.includes("github")?"https://tyrael-lee.gitee.io/harukaemoji/?_=":"https://tyraeldlee.github.io/HarukaEmoji/?_=");
     });
 }

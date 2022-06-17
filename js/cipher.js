@@ -89,42 +89,46 @@ function md5cmn(q, a, b, x, s, t) {
 }
 
 function md5ff(a, b, c, d, x, s, t) {
-    //return new md5().FF(a, b, c, d, x, s, t);
     return md5cmn((b & c) | (~b & d), a, b, x, s, t)
 }
 
 function md5gg(a, b, c, d, x, s, t) {
-    //return new md5().GG(a, b, c, d, x, s, t);
     return md5cmn((b & d) | (c & ~d), a, b, x, s, t)
 }
 
 function md5hh(a, b, c, d, x, s, t) {
-    //return new md5().HH(a, b, c, d, x, s, t);
     return md5cmn(b ^ c ^ d, a, b, x, s, t)
 }
 
 function md5ii(a, b, c, d, x, s, t) {
-    //return new md5().II(a, b, c, d, x, s, t);
     return md5cmn(c ^ (b | ~d), a, b, x, s, t)
 }
 
-function binlMD5(x, len) {
+function binlMD5(input, len) {
+    var x = []
+    x[(input.length >> 2) - 1] = undefined
+    for (let i = 0; i < x.length; i += 1) {
+        x[i] = 0
+    }
+    var length8 = input.length * 8
+    for (let i = 0; i < length8; i += 8) {
+        x[i >> 5] |= (input.charCodeAt(i / 8) & 0xff) << i % 32
+    }
+
     /* append padding */
     x[len >> 5] |= 0x80 << len % 32
     x[(((len + 64) >>> 9) << 4) + 14] = len
-    console.log(x);
 
-    var i
     var olda
     var oldb
     var oldc
     var oldd
-    var a = 1732584193
-    var b = -271733879
-    var c = -1732584194
-    var d = 271733878
+    var a = 0x67452301
+    var b = 0xefcdab89
+    var c = 0x98badcfe
+    var d = 0x10325476
 
-    for (i = 0; i < x.length; i += 16) {
+    for (let i = 0; i < x.length; i += 16) {
         olda = a
         oldb = b
         oldc = c
@@ -250,17 +254,7 @@ function rstr2binl(input) {
  * @returns {string} Raw MD5 string
  */
 function rstrMD5(s) {
-    return binl2rstr(binlMD5(rstr2binl(s), s.length * 8))
-}
-
-/**
- * Encode a string as UTF-8
- *
- * @param {string} input Input string
- * @returns {string} UTF8 string
- */
-function str2rstrUTF8(input) {
-    return unescape(encodeURIComponent(input))
+    return binl2rstr(binlMD5(s, s.length * 8))
 }
 
 /**
@@ -270,7 +264,7 @@ function str2rstrUTF8(input) {
  * @returns {string} Raw MD5 string
  */
 function rawMD5(s) {
-    return rstrMD5(str2rstrUTF8(s))
+    return rstrMD5(unescape(encodeURIComponent(s)))
 }
 
 /**
