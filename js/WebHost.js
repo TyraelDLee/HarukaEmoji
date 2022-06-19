@@ -35,8 +35,8 @@
             }
         }
     });
-
-    if(exp.test(room_id) && room_id.length > 0 && room_id.charAt(room_id.length-1)!=='#'){
+    let bespokePageHref = window.location['href'].replace('https://live.bilibili.com/','').replaceAll('/','').replace("blanc","");
+    if(exp.test(room_id) && room_id.length > 0 && bespokePageHref.charAt(bespokePageHref.length-1)!=='#'){
         var UID = "-1";
 
         var WINDOW_HEIGHT;
@@ -483,12 +483,18 @@
 
                 let originalInput, originalButton;
 
-                setTimeout(()=>{
-                    originalInput = document.getElementsByClassName("fullscreen-danmaku")[0].getElementsByTagName("div")[0];
-                    originalButton = document.getElementsByClassName("fullscreen-danmaku")[0].getElementsByTagName("div")[1];
-                    renderFullScreenMode();
-                    displayFullScreenDanmaku();
-                }, 2000);
+                !function getFullscreenControl(){
+                    try{
+                        originalInput = document.getElementsByClassName("fullscreen-danmaku")[0].getElementsByTagName("div")[0];
+                        originalButton = document.getElementsByClassName("fullscreen-danmaku")[0].getElementsByTagName("div")[1];
+                        renderFullScreenMode();
+                        displayFullScreenDanmaku();
+                    }catch (e) {
+                        console.log(e);
+                        console.log('retry in 2 seconds');
+                        setTimeout(()=>{getFullscreenControl()}, 2000);
+                    }
+                }();
 
                 function renderFullScreenMode(){
                     let fullScreenListener = new MutationObserver((m)=>{
@@ -1027,5 +1033,22 @@
             document.body.removeChild(a);
             window.URL.revokeObjectURL(dl);
         }
+
+        // !function hb(){
+        //     let hbObs = new MutationObserver((m)=>{
+        //         console.log(m);
+        //         if (m.type === "childList") {
+        //             console.log(m.addedNodes[0])
+        //         }
+        //     });
+        //
+        //     try {
+        //         hbObs.observe(document.getElementsByTagName('main')[0],{
+        //             childList: true
+        //         });
+        //     }catch (e){
+        //         console.log(e)
+        //     }
+        // }()
     }
 }();
