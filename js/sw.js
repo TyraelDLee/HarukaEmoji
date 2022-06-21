@@ -1105,9 +1105,10 @@ function setBadge(title, text){
 //todo: error handler √
 //todo: update check √
 //todo: context menu √
-//todo: web traffic control, no needed anymore
+//todo: web traffic control. no needed anymore
 //todo: hidden √
 //todo: mock Android app request.
+//todo: add support for mv2.😅
 
 // AppKey: 1d8b6e7d45233436
 // SecretKey: 560c52ccd288fed045859ed18bffd973

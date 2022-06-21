@@ -9,7 +9,7 @@
     const assConvert = new AssConvert(1280, 720);
 
     //import{bilibili} from protobuf;
-    var vid = window.location["pathname"].replaceAll("/", "").replace("video","");// id for current page, av or bv.
+    var vid = window.location["pathname"].replaceAll("/", "").replace("video","");// id for current page, av or bv or ss or ep.
     var aid = "";
     var bvid = "0";//bv id for current page. convert all id to bv id.
     var pid = new URLSearchParams(window.location["search"]).get("p")===null?0:new URLSearchParams(window.location["search"]).get("p")-1;// current part id.
@@ -297,24 +297,45 @@
         pid = pid<0?0:pid;
         cids = [];
         vtitle = [];
-        fetch("https://api.bilibili.com/x/web-interface/view?"+abv(vid), {
-            method:"GET",
-            credentials: 'include',
-            body:null
-        })
-        .then(res => res.json())
-        .then(json => {
-            if(json["code"]===0){
-                aid = json["data"]["aid"];
-                bvid = json["data"]["bvid"];
-                vtitle.push(json["data"]["title"]);
-                for (let i = 0; i < json["data"]["pages"].length; i++) {
-                    cids.push(json["data"]["pages"][i]["cid"]);
-                    if(json["data"]["pages"].length>1)vtitle.push(json["data"]["pages"][i]["part"]);
-                }
-                getQn(cids[pid]);
-            }
-        });
+        if(vid.substring(0,2)!=='ss' || vid.substring(0,0)!=='ep' ){
+            fetch("https://api.bilibili.com/x/web-interface/view?"+abv(vid), {
+                method:"GET",
+                credentials: 'include',
+                body:null
+            })
+                .then(res => res.json())
+                .then(json => {
+                    if(json["code"]===0){
+                        aid = json["data"]["aid"];
+                        bvid = json["data"]["bvid"];
+                        vtitle.push(json["data"]["title"]);
+                        for (let i = 0; i < json["data"]["pages"].length; i++) {
+                            cids.push(json["data"]["pages"][i]["cid"]);
+                            if(json["data"]["pages"].length>1)vtitle.push(json["data"]["pages"][i]["part"]);
+                        }
+                        getQn(cids[pid]);
+                    }
+                });
+        }else{
+            fetch("https://api.bilibili.com/pgc/view/web/season?season_id="+vid.replace('ss','').replace('ep',''), {
+                method:"GET",
+                credentials: 'include',
+                body:null
+            })
+                .then(res => res.json())
+                .then(json => {
+                    if(json["code"]===0){
+                        aid = json["data"]["aid"];
+                        bvid = json["data"]["bvid"];
+                        vtitle.push(json["data"]["title"]);
+                        for (let i = 0; i < json["data"]["pages"].length; i++) {
+                            cids.push(json["data"]["pages"][i]["cid"]);
+                            if(json["data"]["pages"].length>1)vtitle.push(json["data"]["pages"][i]["part"]);
+                        }
+                        getQn(cids[pid]);
+                    }
+                });
+        }
     }
 
     function copy(string, tips, tipsLocation, offsetX, offsetY){
@@ -386,8 +407,12 @@
                     downloadVideoTray.appendChild(rua_download_block);
                     downloadBlocks.push(rua_download_block);
                     rua_download_block.onclick = () =>{
-                        if (!rua_download_block.classList.contains("rua-download-block-disabled"))
-                            download(bvid, cid, json["data"]["accept_quality"][i], vtitle[0]+(vtitle.length===1?"":vtitle[pid+1])+" "+acceptQn[i]["accept_description"]);
+                        if(!rua_download_block.classList.contains('rua-downloading')){
+                            rua_download_block.classList.add('rua-downloading');
+                            if (!rua_download_block.classList.contains("rua-download-block-disabled")) {
+                                download(bvid, cid, json["data"]["accept_quality"][i], vtitle[0] + (vtitle.length === 1 ? "" : vtitle[pid + 1]) + " " + acceptQn[i]["accept_description"], rua_download_block);
+                            }
+                        }
                     }
                 }
                 downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40 + "px";
@@ -477,9 +502,18 @@
             });
     }
 
-    async function internalDownload(url, fileName, cid, hostObj, requestType){
+    async function internalDownload(url, fileName, cid, hostObj, requestType, dashRequest = true){
         let controller = new AbortController();
         let fileSize = 0, hostItem = hostObj.getElementsByClassName("rua-quality-des")[0].innerText, blobURL = [], audioMeta = {};
+        function releaseDownload(){
+            hostObj.removeAttribute("style");
+            hostObj.removeAttribute("title");
+            hostObj.classList.remove('rua-downloading');
+            hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
+            window.URL.revokeObjectURL(blobURL[0]);
+            if (requestType === 'hdrRecord' || requestType==='8kRecord')
+                window.URL.revokeObjectURL(blobURL[1]);
+        }
         await fetch(url[0], {
             method:"GET",
             body: null,
@@ -489,29 +523,58 @@
             controller.abort();
         });
         hostObj.getElementsByClassName("rua-quality-des")[0].innerText = `取流中...`;
-        if(fileSize < 1.5 * 1024 * 1024 * 1024){
-            hostObj.removeAttribute("title");
-            blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'?'视频':'');
-            if(requestType==='hdrRecord' || requestType==='8kRecord')
-                blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频');
-            if(requestType==='audioRecord')
-                audioMeta = await getAudioMeta();
-
-            encode(blobURL, fileName, requestType, audioMeta).then(r=>{
-                hostObj.removeAttribute("style");
+        if(dashRequest){
+            if(fileSize < 1.5 * 1024 * 1024 * 1024){
                 hostObj.removeAttribute("title");
-                hostObj.classList.remove('rua-downloading');
-                hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
-                window.URL.revokeObjectURL(blobURL[0]);
-                if (requestType === 'hdrRecord' || requestType==='8kRecord')
-                    window.URL.revokeObjectURL(blobURL[1]);
-            });
-        }else{
-            hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
-            chrome.runtime.sendMessage({msg:"requestDownload", url: url[0], fileName:fileName+".mp4"}, (callback)=>{
+                blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'?'视频':'', true);
                 if(requestType==='hdrRecord' || requestType==='8kRecord')
-                    chrome.runtime.sendMessage({msg:"requestDownload", url: url[1], fileName:fileName+"-audio.m4a"},(c)=>{});
-            });
+                    blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频', true);
+                if(requestType==='audioRecord')
+                    audioMeta = await getAudioMeta();
+
+                encode(blobURL, fileName, requestType, audioMeta).then(r=>{
+                    releaseDownload();
+                });
+            }else{
+                hostObj.removeAttribute("title");
+                blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'?'视频':'', false);
+                aDownload(blobURL[0], fileName+".mp4");
+                if(requestType==='hdrRecord' || requestType==='8kRecord'){
+                    blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频', false);
+                    aDownload(blobURL[1], fileName+".m4a");
+                }
+                releaseDownload();
+
+                // hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
+                // //IndexedDB here
+                // chrome.runtime.sendMessage({msg:"requestDownload", url: url[0], fileName:fileName+".mp4"}, (callback)=>{
+                //     if(requestType==='hdrRecord' || requestType==='8kRecord')
+                //         chrome.runtime.sendMessage({msg:"requestDownload", url: url[1], fileName:fileName+"-audio.m4a"},(c)=>{});
+                // });
+            }
+        }else{
+            blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType.includes(':')?'分段'+requestType.split(':')[1]:'视频', false);
+            aDownload(blobURL[0], fileName+".flv");
+            releaseDownload();
+        }
+
+    }
+
+    /**
+     * Download from <a> tag.
+     *
+     * @param{string} blobURL the blob url.
+     * @param{string} fileName the name of downloaded file.
+     * */
+    function aDownload(blobURL, fileName){
+        if(!blobURL.includes('undefined')){
+            let a = document.createElement("a");
+            a.href = blobURL;
+            a.style.display = 'none';
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
     }
 
@@ -588,7 +651,17 @@
             .catch(e=>{});
     }
 
-    async function dash(url, hostObj, cid, hostItem, dispTag){
+    /**
+     * Download function for DASH protocol.
+     *
+     * @param {string} url the url for media stream.
+     * @param {object} hostObj the front-end object to show the progress.
+     * @param {number | string} cid the id for the specific media segment.
+     * @param {object} hostItem the front-end to the status text.
+     * @param {string} dispTag the status text.
+     * @param {boolean} encode indicate the media require encode or not.
+     * */
+    async function dash(url, hostObj, cid, hostItem, dispTag, encode){
         let size=0, get=0;
         return fetch(url,{
             method:"GET",
@@ -603,14 +676,14 @@
                 const reader = body.getReader();
                 return new Response(
                     new ReadableStream({
-                        start(controller){
+                        async start(controller){
                             return push();
                             function push() {
-                                return reader.read().then(res => {
+                                return reader.read().then(async res => {
                                     const {done, value} = res;
                                     if (done) {
                                         controller.close();
-                                        hostObj.getElementsByClassName("rua-quality-des")[0].innerText = "转码中...";
+                                        if (encode) hostObj.getElementsByClassName("rua-quality-des")[0].innerText = "转码中...";
                                     }
                                     get += value.length || 0;
                                     setProgress(hostObj, (get/size) * 100);
@@ -647,7 +720,16 @@
         obj.addEventListener('click', errorClick);
     }
 
-    function download(vid, cid, qn, fileName){
+    /**
+     * Grab the segments information.
+     *
+     * @param{string} vid the video id.
+     * @param{number | string} cid the cid for the specific video segment.
+     * @param{number | string} qn the quality indicator.
+     * @param{string} fileName the name of downloaded file.
+     * @param{object} hostObj the front-end object to show the progress.
+     * */
+    function download(vid, cid, qn, fileName, hostObj){
         let grabDownloadURL = new XMLHttpRequest();
         grabDownloadURL.withCredentials = true;
         grabDownloadURL.open("GET","https://api.bilibili.com/x/player/playurl?bvid="+bvid+"&cid="+cid+"&qn="+qn+"&type=flv&fourk=1");
@@ -655,20 +737,21 @@
         grabDownloadURL.onload = function (e){
             if(grabDownloadURL.status===200) {
                 if(JSON.parse(grabDownloadURL.responseText)["code"]===0 && JSON.parse(grabDownloadURL.responseText)["data"]["durl"]!==null){
-                    downloadSegments(JSON.parse(grabDownloadURL.responseText)["data"]["durl"], fileName, 0, JSON.parse(grabDownloadURL.responseText)["data"]["durl"].length);
+                    downloadSegments(JSON.parse(grabDownloadURL.responseText)["data"]["durl"], fileName, 0, JSON.parse(grabDownloadURL.responseText)["data"]["durl"].length, cid, hostObj);
                 }
             }
         }
     }
 
-    function downloadSegments(durl, fileName, currentLocation, totalSize){
-        chrome.runtime.sendMessage({msg:"requestDownload", url: durl[currentLocation]["url"], fileName:(fileName+(durl.length===1?"":"_p"+currentLocation))+new URL(durl[currentLocation]["url"])["pathname"].toString().substring(new URL(durl[currentLocation]["url"])["pathname"].toString().length-4,new URL(durl[currentLocation]["url"])["pathname"].toString().length)},(callback)=>{});
-        currentLocation=currentLocation+1;
-        if(currentLocation<totalSize){
-            setTimeout(()=>{
-                downloadSegments(durl, fileName, currentLocation, totalSize);
-            }, 2000);
-        }
+    function downloadSegments(durl, fileName, currentLocation, totalSize, cid, hostObj){
+        internalDownload([durl[currentLocation]["url"]],fileName+((totalSize>1)?'-s'+currentLocation:''), cid, hostObj, 'video'+((totalSize>1)?':'+currentLocation:''), false).then(r=>{
+            currentLocation=currentLocation+1;
+            if(currentLocation<totalSize){
+                downloadSegments(durl, fileName, currentLocation, totalSize, cid, hostObj);
+            }
+        });
+        //chrome.runtime.sendMessage({msg:"requestDownload", url: durl[currentLocation]["url"], fileName:(fileName+(durl.length===1?"":"_p"+currentLocation))+new URL(durl[currentLocation]["url"])["pathname"].toString().substring(new URL(durl[currentLocation]["url"])["pathname"].toString().length-4,new URL(durl[currentLocation]["url"])["pathname"].toString().length)},(callback)=>{});
+
     }
 
     function removeListener(){
