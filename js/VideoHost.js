@@ -9,7 +9,7 @@
     const assConvert = new AssConvert(1280, 720);
 
     //import{bilibili} from protobuf;
-    var vid = window.location["pathname"].replaceAll("/", "").replace("video","");// id for current page, av or bv or ss or ep.
+    var vid = window.location["pathname"].replaceAll("/", "").replace("video","").replace('bangumi','').replace('play','');// id for current page, av or bv or ss or ep.
     var aid = "";
     var bvid = "0";//bv id for current page. convert all id to bv id.
     var pid = new URLSearchParams(window.location["search"]).get("p")===null?0:new URLSearchParams(window.location["search"]).get("p")-1;// current part id.
@@ -33,7 +33,7 @@
 
     new MutationObserver(()=>{
         const p = new URLSearchParams(window.location["search"]).get("p")-1;
-        const nvid = window.location["pathname"].replaceAll("/", "").replace("video","");
+        const nvid = window.location["pathname"].replaceAll("/", "").replace("video","").replace('bangumi','').replace('play','');
         if(new URLSearchParams(window.location["search"]).get("p") !== null && pid!==p){
             pid = p;
             getQn(cids[p]);
@@ -285,58 +285,6 @@
             selec.style.removeProperty("background");
         }
     }
-    /**
-     * Popup UI render section end.
-     * */
-
-    /**
-     * Download section
-     * */
-    grabVideoInfo();
-    function grabVideoInfo(){
-        pid = pid<0?0:pid;
-        cids = [];
-        vtitle = [];
-        if(vid.substring(0,2)!=='ss' || vid.substring(0,0)!=='ep' ){
-            fetch("https://api.bilibili.com/x/web-interface/view?"+abv(vid), {
-                method:"GET",
-                credentials: 'include',
-                body:null
-            })
-                .then(res => res.json())
-                .then(json => {
-                    if(json["code"]===0){
-                        aid = json["data"]["aid"];
-                        bvid = json["data"]["bvid"];
-                        vtitle.push(json["data"]["title"]);
-                        for (let i = 0; i < json["data"]["pages"].length; i++) {
-                            cids.push(json["data"]["pages"][i]["cid"]);
-                            if(json["data"]["pages"].length>1)vtitle.push(json["data"]["pages"][i]["part"]);
-                        }
-                        getQn(cids[pid]);
-                    }
-                });
-        }else{
-            fetch("https://api.bilibili.com/pgc/view/web/season?season_id="+vid.replace('ss','').replace('ep',''), {
-                method:"GET",
-                credentials: 'include',
-                body:null
-            })
-                .then(res => res.json())
-                .then(json => {
-                    if(json["code"]===0){
-                        aid = json["data"]["aid"];
-                        bvid = json["data"]["bvid"];
-                        vtitle.push(json["data"]["title"]);
-                        for (let i = 0; i < json["data"]["pages"].length; i++) {
-                            cids.push(json["data"]["pages"][i]["cid"]);
-                            if(json["data"]["pages"].length>1)vtitle.push(json["data"]["pages"][i]["part"]);
-                        }
-                        getQn(cids[pid]);
-                    }
-                });
-        }
-    }
 
     function copy(string, tips, tipsLocation, offsetX, offsetY){
         const copyTips = document.createElement('div');
@@ -356,6 +304,148 @@
             document.execCommand('Copy');
             videoInfo.remove();
         });
+    }
+
+    /**
+     * Popup UI render section end.
+     * */
+
+    /**
+     * Download section
+     * */
+    grabVideoInfo();
+    function grabVideoInfo(){
+        pid = pid<0?0:pid;
+        cids = [];
+        vtitle = [];
+        if(vid.substring(0,2)!=='ss' && vid.substring(0,2)!=='ep'){
+            fetch("https://api.bilibili.com/x/web-interface/view?"+abv(vid), {
+                method:"GET",
+                credentials: 'include',
+                body:null
+            })
+                .then(res => res.json())
+                .then(json => {
+                    if(json["code"]===0){
+                        aid = json["data"]["aid"];
+                        bvid = json["data"]["bvid"];
+                        vtitle.push(json["data"]["title"]);
+                        for (let i = 0; i < json["data"]["pages"].length; i++) {
+                            cids.push(json["data"]["pages"][i]["cid"]);
+                            if(json["data"]["pages"].length>1)vtitle.push(json["data"]["pages"][i]["part"]);
+                        }
+                        getQn(cids[pid]);
+                    }
+                });
+        }else {
+            document.getElementById('emoji-selection').style.fontSize = '12px';
+            let found = false;
+            for (const e of document.getElementById('media_module').getElementsByClassName('media-right')[0].getElementsByClassName('pub-wrapper')[0].getElementsByTagName('a')){
+                if (e.classList.contains('av-link')){
+                    found = true;
+                    fetch("https://api.bilibili.com/pgc/view/web/season?"+sep(vid), {
+                        method:"GET",
+                        credentials: 'include',
+                        body:null
+                    })
+                        .then(res => res.json())
+                        .then(json => {
+                            grabBangumi(json, e.innerText);
+                        });
+                }
+            }
+            if(!found){
+                const bvObs = new MutationObserver(m=>{
+                    m.forEach(function(mutation) {
+                        if (mutation.type === "childList" && mutation.addedNodes[0]!==undefined && mutation.addedNodes[0].classList.contains('av-link')) {
+                            const bv = mutation.addedNodes[0].innerText;
+                            fetch("https://api.bilibili.com/pgc/view/web/season?"+sep(vid), {
+                                method:"GET",
+                                credentials: 'include',
+                                body:null
+                            })
+                                .then(res => res.json())
+                                .then(json => {
+                                    grabBangumi(json, bv);
+                                });
+                        }
+                    });
+                });
+                bvObs.observe(document.getElementById('media_module').getElementsByClassName('media-right')[0].getElementsByClassName('pub-wrapper')[0],{
+                    childList:true
+                });
+            }
+        }
+    }
+
+    function grabBangumi(json, id){
+        if(json["code"]===0){
+            let found = false;
+            for (let i = 0; i < json['result']['episodes'].length; i++) {
+                if (json['result']['episodes'][i]['bvid']+'' === id){
+                    aid = json['result']['episodes'][i]['aid'];
+                    bvid = json['result']['episodes'][i]['bvid'];
+                    vtitle.push(json['result']['season_title']+'-'+json['result']['episodes'][i]['long_title']);
+                    cids.push(json['result']['episodes'][i]['cid']);
+                    found = true;
+                }
+            }
+            if(!found){
+                for (let i = 0; i < json['result']['section'][0]['episodes'].length; i++) {
+                    if (json['result']['section'][0]['episodes'][i]['bvid']+'' === id){
+                        aid = json['result']['section'][0]['episodes'][i]['aid'];
+                        bvid = json['result']['section'][0]['episodes'][i]['bvid'];
+                        vtitle.push(json['result']['season_title']+'-花絮-'+json['result']['section'][0]['episodes'][i]['long_title']);
+                        cids.push(json['result']['section'][0]['episodes'][i]['cid']);
+                        found = true;
+                    }
+                }
+            }
+            if (!found){
+                for (let i = 0; i < json['result']['section'][1]['episodes'].length; i++) {
+                    if (json['result']['section'][1]['episodes'][i]['bvid']+'' === id){
+                        aid = json['result']['section'][1]['episodes'][i]['aid'];
+                        bvid = json['result']['section'][1]['episodes'][i]['bvid'];
+                        vtitle.push(json['result']['season_title']+'-二创-'+json['result']['section'][1]['episodes'][i]['long_title']);
+                        cids.push(json['result']['section'][1]['episodes'][i]['cid']);
+                        found = true;
+                    }
+                }
+            }
+            if (found){
+                getQn(cids[0]);
+            }
+        }
+    }
+
+    /**
+     * Determine the type of input vid.
+     *
+     * @param {string} str video tag.
+     * @return {string} the query string for url.
+     * */
+    function abv(str){
+        let headB = "AaBb";
+        let headE = "Vv";
+        if(headB.includes(str.charAt(0)) && headE.includes(str.charAt(1))){
+            return headB.substr(0,2).includes(str.charAt(0))?"aid="+str.replace("av",""):"bvid="+str;
+        }
+    }
+
+    /**
+     * Determine the type of input bangumi id.
+     *
+     * @param {string} str bangumi tag.
+     * @return {string} the query string for url.
+     * */
+    function sep(str){
+        str = str.toUpperCase();
+        if (str.substring(0,2)==='SS'){
+            return 'season_id='+str.replace('SS','');
+        }
+        else if (str.substring(0,2)==='EP'){
+            return 'ep_id='+str.replace('EP','');
+        }
     }
 
     function getQn(cid){
@@ -759,14 +849,6 @@
         downloadBlocks = [];
     }
 
-    function abv(str){
-        let headB = "AaBb";
-        let headE = "Vv";
-        if(headB.includes(str.charAt(0)) && headE.includes(str.charAt(1))){
-            return headB.substr(0,2).includes(str.charAt(0))?"aid="+str.replace("av",""):"bvid="+str;
-        }
-    }
-
     /**
      * Danmaku section
      * */
@@ -1010,3 +1092,6 @@
         return false;
     }
 }();
+
+//todo: code review
+//todo: region check for bangumi.

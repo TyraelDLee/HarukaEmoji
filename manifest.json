@@ -69,7 +69,7 @@
     "all_frames": true,
     "css": ["css/host.min.css", "css/button.min.css", "css/videos.min.css"],
     "js": ["ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/protobuf.min.js","js/ADT.js", "js/DanmakuToAss.min.js", "js/VideoHost.min.js"],
-    "matches": ["*://www.bilibili.com/video/*"],
+    "matches": ["*://www.bilibili.com/video/*", "*://www.bilibili.com/bangumi/play/*"],
     "run_at": "document_end"
   },{
     "all_frames": true,
