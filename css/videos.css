@@ -195,6 +195,11 @@
     animation-fill-mode: forwards;
 }
 
+.rua-video-right-info{
+    line-height: 80px;
+    font-size: 14px;
+}
+
 #rua-user-control-bar{
     text-align: center;
     width: 280px;

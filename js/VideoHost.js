@@ -318,6 +318,8 @@
         pid = pid<0?0:pid;
         cids = [];
         vtitle = [];
+        document.getElementById("rua-danmaku-size").innerText = "共"+ 0 + " 弹幕";
+        danmakuTray.getElementsByTagName('div')[0].style.height='0px';
         if(vid.substring(0,2)!=='ss' && vid.substring(0,2)!=='ep'){
             fetch("https://api.bilibili.com/x/web-interface/view?"+abv(vid), {
                 method:"GET",
@@ -379,43 +381,56 @@
     }
 
     function grabBangumi(json, id){
-        if(json["code"]===0){
-            let found = false;
-            for (let i = 0; i < json['result']['episodes'].length; i++) {
-                if (json['result']['episodes'][i]['bvid']+'' === id){
-                    aid = json['result']['episodes'][i]['aid'];
-                    bvid = json['result']['episodes'][i]['bvid'];
-                    vtitle.push(json['result']['season_title']+'-'+json['result']['episodes'][i]['long_title']);
-                    cids.push(json['result']['episodes'][i]['cid']);
-                    found = true;
-                }
-            }
-            if(!found){
-                for (let i = 0; i < json['result']['section'][0]['episodes'].length; i++) {
-                    if (json['result']['section'][0]['episodes'][i]['bvid']+'' === id){
-                        aid = json['result']['section'][0]['episodes'][i]['aid'];
-                        bvid = json['result']['section'][0]['episodes'][i]['bvid'];
-                        vtitle.push(json['result']['season_title']+'-花絮-'+json['result']['section'][0]['episodes'][i]['long_title']);
-                        cids.push(json['result']['section'][0]['episodes'][i]['cid']);
+        let reason, rightBadge;
+        chrome.runtime.sendMessage({ msg: "get_LoginStatus" }, function (vip){
+            if(json["code"]===0){
+                let found = false;
+                for (let i = 0; i < json['result']['episodes'].length; i++) {
+                    if (json['result']['episodes'][i]['bvid']+'' === id){
+                        aid = json['result']['episodes'][i]['aid'];
+                        bvid = json['result']['episodes'][i]['bvid'];
+                        rightBadge = json['result']['episodes'][i]['badge_info']['text'];
+                        vtitle.push(json['result']['season_title']+'-'+json['result']['episodes'][i]['long_title']);
+                        cids.push(json['result']['episodes'][i]['cid']);
                         found = true;
+                        break;
                     }
                 }
-            }
-            if (!found){
-                for (let i = 0; i < json['result']['section'][1]['episodes'].length; i++) {
-                    if (json['result']['section'][1]['episodes'][i]['bvid']+'' === id){
-                        aid = json['result']['section'][1]['episodes'][i]['aid'];
-                        bvid = json['result']['section'][1]['episodes'][i]['bvid'];
-                        vtitle.push(json['result']['season_title']+'-二创-'+json['result']['section'][1]['episodes'][i]['long_title']);
-                        cids.push(json['result']['section'][1]['episodes'][i]['cid']);
-                        found = true;
+                if(!found){
+                    for (let i = 0; i < json['result']['section'][0]['episodes'].length; i++) {
+                        if (json['result']['section'][0]['episodes'][i]['bvid']+'' === id){
+                            aid = json['result']['section'][0]['episodes'][i]['aid'];
+                            bvid = json['result']['section'][0]['episodes'][i]['bvid'];
+                            rightBadge = json['result']['episodes'][i]['badge_info']['text'];
+                            vtitle.push(json['result']['season_title']+'-花絮-'+json['result']['section'][0]['episodes'][i]['long_title']);
+                            cids.push(json['result']['section'][0]['episodes'][i]['cid']);
+                            found = true;
+                            break;
+                        }
                     }
                 }
+                if (!found){
+                    for (let i = 0; i < json['result']['section'][1]['episodes'].length; i++) {
+                        if (json['result']['section'][1]['episodes'][i]['bvid']+'' === id){
+                            aid = json['result']['section'][1]['episodes'][i]['aid'];
+                            bvid = json['result']['section'][1]['episodes'][i]['bvid'];
+                            rightBadge = json['result']['episodes'][i]['badge_info']['text'];
+                            vtitle.push(json['result']['season_title']+'-二创-'+json['result']['section'][1]['episodes'][i]['long_title']);
+                            cids.push(json['result']['section'][1]['episodes'][i]['cid']);
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                // if(rightBadge!=='' && found){
+                //     found = rightBadge === '会员' && vip.vip > 0;
+                //     console.log(rightBadge);
+                // }
+                if (found){
+                    getQn(cids[0], rightBadge===''||(rightBadge==='会员' && vip.vip > 0)?'':`<span class="rua-video-right-info">${rightBadge==='会员'?'此视频需要大会员':'您所在的地区无法观看本片'}。</span>`);
+                }
             }
-            if (found){
-                getQn(cids[0]);
-            }
-        }
+        });
     }
 
     /**
@@ -448,14 +463,14 @@
         }
     }
 
-    function getQn(cid){
+    function getQn(cid, trayText = ''){
         videoInfo.innerHTML = `<b style='user-select: none'>视频ID：</b><span>av${aid}</span><span style='user-select: none'> / </span><span>cid:${cid}</span><span title="复制ID" class="rua-video-info-copy" id="rua-video-info-copy"><svg viewBox="0 0 400 400" width="18" height="18" style="position: absolute" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="400" fill='#aaa' mask='url(#rua-copy-mask)'/><mask id="rua-copy-mask"><rect x='150' y='40' rx="20" ry="20" width="200" height="280" style="fill:#fff" /><rect x="190" y="110" width="120" height="20" fill="black"/><rect x="190" y="160" width="120" height="20" fill="black"/><rect x="190" y="210" width="120" height="20" fill="black"/><rect x='55' y='75' rx="20" ry="20" width="200" height="280" style="fill:#000"/><rect x='50' y='80' rx="20" ry="20" width="200" height="280" style="fill:#fff"/><rect x="90" y="150" width="120" height="20" fill="black"/><rect x="90" y="200" width="120" height="20" fill="black"/><rect x="90" y="250" width="120" height="20" fill="black"/></mask></svg></span>`;
         pInfo.innerText = (pid-1+2)+ "p/"+cids.length+"p";
         document.getElementById('rua-video-info-copy').addEventListener('click', ()=>{
             copy(`av号: av${aid}\r\nBV号: ${bvid}\r\ncid: ${cid}`, '视频ID已复制到粘贴板', 'rua-video-info-copy', -75, 18);
         });
         removeListener();
-        downloadVideoTray.innerHTML = "";
+        downloadVideoTray.innerHTML = trayText;
         videoDuration = 0;
         danmakuPoolSize = 0;
         danmakuArr = new DanmakuArr();
@@ -1094,4 +1109,3 @@
 }();
 
 //todo: code review
-//todo: region check for bangumi.
