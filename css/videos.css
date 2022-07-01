@@ -154,9 +154,16 @@
     opacity: 1;
 }
 
+.rua-danmaku-time:hover{
+    background: #ffebee;
+    color: var(--bili-blue);
+    opacity: 1;
+}
+
 .rua-danmaku-copy{
     cursor: pointer;
     opacity: 0;
+    min-width: 26px;
 }
 
 /*.rua-danmaku-copy:hover{*/

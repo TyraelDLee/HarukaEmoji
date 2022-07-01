@@ -63,11 +63,8 @@
     videoInfoSec.setAttribute("id","rua-video-info");
     videoInfoSec.style.paddingTop = "2px";
     const videoInfo = document.createElement("div");
-    videoInfo.setAttribute("style","float: left; padding-left:5px");
+    videoInfo.setAttribute("style","display: flex; padding-left:5px; justify-content: space-between;");
     videoInfoSec.appendChild(videoInfo);
-    const pInfo = document.createElement("span");
-    pInfo.setAttribute("style", "float: right; padding-right:5px; user-select: none;");
-    videoInfoSec.appendChild(pInfo);
 
     const danmakuTray = document.createElement("div");
     danmakuTray.setAttribute("id","rua-danmaku");
@@ -312,6 +309,12 @@
      * Download section
      * */
     grabVideoInfo();
+    
+    /**
+     * Get the video information.
+     * Includes aid, bvid, cid.
+     * Support video type: aid, bvid, epid, ssid.
+     * */
     function grabVideoInfo(){
         pid = pid<0?0:pid;
         cids = [];
@@ -378,6 +381,9 @@
         }
     }
 
+    /**
+     * Get the bangumi information.
+     * */
     function grabBangumi(json, id){
         let reason, rightBadge;
         chrome.runtime.sendMessage({ msg: "get_LoginStatus" }, function (vip){
@@ -420,10 +426,6 @@
                         }
                     }
                 }
-                // if(rightBadge!=='' && found){
-                //     found = rightBadge === '会员' && vip.vip > 0;
-                //     console.log(rightBadge);
-                // }
                 if (found){
                     getQn(cids[0], rightBadge===''||(rightBadge==='会员' && vip.vip > 0)?'':`<span class="rua-video-right-info">${rightBadge==='会员'?'此视频需要大会员':'您所在的地区无法观看本片'}。</span>`);
                 }
@@ -461,9 +463,14 @@
         }
     }
 
-    function getQn(cid, trayText = ''){
-        videoInfo.innerHTML = `<b style='user-select: none'>视频ID：</b><span>av${aid}</span><span style='user-select: none'> / </span><span>cid:${cid}</span><span title="复制ID" class="rua-video-info-copy" id="rua-video-info-copy"><svg viewBox="0 0 400 400" width="18" height="18" style="position: absolute" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="400" fill='#aaa' mask='url(#rua-copy-mask)'/><mask id="rua-copy-mask"><rect x='150' y='40' rx="20" ry="20" width="200" height="280" style="fill:#fff" /><rect x="190" y="110" width="120" height="20" fill="black"/><rect x="190" y="160" width="120" height="20" fill="black"/><rect x="190" y="210" width="120" height="20" fill="black"/><rect x='55' y='75' rx="20" ry="20" width="200" height="280" style="fill:#000"/><rect x='50' y='80' rx="20" ry="20" width="200" height="280" style="fill:#fff"/><rect x="90" y="150" width="120" height="20" fill="black"/><rect x="90" y="200" width="120" height="20" fill="black"/><rect x="90" y="250" width="120" height="20" fill="black"/></mask></svg></span>`;
-        pInfo.innerText = (pid-1+2)+ "p/"+cids.length+"p";
+    /**
+     * Get the quality information, render the download buttons and video information.
+     *
+     * @param {string | number} cid the video file id for download.
+     * @param {string} trayText the default text shown at the download section.
+     * */
+    function getQn(cid, trayText = ``){
+        videoInfo.innerHTML = `<b style='user-select: none'>视频ID：</b><div style="display: flex; margin-left: -45px"><span>av${aid}</span><span style='user-select: none; margin: 0 2px'>/</span><span>cid:${cid}</span><span title="复制ID" class="rua-video-info-copy" id="rua-video-info-copy"><svg viewBox="0 0 400 400" width="18" height="18" style="position: absolute" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="400" fill='#aaa' mask='url(#rua-copy-mask)'/><mask id="rua-copy-mask"><rect x='150' y='40' rx="20" ry="20" width="200" height="280" style="fill:#fff" /><rect x="190" y="110" width="120" height="20" fill="black"/><rect x="190" y="160" width="120" height="20" fill="black"/><rect x="190" y="210" width="120" height="20" fill="black"/><rect x='55' y='75' rx="20" ry="20" width="200" height="280" style="fill:#000"/><rect x='50' y='80' rx="20" ry="20" width="200" height="280" style="fill:#fff"/><rect x="90" y="150" width="120" height="20" fill="black"/><rect x="90" y="200" width="120" height="20" fill="black"/><rect x="90" y="250" width="120" height="20" fill="black"/></mask></svg></span></div><div style="padding-right:5px; user-select: none;">${(pid-0+1)}p/${cids.length}p</div>`;
         document.getElementById('rua-video-info-copy').addEventListener('click', ()=>{
             copy(`av号: av${aid}\r\nBV号: ${bvid}\r\ncid: ${cid}`, '视频ID已复制到粘贴板', 'rua-video-info-copy', -75, 18);
         });
@@ -509,14 +516,21 @@
                         rua_download_block.classList.add("rua-download-block-disabled");
                     downloadVideoTray.appendChild(rua_download_block);
                     downloadBlocks.push(rua_download_block);
+                    let abortSignal = new AbortController();
                     rua_download_block.onclick = () =>{
                         if(!rua_download_block.classList.contains('rua-downloading')){
+                            abortSignal = new AbortController();
                             rua_download_block.classList.add('rua-downloading');
                             if (!rua_download_block.classList.contains("rua-download-block-disabled")) {
-                                download(bvid, cid, json["data"]["accept_quality"][i], vtitle[0] + (vtitle.length === 1 ? "" : vtitle[pid + 1]) + " " + acceptQn[i]["accept_description"], rua_download_block);
+                                download(bvid, cid, json["data"]["accept_quality"][i], vtitle[0] + (vtitle.length === 1 ? "" : vtitle[pid + 1]) + " " + acceptQn[i]["accept_description"], rua_download_block, abortSignal);
                             }
+                        }else{
+                            abortSignal.abort('User');
+                            releaseDownloadButton(rua_download_block);
                         }
                     }
+                    abortHandler(rua_download_block);
+
                 }
                 downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40 + "px";
                 getAudioOnly(cid, true, true);
@@ -525,6 +539,14 @@
         });
     }
 
+    /**
+     * Grad the availability information for audio.
+     * Based on DASH.
+     *
+     * @param {string | number} cid the video file id for download.
+     * @param {boolean} dolby request dolby atmos.
+     * @param {boolean} audio request audio.
+     * */
     function getAudioOnly(cid, dolby, audio){
         fetch("https://api.bilibili.com/x/player/playurl?bvid="+bvid+"&cid="+cid+"&qn=120&fnval=272",{
             method:"GET",
@@ -544,6 +566,39 @@
         });
     }
 
+    /**
+     * Grad the availability information for HDR or 8k video.
+     * Based on DASH.
+     *
+     * @param {string | number} cid the video file id for download.
+     * @param {number} qn request dolby atmos.
+     * @param {string} type request audio.
+     * @param {string} title the text shown on button.
+     * */
+    async function getHDR8K(cid, qn, type, title){
+        await fetch(`https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=${qn}&fourk=1&fnver=0&fnval=4048`,{
+            method:'GET',
+            credentials:'include',
+            body:null
+        })
+            .then(res => res.json())
+            .then(json => {
+                if(json["code"]===0 && json["data"]!==null && json['data']['dash']!==null && json['data']['dash']!==undefined){
+                    if (json['data']['dash']['video'][0]['id']===qn){
+                        innerDownloadBlock(cid, type, title);
+                    }
+                }
+            });
+    }
+
+    /**
+     * Grab the stream information and render download buttons
+     * for all request based on DASH protocol.
+     *
+     * @param {string | number} cid the video file id for download.
+     * @param {string} type the request type [hdr, 8k, audio, dolby].
+     * @param {string} title the text shown on button.
+     * */
     function innerDownloadBlock(cid, type, title){
         const url = [`https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=125&fnval=336`, `https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=120&fnval=272`, `https://api.bilibili.com/x/player/playurl?cid=${cid}&bvid=${bvid}&qn=127&fourk=1&fnver=0&fnval=4048`];
         let rua_download = document.createElement("div");
@@ -553,8 +608,10 @@
         downloadVideoTray.appendChild(rua_download);
         downloadBlocks.push(rua_download);
         downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40+"px";
+        let abortSignal = new AbortController();
         rua_download.onclick = async () =>{
             if(!rua_download.classList.contains('rua-downloading')){
+                abortSignal = new AbortController();
                 rua_download.classList.add('rua-downloading');
                 rua_download.getElementsByClassName("rua-quality-des")[0].innerText = `取流中...`;
                 let dlURL = [];
@@ -585,29 +642,53 @@
                             }
                         }
                     });
-                await internalDownload(dlURL, vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid, rua_download, type+'Record');
+                await internalDownload(dlURL, vtitle[0]+(vtitle.length===1?"":" "+vtitle[pid+1]), cid, rua_download, type+'Record', true,abortSignal);
+            }else{
+                abortSignal.abort('User');
+                releaseDownloadButton(rua_download);
+            }
+        }
+        abortHandler(rua_download);
+    }
+
+    function abortHandler(DOMObject){
+        DOMObject.onmouseenter = () =>{
+            if(DOMObject.classList.contains('rua-downloading')){
+                let text = DOMObject.getElementsByTagName('div')[0].innerText;
+                DOMObject.getElementsByTagName('div')[0].innerText = '取消下载';
+                DOMObject.onmouseleave = () =>{
+                    if(DOMObject.classList.contains('rua-downloading'))
+                        DOMObject.getElementsByTagName('div')[0].innerText = text;
+                    DOMObject.onmouseleave = null;
+                }
             }
         }
     }
 
-    async function getHDR8K(cid, qn, type, title){
-        await fetch(`https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=${qn}&fourk=1&fnver=0&fnval=4048`,{
-            method:'GET',
-            credentials:'include',
-            body:null
-        })
-            .then(res => res.json())
-            .then(json => {
-                if(json["code"]===0 && json["data"]!==null && json['data']['dash']!==null && json['data']['dash']!==undefined){
-                    if (json['data']['dash']['video'][0]['id']===qn){
-                        innerDownloadBlock(cid, type, title);
-                    }
-                }
-            });
+    function releaseDownloadButton(DOMObject){
+        DOMObject.getElementsByTagName('div')[0].innerText = DOMObject.getElementsByTagName('div')[0].getAttribute('title');
+        DOMObject.removeAttribute('style');
+        DOMObject.classList.remove('rua-downloading');
     }
 
-    async function internalDownload(url, fileName, cid, hostObj, requestType, dashRequest = true){
-        let controller = new AbortController();
+    /**
+     * Fetch the stream file information and download the media from File Stream to local disk.
+     * Will check the file size first.
+     *
+     * If the media is using DASH protocol and the video file size smaller than 1.5GB then the video and soundtrack will
+     * be combined by FFmpeg before download to local disk. (Hard limit in wasm)
+     * Otherwise, download to local disk directly.
+     *
+     * @param {string} url the stream url.
+     * @param {string} fileName the file name.
+     * @param {string | number} cid the video file id for download.
+     * @param {object} hostObj the DOM object for download button.
+     * @param {string} requestType the media type.
+     * @param {boolean} dashRequest the request type ?DASH
+     * @param {AbortController} controller the abort controller for user cancel download.
+     * */
+    async function internalDownload(url, fileName, cid, hostObj, requestType, dashRequest = true, controller){
+        let headerController = new AbortController();
         let fileSize = 0, hostItem = hostObj.getElementsByClassName("rua-quality-des")[0].getAttribute('title'), blobURL = [], audioMeta = {};
         function releaseDownload(){
             hostObj.removeAttribute("style");
@@ -620,27 +701,27 @@
         await fetch(url[0], {
             method:"GET",
             body: null,
-            signal:controller.signal
+            signal:headerController.signal
         }).then(response => {
             fileSize = response.headers.get("Content-Length");
-            controller.abort();
+            headerController.abort();
         });
         if(dashRequest){
             if(fileSize < 1.5 * 1024 * 1024 * 1024){
-                blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'?'视频':'', true);
-                if(requestType==='hdrRecord' || requestType==='8kRecord')
-                    blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频', true);
+                blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'?'视频':'', true, controller);
+                if((requestType==='hdrRecord' || requestType==='8kRecord')&&!controller.signal.aborted)
+                    blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频', true, controller);
                 if(requestType==='audioRecord')
                     audioMeta = await getAudioMeta();
-
-                encode(blobURL, fileName, requestType, audioMeta).then(r=>{
-                    releaseDownload();
-                });
+                if (!controller.signal.aborted)
+                    encode(blobURL, fileName, requestType, audioMeta).then(r=>{
+                        releaseDownload();
+                    });
             }else{
-                blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'?'视频':'', false);
+                blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'?'视频':'', false, controller);
                 aDownload(blobURL[0], fileName+".mp4");
-                if(requestType==='hdrRecord' || requestType==='8kRecord'){
-                    blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频', false);
+                if((requestType==='hdrRecord' || requestType==='8kRecord')&&!controller.signal.aborted){
+                    blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频', false, controller);
                     aDownload(blobURL[1], fileName+".m4a");
                 }
                 releaseDownload();
@@ -653,7 +734,7 @@
                 // });
             }
         }else{
-            blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType.includes(':')?'分段'+requestType.split(':')[1]:'视频', false);
+            blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType.includes(':')?'分段'+requestType.split(':')[1]:'视频', false, controller);
             aDownload(blobURL[0], fileName+".flv");
             releaseDownload();
         }
@@ -661,14 +742,14 @@
     }
 
     /**
-     * Download from <a> tag.
+     * Download from blob url by <a> tag.
      *
      * @param{string} blobURL the blob url.
      * @param{string} fileName the name of downloaded file.
      * */
     function aDownload(blobURL, fileName){
-        if(!blobURL.includes('undefined')){
-            let a = document.createElement("a");
+        if(typeof blobURL !== 'undefined' && !blobURL.includes('undefined')){
+            const a = document.createElement("a");
             a.href = blobURL;
             a.style.display = 'none';
             a.download = fileName;
@@ -678,6 +759,17 @@
         }
     }
 
+    /**
+     * Combined the video and soundtrack or write the metadata
+     * for sound only download.
+     *
+     * Using Fmpeg.
+     *
+     * @param {array} blob the blob urls. Should not longer than 2.
+     * @param {string} filename the file name.
+     * @param {string} requestType the request type. [audioRecord, dolbyRecord, hdrRecord, 8kRecord]
+     * @param {object} metadata the metadata for sound download.
+     * */
     async function encode(blob, filename, requestType, metadata){
         let out, downloadName, dl;
         const {createFFmpeg, fetchFile} = FFmpeg;
@@ -728,6 +820,12 @@
         return result;
     }
 
+    /**
+     * Grab metadata for soundtracks.
+     * The metadata object contains: title: the video title shown as video page, artist: up, year: the year that video uploaded.
+     *
+     * @return {Promise} the Promise which contain the metadata object.
+     * */
     async function getAudioMeta(){
         return fetch(`https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`, {
             method: 'GET',
@@ -760,12 +858,16 @@
      * @param {object} hostItem the front-end to the status text.
      * @param {string} dispTag the status text.
      * @param {boolean} encode indicate the media require encode or not.
+     * @param {AbortController} controller the controller for user cancel download.
+     *
+     * @return {Promise} the blob url.
      * */
-    async function dash(url, hostObj, cid, hostItem, dispTag, encode){
+    async function dash(url, hostObj, cid, hostItem, dispTag, encode, controller){
         let size=0, get=0;
         return fetch(url,{
             method:"GET",
-            body:null
+            body:null,
+            signal: controller.signal
         })
             .then(response => {
                 hostObj.getElementsByClassName("rua-quality-des")[0].innerText = `下载${dispTag}中...`;
@@ -797,7 +899,8 @@
             })
             .then(blob => window.URL.createObjectURL(blob))
             .catch(e =>{
-                downloadError(hostObj, cid, e.toString(), false, hostItem);
+                if(!controller.signal.aborted)
+                    downloadError(hostObj, cid, e.toString(), false, hostItem);
             });
     }
 
@@ -814,7 +917,7 @@
             obj.removeEventListener('click', errorClick);
         }
         obj.setAttribute("style","background: #ff4650;");
-        obj.setAttribute("title",errMsg);
+        //obj.setAttribute("title",errMsg);
         obj.getElementsByClassName("rua-quality-des")[0].innerText = decode?"转码失败":"下载失败";
         obj.addEventListener('click', errorClick);
     }
@@ -827,8 +930,9 @@
      * @param{number | string} qn the quality indicator.
      * @param{string} fileName the name of downloaded file.
      * @param{object} hostObj the front-end object to show the progress.
+     * @param {AbortController} controller the controller for user cancel download.
      * */
-    function download(vid, cid, qn, fileName, hostObj){
+    function download(vid, cid, qn, fileName, hostObj, controller){
         hostObj.getElementsByClassName("rua-quality-des")[0].innerText = `取流中...`;
         fetch(`https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=${qn}&type=flv&fourk=1`,{
             method:"GET",
@@ -838,18 +942,18 @@
             .then(r=>r.json())
             .then(json=>{
                 if(json['code']===0 && json['data']['durl']!==null)
-                    downloadSegments(json["data"]["durl"], fileName, 0, json["data"]["durl"].length, cid, hostObj);
+                    downloadSegments(json["data"]["durl"], fileName, 0, json["data"]["durl"].length, cid, hostObj, controller);
             })
             .catch(e=>{
                 console.log(e);
             });
     }
 
-    function downloadSegments(durl, fileName, currentLocation, totalSize, cid, hostObj){
-        internalDownload([durl[currentLocation]["url"]],fileName+((totalSize>1)?'-s'+currentLocation:''), cid, hostObj, 'video'+((totalSize>1)?':'+currentLocation:''), false).then(r=>{
+    function downloadSegments(durl, fileName, currentLocation, totalSize, cid, hostObj, controller){
+        internalDownload([durl[currentLocation]["url"]],fileName+((totalSize>1)?'-s'+currentLocation:''), cid, hostObj, 'video'+((totalSize>1)?':'+currentLocation:''), false, controller).then(r=>{
             currentLocation=currentLocation+1;
             if(currentLocation<totalSize){
-                downloadSegments(durl, fileName, currentLocation, totalSize, cid, hostObj);
+                downloadSegments(durl, fileName, currentLocation, totalSize, cid, hostObj, controller);
             }
         });
         //chrome.runtime.sendMessage({msg:"requestDownload", url: durl[currentLocation]["url"], fileName:(fileName+(durl.length===1?"":"_p"+currentLocation))+new URL(durl[currentLocation]["url"])["pathname"].toString().substring(new URL(durl[currentLocation]["url"])["pathname"].toString().length-4,new URL(durl[currentLocation]["url"])["pathname"].toString().length)},(callback)=>{});
@@ -981,6 +1085,9 @@
         spanCopy.innerText="复制";
         div.appendChild(spanCopy);
 
+        spanTime.onclick = e => {
+            document.getElementsByTagName('video')[0].currentTime = jumpTo;
+        }
         spanContent.onmousedown = function (e){
             if(e.button === 0)
                 drawUserInfoDanmaku(document.body, mid, selec.style.left.replace("px","")-1+1,e.clientY-140, index);
