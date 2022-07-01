@@ -3,12 +3,10 @@
  * */
 
 !function (){
-    const protobuf = chrome.runtime.getURL('danmakuProtobuf.js');
     const link = chrome.runtime.getURL("../images/haruka/abaaba.svg");
     const wasmPath = chrome.runtime.getURL('../ffmpeg/ffmpeg-core.wasm');
     const assConvert = new AssConvert(1280, 720);
 
-    //import{bilibili} from protobuf;
     var vid = window.location["pathname"].replaceAll("/", "").replace("video","").replace('bangumi','').replace('play','');// id for current page, av or bv or ss or ep.
     var aid = "";
     var bvid = "0";//bv id for current page. convert all id to bv id.
@@ -506,7 +504,7 @@
                     let rua_download_block = document.createElement("div");
                     rua_download_block.setAttribute("id","qn-"+acceptQn[i]["accept_format"]);
                     rua_download_block.classList.add("rua-download-block");
-                    rua_download_block.innerHTML = "<div class='rua-quality-des'>"+acceptQn[i]["accept_description"]+"</div>";
+                    rua_download_block.innerHTML = `<div class='rua-quality-des' title='${acceptQn[i]["accept_description"]}'>${acceptQn[i]["accept_description"]}</div>`;
                     if((!vipStatus.login && (acceptQn[i]["accept_format"]-0)>63)||(vipStatus.login && vipStatus.vip===0 && (acceptQn[i]["accept_format"]-0)>80))
                         rua_download_block.classList.add("rua-download-block-disabled");
                     downloadVideoTray.appendChild(rua_download_block);
@@ -551,13 +549,14 @@
         let rua_download = document.createElement("div");
             rua_download.setAttribute("id",`qn-${type}`);
         rua_download.classList.add("rua-download-block");
-        rua_download.innerHTML = `<div class='rua-quality-des'>${title}</div>`;
+        rua_download.innerHTML = `<div class='rua-quality-des' title='${title}'>${title}</div>`;
         downloadVideoTray.appendChild(rua_download);
         downloadBlocks.push(rua_download);
         downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40+"px";
         rua_download.onclick = async () =>{
             if(!rua_download.classList.contains('rua-downloading')){
                 rua_download.classList.add('rua-downloading');
+                rua_download.getElementsByClassName("rua-quality-des")[0].innerText = `取流中...`;
                 let dlURL = [];
                 await fetch(type==='hdr'?url[0]:(type==='8k'?url[2]:url[1]),{
                     method:'GET',
@@ -609,10 +608,9 @@
 
     async function internalDownload(url, fileName, cid, hostObj, requestType, dashRequest = true){
         let controller = new AbortController();
-        let fileSize = 0, hostItem = hostObj.getElementsByClassName("rua-quality-des")[0].innerText, blobURL = [], audioMeta = {};
+        let fileSize = 0, hostItem = hostObj.getElementsByClassName("rua-quality-des")[0].getAttribute('title'), blobURL = [], audioMeta = {};
         function releaseDownload(){
             hostObj.removeAttribute("style");
-            hostObj.removeAttribute("title");
             hostObj.classList.remove('rua-downloading');
             hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
             window.URL.revokeObjectURL(blobURL[0]);
@@ -627,10 +625,8 @@
             fileSize = response.headers.get("Content-Length");
             controller.abort();
         });
-        hostObj.getElementsByClassName("rua-quality-des")[0].innerText = `取流中...`;
         if(dashRequest){
             if(fileSize < 1.5 * 1024 * 1024 * 1024){
-                hostObj.removeAttribute("title");
                 blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'?'视频':'', true);
                 if(requestType==='hdrRecord' || requestType==='8kRecord')
                     blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频', true);
@@ -641,7 +637,6 @@
                     releaseDownload();
                 });
             }else{
-                hostObj.removeAttribute("title");
                 blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'?'视频':'', false);
                 aDownload(blobURL[0], fileName+".mp4");
                 if(requestType==='hdrRecord' || requestType==='8kRecord'){
@@ -815,7 +810,6 @@
         obj.classList.remove('rua-downloading');
         function errorClick(){
             obj.removeAttribute("style");
-            obj.removeAttribute("title");
             obj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
             obj.removeEventListener('click', errorClick);
         }
@@ -835,17 +829,20 @@
      * @param{object} hostObj the front-end object to show the progress.
      * */
     function download(vid, cid, qn, fileName, hostObj){
-        let grabDownloadURL = new XMLHttpRequest();
-        grabDownloadURL.withCredentials = true;
-        grabDownloadURL.open("GET","https://api.bilibili.com/x/player/playurl?bvid="+bvid+"&cid="+cid+"&qn="+qn+"&type=flv&fourk=1");
-        grabDownloadURL.send(null);
-        grabDownloadURL.onload = function (e){
-            if(grabDownloadURL.status===200) {
-                if(JSON.parse(grabDownloadURL.responseText)["code"]===0 && JSON.parse(grabDownloadURL.responseText)["data"]["durl"]!==null){
-                    downloadSegments(JSON.parse(grabDownloadURL.responseText)["data"]["durl"], fileName, 0, JSON.parse(grabDownloadURL.responseText)["data"]["durl"].length, cid, hostObj);
-                }
-            }
-        }
+        hostObj.getElementsByClassName("rua-quality-des")[0].innerText = `取流中...`;
+        fetch(`https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=${qn}&type=flv&fourk=1`,{
+            method:"GET",
+            credentials:"include",
+            body:null
+        })
+            .then(r=>r.json())
+            .then(json=>{
+                if(json['code']===0 && json['data']['durl']!==null)
+                    downloadSegments(json["data"]["durl"], fileName, 0, json["data"]["durl"].length, cid, hostObj);
+            })
+            .catch(e=>{
+                console.log(e);
+            });
     }
 
     function downloadSegments(durl, fileName, currentLocation, totalSize, cid, hostObj){
@@ -856,7 +853,6 @@
             }
         });
         //chrome.runtime.sendMessage({msg:"requestDownload", url: durl[currentLocation]["url"], fileName:(fileName+(durl.length===1?"":"_p"+currentLocation))+new URL(durl[currentLocation]["url"])["pathname"].toString().substring(new URL(durl[currentLocation]["url"])["pathname"].toString().length-4,new URL(durl[currentLocation]["url"])["pathname"].toString().length)},(callback)=>{});
-
     }
 
     function removeListener(){

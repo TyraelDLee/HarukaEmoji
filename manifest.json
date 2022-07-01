@@ -22,7 +22,7 @@
       "path": "ruleSet/danmakuSource.json"
     }]
   },
-  "permissions": ["alarms", "cookies", "contextMenus", "storage", "notifications", "declarativeNetRequest", "declarativeNetRequestFeedback", "downloads"],
+  "permissions": ["alarms", "cookies", "contextMenus", "storage", "notifications", "declarativeNetRequest", "declarativeNetRequestFeedback"],
   "action": {
     "default_popup": "popup.html"
   },
@@ -98,6 +98,7 @@
     "https://tyrael-lee.gitee.io/",
     "https://tyraeldlee.github.io/",
     "*://*.bilivideo.com/",
+    "*://*.bilivideo.cn/",
     "*://*.akamaized.net/"
   ]
 }

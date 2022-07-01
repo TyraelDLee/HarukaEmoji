@@ -1,4 +1,9 @@
 /*Copyright (c) 2021 Tyrael, Y. LI*/
+:root {
+    color-scheme: light dark;
+    /*    for safari popup page. */
+}
+
 body{
     scrollbar-width:thin;
     font-family: system-ui, "PingFang SC", STHeiti, sans-serif;
@@ -39,19 +44,19 @@ thead{
     background: #eee;
 }
 
-.bottom{
+#bottom{
     margin: 0 75px 75px 75px;
     height: 20px;
 }
 
-.bottom div{
+#bottom div{
     cursor: pointer;
     position: relative;
     float: left;
     margin: 0 5px;
 }
 
-.bottom a{
+#bottom a{
     text-decoration: none;
 }
 
@@ -85,6 +90,11 @@ thead{
 .rua-icon-top{
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+#main{
+    margin: 0 75px;
+    padding-top: 350px;
 }
 
 #rua-nav{
