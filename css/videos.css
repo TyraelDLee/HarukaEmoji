@@ -30,7 +30,7 @@
 }
 
 #rua-video-info{
-    height: 20px;
+    height: auto;
 }
 
 #rua-danmaku{
@@ -105,6 +105,29 @@
     text-align: center;
 }
 
+#rua-copy-tips{
+    position: absolute;
+    z-index: 10000000;
+    background: var(--bili-blue);
+    color: #fff;
+    border-radius: 5px;
+    width: 150px;
+    transition: 0.4s;
+    text-align: center;
+}
+
+#emoji-selection{
+    height: auto;
+}
+
+#rua-user-control-bar{
+    text-align: center;
+    width: 280px;
+}
+
+#rua-user-host{
+    height: 82px;
+}
 
 .rua-download-block{
     border-radius: 5px;
@@ -207,13 +230,17 @@
     font-size: 14px;
 }
 
-#rua-user-control-bar{
-    text-align: center;
-    width: 280px;
+.rua-cover{
+    border-radius: 5px;
+    background: var(--bili-pink);
+    color: #fff;
+    margin: 5px 19px;
+    cursor: pointer;
+    transition: 0.4s;
 }
 
-#rua-user-host{
-    height: 82px;
+.rua-cover:hover{
+    background: var(--bili-pink-a70);
 }
 
 .rua-user{
@@ -252,15 +279,4 @@
 
 .rua-video-info-copy{
     cursor: pointer;
-}
-
-#rua-copy-tips{
-    position: absolute;
-    z-index: 10000000;
-    background: var(--bili-blue);
-    color: #fff;
-    border-radius: 5px;
-    width: 150px;
-    transition: 0.4s;
-    text-align: center;
 }

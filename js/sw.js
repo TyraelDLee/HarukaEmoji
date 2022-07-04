@@ -979,7 +979,6 @@ function daka(dakaUid, jct, dkMsg){
     if (dakaUid.length===0){
         chrome.alarms.clear('dakaRoom',()=>{});
     }else{
-        console.log(dakaUid);
         fetch("https://api.live.bilibili.com/live_user/v1/Master/info?uid="+dakaUid[0], {
             method:"GET",
             credentials: 'include',
@@ -1108,7 +1107,7 @@ function setBadge(title, text){
 //todo: web traffic control. no needed anymore
 //todo: hidden √
 //todo: mock Android app request.
-//todo: add support for mv2.😅
+//todo: add support for mv2.😅 √
 
 // AppKey: 1d8b6e7d45233436
 // SecretKey: 560c52ccd288fed045859ed18bffd973

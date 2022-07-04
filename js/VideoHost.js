@@ -90,6 +90,12 @@
     downloadVideoTray.setAttribute("style", "margin: 0 0 0 15px;");
     downloadTray.appendChild(downloadVideoTray);
 
+    const coverSection = document.createElement('div');
+    const coverButton = document.createElement('div');
+    coverButton.classList.add('rua-cover');
+    coverButton.innerText = '下载封面';
+    coverSection.appendChild(coverButton);
+
     function calculateStringLength(string){
         return 180 - (string.length * 8);
     }
@@ -112,6 +118,7 @@
         selec.innerHTML = "";
 
         selec.appendChild(videoInfoSec);
+        selec.appendChild(coverSection);
         selec.appendChild(danmakuTag);
         selec.appendChild(danmakuTray);
         selec.appendChild(downloadTag);
@@ -316,6 +323,7 @@
      * Support video type: aid, bvid, epid, ssid.
      * */
     function grabVideoInfo(){
+        console.log('new v');
         pid = pid<0?0:pid;
         cids = [];
         vtitle = [];
@@ -337,6 +345,7 @@
                             cids.push(json["data"]["pages"][i]["cid"]);
                             if(json["data"]["pages"].length>1)vtitle.push(json["data"]["pages"][i]["part"]);
                         }
+                        downloadCover(json['data']['pic']);
                         getQn(cids[pid]);
                     }
                 });
@@ -353,6 +362,7 @@
                     })
                         .then(res => res.json())
                         .then(json => {
+                            downloadCover(json['result']['cover']);
                             grabBangumi(json, e.innerText);
                         });
                 }
@@ -369,6 +379,7 @@
                             })
                                 .then(res => res.json())
                                 .then(json => {
+                                    downloadCover(json['result']['cover']);
                                     grabBangumi(json, bv);
                                 });
                         }
@@ -381,6 +392,13 @@
         }
     }
 
+    function downloadCover(dlURL){
+        coverButton.onclick = null;
+        coverButton.onclick = e=>{
+            aDownload(dlURL, '');
+        }
+    }
+
     /**
      * Get the bangumi information.
      * */
@@ -389,42 +407,46 @@
         chrome.runtime.sendMessage({ msg: "get_LoginStatus" }, function (vip){
             if(json["code"]===0){
                 let found = false;
-                for (let i = 0; i < json['result']['episodes'].length; i++) {
-                    if (json['result']['episodes'][i]['bvid']+'' === id){
-                        aid = json['result']['episodes'][i]['aid'];
-                        bvid = json['result']['episodes'][i]['bvid'];
-                        rightBadge = json['result']['episodes'][i]['badge_info']['text'];
-                        vtitle.push(json['result']['season_title']+'-'+json['result']['episodes'][i]['long_title']);
-                        cids.push(json['result']['episodes'][i]['cid']);
-                        found = true;
-                        break;
-                    }
-                }
-                if(!found){
-                    for (let i = 0; i < json['result']['section'][0]['episodes'].length; i++) {
-                        if (json['result']['section'][0]['episodes'][i]['bvid']+'' === id){
-                            aid = json['result']['section'][0]['episodes'][i]['aid'];
-                            bvid = json['result']['section'][0]['episodes'][i]['bvid'];
+                try{
+                    for (let i = 0; i < json['result']['episodes'].length; i++) {
+                        if (json['result']['episodes'][i]['bvid']+'' === id){
+                            aid = json['result']['episodes'][i]['aid'];
+                            bvid = json['result']['episodes'][i]['bvid'];
                             rightBadge = json['result']['episodes'][i]['badge_info']['text'];
-                            vtitle.push(json['result']['season_title']+'-花絮-'+json['result']['section'][0]['episodes'][i]['long_title']);
-                            cids.push(json['result']['section'][0]['episodes'][i]['cid']);
+                            vtitle.push(json['result']['season_title']+'-'+json['result']['episodes'][i]['long_title']);
+                            cids.push(json['result']['episodes'][i]['cid']);
                             found = true;
                             break;
                         }
                     }
-                }
-                if (!found){
-                    for (let i = 0; i < json['result']['section'][1]['episodes'].length; i++) {
-                        if (json['result']['section'][1]['episodes'][i]['bvid']+'' === id){
-                            aid = json['result']['section'][1]['episodes'][i]['aid'];
-                            bvid = json['result']['section'][1]['episodes'][i]['bvid'];
-                            rightBadge = json['result']['episodes'][i]['badge_info']['text'];
-                            vtitle.push(json['result']['season_title']+'-二创-'+json['result']['section'][1]['episodes'][i]['long_title']);
-                            cids.push(json['result']['section'][1]['episodes'][i]['cid']);
-                            found = true;
-                            break;
+                    if(!found){
+                        for (let i = 0; i < json['result']['section'][0]['episodes'].length; i++) {
+                            if (json['result']['section'][0]['episodes'][i]['bvid']+'' === id){
+                                aid = json['result']['section'][0]['episodes'][i]['aid'];
+                                bvid = json['result']['section'][0]['episodes'][i]['bvid'];
+                                rightBadge = json['result']['episodes'][i]['badge_info']['text'];
+                                vtitle.push(json['result']['season_title']+'-花絮-'+json['result']['section'][0]['episodes'][i]['long_title']);
+                                cids.push(json['result']['section'][0]['episodes'][i]['cid']);
+                                found = true;
+                                break;
+                            }
                         }
                     }
+                    if (!found){
+                        for (let i = 0; i < json['result']['section'][1]['episodes'].length; i++) {
+                            if (json['result']['section'][1]['episodes'][i]['bvid']+'' === id){
+                                aid = json['result']['section'][1]['episodes'][i]['aid'];
+                                bvid = json['result']['section'][1]['episodes'][i]['bvid'];
+                                rightBadge = json['result']['episodes'][i]['badge_info']['text'];
+                                vtitle.push(json['result']['season_title']+'-二创-'+json['result']['section'][1]['episodes'][i]['long_title']);
+                                cids.push(json['result']['section'][1]['episodes'][i]['cid']);
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                }catch (e) {
+                    console.log(e);
                 }
                 if (found){
                     getQn(cids[0], rightBadge===''||(rightBadge==='会员' && vip.vip > 0)?'':`<span class="rua-video-right-info">${rightBadge==='会员'?'此视频需要大会员':'您所在的地区无法观看本片'}。</span>`);
@@ -495,6 +517,11 @@
         })
         .then(res => res.json())
         .then(async json => {
+            if(json['code']===-404){
+                danmakuTag.style.display = 'none';
+                danmakuTray.style.display = 'none';
+                downloadTag.style.display = 'none';
+            }
             if(json["code"]===0){
                 await chrome.runtime.sendMessage({ msg: "get_LoginStatus" }, function (vip){
                     vipStatus = vip;
@@ -602,7 +629,7 @@
     function innerDownloadBlock(cid, type, title){
         const url = [`https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=125&fnval=336`, `https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=120&fnval=272`, `https://api.bilibili.com/x/player/playurl?cid=${cid}&bvid=${bvid}&qn=127&fourk=1&fnver=0&fnval=4048`];
         let rua_download = document.createElement("div");
-            rua_download.setAttribute("id",`qn-${type}`);
+        rua_download.setAttribute("id",`qn-${type}`);
         rua_download.classList.add("rua-download-block");
         rua_download.innerHTML = `<div class='rua-quality-des' title='${title}'>${title}</div>`;
         downloadVideoTray.appendChild(rua_download);
@@ -725,13 +752,6 @@
                     aDownload(blobURL[1], fileName+".m4a");
                 }
                 releaseDownload();
-
-                // hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
-                // //IndexedDB here
-                // chrome.runtime.sendMessage({msg:"requestDownload", url: url[0], fileName:fileName+".mp4"}, (callback)=>{
-                //     if(requestType==='hdrRecord' || requestType==='8kRecord')
-                //         chrome.runtime.sendMessage({msg:"requestDownload", url: url[1], fileName:fileName+"-audio.m4a"},(c)=>{});
-                // });
             }
         }else{
             blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType.includes(':')?'分段'+requestType.split(':')[1]:'视频', false, controller);
@@ -751,6 +771,7 @@
         if(typeof blobURL !== 'undefined' && !blobURL.includes('undefined')){
             const a = document.createElement("a");
             a.href = blobURL;
+            a.target = '_blank';
             a.style.display = 'none';
             a.download = fileName;
             document.body.appendChild(a);
@@ -801,13 +822,7 @@
             downloadName = filename + ".mkv";
             dl = URL.createObjectURL(new Blob([out.buffer]));
         }
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = dl;
-        a.download = downloadName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        aDownload(dl, downloadName);
         window.URL.revokeObjectURL(dl);
     }
 

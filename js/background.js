@@ -237,7 +237,7 @@ class CRC32{
 !function (){
     const currentVersion = chrome.runtime.getManifest().version;
     const crc = new CRC32();
-    var latestVersion = currentVersion;
+    var latestVersion = currentVersion.split('.');
     var checkin;
     var exchangeBcoin;
     var dk;
@@ -270,9 +270,7 @@ class CRC32{
         for (let k in notifications)
             chrome.notifications.clear(k);
     });
-    chrome.storage.local.set({'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}'}, function (){});
-    chrome.storage.local.set({'unreadMessage':0}, function (){});
-    chrome.storage.local.set({'dynamicList':[]}, ()=>{});
+    chrome.storage.local.set({'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0, 'dynamicList':[]}, function (){});
 
     chrome.runtime.getPlatformInfo((info)=>{OSInfo = info.os;});
 
@@ -284,21 +282,8 @@ class CRC32{
     chrome.runtime.onInstalled.addListener(function (obj){
         // init setting
         if(localStorage.getItem("rua_lastDK")===null)localStorage.setItem("rua_lastDK", "1970-01-01");
-        chrome.storage.sync.set({"notification": true}, function(){notificationPush = true;});
-        chrome.storage.sync.set({"medal": true}, function(){});
-        chrome.storage.sync.set({"checkIn": true}, function(){checkinSwitch = true;});
+        chrome.storage.sync.set({"notification": true, "medal": true, "checkIn": true, "bcoin": true, "qn": true, "qnvalue": "原画", "dynamicPush":true, "hiddenEntry":false, "daka":true, "record":false, "prerecord":300, "enhancedHiddenEntry":false, "unreadSwitch":true, "dynamicSwitch":true}, function(){});
         chrome.storage.local.set({"imageNotice": false}, function(){imageNotificationSwitch = false;});
-        chrome.storage.sync.set({"bcoin": true}, function(){BCOIN = true;});
-        chrome.storage.sync.set({"qn": true}, function(){QN = true;});
-        chrome.storage.sync.set({"qnvalue": "原画"}, function(){});
-        chrome.storage.sync.set({"dynamicPush":true}, function (){dynamicPush = true});
-        chrome.storage.sync.set({"hiddenEntry":false}, function (){hiddenEntry = false});
-        chrome.storage.sync.set({"daka":true}, function (){dakaSwitch = true});
-        chrome.storage.sync.set({"record":false});
-        chrome.storage.sync.set({"prerecord":300}, function (){});
-        chrome.storage.sync.set({'enhancedHiddenEntry':false}, function (){});
-        chrome.storage.sync.set({'unreadSwitch':true}, function (){});
-        chrome.storage.sync.set({'dynamicSwitch':true}, function (){});
         chrome.tabs.create({url: "./readme.html"});
     });
 
@@ -348,6 +333,23 @@ class CRC32{
                         (jct === null) ? JCT = -1 : JCT = jct.value;
                         sendResponse({res:JCT+","+UUID+","+UUID});
                     });
+            }
+            if(request.msg === 'get_LoginStatus'){
+                chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'DedeUserID'},(uid)=>{
+                    if (uid === null || uid === undefined)
+                        sendResponse({login:false, vip:0});
+                    else{
+                        fetch(`https://api.bilibili.com/x/space/acc/info?mid=${uid.value}`,{
+                            method: 'GET',
+                            credentials: 'include',
+                            body: null
+                        })
+                            .then(res=>res.json())
+                            .then(result=>{
+                                result["code"]===0 && result["data"]!==null?sendResponse({login:true, vip:result["data"]['vip']['type']}):sendResponse({login:true, vip:1});
+                            });
+                    }
+                });
             }
             if(request.msg === "get_UUID") {sendResponse({res:UUID});}
             if(request.msg === "updateStatus") {sendResponse({res:updateAvailable, address:availableBranch});}
@@ -1110,35 +1112,32 @@ class CRC32{
      * */
     function checkUpd(url){
         console.log("checking update at "+(new URL(url)).hostname);
-        var request = new XMLHttpRequest();
-        request.open("GET", url+new Date().getTime(), true);
-        request.timeout = 5000;
-        request.onreadystatechange = function() {
-            if (request.responseText !== null && request.readyState == 4 && (/<title>(.*?)<\/title>/m).exec(request.responseText) !== null) {
-                if(latestVersion !== (/<title>(.*?)<\/title>/m).exec(request.responseText)[1]){
-                    latestVersion = (/<title>(.*?)<\/title>/m).exec(request.responseText)[1];
-                    if(latestVersion!==currentVersion){
-                        console.log("A newer version found: "+latestVersion);
-                        updateAvailable = true;
-                        availableBranch = new URL(url).hostname.includes("github")?"https://github.com/TyraelDLee/HarukaEmoji/releases/latest":"https://gitee.com/tyrael-lee/HarukaEmoji/releases";
-                        setBadge("rua豹器 有更新可用", "1");
-                    }else{
-                        console.log("Current version is latest.");
-                        updateAvailable = false;
-                        setBadge("rua豹器", "");
+        fetch(url+new Date().getTime(), {
+            method:'GET',
+            credentials: 'omit',
+            body:null
+        }).then(t=>t.text())
+            .then(text=>{
+                if (text !== null && (/<meta name="current-version" content="(.*?)">/m).exec(text) !== null) {
+                    if(latestVersion !== (/<meta name="current-version" content="(.*?)">/m).exec(text)[1]){
+                        latestVersion = (/<meta name="current-version" content="(.*?)">/m).exec(text)[1].split('.');
+                        if(latestVersion[0]-0>chrome.runtime.getManifest().version.split('.')[0]-0||latestVersion[0]-0>=chrome.runtime.getManifest().version.split('.')[0]-0 && latestVersion[1]-0>chrome.runtime.getManifest().version.split('.')[1]-0){
+                            console.log(`A newer version found: ${latestVersion[0]}.${latestVersion[1]}`);
+                            updateAvailable = true;
+                            availableBranch = new URL(url).hostname.includes("github")?"https://github.com/TyraelDLee/HarukaEmoji/releases/latest":"https://gitee.com/tyrael-lee/HarukaEmoji/releases";
+                            setBadge("rua豹器 有更新可用", "1");
+                        }else{
+                            console.log("Current version is latest.");
+                            updateAvailable = false;
+                            setBadge("rua豹器", "");
+                        }
                     }
                 }
-            }
-        }
-        request.send();
-        request.ontimeout = function (){
-            /*add alternative request here.*/
-            checkUpd(url.includes("github")?"https://tyrael-lee.gitee.io/harukaemoji/?_=":"https://tyraeldlee.github.io/HarukaEmoji/?_=");
-        };
-        request.onerror = function (){
-            setTimeout(()=>{
-                checkUpd(url.includes("github")?"https://tyrael-lee.gitee.io/harukaemoji/?_=":"https://tyraeldlee.github.io/HarukaEmoji/?_=");},1800000);
-        };
+            })
+            .catch(e=>{
+                console.log(e);
+                checkUpdate(url.includes("github")?"https://tyrael-lee.gitee.io/harukaemoji/?_=":"https://tyraeldlee.github.io/HarukaEmoji/?_=");
+            });
     }
 
     function isNewerThan(dateOld, dateNew){
@@ -1147,7 +1146,8 @@ class CRC32{
 
     function getUTC8Time(){
         return new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000);
-        //return new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 + 28_800_000);
+        // 早8点后才是新的一天。
+        //return new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 + 28800000);
     }
 
     function setBadge(title, text){
@@ -1211,5 +1211,4 @@ class CRC32{
                 });
         });
     }
-
 }();
