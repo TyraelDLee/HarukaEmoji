@@ -282,10 +282,30 @@ class CRC32{
     chrome.runtime.onInstalled.addListener(function (obj){
         // init setting
         if(localStorage.getItem("rua_lastDK")===null)localStorage.setItem("rua_lastDK", "1970-01-01");
-        chrome.storage.sync.set({"notification": true, "medal": true, "checkIn": true, "bcoin": true, "qn": true, "qnvalue": "原画", "dynamicPush":true, "hiddenEntry":false, "daka":true, "record":false, "prerecord":300, "enhancedHiddenEntry":false, "unreadSwitch":true, "dynamicSwitch":true}, function(){});
+        setInitValue('notification', true);
+        setInitValue('medal', true);
+        setInitValue('checkIn', true);
+        setInitValue('bcoin', true);
+        setInitValue('qn', true);
+        setInitValue('qnvalue', '原画');
+        setInitValue('dynamicPush', true);
+        setInitValue('hiddenEntry', false);
+        setInitValue('daka', true);
+        setInitValue('record', false);
+        setInitValue('prerecord', 300);
+        setInitValue('enhancedHiddenEntry', false);
+        setInitValue('unreadSwitch', true);
+        setInitValue('dynamicSwitch', true);
         chrome.storage.local.set({"imageNotice": false}, function(){imageNotificationSwitch = false;});
         chrome.tabs.create({url: "./readme.html"});
     });
+
+    function setInitValue(key, defaultVal){
+        chrome.storage.sync.get([key], function (value){
+            if (value.key===null)
+                chrome.storage.sync.set({key:defaultVal},function (){});
+        });
+    }
 
     chrome.storage.onChanged.addListener(function (changes, namespace) {
         for (let [key, {oldValue, newValue}] of Object.entries(changes)) {

@@ -279,8 +279,23 @@ chrome.runtime.onInstalled.addListener(async function (obj){
             chrome.storage.local.set({'rua_lastDK':"1970-01-01"}, ()=>{});
     });
     await chrome.storage.local.set({"imageNotice": false}, function(){});
-    await chrome.storage.sync.set({"notification": true, "medal": true, "checkIn": true, "bcoin": true, "qn": true, "qnvalue": "原画", "dynamicPush":true, "hiddenEntry":false, "daka":true, "record":false, "prerecord":300, "enhancedHiddenEntry":false, "unreadSwitch":true, "dynamicSwitch":true}, function(){});
-
+    // await chrome.storage.sync.set({"notification": true, "medal": true, "checkIn": true, "bcoin": true, "qn": true, "qnvalue": "原画",
+    //     "dynamicPush":true, "hiddenEntry":false, "daka":true, "record":false, "prerecord":300,
+    //     "enhancedHiddenEntry":false, "unreadSwitch":true, "dynamicSwitch":true}, function(){});
+    setInitValue('notification', true);
+    setInitValue('medal', true);
+    setInitValue('checkIn', true);
+    setInitValue('bcoin', true);
+    setInitValue('qn', true);
+    setInitValue('qnvalue', '原画');
+    setInitValue('dynamicPush', true);
+    setInitValue('hiddenEntry', false);
+    setInitValue('daka', true);
+    setInitValue('record', false);
+    setInitValue('prerecord', 300);
+    setInitValue('enhancedHiddenEntry', false);
+    setInitValue('unreadSwitch', true);
+    setInitValue('dynamicSwitch', true);
     /**
      * Context menu section.
      *
@@ -293,6 +308,13 @@ chrome.runtime.onInstalled.addListener(async function (obj){
     await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "dynamic_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0/*'{"biz_msg_follow_unread":0,"biz_msg_unfollow_unread":0,"dustbin_push_msg":0,"dustbin_unread":0,"follow_unread":0,"unfollow_push_msg":0,"unfollow_unread":0}'*/, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[]}, ()=>{});
     chrome.alarms.create('getUID_CSRF', {'when': Date.now(), periodInMinutes:0.3});
 });
+
+function setInitValue(key, defaultVal){
+    chrome.storage.sync.get([key], function (value){
+        if (value.key===null)
+            chrome.storage.sync.set({key:defaultVal},function (){});
+    });
+}
 
 chrome.contextMenus.onClicked.addListener((info)=>{
     if(info.menuItemId==="rua-contextMenu-v3"){

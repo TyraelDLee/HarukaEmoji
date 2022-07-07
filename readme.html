@@ -38,6 +38,7 @@
         <li>更改了下载方式（但是现在在文件完成下载前请不要关掉页面，不用担心文件是以流的方式直接写入硬盘的不会占用内存），修复了文件名突然变成一串数字的问题。</li>
         <li>添加了对超大文件的下载支持，但是由于FFmpeg wasm的限制将无法合并视频音频，遇到大容量dash协议媒体流（HDR、8k、4k）时将保留为两个mp4文件（一个视频，一个音轨），flv文件不受影响，参见<a href="https://github.com/ffmpegwasm/ffmpeg.wasm#what-is-the-maximum-size-of-input-file" target="_blank">FFmpeg.wasm文档</a></li>
         <li>现已转为MV3应用。</li>
+        <li>现在更新已经不会再将设置初始化。</li>
         <li>一些其他改进。</li>
     </ul>
     <h2 id="functions">已有的功能</h2>
@@ -184,6 +185,7 @@
         <li>添加了对超大文件的下载支持，但是由于FFmpeg wasm的限制将无法合并视频音频，遇到大容量dash协议媒体流（HDR、8k、4k）时将保留为两个mp4文件（一个视频，一个音轨），flv文件不受影响，参见<a href="https://github.com/ffmpegwasm/ffmpeg.wasm#what-is-the-maximum-size-of-input-file" target="_blank">FFmpeg.wasm文档</a></li>
         <li>更改了下载方式（但是现在在文件完成下载前请不要关掉页面，不用担心文件是以流的方式直接写入硬盘的不会占用内存），修复了文件名突然变成一串数字的问题。</li>
         <li>现已转为MV3应用。</li>
+        <li>现在更新已经不会再将设置初始化。</li>
         <li>一些其他改进。</li>
     </ul>
     <h3>ver 5.9</h3>
