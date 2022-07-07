@@ -311,8 +311,8 @@ chrome.runtime.onInstalled.addListener(async function (obj){
 
 function setInitValue(key, defaultVal){
     chrome.storage.sync.get([key], function (value){
-        if (value.key===null)
-            chrome.storage.sync.set({key:defaultVal},function (){});
+        if (value[key]===null || value[key]===undefined)
+            chrome.storage.sync.set({[key]:defaultVal},function (){});
     });
 }
 
