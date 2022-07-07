@@ -497,7 +497,7 @@ function queryLivingRoom(uids) {
 
                 }
             })
-            .catch(msg =>{errorHandler('getNewVideos', msg, 'queryLivingRoom()');});
+            .catch(msg =>{errorHandler('getNewVideos', msg, 'queryLivingRoom(); line 500');});
     });
 }
 
@@ -670,7 +670,7 @@ function checkingIn(){
                 body: null
             }).then(res => {
                 console.log("签到成功 "+new Date().toUTCString());
-            }).catch(msg =>{errorHandler('checkIn', msg, 'checkIn()');});
+            }).catch(msg =>{errorHandler('checkIn', msg, 'checkIn(); line 673');});
         }
     });
 }
@@ -735,7 +735,7 @@ function exchangeBCoin(JCT){
                     },3000);
                 }
             );
-        }).catch(msg =>{errorHandler('bcoin', msg, 'exchangeBCoin()');});
+        }).catch(msg =>{errorHandler('bcoin', msg, 'exchangeBCoin(); line 742');});
 }
 
 function queryBcoin(){
@@ -758,7 +758,7 @@ function queryBcoin(){
                         else if(json["data"]["list"]["0"]["type"]===1&&json["data"]["list"]["0"]["state"]===1)
                             console.log("这个月的已经兑换过了，好耶！( •̀ ω •́ )✧");
                     }
-                }).catch(msg =>{errorHandler('bcoin', msg, 'queryBcoin()');});
+                }).catch(msg =>{errorHandler('bcoin', msg, 'queryBcoin(); line 765');});
         }
     });
 
@@ -780,7 +780,7 @@ function videoNotify(UUID){
             .then(res => res.json())
             .then(json => {
                 chrome.storage.sync.get(["dynamicPush"], (result)=>{
-                    if (json['code']!==0) errorHandler('getNewVideos', json['code'], 'videoNotify()');
+                    if (json['code']!==0) errorHandler('getNewVideos', json['code'], 'videoNotify(); line 787');
                     else if(json["code"] === 0){
                         if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
                             let data = json["data"]["attentions"]['uids'];
@@ -811,7 +811,8 @@ function videoNotify(UUID){
                     }
                     chrome.storage.local.set({'videoInit': false}, ()=>{});
                 });
-            }).catch(msg =>{errorHandler('getNewVideos',msg, 'videoNotify()');});
+            })
+            .catch(msg =>{errorHandler('getNewVideos',msg, 'videoNotify(); line 819');});
 
     });
 }
@@ -833,7 +834,7 @@ function dynamicNotify(){
             .then(r=>r.json())
             .then(json=>{
                 if(json['code']!==0){
-                    errorHandler('getNewDynamics', json['code'], 'dynamicNotify()');
+                    errorHandler('getNewDynamics', json['code'], 'dynamicNotify(); line 841');
                 }else{
                     chrome.storage.sync.get(['dynamicSwitch'], (result=>{
                         let o = json["data"]["cards"];
@@ -867,7 +868,7 @@ function dynamicNotify(){
                 }
                 chrome.storage.local.set({'dynamicInit': false},()=>{});
             })
-            .catch(e=>{errorHandler('getNewDynamics', e, 'dynamicNotify()')});
+            .catch(e=>{errorHandler('getNewDynamics', e, 'dynamicNotify(); line 875')});
     });
 }
 
@@ -897,11 +898,11 @@ function getNewUnread(){
                         }
                     });
                 }else{
-                    errorHandler('getNewUnreads', json.code, 'getUnread()');
+                    errorHandler('getNewUnreads', json.code, 'getUnread(); line 905');
                 }
             })
             .catch(e=>{
-                errorHandler('getNewUnreads', e, 'getUnread()');
+                errorHandler('getNewUnreads', e, 'getUnread(); line 909');
             });
         await fetch('https://api.vc.bilibili.com/session_svr/v1/session_svr/single_unread', {
             method:'GET',
@@ -921,11 +922,11 @@ function getNewUnread(){
                         chrome.storage.local.set({"unreadMessage":(json['data']['biz_msg_follow_unread']+json['data']['biz_msg_unfollow_unread']+json['data']['dustbin_push_msg']+json['data']['dustbin_unread']+json['data']['follow_unread']+json['data']['unfollow_push_msg']+json['data']['unfollow_unread'])}, ()=>{});
                     });
                 }else{
-                    errorHandler('getUnread', 'getUnread()');
+                    errorHandler('getUnread', json.code,'getUnread(); line 929');
                 }
             })
             .catch(e=>{
-                errorHandler('getUnread', e, 'getUnread()');
+                errorHandler('getUnread', e, 'getUnread(; line 933)');
             });
         chrome.storage.local.set({'unreadInit': false},()=>{});
     });
@@ -960,7 +961,7 @@ function checkMedalDaka(){
                     })
                     .catch(msg => {
                         chrome.storage.local.set({'rua_lastDK':"1970-01-01"}, ()=>{});
-                        errorHandler('daka',msg, 'checkMedalDaka()');
+                        errorHandler('daka',msg, 'checkMedalDaka(); line 968');
                     });
             }else console.log("No more grab needed.");
         }));
