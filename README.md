@@ -79,9 +79,14 @@ rua豹器的MV3转移计划可以追随到数个版本前。作为个人开发�
 [chrome插件商店](https://chrome.google.com/webstore/detail/rua%E8%B1%B9%E5%99%A8/igapngheaefbfhikpbngjgakfnedkchb)
 <br>
 [火狐扩展商店](https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/)
+<br>
+右边"发布"页（由于mv3只有本地加载的扩展后台刷新可以小于一分钟。所以mv3版今后只提供zip压缩包，不再提供crx与xpi文件）。
+<br>
+要从本地加载扩展：请在"扩展程序"页打开"开发者模式"后点击"加载已解压的扩展程序"。
 
 ## 版本记录
 ### ver 5.10
+- 悬浮球现在支持番剧页面了，可以下载番剧了。
 - 现在可以缓存8k的视频了。
 - 加入了消息推送的功能 (包括@、赞、回复、私信、系统通知)。
 - 加入了新动态推送的功能。
