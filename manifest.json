@@ -1,7 +1,7 @@
 {
   "name": "rua豹器",
   "manifest_version": 3,
-  "version": "5.10",
+  "version": "5.11",
   "description": "rua!",
   "declarative_net_request": {
     "rule_resources": [{
@@ -42,21 +42,23 @@
     "run_at": "document_end"
   },{
     "all_frames": true,
-    "css": ["css/host.min.css", "css/button.min.css"],
-    "js": ["js/ADT.min.js","js/haruka.js","js/WebHost.min.js"],
+    "js": ["js/ADT.min.js","js/haruka.js"],
     "matches": [ "*://live.bilibili.com/21652717*", "*://live.bilibili.com/record/21652717*", "*://live.bilibili.com/blanc/21652717?liteVersion=true"],
     "run_at": "document_end"
   },{
     "all_frames": true,
-    "css": ["css/host.min.css", "css/button.min.css"],
-    "js": ["js/ADT.min.js","js/pudding.js","js/WebHost.min.js"],
+    "js": ["js/ADT.min.js","js/pudding.js"],
     "matches": [ "*://live.bilibili.com/21413565*", "*://live.bilibili.com/record/21413565*","*://live.bilibili.com/blanc/21413565?liteVersion=true"],
     "run_at": "document_end"
   },{
     "all_frames": true,
-    "css": ["css/host.min.css", "css/button.min.css"],
-    "js": ["js/ADT.min.js","js/seki.js","js/WebHost.min.js"],
+    "js": ["js/ADT.min.js","js/seki.js"],
     "matches": [ "*://live.bilibili.com/1603600*", "*://live.bilibili.com/record/1603600*","*://live.bilibili.com/blanc/1603600?liteVersion=true"],
+    "run_at": "document_end"
+  },{
+    "all_frames": true,
+    "js": ["js/ADT.min.js","js/nana.js"],
+    "matches": [ "*://live.bilibili.com/330*", "*://live.bilibili.com/record/330*","*://live.bilibili.com/blanc/330?liteVersion=true"],
     "run_at": "document_end"
   },{
     "all_frames": true,
@@ -68,7 +70,6 @@
     "css": ["css/host.min.css", "css/button.min.css", "css/tips.min.css"],
     "js": ["js/WebHost.min.js"],
     "matches": [ "*://live.bilibili.com/*", "*://live.bilibili.com/record/*","*://live.bilibili.com/blanc/*?liteVersion=true"],
-    "exclude_matches": ["*://live.bilibili.com/21652717*", "*://live.bilibili.com/record/21652717*", "*://live.bilibili.com/blanc/21652717?liteVersion=true","*://live.bilibili.com/21413565*", "*://live.bilibili.com/record/21413565*","*://live.bilibili.com/blanc/21413565?liteVersion=true","*://live.bilibili.com/1603600*", "*://live.bilibili.com/record/1603600*","*://live.bilibili.com/blanc/1603600?liteVersion=true"],
     "run_at": "document_end"
   },{
     "all_frames": true,
