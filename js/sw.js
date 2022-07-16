@@ -296,6 +296,9 @@ chrome.runtime.onInstalled.addListener(async function (obj){
     setInitValue('enhancedHiddenEntry', false);
     setInitValue('unreadSwitch', true);
     setInitValue('dynamicSwitch', true);
+    setInitValue('blackListLive', []);
+    setInitValue('blackListDynamic',[]);
+    setInitValue('blackListMassage', []);
     /**
      * Context menu section.
      *
@@ -745,18 +748,32 @@ function exchangeBCoin(JCT){
     })
         .then(res => res.json())
         .then(json => {
-            console.log("兑换成功！好耶( •̀ ω •́ )✧");
-            chrome.notifications.create(Math.random()+"", {
-                    type: "basic",
-                    iconUrl: "./images/abaaba.png",
-                    title: "本月大会员的5B币兑换成功！",
-                    message:""
-                }, function (id) {
-                    setTimeout(function (){
-                        chrome.notifications.clear(id);
-                    },3000);
-                }
-            );
+            switch (json['code']) {
+                case 0:
+                    console.log("兑换成功！好耶( •̀ ω •́ )✧");
+                    chrome.notifications.create(Math.random()+"", {
+                            type: "basic",
+                            iconUrl: "./images/abaaba.png",
+                            title: "本月大会员的5B币兑换成功！",
+                            message:""
+                        }, function (id) {
+                            setTimeout(function (){
+                                chrome.notifications.clear(id);
+                            },3000);
+                        }
+                    );
+                    break;
+                case 69155:
+                    console.log("当前非大会员");
+                    break;
+                default:
+                    console.log("兑换失败，位置错误");
+                    break;
+            }
+            if(json['code']===0){
+
+            }
+
         }).catch(msg =>{errorHandler('bcoin', msg, 'exchangeBCoin(); line 742');});
 }
 

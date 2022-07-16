@@ -45,7 +45,6 @@
       <root url="file://$PROJECT_DIR$/js/audio.min.js" />
       <root url="file://$PROJECT_DIR$/js/background.min.js" />
       <root url="file://$PROJECT_DIR$/js/biliMain.min.js" />
-      <root url="file://$PROJECT_DIR$/js/download.min.js" />
       <root url="file://$PROJECT_DIR$/js/haruka.min.js" />
       <root url="file://$PROJECT_DIR$/js/nana.min.js" />
       <root url="file://$PROJECT_DIR$/js/popup.min.js" />
@@ -55,6 +54,7 @@
       <root url="file://$PROJECT_DIR$/js/seki.min.js" />
       <root url="file://$PROJECT_DIR$/js/sw.min.js" />
       <root url="file://$PROJECT_DIR$/js/yuka.min.js" />
+      <root url="file://$PROJECT_DIR$/js/setting.min.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
