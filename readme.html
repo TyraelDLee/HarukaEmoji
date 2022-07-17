@@ -13,6 +13,7 @@
         <img src="./images/svga/13.svg" frame="13" height="100%" width="100%">
     </div>
     <div id="rua-nav">
+        <a href="./setting.html">通知设置</a>
         <a goto="MV3">Manifest V3</a>
         <a goto="new-features">新特性</a>
         <a goto="functions">已有的功能</a>
@@ -24,21 +25,13 @@
     <h1>b站助手rua豹器 使用说明</h1>
     <p>
         rua豹使人快乐，rua了又rua！<br><br>
-        rua豹器5.10来啦 <br>
+        rua豹器5.11来啦 <br>
         兼容绝大多数chromium内核浏览器，例如：Opera浏览器，360浏览器，新MS Edge，yandex....。<br>
         现已支持火狐浏览器，见：<a href="https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/">火狐扩展商店</a>
     </p>
-    <h3 style="font-size: 28px" id="new-features">ver 5.10 特性：</h3>
+    <h3 style="font-size: 28px" id="new-features">ver 5.11 特性：</h3>
     <ul>
-        <li>悬浮球现在支持番剧页面了，可以下载番剧了。</li>
-        <li>现在可以缓存8k的视频了。</li>
-        <li>加入了消息推送的功能 (包括@、赞、回复、私信、系统通知)。</li>
-        <li>加入了新动态推送的功能。</li>
-        <li>更改了开播查询API，现在推送延迟更小了。</li>
-        <li>更改了下载方式（但是现在在文件完成下载前请不要关掉页面，不用担心文件是以流的方式直接写入硬盘的不会占用内存），修复了文件名突然变成一串数字的问题。</li>
-        <li>添加了对超大文件的下载支持，但是由于FFmpeg wasm的限制将无法合并视频音频，遇到大容量dash协议媒体流（HDR、8k、4k）时将保留为两个mp4文件（一个视频，一个音轨），flv文件不受影响，参见<a href="https://github.com/ffmpegwasm/ffmpeg.wasm#what-is-the-maximum-size-of-input-file" target="_blank">FFmpeg.wasm文档</a></li>
-        <li>现已转为MV3应用。</li>
-        <li>现在更新已经不会再将设置初始化。</li>
+        <li>现在可以为up单独设置通知偏好了（包括开播、投稿、动态）。</li>
         <li>一些其他改进。</li>
     </ul>
     <h2 id="functions">已有的功能</h2>
@@ -175,6 +168,11 @@
 
     <br/>
     <h2 id="version">版本记录</h2>
+    <h3>ver 5.11</h3>
+    <ul>
+        <li>现在可以为up单独设置通知偏好了（包括开播、投稿、动态）。</li>
+        <li>一些其他改进。</li>
+    </ul>
     <h3>ver 5.10</h3>
     <ul>
         <li>悬浮球现在支持番剧页面了，可以下载番剧了。</li>
@@ -318,11 +316,6 @@
         <li>改进了翻牌子的功能，现在支持多个直播间无缝切换，不再需要刷新了。</li>
         <li>添加了设置页面。</li>
         <li>修复了移动悬窗时文本会被选中的问题。</li>
-    </ul>
-    <h3>ver 4.6</h3>
-    <ul>
-        <li>添加了自动签到功能。</li>
-        <li>改进了直播间信息API调用，开播推送延迟大幅减少。</li>
     </ul>
 
     <h2>开源组件许可</h2>

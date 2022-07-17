@@ -298,7 +298,7 @@ chrome.runtime.onInstalled.addListener(async function (obj){
     setInitValue('dynamicSwitch', true);
     setInitValue('blackListLive', []);
     setInitValue('blackListDynamic',[]);
-    setInitValue('blackListMassage', []);
+    setInitValue('blackListVideo', []);
     /**
      * Context menu section.
      *
@@ -818,21 +818,25 @@ function videoNotify(UUID){
         })
             .then(res => res.json())
             .then(json => {
-                chrome.storage.sync.get(["dynamicPush"], (result)=>{
-                    if (json['code']!==0) errorHandler('getNewVideos', json['code'], 'videoNotify(); line 787');
+                chrome.storage.sync.get(["dynamicPush", "blackListLive", "blackListVideo"], (result)=>{
+                    if (json['code']!==0) errorHandler('getNewVideos', json['code'], 'videoNotify(); line 822');
                     else if(json["code"] === 0){
                         if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
                             let data = json["data"]["attentions"]['uids'];
                             data.splice(json["data"]["attentions"]['uids'].indexOf(UUID-1+1),1);
-                            console.log(`Load following list complete. ${data.length} followings found.`);
+                            for (let i = 0; i < result['blackListLive'].length; i++) {
+                                if (data.includes(result['blackListLive'][i]))
+                                data.splice(data.indexOf(result['blackListLive'][i]),1);
+                            }
+                            console.log(`Load following list complete. ${data.length+result['blackListLive'].length} followings found, ${result['blackListLive'].length} live notifications are ignored.`);
                             queryLivingRoom(data);
                         }
                         if(result.dynamicPush){
                             let o = json["data"]["cards"];
                             for (let i = 0; i < o.length; i++) {
                                 let c = JSON.parse(o[i+""]["card"]);
-                                let type = o[i+""]["desc"]["type"];
-                                if(!info.videoInit && !dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
+                                let type = o[i+""]["desc"]["type"], uid = o[i+""]["desc"]["uid"]-0;
+                                if(!info.videoInit && !dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"]) && !result['blackListVideo'].includes(uid)){
                                     if(type === 8){
                                         console.log("你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！"+c["title"]+" see:"+o[i+""]["desc"]["bvid"]);
                                         basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], o[i+'']["desc"]["user_profile"]["info"]["face"], "b23.tv/");
@@ -875,13 +879,13 @@ function dynamicNotify(){
                 if(json['code']!==0){
                     errorHandler('getNewDynamics', json['code'], 'dynamicNotify(); line 841');
                 }else{
-                    chrome.storage.sync.get(['dynamicSwitch'], (result=>{
+                    chrome.storage.sync.get(['dynamicSwitch', 'blackListDynamic'], (result=>{
                         let o = json["data"]["cards"];
                         for (let i = 0; i < o.length; i++){
                             let c = JSON.parse(o[i+""]["card"]);
-                            let type = o[i+""]["desc"]["type"];
+                            let type = o[i+""]["desc"]["type"], uid = o[i+""]["desc"]["uid"]-0;
                             if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
-                                if(!r.dynamicInit && result.dynamicSwitch){
+                                if(!r.dynamicInit && result.dynamicSwitch && !result['blackListDynamic'].includes(uid)){
                                     switch (type){
                                         case 1:
                                             console.log("你关注的up "+c["user"]["uname"]+" 转发了一条新动态 "+c['item']['content']+" see:"+`https://t.bilibili.com/${o[i+""]["desc"]["dynamic_id_str"]}`);

@@ -14,6 +14,14 @@
     --light-background-a70: rgba(255, 255, 255, 0.7);
 }
 
+a{
+    text-decoration: none;
+}
+
+body{
+    min-width: 750px;
+}
+
 #main{
     display: flex;
     flex-direction: column;
@@ -38,6 +46,7 @@
     width: 100%;
     background-color: rgba(255,255,255, 0.72);
     border-bottom: 1px solid #aaa;
+    min-width: 800px;
 }
 
 .rua-setting-user-block{
@@ -59,6 +68,7 @@
 .user-face{
     overflow:visible;
     position: relative;
+    border-radius: 48px;
 }
 
 .verified{
@@ -84,9 +94,22 @@
     justify-content: center;
 }
 
-.user-name span{
+.user-name span, .user-name a{
     line-height: 30px;
     margin-left: 25px;
+}
+
+.user-name span{
+    color: #6d757a;
+}
+
+.user-name a{
+    transition: 0.15s;
+    color: #000;
+}
+
+.user-name a:hover{
+    color: var(--bili-blue);
 }
 
 .user-name .verify-text{
@@ -125,6 +148,20 @@
     -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
 
+.rua-nav-left{
+    display: flex;
+    margin-left: 60px;
+    height: 90px;
+    overflow: visible;
+}
+
+.rua-nav-left b{
+    line-height: 90px;
+    margin-left: 20px;
+    font-size: 22px;
+    user-select: none;
+}
+
 @media (prefers-color-scheme: dark) {
     #rua-icon-host{
         background-color: rgba(0, 0, 0, 0.72);
@@ -141,6 +178,14 @@
 
     .rua-head{
         background: var(--dark-background-a70);
+    }
+
+    .user-name a{
+        color: #fff;
+    }
+
+    .user-name span{
+        color: #8d959a;
     }
 
     .button .checkbox input:checked + label {

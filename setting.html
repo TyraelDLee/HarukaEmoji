@@ -11,21 +11,25 @@
 </head>
 <body style="font-size: 100%;">
 <div id="rua-icon-host" class="rua-icon-top">
-    <div id="rua-icon" style="transform: translate(60px, 0px); height: 100px; width:100px;">
-        <img src="./images/svga/13.svg" frame="13" height="100%" width="100%">
+    <div class="rua-nav-left">
+        <div id="rua-icon" style="height: 100px; width:100px;">
+            <img src="./images/svga/13.svg" frame="13" height="100%" width="100%">
+        </div>
+        <b>通知设置</b>
     </div>
+
     <div id="rua-nav" style="display: flex; opacity: 1;">
-        <a goto="MV3">Manifest V3</a>
-        <a goto="new-features">新特性</a>
-        <a goto="functions">已有的功能</a>
-        <a goto="how-to-use">怎么用</a>
-        <a goto="version">版本记录</a>
+        <a href="./readme.html#MV3">Manifest V3</a>
+        <a href="./readme.html#new-features">新特性</a>
+        <a href="./readme.html#functions">已有的功能</a>
+        <a href="./readme.html#how-to-use">怎么用</a>
+        <a href="./readme.html#version">版本记录</a>
     </div>
 </div>
 <div id="main">
     <div class="rua-setting-user-block rua-head" id="rua-head">
         <div class="rua-setting-user-info">
-            <div class="user-name"><span>你关注的UP</span></div>
+            <div class="user-name"><b style="margin-left: 25px">你关注的UP</b></div>
         </div>
         <div class="rua-setting-button-group" style="width: 310px; margin-right: -12px; justify-content: space-evenly;">
             <div>
@@ -39,7 +43,7 @@
             </div>
         </div>
     </div>
-    <div class="rua-setting-user-block" id="rua-head-space" style="display: none; padding: 5px 0">
+    <div class="rua-setting-user-block" id="rua-head-space" style="display: none; padding: 0; border: none;">
         <div class="rua-setting-user-info">
             <div class="user-name"><span></span></div>
         </div>

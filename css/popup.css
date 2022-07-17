@@ -237,6 +237,14 @@ option{
     fill: #000;
 }
 
+#more-setting{
+    text-decoration: none;
+}
+
+#more-setting::after{
+
+}
+
 @media (prefers-color-scheme: dark) {
     body {
         background: #292a2d;
