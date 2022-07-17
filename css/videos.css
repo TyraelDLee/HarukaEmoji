@@ -129,7 +129,7 @@
     height: 82px;
 }
 
-.rua-setting-user-block{
+.rua-download-block{
     border-radius: 5px;
     background: var(--bili-pink);
     height: 30px;
@@ -138,6 +138,7 @@
     margin: 4px;
     cursor: pointer;
 }
+
 
 .rua-download-block-disabled{
     opacity: 0.6 !important;
