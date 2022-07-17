@@ -33,6 +33,7 @@
                 pn++;
                 grabFollowing(pn);
             }
+            // console.log(Math.floor(document.body.clientHeight-document.documentElement.scrollTop-window.innerHeight))
         }
 
     }();
@@ -49,7 +50,10 @@
                 for (let i = 0; i < json['data']['list'].length; i++) {
                     drawUsers(json['data']['list'][i]['face'], json['data']['list'][i]['uname'], json['data']['list'][i]['mid'], json['data']['list'][i]['official_verify']['type'], json['data']['list'][i]['official_verify']['desc'])
                 }
-                pnMax = Math.ceil((json['data']['total']-0)/50);
+                if (pn===1)pnMax = Math.ceil((json['data']['total']-0)/50);
+                if (pn===pnMax){
+                    document.getElementById('loading').style.display='none';
+                }
             }else{
 
             }
@@ -100,6 +104,5 @@
         </div>
     </div>`;
         main.innerHTML+=userBlock;
-
     }
 }();
