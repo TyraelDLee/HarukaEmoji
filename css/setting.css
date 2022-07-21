@@ -18,10 +18,6 @@ a{
     text-decoration: none;
 }
 
-body{
-    min-width: 750px;
-}
-
 #main{
     display: flex;
     flex-direction: column;
@@ -29,16 +25,6 @@ body{
     align-items: center;
     padding-top: 100px;
     position: relative;
-}
-
-#rua-title{
-    margin-top: -30px;
-    text-align: center;
-    transition: 0.4s;
-}
-
-#rua-title b{
-    font-size: 28px;
 }
 
 #rua-icon-host{
@@ -141,6 +127,7 @@ body{
 .rua-head{
     /*position: fixed;*/
     z-index: 10;
+    user-select: none;
     border-top: none;
     border-bottom: solid 1px #aaa;
     background: var(--light-background-a70);

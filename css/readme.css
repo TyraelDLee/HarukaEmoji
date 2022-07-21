@@ -5,6 +5,7 @@
 }
 
 body{
+    min-width: 750px;
     scrollbar-width:thin;
     font-family: system-ui, "PingFang SC", STHeiti, sans-serif;
 }

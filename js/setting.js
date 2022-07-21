@@ -1,12 +1,14 @@
 !function () {
     const main = document.getElementById('main');
-    let pnMax = 1, liveList=[], videoList=[], dynamicList=[];
-    !function (){
+    let elementsOnPage = 50, liveList=[], videoList=[], dynamicList=[], uid, whisperRequest = false;
+    !async function (){
+        uid = await getUID();
+        let followingStat = await getFollowStat(uid);
         const icon = document.getElementById('rua-icon');
-        const nav = document.getElementById('rua-nav');
-        const head = document.getElementById('rua-head');
-        let pn = 1;
-
+        let pn = 1, followPM = Math.ceil((followingStat['following']-0)/elementsOnPage), whisperPM = Math.ceil((followingStat['whisper']-0)/elementsOnPage);
+        icon.addEventListener('click', ()=>{
+            document.documentElement.scrollTop=0;
+        });
         icon.addEventListener("mouseenter", ()=>{
             svga(icon.getElementsByTagName('img')[0],Math.floor(Math.random()*2+1));
         });
@@ -19,11 +21,11 @@
         icon.addEventListener("touchend", ()=>{
             svga(icon.getElementsByTagName('img')[0],0);
         });
-        chrome.storage.sync.get(['blackListLive', 'blackListDynamic', 'blackListVideo'],(r)=>{
+        chrome.storage.sync.get(['blackListLive', 'blackListDynamic', 'blackListVideo', 'uuid'],(r)=>{
             liveList = r['blackListLive'];
             dynamicList = r['blackListDynamic'];
             videoList = r['blackListVideo'];
-            grabFollowing(1);
+            grabFollowing(1, uid,followPM, whisperRequest);
         });
 
         document.body.onscroll= (e)=>{
@@ -34,33 +36,56 @@
                 document.getElementById('rua-head').removeAttribute('style');
                 document.getElementById('rua-head-space').setAttribute('style', `display:none; padding: 0; border: none;`);
             }
-            if(Math.floor(document.body.clientHeight-document.documentElement.scrollTop-window.innerHeight)===-83 && pn<pnMax){
+            if(Math.ceil(document.body.clientHeight-document.documentElement.scrollTop-window.innerHeight)===-83){
                 pn++;
-                grabFollowing(pn);
+                if (pn<=followPM){
+                    grabFollowing(pn, uid, followPM, whisperRequest);
+                }
+                if (pn === followPM+1 && !whisperRequest){
+                    pn = 1;
+                    followPM = whisperPM;
+                    whisperRequest = true;
+                }
             }
         }
     }();
 
-
-    function grabFollowing(pn){
-        fetch(`https://api.bilibili.com/x/relation/followings?vmid=3831650&pn=${pn}&ps=50`, {
+    /**
+     * Get the user's following. 50 elements per request.
+     *
+     * @param{number} pn the page number for request.
+     * @param{number} uid the user's id.
+     * @param{number} pageNumberMax the max page number.
+     * @param{boolean} whisper request whisper following.
+     * */
+    function grabFollowing(pn, uid,pageNumberMax, whisper = false){
+        return fetch(`https://api.bilibili.com/x/relation/${whisper?`whispers?`:`followings?vmid=${uid}&`}pn=${pn}&ps=${elementsOnPage}`, {
             method:"GET",
             credentials:"include",
             body:null
-        }).then(r => r.json())
-        .then(json=>{
-            if(json['code']===0){
-                for (let i = 0; i < json['data']['list'].length; i++) {
-                    drawUsers(json['data']['list'][i]['face'], json['data']['list'][i]['uname'], json['data']['list'][i]['mid'], json['data']['list'][i]['official_verify']['type'], json['data']['list'][i]['official_verify']['desc'])
+        })
+            .then(r => r.json())
+            .then(json=>{
+                if(json['code']===0){
+                    for (let i = 0; i < json['data']['list'].length; i++) {
+                        drawUsers(json['data']['list'][i]['face'], json['data']['list'][i]['uname'], json['data']['list'][i]['mid'], json['data']['list'][i]['official_verify']['type'], json['data']['list'][i]['official_verify']['desc'])
+                    }
+                    if (pn===pageNumberMax){
+                        if(!whisper){
+                            grabFollowing(1, uid, 3, true).then(r=>{
+                                if (r<=elementsOnPage) document.getElementById('loading').style.display='none';
+                            });
+                        }else{
+                            document.getElementById('loading').style.display='none';
+                        }
+                    }
+                    if(typeof json['data']['total'] === 'undefined')
+                        return json['data']['list'].length+1;
+                    else return json['data']['total'];
+                }else{
+                    return 0;
                 }
-                if (pn===1)pnMax = Math.ceil((json['data']['total']-0)/50);
-                if (pn===pnMax){
-                    document.getElementById('loading').style.display='none';
-                }
-            }else{
-
-            }
-        });
+            });
     }
 
     /**
@@ -145,13 +170,31 @@
         });
     }
 
-    chrome.storage.onChanged.addListener(function (changes, namespace) {
-        for (let [key, {oldValue, newValue}] of Object.entries(changes)) {
-            if(key === "blackListDynamic" || key === "blackListVideo" || key === "blackListLive" ) {
-                console.log(key);
-                console.log(newValue);
-            }
-        }
+    /**
+     * Get the user's id from service worker.
+     *
+     * @return {Promise} uid.
+     * */
+    function getUID(){
+        return new Promise((resolve, reject)=>{
+            chrome.runtime.sendMessage({ msg: "get_UUID" },function(uuid){
+                resolve(uuid.res);
+            });
+        });
+    }
 
-    });
+    function getFollowStat(uid){
+        return fetch(`https://api.bilibili.com/x/relation/stat?vmid=${uid}&jsonp=jsonp`,{
+            method:"GET",
+            credentials:"include",
+            body:null
+        }).then(r=>r.json())
+            .then(json=>{
+                if (json['code']===0){
+                    return {'code':0,'following': json['data']['following'], 'whisper':json['data']['whisper']};
+                }else{
+                    return {'code':-1};
+                }
+            });
+    }
 }();

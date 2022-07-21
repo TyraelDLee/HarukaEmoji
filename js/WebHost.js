@@ -560,15 +560,6 @@
                     fullscreenEmojiPad.style.display = "block";
                     fullscreenBackground.style.display = "block";
 
-                    document.getElementsByClassName("emoji-fullscreen-danmaku")[0].addEventListener("mouseenter", function (){
-                        fullscreenEmojiPad.classList.remove("fullscreen-hoverout");
-                        fullscreenEmojiPad.classList.add("fullscreen-hoverin");
-                    });
-                    document.getElementsByClassName("fullscreen-danmaku")[0].addEventListener("mouseleave", function (){
-                        fullscreenEmojiPad.classList.remove("fullscreen-hoverin");
-                        fullscreenEmojiPad.classList.add("fullscreen-hoverout");
-                    });
-                    document.getElementById("live-player").addEventListener("mousemove",fs_move);
                     fullscreenInputBtn.addEventListener("click", function (){
                         packaging(fullscreenInput.value);
                         fullscreenInput.value = "";
@@ -584,15 +575,6 @@
                     fullscreenInputBtn.style.display = "none";
                     fullscreenEmojiPad.style.display = "none";
                     fullscreenBackground.style.display = "none";
-
-                    document.getElementById("live-player").removeEventListener("mousemove",fs_move);
-                }
-
-                function fs_move(){
-                    clearTimeout(timer);
-                    timer = setTimeout(function(){
-                        fullscreenEmojiPad.classList.remove("fullscreen-hoverout");
-                    },2000);
                 }
             }
         }
