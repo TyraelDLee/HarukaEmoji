@@ -560,7 +560,7 @@
 
                 }
                 downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40 + "px";
-                getAudioOnly(cid, true, true);
+                getAudioOnly(cid, true, true, true);
                 grabDanmaku(cid, aid, 1, getDMSegments(videoDuration));
             }
         });
@@ -573,8 +573,9 @@
      * @param {string | number} cid the video file id for download.
      * @param {boolean} dolby request dolby atmos.
      * @param {boolean} audio request audio.
+     * @param {boolean} hires request hires audio.
      * */
-    function getAudioOnly(cid, dolby, audio){
+    function getAudioOnly(cid, dolby, audio, hires){
         fetch("https://api.bilibili.com/x/player/playurl?bvid="+bvid+"&cid="+cid+"&qn=120&fnval=272",{
             method:"GET",
             credentials: 'include',
@@ -583,6 +584,11 @@
         .then(res => res.json())
         .then(json => {
             if(json["code"]===0 && json["data"]!==null && json['data']['dash']!==null && json['data']['dash']!==undefined){
+                try{
+                    if(json["data"]["dash"]["flac"]['audio']['base_url']!==null && hires){
+                        innerDownloadBlock(cid, 'flac', 'Hi-Res');
+                    }
+                }catch (e) {}
                 if(json["data"]["dash"]["dolby"]!==null && dolby){
                     innerDownloadBlock(cid, 'dolby', '杜比全景声');
                 }
@@ -660,6 +666,9 @@
                                 case 'dolby':
                                     dlURL[0] = json["data"]["dash"]["dolby"]["audio"][0]["base_url"];
                                     break;
+                                case 'flac':
+                                    dlURL[0] = json['data']['dash']['flac']['audio']['base_url'];
+                                    break;
                                 case '8k':
                                     dlURL[0] = json['data']['dash']['video'][0]['base_url'];
                                     dlURL[1] = json['data']['dash']['dolby']===null?json['data']['dash']['audio'][0]['base_url']:json['data']['dash']['audio'][0]['base_url'];
@@ -706,7 +715,7 @@
      * be combined by FFmpeg before download to local disk. (Hard limit in wasm)
      * Otherwise, download to local disk directly.
      *
-     * @param {string} url the stream url.
+     * @param {array} url the stream url.
      * @param {string} fileName the file name.
      * @param {string | number} cid the video file id for download.
      * @param {object} hostObj the DOM object for download button.
@@ -813,6 +822,13 @@
             out = ffmpeg.FS('readFile', 'final.mp4');
             downloadName = filename + ".mp4";
             dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+        }
+        if(requestType === 'flacRecord'){
+            ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(blob[0]));
+            await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', 'final.flac');
+            out = ffmpeg.FS('readFile', 'final.flac');
+            downloadName = filename + ".flac";
+            dl = URL.createObjectURL(new Blob([out.buffer]));
         }
         if(requestType === 'hdrRecord'  || requestType==='8kRecord'){
             ffmpeg.FS('writeFile', 'video.m4s', await fetchFile(blob[0]));

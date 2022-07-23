@@ -30,10 +30,12 @@
 
         document.body.onscroll= (e)=>{
             if (document.documentElement.scrollTop > 20) {
-                document.getElementById('rua-head').setAttribute('style', `top: ${80 + document.documentElement.scrollTop}px; position: absolute`);
+                document.getElementById('rua-head').setAttribute('style', `top: 90px; position: fixed; padding: 20px 75px;border-bottom:none;`);
+                document.getElementById('rua-head').classList.add('rua-head-border');
                 document.getElementById('rua-head-space').setAttribute('style', `display:block; padding: 0; border: none;`);
             }else {
                 document.getElementById('rua-head').removeAttribute('style');
+                document.getElementById('rua-head').classList.remove('rua-head-border');
                 document.getElementById('rua-head-space').setAttribute('style', `display:none; padding: 0; border: none;`);
             }
             if(Math.ceil(document.body.clientHeight-document.documentElement.scrollTop-window.innerHeight)===-83){

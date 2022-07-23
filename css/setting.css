@@ -149,6 +149,17 @@ a{
     user-select: none;
 }
 
+.rua-head-border::after{
+    min-width: 750px;
+    content: '';
+    top: 63px;
+    width: calc(100% - 150px);
+    height: 1px;
+    padding: 0 75px;
+    position: inherit;
+    background: #aaa;
+}
+
 @media (prefers-color-scheme: dark) {
     #rua-icon-host{
         background-color: rgba(0, 0, 0, 0.72);
