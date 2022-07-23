@@ -186,6 +186,12 @@ option{
     opacity: 75%;
 }
 
+.right-arrow{
+    fill: #06c;
+    position: absolute;
+    top: 0;
+}
+
 .qn-i{
     height: 18px;
     line-height: 20px;
@@ -239,10 +245,11 @@ option{
 
 #more-setting{
     text-decoration: none;
+    color: #06c;
 }
 
-#more-setting::after{
-
+#more-setting:hover{
+    text-decoration: underline;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -264,11 +271,18 @@ option{
     .button .checkbox input:checked + label:after {
         background: #26afe9 !important;
     }
+    .right-arrow{
+        fill: #2997ff;
+    }
     #btn7 span{
         color: #23ade5 !important;
     }
     #github-icon{
         fill: #fff;
+    }
+
+    #more-setting{
+        color: #2997ff;
     }
 
     :root{

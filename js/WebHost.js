@@ -292,11 +292,11 @@
         function renderExtension(){
             loadPopPos();
             popup.setAttribute("id", "emoji-popup");
-            popup.style.background = "url("+chrome.runtime.getURL("../images/haruka/abaaba.svg")+") no-repeat center";
             try{
                 popup.style.background = "url("+link+") no-repeat center";
-            }catch (e){}
-
+            }catch (e){
+                popup.style.background = "url("+chrome.runtime.getURL("../images/haruka/abaaba.svg")+") no-repeat center";
+            }
             popup.style.backgroundSize = "contain";
             popup.style.cursor = "pointer";
             popup.innerHTML = "<!---->";
