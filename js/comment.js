@@ -1,7 +1,7 @@
 !function () {
     const div = document.createElement('div'), emojiTitle = document.createElement('div'), emojiContent = document.createElement('div'), emojiTab = document.createElement('div'),emojiSlider = document.createElement('div'),emojiLeftArrow = document.createElement('i'),emojiRightArrow = document.createElement('i');
     const pageUrl = window.location['host'];
-    const pageID = window.location["pathname"].replaceAll("/", "").replace("video", "").replace('bangumi', '').replace('play', '');
+    let pageID = window.location["pathname"].replaceAll("/", "").replace("video", "").replace('bangumi', '').replace('play', '');
     let exp =new RegExp("https://space.bilibili.com/\\d*/dynamic");
     let textArea = null;
     function boundDynamicModule(emojisType, emojis){
@@ -32,11 +32,20 @@
             let mid = await getOwnerID();
             let emojis = await getOwnerEmote(mid);
             let emojisType = await getUserEmote(mid);
-            if(pageUrl==='t.bilibili.com') {
+            if(pageUrl==='t.bilibili.com' || exp.test(window.location.href)) {
                 boundDynamicModule(emojisType, emojis);
                 boundButtons('comment-emoji-lite');
                 boundButtons('comment-emoji');
             }else{
+                new MutationObserver(async ()=>{
+                    const nvid = window.location["pathname"].replaceAll("/", "").replace("video","").replace('bangumi','').replace('play','');
+                    if(nvid!==null && nvid!==pageID){
+                        pageID = nvid;
+                        mid = await getOwnerID();
+                        emojis = await getOwnerEmote(mid);
+                        emojisType = await getUserEmote(mid);
+                    }
+                }).observe(document, {subtree: true, childList: true});
                 new MutationObserver((m) => {
                     m.forEach(function (mutation) {
                         if (mutation.type === "childList" && mutation.target.classList.contains("box-active") && mutation.addedNodes.length > 0) {
@@ -158,10 +167,10 @@
         emojiTab.classList.add('rua-emoji-tab');
         emojiSlider.classList.add('rua-emoji-slider');
         emojiLeftArrow.setAttribute('style', '--2c6ec6e4:#c9ccd0; --72eca176:16px;');
-        emojiLeftArrow.classList.add('svg-icon','left-arrow','use-color','slider-pre');
+        emojiLeftArrow.classList.add('svg-icon','left-arrow','use-color','slider-pre', 'rua-arrow');
         emojiLeftArrow.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.67413 1.57564C7.90844 1.80995 7.90844 2.18985 7.67413 2.42417L4.09839 5.9999L7.67413 9.57564C7.90844 9.80995 7.90844 10.1899 7.67413 10.4242C7.43981 10.6585 7.05992 10.6585 6.8256 10.4242L3.00238 6.60094C2.67043 6.269 2.67043 5.73081 3.00238 5.39886L6.8256 1.57564C7.05992 1.34132 7.43981 1.34132 7.67413 1.57564Z" fill="#A2A7AE"></path></svg>`;
         (emojiCat['packages'].length>5)?emojiRightArrow.setAttribute('style', '--2c6ec6e4:#61666d; --72eca176:16px;'):emojiRightArrow.setAttribute('style', '--2c6ec6e4:#c9ccd0; --72eca176:16px;');
-        emojiRightArrow.classList.add('svg-icon','right-arrow','use-color','slider-pre');
+        emojiRightArrow.classList.add('svg-icon','right-arrow','use-color','slider-pre', 'rua-arrow');
         emojiRightArrow.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.82576 2.07564C5.59145 2.30995 5.59145 2.68985 5.82576 2.92417L10.9015 7.9999L5.82576 13.0756C5.59145 13.31 5.59145 13.6899 5.82576 13.9242C6.06008 14.1585 6.43997 14.1585 6.67429 13.9242L11.9386 8.65987C12.3031 8.29538 12.3031 7.70443 11.9386 7.33994L6.67429 2.07564C6.43997 1.84132 6.06008 1.84132 5.82576 2.07564Z" fill="#E19C2C"></path></svg>`;
 
         emojiSlider.appendChild(emojiLeftArrow);
@@ -173,7 +182,7 @@
                 emojiTab.appendChild(drawSlider(emojiCat['packages'][i]['url'], i, emojiCat['packages'][i]['text'], emojiCat['packages'][i]['emote']));
         }
         for (let j = 0; j < emojiCat['packages'][1]['emote'].length; j++) {
-            emojiContent.appendChild(drawBlock(emojiCat['packages'][1]['emote'][j]['url'], emojiCat['packages'][1]['emote'][j]['text'], 'img', 'rua-normal-small-emoji'));
+            emojiContent.appendChild(drawBlock(emojiCat['packages'][1]['emote'][j]['url'], emojiCat['packages'][1]['emote'][j]['text'], 'img', 'rua-normal-small-emoji', false, null));
         }
         emojiLeftArrow.addEventListener('click',()=>{
             if(emojiCat['packages'].length>5){
@@ -230,7 +239,8 @@
         return div;
     }
 
-    function drawBlock(url, content, type, size){
+    function drawBlock(url, content, type, size, unlocked, reason){
+        console.log(unlocked);
         url = url.replace('http', 'https');
         let div = document.createElement('div');
         div.classList.add('rua-emoji-info');
@@ -239,10 +249,17 @@
             div.innerHTML=`<div class="${size}" data-v-187455db="">${url}</div>`;
         else
             div.innerHTML=`<img class="${size}" src="${url}" data-v-187455db="">`;
-        div.addEventListener('click',()=>{
-           textArea.focus();
-           textArea.value+=div.getAttribute('content');
-        });
+        if(reason!==null && !unlocked){
+            div.style.position = `relative`;
+            div.getElementsByTagName('img')[0].style.opacity='0.3';
+            div.innerHTML+=`<div class="rua-disabled-text">${reason['title']}</div>`
+        }else{
+            div.addEventListener('click',()=>{
+                textArea.focus();
+                textArea.value+=div.getAttribute('content');
+            });
+        }
+
         return div;
     }
 
@@ -263,19 +280,20 @@
             div.classList.add('rua-current-type');
             emojiTitle.innerText=title;
             emojiContent.innerHTML='';
+            console.log(icons);
             for (let i = 0; i < icons.length; i++) {
                 switch (title) {
                     case 'tv_小电视':
-                        emojiContent.appendChild(drawBlock(icons[i]['url'], icons[i]['text'], 'img', 'rua-normal-small-emoji'));
+                        emojiContent.appendChild(drawBlock(icons[i]['url'], icons[i]['text'], 'img', 'rua-normal-small-emoji', false, null));
                         break;
                     case '小黄脸':
-                        emojiContent.appendChild(drawBlock(icons[i]['url'], icons[i]['text'], 'img', 'rua-normal-small-emoji'));
+                        emojiContent.appendChild(drawBlock(icons[i]['url'], icons[i]['text'], 'img', 'rua-normal-small-emoji', false, null));
                         break;
                     case '颜文字':
-                        emojiContent.appendChild(drawBlock(icons[i]['url'], icons[i]['text'], 'div', 'rua-text-emoji'));
+                        emojiContent.appendChild(drawBlock(icons[i]['url'], icons[i]['text'], 'div', 'rua-text-emoji', false, null));
                         break;
                     default:
-                        emojiContent.appendChild(drawBlock(icons[i]['url'], icons[i]['text'], 'img', 'rua-normal-large-emoji'));
+                        emojiContent.appendChild(drawBlock(icons[i]['url'], icons[i]['text'], 'img', 'rua-normal-large-emoji', icons[i]['flags']['unlocked'], icons[i]['activity']));
 
                 }
             }
