@@ -89,6 +89,13 @@
     "js": ["ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/audio.min.js"],
     "matches": ["*://www.bilibili.com/audio/*"],
     "run_at": "document_end"
+  },{
+    "all_frames": true,
+    "css": ["css/comment.min.css"],
+    "js": ["js/comment.js"],
+    "matches": ["*://*.bilibili.com/*"],
+    "exclude_matches": ["*://message.bilibili.com/*"],
+    "run_at": "document_end"
   }],
   "web_accessible_resources": [{"resources": ["images/*", "css/*", "js/*", "ffmpeg/*"], "matches": ["https://*/*"]}],
   "content_security_policy": {

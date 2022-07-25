@@ -17,6 +17,7 @@
         <item url="file://$PROJECT_DIR$/js/audio.min.js" />
         <item url="file://$PROJECT_DIR$/js/background.min.js" />
         <item url="file://$PROJECT_DIR$/js/biliMain.min.js" />
+        <item url="file://$PROJECT_DIR$/js/comment.min.js" />
         <item url="file://$PROJECT_DIR$/js/haruka.min.js" />
         <item url="file://$PROJECT_DIR$/js/nana.min.js" />
         <item url="file://$PROJECT_DIR$/js/popup.min.js" />
@@ -45,6 +46,7 @@
       <root url="file://$PROJECT_DIR$/js/audio.min.js" />
       <root url="file://$PROJECT_DIR$/js/background.min.js" />
       <root url="file://$PROJECT_DIR$/js/biliMain.min.js" />
+      <root url="file://$PROJECT_DIR$/js/comment.min.js" />
       <root url="file://$PROJECT_DIR$/js/haruka.min.js" />
       <root url="file://$PROJECT_DIR$/js/nana.min.js" />
       <root url="file://$PROJECT_DIR$/js/popup.min.js" />
