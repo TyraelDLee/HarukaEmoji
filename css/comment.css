@@ -138,6 +138,8 @@
 
 .rua-arrow{
     color: var(--2c6ec6e4);
+    width: var(--72eca176);
+    height: var(--72eca176);
 }
 
 .rua-arrow svg path{

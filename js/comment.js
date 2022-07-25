@@ -4,6 +4,7 @@
     let pageID = window.location["pathname"].replaceAll("/", "").replace("video", "").replace('bangumi', '').replace('play', '');
     let exp =new RegExp("https://space.bilibili.com/\\d*/dynamic");
     let textArea = null;
+
     function boundDynamicModule(emojisType, emojis){
         document.getElementById('app').addEventListener('click', ()=>{
             if (document.activeElement.tagName==='TEXTAREA'){
@@ -28,7 +29,7 @@
     }
 
     !async function () {
-        if (pageUrl === 't.bilibili.com' || pageID.toUpperCase().includes('BV') || pageID.toUpperCase().includes('AV') || exp.test(window.location.href)) {
+        if ((pageUrl === 't.bilibili.com' || pageID.toUpperCase().includes('BV') || pageID.toUpperCase().includes('AV') || exp.test(window.location.href)) && pageID.length>0) {
             let mid = await getOwnerID();
             let emojis = await getOwnerEmote(mid);
             let emojisType = await getUserEmote(mid);
@@ -240,7 +241,6 @@
     }
 
     function drawBlock(url, content, type, size, unlocked, reason){
-        console.log(unlocked);
         url = url.replace('http', 'https');
         let div = document.createElement('div');
         div.classList.add('rua-emoji-info');
@@ -257,9 +257,9 @@
             div.addEventListener('click',()=>{
                 textArea.focus();
                 textArea.value+=div.getAttribute('content');
+                textArea.dispatchEvent(new Event("input"));
             });
         }
-
         return div;
     }
 
@@ -280,7 +280,6 @@
             div.classList.add('rua-current-type');
             emojiTitle.innerText=title;
             emojiContent.innerHTML='';
-            console.log(icons);
             for (let i = 0; i < icons.length; i++) {
                 switch (title) {
                     case 'tv_小电视':
