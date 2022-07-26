@@ -631,7 +631,7 @@ function reloadCookies() {
                     chrome.alarms.getAll((alarms)=>{
                         for(let name of alarms){
                             console.log(`alarm ${name.name} found`);
-                            if (name.name !== 'checkUpd') chrome.alarms.clear(name.name).then(r=>{console.log(`${name.name} was cleared ${r}`)});
+                            if (name.name !== 'checkUpd' && name.name !== 'getUID_CSRF') chrome.alarms.clear(name.name).then(r=>{console.log(`${name.name} was cleared ${r}`)});
                         }
                     })
                 }

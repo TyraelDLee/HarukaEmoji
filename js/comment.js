@@ -1,21 +1,22 @@
 !function () {
     const div = document.createElement('div'), emojiTitle = document.createElement('div'), emojiContent = document.createElement('div'), emojiTab = document.createElement('div'),emojiSlider = document.createElement('div'),emojiLeftArrow = document.createElement('i'),emojiRightArrow = document.createElement('i');
     const pageUrl = window.location['host'];
-    let pageID = window.location["pathname"].replaceAll("/", "").replace("video", "").replace('bangumi', '').replace('play', '');
+    let pageID = window.location["pathname"].replaceAll("/", "").replace("video", "").replace('bangumi', '').replace('play', '').replace('read', '');
     let exp =new RegExp("https://space.bilibili.com/\\d*/dynamic");
     let textArea = null;
 
+    function appEvent(){
+        if (document.activeElement.tagName === 'TEXTAREA') {
+            textArea = document.activeElement;
+        }
+    }
     function boundDynamicModule(emojisType, emojis){
-        document.getElementById('app').addEventListener('click', ()=>{
-            if (document.activeElement.tagName==='TEXTAREA'){
-                textArea = document.activeElement;
-            }
-        });
+        document.getElementById('app').addEventListener('click', appEvent);
         try{
-            textArea = document.getElementsByClassName('comment-send')[0].getElementsByTagName('textarea')[0];
             document.getElementsByClassName('emoji-box')[0].innerHTML = '';
             document.getElementsByClassName('emoji-box')[0].appendChild(drawUI(emojisType, emojis, [0, 0]));
         }catch (e){
+            document.getElementById('app').removeEventListener('click', appEvent);
             setTimeout(()=>{boundDynamicModule(emojisType, emojis)}, 1000);
         }
     }
@@ -25,21 +26,24 @@
             document.getElementsByClassName(className)[0].addEventListener('click', ()=>{
                 textArea = document.getElementsByClassName(className)[0].parentElement.getElementsByClassName('textarea-container')[0].getElementsByTagName('textarea')[0];
             });
-        }catch (e) {}
+        }catch (e) {
+            console.log(e);
+            setTimeout(()=>{boundButtons(className)}, 1000);
+        }
     }
 
     !async function () {
-        if ((pageUrl === 't.bilibili.com' || pageID.toUpperCase().includes('BV') || pageID.toUpperCase().includes('AV') || exp.test(window.location.href)) && pageID.length>0) {
+        if ((pageUrl === 't.bilibili.com' || pageID.toUpperCase().includes('AV') || pageID.toUpperCase().includes('BV') || pageID.toUpperCase().includes('CV') || exp.test(window.location.href)) && pageID.length>0) {
             let mid = await getOwnerID();
             let emojis = await getOwnerEmote(mid);
             let emojisType = await getUserEmote(mid);
-            if(pageUrl==='t.bilibili.com' || exp.test(window.location.href)) {
+            if(pageUrl==='t.bilibili.com' || exp.test(window.location.href) || pageID.toUpperCase().includes('CV')) {
                 boundDynamicModule(emojisType, emojis);
                 boundButtons('comment-emoji-lite');
                 boundButtons('comment-emoji');
             }else{
                 new MutationObserver(async ()=>{
-                    const nvid = window.location["pathname"].replaceAll("/", "").replace("video","").replace('bangumi','').replace('play','');
+                    const nvid = window.location["pathname"].replaceAll("/", "").replace("video","").replace('bangumi','').replace('play','').replace('read', '');
                     if(nvid!==null && nvid!==pageID){
                         pageID = nvid;
                         mid = await getOwnerID();
@@ -98,7 +102,22 @@
                 });
         } else if(exp.test(window.location.href)){
             return window.location.pathname.replaceAll('dynamic','').replaceAll('/','')-0;
-        }else {
+        } else if(pageID.substring(0,2)==='cv'){
+            return fetch(`https://api.bilibili.com/x/article/viewinfo?id=${pageID.substring(2)}`,{
+                method:"GET",
+                credentials:"include",
+                body:null
+            }).then(r=>r.json())
+                .then(json=>{
+                    if (json['code'] === 0) {
+                        return json['data']['mid'];
+                    } else
+                        return -1;
+                })
+                .catch(e=>{
+                    return -1;
+                });
+        } else{
             return fetch(`https://api.bilibili.com/x/web-interface/view?${abv(pageID)}`, {
                 method: "GET",
                 credentials: "include",
@@ -273,7 +292,6 @@
         }
         div.innerHTML=`<img class="emoji-type-face" src="${url}" data-v-187455db="">`;
         div.addEventListener('click', ()=>{
-            textArea.focus();
             for (const block of document.querySelectorAll('.rua-emoji-type')) {
                 block.classList.remove('rua-current-type');
             }
