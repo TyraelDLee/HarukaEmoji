@@ -549,6 +549,18 @@
                     document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreenInputBtn);
                     document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreenBackground);
                     document.getElementsByClassName("emoji-fullscreen-danmaku")[0].appendChild(fullscreenEmojiPad);
+
+                    let interval;
+                    fullscreenEmojiTableSystem.addEventListener('mouseenter', ()=>{
+                        interval = setInterval(fullscreenMousemoveEvent, 1000);
+                    });
+                    fullscreenEmojiTableSystem.addEventListener('mouseleave', ()=>{
+                        clearInterval(interval);
+                    });
+                }
+
+                function fullscreenMousemoveEvent(){
+                    fullscreenEmojiTableSystem.parentElement.parentElement.parentElement.parentElement.dispatchEvent(new Event('mousemove'));
                 }
 
                 function displayFullScreenDanmaku(){
