@@ -823,18 +823,28 @@ class CRC32{
         })
             .then(res => res.json())
             .then(json => {
-                console.log("兑换成功！好耶( •̀ ω •́ )✧");
-                chrome.notifications.create(Math.random()+"", {
-                        type: "basic",
-                        iconUrl: "./images/abaaba.png",
-                        title: "本月大会员的5B币兑换成功！",
-                        message:""
-                    }, function (id) {
-                        setTimeout(function (){
-                            chrome.notifications.clear(id);
-                        },3000);
-                    }
-                );
+                switch (json['code']) {
+                    case 0:
+                        console.log("兑换成功！好耶( •̀ ω •́ )✧");
+                        chrome.notifications.create(Math.random()+"", {
+                                type: "basic",
+                                iconUrl: "./images/abaaba.png",
+                                title: "本月大会员的5B币兑换成功！",
+                                message:""
+                            }, function (id) {
+                                setTimeout(function (){
+                                    chrome.notifications.clear(id);
+                                },3000);
+                            }
+                        );
+                        break;
+                    case 69155:
+                        console.log("当前非大会员");
+                        break;
+                    default:
+                        console.log("兑换失败，位置错误");
+                        break;
+                }
             }).catch(msg =>{errorHandler(queryBcoin, msg, 'exchangeBCoin()');});
     }
 
@@ -1115,7 +1125,7 @@ class CRC32{
     }
 
     /**
-     * Query selected a/bv id is exist or not.
+     * Query selected a/bv id is existed or not.
      * */
     function findVideo(vid){
         return new Promise(function (videoExist){

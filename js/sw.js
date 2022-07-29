@@ -770,10 +770,6 @@ function exchangeBCoin(JCT){
                     console.log("兑换失败，位置错误");
                     break;
             }
-            if(json['code']===0){
-
-            }
-
         }).catch(msg =>{errorHandler('bcoin', msg, 'exchangeBCoin(); line 742');});
 }
 
