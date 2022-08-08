@@ -12,6 +12,8 @@
     --dark-background-a70: rgba(41, 42, 45, 0.7);
     --light-background: rgba(255, 255, 255,1);
     --light-background-a70: rgba(255, 255, 255, 0.7);
+    --text-light-gray: #6d757a;
+    --text-dark-gray: #8d959a;
 }
 
 a{
@@ -86,7 +88,7 @@ a{
 }
 
 .user-name span{
-    color: #6d757a;
+    color: var(--text-light-gray);
 }
 
 .user-name a{
@@ -135,6 +137,10 @@ a{
     -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
 
+#rua-nav{
+    right: 100px;
+}
+
 .rua-nav-left{
     display: flex;
     margin-left: 60px;
@@ -160,6 +166,68 @@ a{
     background: #aaa;
 }
 
+.setting-heading{
+    font-size: 20px;
+    margin: 50px 150px 0 150px;
+}
+
+.rua-setting-col{
+    display: flex;
+    margin: 0 250px;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.rua-setting-row{
+    margin: 25px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.setting-block{
+    display: flex;
+    margin: 0 50px;
+
+}
+
+.setting-text{
+    line-height: 57px;
+}
+
+.dropbox{
+    width: 40px;
+    line-height: 57px;
+    margin-left: 15px;
+}
+
+.dropbox select{
+    padding: 0 2%;
+    border: 0;
+    border-bottom: 2px solid var(--bili-pink);
+    scrollbar-width:thin;
+    outline: none !important;
+    transition: 0.4s;
+    -webkit-transition: 0.4s;
+}
+
+.dropbox select::-webkit-scrollbar{
+    width: 6px;
+    height: 6px;
+}
+
+.dropbox select::-webkit-scrollbar-thumb{
+    border-radius: 6px;
+    background-color: #aaa;
+}
+
+.setting-description{
+    color: var(--text-light-gray);
+    line-height: 57px;
+}
+/*.button-host{*/
+/*    margin-left: 20px;*/
+/*}*/
+
 @media (prefers-color-scheme: dark) {
     #rua-icon-host{
         background-color: rgba(0, 0, 0, 0.72);
@@ -183,7 +251,7 @@ a{
     }
 
     .user-name span{
-        color: #8d959a;
+        color: var(--text-dark-gray);
     }
 
     .button .checkbox input:checked + label {
@@ -191,6 +259,16 @@ a{
     }
     .button .checkbox input:checked + label:after {
         background: var(--bili-blue) !important;
+    }
+
+    .dropbox select{
+        background: #292a2d;
+        color: #fff;
+        border-color: var(--bili-blue);
+    }
+
+    .setting-description{
+        color: var(--text-dark-gray);
     }
 }
 

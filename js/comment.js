@@ -251,7 +251,8 @@
                 }
             }catch (e) {}
         }
-        emojiTab.appendChild(emojiSlider);
+        if(emojiCat['packages'].length>6)
+            emojiTab.appendChild(emojiSlider);
 
         div.appendChild(emojiTitle);
         div.appendChild(emojiContent);

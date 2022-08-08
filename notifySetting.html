@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="current-version" content="5.10">
-    <title>rua豹器 偏好设置</title>
+    <title>rua豹器 通知偏好</title>
     <link href="css/readme.min.css" type="text/css" rel="stylesheet">
     <link href="css/setting.min.css" type="text/css" rel="stylesheet">
     <link href="css/popupbtn.min.css" type="text/css" rel="stylesheet">
@@ -15,47 +15,48 @@
         <div id="rua-icon" style="height: 100px; width:100px;">
             <img src="./images/svga/13.svg" frame="13" height="100%" width="100%">
         </div>
-        <b>偏好设置</b>
+        <b>通知偏好</b>
     </div>
 
-    <div class="rua-nav-right" id="rua-nav" style="display: flex; opacity: 1;">
-        <a href="./notifySetting.html">通知偏好</a>
-    </div>
+<!--    <div class="rua-nav-right" id="rua-nav" style="display: flex; opacity: 1;">-->
+<!--        <a href="./setting.html">偏好设置</a>-->
+<!--    </div>-->
 </div>
-<div id="main" style="display: block;">
-    <div class="setting-heading"><b>缓存设置</b></div>
-    <div class="rua-setting-col">
-        <div class="rua-setting-row">
-            <div class="setting-block">
-                <div class="setting-text">缓存8k、HDR视频时优先选择</div>
-                <div class="dropbox" style="width: 150px">
-                    <label for="dashAudioQuality"></label>
-                    <select id="dashAudioQuality">
-                        <option value="320k">默认</option>
-                        <option value="Hi-Res">Hi-Res</option>
-                        <option value="Dolby">杜比全景声</option>
-                    </select>
-                    <span style="padding-left: 5px;"> 音轨</span>
-                </div>
-            </div>
-            <div class="setting-description">*当所选音轨不可用时，将使用默认音轨。</div>
+<div id="main">
+    <div class="rua-setting-user-block rua-head" id="rua-head">
+        <div class="rua-setting-user-info">
+            <div class="user-name"><b style="margin-left: 25px">你关注的UP</b></div>
         </div>
-        <div class="rua-setting-row">
-            <div class="setting-block">
-                <div class="setting-text">缓存音频时优先选择</div>
-                <div class="dropbox">
-                    <label for="audioQuality"></label>
-                    <select id="audioQuality">
-                        <option value="320k">320Kbps</option>
-                        <option value="flac">flac</option>
-                    </select>
-                </div>
+        <div class="rua-setting-button-group" style="width: 310px; margin-right: -12px; justify-content: space-evenly;">
+            <div>
+                <span>开播</span>
             </div>
-            <div class="setting-description">*当所选音质不可用时，将依次向下选择。</div>
+            <div>
+                <span>视频投稿</span>
+            </div>
+            <div>
+                <span>动态</span>
+            </div>
         </div>
     </div>
-    <div class="setting-heading"><b>缓存设置</b></div>
+    <div class="rua-setting-user-block" id="rua-head-space" style="display: none; padding: 0; border: none;">
+        <div class="rua-setting-user-info">
+            <div class="user-name"><span></span></div>
+        </div>
+        <div class="rua-setting-button-group">
+            <div class="button-host" style="padding: 0 20px">
+                <span></span>
+            </div>
+            <div class="button-host" style="padding: 0 20px">
+                <span></span>
+            </div>
+            <div class="button-host" style="padding: 0 20px">
+                <span></span>
+            </div>
+        </div>
+    </div>
 </div>
+<div id="loading" style="display: flex; width: 100%;justify-content: center;height: 60px"><span style="line-height: 60px;text-align: center;">加载中...</span></div>
 <div id="bottom">
     <h2></h2>
     <div style="cursor: auto"><svg height="16" width="16" viewBox="0 0 16 16" version="1.1">
@@ -65,7 +66,7 @@
     <div id="bug-reporter"><a href="https://github.com/TyraelDLee/HarukaEmoji/issues">问题反馈</a></div>
 </div>
 <script src="./js/SVGA.min.js"></script>
-
+<script src="./js/setting.min.js"></script>
 </body>
 </html>
 <!--todo: download setting-->

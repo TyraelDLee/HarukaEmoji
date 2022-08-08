@@ -806,7 +806,7 @@ function queryBcoin(){
  * */
 function videoNotify(UUID){
     chrome.storage.local.get(['dynamic_id_list', 'videoInit'], (info)=>{
-        let dynamic_id_list = info.dynamic_id_list;
+        let dynamic_id_list = info.dynamic_id_list, nowTS = Date.now() / 1000.0;
         fetch("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=8,512,4097,4098,4099,4100,4101",{
             method:"GET",
             credentials: 'include',
@@ -832,7 +832,7 @@ function videoNotify(UUID){
                             for (let i = 0; i < o.length; i++) {
                                 let c = JSON.parse(o[i+""]["card"]);
                                 let type = o[i+""]["desc"]["type"], uid = o[i+""]["desc"]["uid"]-0;
-                                if(!info.videoInit && !dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"]) && !result['blackListVideo'].includes(uid)){
+                                if(!info.videoInit && !dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"]) && !result['blackListVideo'].includes(uid) && (nowTS - (o[i+""]["desc"]["timestamp"]-0)) < 300){
                                     if(type === 8){
                                         console.log("你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！"+c["title"]+" see:"+o[i+""]["desc"]["bvid"]);
                                         basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], o[i+'']["desc"]["user_profile"]["info"]["face"], "b23.tv/");
@@ -864,7 +864,7 @@ function videoNotify(UUID){
  * */
 function dynamicNotify(){
     chrome.storage.local.get(['dynamicList', 'dynamicInit'], (r)=>{
-        let dynamic_id_list = r.dynamicList;
+        let dynamic_id_list = r.dynamicList, nowTS = Date.now() / 1000.0;
         fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=1,2,4`,{
             method:'GET',
             credentials:'include',
@@ -880,7 +880,7 @@ function dynamicNotify(){
                         for (let i = 0; i < o.length; i++){
                             let c = JSON.parse(o[i+""]["card"]);
                             let type = o[i+""]["desc"]["type"], uid = o[i+""]["desc"]["uid"]-0;
-                            if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"])){
+                            if(!dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"]) && (nowTS - (o[i+""]["desc"]["timestamp"]-0)) < 300){
                                 if(!r.dynamicInit && result.dynamicSwitch && !result['blackListDynamic'].includes(uid)){
                                     switch (type){
                                         case 1:
@@ -1146,14 +1146,5 @@ function setBadge(title, text){
 //todo: context menu √
 //todo: web traffic control. no needed anymore
 //todo: hidden √
-//todo: mock Android app request.
+//todo: mock Android app request. no needed anymore
 //todo: add support for mv2.😅 √
-
-// AppKey: 1d8b6e7d45233436
-// SecretKey: 560c52ccd288fed045859ed18bffd973
-// sign=MD5(queryString+SK).
-// User-Agent: Mozilla/5.0 BiliDroid/6.72.0 (bbcallen@gmail.com) os/android model/MuMu mobi_app/android build?6720300 channel/bili innerVer/6720300 osVer/6.0.1 network/2
-
-
-// live dm api: api.live.bilibili.com/xlive/app-room/v1/dM/sendmsg?access_key= &actionKey=appkey&appkey=1d8b6e7d45233436&build=6720300&c_locale=zh_CN&channel=bili&device=android&disable_rcmd=0&mobi_app=android&platform=android&s_locale=zh_CN&statistics={"appId":1,"platform":3,"version":"6.72.0","abtest":""}&ts= &sign=
-// live share api: api.bilibili.com/x/share/placard body form: access_key appkey=1d8b6e7d45233436 build=6720300 buvid c_locale=zh_CN channel=bili device=MuMu disable_rcmd=0 image_exists=0 materials={ } mobi_app=android oid=2 platform=android s_locale=zh_CN share_id= share_origin= share_session_id= sid= spm_id= statstics={"appId":1,"platform":3,"version":"6.72.0","abtest":""} template_id=11 ts= sign=
