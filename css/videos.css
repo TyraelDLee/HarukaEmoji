@@ -22,7 +22,14 @@
 #emoji-selection{
     border-radius: 5px;
     box-shadow: #ddd 0 0 5px;
+    height: auto;
+    color: var(--text1);
 }
+
+html[theme*="dark"] #emoji-selection{
+    box-shadow: #222 0 0 5px;
+}
+
 #rua-input-container{
     left: 40px;
     height: 18px;
@@ -89,6 +96,7 @@
     outline: none !important;
     transition: 0.4s;
     -webkit-transition: 0.4s;
+    background-color: var(--bg1);
 }
 
 #rua-danmaku-intense::-webkit-scrollbar{
@@ -114,10 +122,6 @@
     width: 150px;
     transition: 0.4s;
     text-align: center;
-}
-
-#emoji-selection{
-    height: auto;
 }
 
 #rua-user-control-bar{
@@ -177,6 +181,11 @@
     color: var(--bili-pink);
     opacity: 1;
 }
+
+html[theme*="dark"] .rua-danmaku-time:hover, html[theme*="dark"] .rua-danmaku-content:hover, html[theme*="dark"] .rua-danmaku-content:hover .rua-danmaku-copy{
+    background: var(--Ga2);
+}
+
 
 .rua-danmaku-time:hover{
     background: #ffebee;

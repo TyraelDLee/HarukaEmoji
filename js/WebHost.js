@@ -805,43 +805,43 @@
             }
         }
 
-        var obs = new MutationObserver(function (m){
-            m.forEach(function(mutation) {
-                if (mutation.type === "attributes") {
-                    if(labStyle.getAttribute("lab-style")!==null){
-                        labFeatures = labStyle.getAttribute("lab-style").split(",");
-                        labFeatures.indexOf("dark")!==-1?darkMode(true):darkMode(false);
-                    }else{
-                        darkMode(false);
-                    }
-                }
-            });
-        });
+        // var obs = new MutationObserver(function (m){
+        //     m.forEach(function(mutation) {
+        //         if (mutation.type === "attributes") {
+        //             if(labStyle.getAttribute("lab-style")!==null){
+        //                 labFeatures = labStyle.getAttribute("lab-style").split(",");
+        //                 labFeatures.indexOf("dark")!==-1?darkMode(true):darkMode(false);
+        //             }else{
+        //                 darkMode(false);
+        //             }
+        //         }
+        //     });
+        // });
+        //
+        // const labStyle = document.documentElement;
+        // obs.observe(labStyle,{
+        //     attributes: true
+        // });
 
-        const labStyle = document.documentElement;
-        obs.observe(labStyle,{
-            attributes: true
-        });
-
-        function darkMode(on){
-            if(on){
-                selec.style.background = "#151515";
-                emojiPad.style.opacity = "0.8";
-                DanMuSub.style.opacity = "0.8";
-                DanMuInput.style.background = "#151515";
-                DanMuInput.style.borderColor = "#2b2b2b";
-                DanMuInput.style.color = "#fff";
-                fullScreenText.style.color = "#fff";
-            }else{
-                selec.style.removeProperty("background");
-                emojiPad.style.removeProperty("opacity");
-                DanMuSub.style.removeProperty("opacity");
-                DanMuInput.style.removeProperty("background");
-                DanMuInput.style.removeProperty("border-color");
-                DanMuInput.style.removeProperty("color");
-                fullScreenText.style.removeProperty("color");
-            }
-        }
+        // function darkMode(on){
+        //     if(on){
+        //         selec.style.background = "#151515";
+        //         emojiPad.style.opacity = "0.8";
+        //         DanMuSub.style.opacity = "0.8";
+        //         DanMuInput.style.background = "#151515";
+        //         DanMuInput.style.borderColor = "#2b2b2b";
+        //         DanMuInput.style.color = "#fff";
+        //         fullScreenText.style.color = "#fff";
+        //     }else{
+        //         selec.style.removeProperty("background");
+        //         emojiPad.style.removeProperty("opacity");
+        //         DanMuSub.style.removeProperty("opacity");
+        //         DanMuInput.style.removeProperty("background");
+        //         DanMuInput.style.removeProperty("border-color");
+        //         DanMuInput.style.removeProperty("color");
+        //         fullScreenText.style.removeProperty("color");
+        //     }
+        // }
 
         /**
          * Recording section

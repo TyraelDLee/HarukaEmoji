@@ -37,6 +37,12 @@
   },
   "content_scripts": [{
     "all_frames": true,
+    "css": ["css/colors.min.css"],
+    "js": ["js/darkMode.min.js"],
+    "matches": ["*://*.bilibili.com/*"],
+    "run_at": "document_start"
+  },{
+    "all_frames": true,
     "js": ["js/Lott.min.js"],
     "matches": ["*://live.bilibili.com/p/html/live-lottery/anchor-join*"],
     "run_at": "document_end"

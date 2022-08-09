@@ -370,7 +370,6 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
                 checkMedalDaka();
         }
     }
-
 });
 
 /**

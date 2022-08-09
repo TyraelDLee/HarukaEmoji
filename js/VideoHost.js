@@ -71,7 +71,7 @@
     danmakuTray.classList.add("emoji_sec");
 
     const danmakuTag = document.createElement("div");
-    danmakuTag.setAttribute("style", "width: 300px; position: fixed; background: #fff");
+    danmakuTag.setAttribute("style", "width: 300px; position: fixed;");
     danmakuTag.innerHTML = `<div style='float: left; padding-left: 5px; user-select: none;'><b>弹幕：</b></div><div style='float: right; padding-right: 5px; user-select: none;' id='rua-danmaku-size'>共${danmakuPoolSize} 弹幕</div><div style='float: right; padding-right: 5px;user-select: none;cursor: pointer' id='rua-danmaku-search' title='查询弹幕内容'><svg width='18' height='18' viewBox='0 0 18 18' xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"8\" cy=\"8\" r=\"5\" style=\"stroke:#aaa;stroke-width:2; fill: none\"/><line x1=\"11.5\" y1=\"11.5\" x2=\"15\" y2=\"15\" style=\"stroke:#aaa;stroke-width:2\" /></svg></div><div id='rua-input-container' style='width: ${calculateStringLength(danmakuPoolSize+"")}px'><textarea id='rua-danmaku-search-input' class='rua-danmaku-search-out' style='display: none' placeholder='输入要查询的弹幕内容'></textarea></div>`;
     const danmakuArea = document.createElement("div");
     danmakuArea.style.position = "relative";
@@ -83,7 +83,7 @@
     downloadTray.classList.add("emoji_sec");
 
     const downloadTag = document.createElement("div");
-    downloadTag.setAttribute("style", "width: 290px; position: fixed; background: #fff");
+    downloadTag.setAttribute("style", "width: 290px; position: fixed;");
     downloadTag.innerHTML = `<div style='float: left; user-select: none; padding-left: 5px'><b>视频下载：</b></div><div id="rua-danmaku-download" style="opacity: 0.8; cursor: not-allowed;" title="将弹幕保存为ass文件">加载中</div><div style="float: right; margin: -2px 10px 0 0"><label for="rua-danmaku-intense"></label><select id="rua-danmaku-intense"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10" selected>10</option></select></div><div style="float: right; margin-right: 5px;">弹幕强度</div></div>`;
 
     const downloadVideoTray = document.createElement("div");
@@ -936,7 +936,7 @@
     }
 
     function setProgress(obj, progress){
-        obj.setAttribute("style", "background: linear-gradient(to right, #23ade5 0%, #23ade5 "+progress+"%, #fb7299 "+progress+"%, #fb7299);");
+        obj.setAttribute("style", "background: linear-gradient(to right, var(--bili-blue) 0%, var(--bili-blue) "+progress+"%, var(--bili-pink) "+progress+"%, var(--bili-pink));");
     }
 
     function downloadError(obj, cid, errMsg, decode, hostItem){
