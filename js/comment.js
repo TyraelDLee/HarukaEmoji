@@ -37,7 +37,7 @@
             let mid = await getOwnerID();
             let emojis = await getOwnerEmote(mid);
             let emojisType = await getUserEmote(mid);
-            if(emojis!==null && typeof emojis !== 'undefined'){
+            //if(emojis!==null && typeof emojis !== 'undefined'){
                 if(pageUrl==='t.bilibili.com' || exp.test(window.location.href) || pageID.toUpperCase().includes('CV')) {
                     boundDynamicModule(emojisType, emojis);
                     boundButtons('comment-emoji-lite');
@@ -69,7 +69,7 @@
                         });
                     }).observe(document, {subtree: true, childList: true, attributes: true});
                 }
-            }
+            //}
         }
     }();
 
@@ -279,7 +279,15 @@
         }else{
             div.addEventListener('click',()=>{
                 textArea.focus();
-                textArea.value+=div.getAttribute('content');
+                if(typeof textArea.selectionStart === 'number' && typeof textArea.selectionEnd === 'number'){
+                    if (textArea.selectionStart===textArea.selectionEnd)
+                        textArea.value = textArea.value.substring(0,textArea.selectionStart)+div.getAttribute('content')+textArea.value.substring(textArea.selectionEnd, textArea.value.length);
+                    else{
+                        let p1 = textArea.value.substring(0,textArea.selectionStart), p2 = textArea.value.substring(textArea.selectionEnd, textArea.value.length);
+                        textArea.value=p1+div.getAttribute('content')+p2;
+                    }
+                }else
+                    textArea.value+=div.getAttribute('content');
                 textArea.dispatchEvent(new Event("input"));
             });
         }

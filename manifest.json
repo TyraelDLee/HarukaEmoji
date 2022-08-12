@@ -40,7 +40,7 @@
     "css": ["css/colors.min.css"],
     "js": ["js/darkMode.min.js"],
     "matches": ["*://*.bilibili.com/*"],
-    "run_at": "document_start"
+    "run_at": "document_end"
   },{
     "all_frames": true,
     "js": ["js/Lott.min.js"],

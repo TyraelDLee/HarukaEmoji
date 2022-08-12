@@ -1,9 +1,11 @@
 !function (){
+    let zhuanlan =new RegExp("https://www.bilibili.com/read/cv\\d*");
+
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.setAttribute("theme", "dark")
+        setDark()
     }
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-        event.matches ? document.documentElement.setAttribute("theme", "dark") : document.documentElement.removeAttribute("theme");
+        event.matches ? setDark() : document.documentElement.removeAttribute("theme");
     });
     chrome.storage.onChanged.addListener(function (changes, namespace) {
 
@@ -22,6 +24,13 @@
         }
     });
 
+    function setDark(){
+        document.documentElement.setAttribute("theme", "dark");
+        if (window.location.href.includes('t.bilibili.com/pages/nav/index_new') || window.location.href.includes('www.bilibili.com/page-proxy/game-nav.html') || window.location.href.includes('manga.bilibili.com/eden/bilibili-nav-panel.html')){
+            document.documentElement.style.backgroundColor = "transparent";
+            document.body.style.backgroundColor = "transparent";
+        }
+    }
 
 }();
 

@@ -226,7 +226,7 @@
     --bili-pink: #FB7299;
 }
 
-html[theme="dark"]{
+html[theme="dark"] {
     --Ga0: #0D0D0E !important;
     --Ga0_s: #1E2022 !important;
     --Ga0_t: #1E2022 !important;
@@ -418,27 +418,27 @@ html[theme="dark"]{
     --bili-pink: #23ADE5 !important;
 }
 
-html[theme*="dark"] .bg:after, html[theme*="dark"] .room-bg.p-fixed:after{
+html[theme*="dark"] .bg:after, html[theme*="dark"] .room-bg.p-fixed:after {
     position: absolute;
     content: '';
     width: 100%;
     height: 100%;
-    background: rgba(28,32,34,.851)!important;
+    background: rgba(28, 32, 34, .851) !important;
 }
 
-html[theme*="dark"] .bb-comment .comment-list .list-item .text, html[theme*="dark"] .comment-bilibili-fold .comment-list .list-item .text , html[theme*="dark"] .reply-content{
+html[theme*="dark"] .bb-comment .comment-list .list-item .text, html[theme*="dark"] .comment-bilibili-fold .comment-list .list-item .text, html[theme*="dark"] .reply-content {
     color: #fff;
 }
 
-html[theme*="dark"] .reply-content{
+html[theme*="dark"] .reply-content {
     opacity: 0.8;
 }
 
-html[theme*="dark"] .bili-dyn-item, html[theme*="dark"] .bb-comment{
+html[theme*="dark"] .bili-dyn-item, html[theme*="dark"] .bb-comment {
     background-color: var(--bg1) !important;
 }
 
-html[theme*="dark"] .bg-bright-filter:before{
+html[theme*="dark"] .bg-bright-filter:before {
     position: absolute;
     content: '';
     width: 100%;
@@ -447,169 +447,884 @@ html[theme*="dark"] .bg-bright-filter:before{
     right: 0;
     bottom: 0;
     left: 0;
-    background: rgba(50,50,50,.2)!important;
+    background: rgba(50, 50, 50, .2) !important;
 }
 
-html[theme*="dark"] .mini-header{
+html[theme*="dark"] .mini-header {
     box-shadow: 0 2px 4px #ffffff14;
 }
 
-html[theme*="dark"] .reply-tag-item{
-    background-color: rgb(11, 11, 11);
+html[theme*="dark"] .reply-tag-item {
+    background-color: rgb(11, 11, 11) !important;
 }
 
-html[theme*="dark"] .bili-rich-text span, html[theme*="dark"] .bili-dyn-card-video__title, html[theme*="dark"] .bili-dyn-title__text, html[theme*="dark"] .bili-dyn-card-pgc__title, html[theme*="dark"] .bili-dyn-card-article__title, html[theme*="dark"] .dyn-additional-common__detail__title, html[theme*="dark"] .bili-rich-textarea__inner, html[theme*="dark"] .bili-topic-item__cloud__name[data-v-df315e38], html[theme*="dark"] .topic-panel__nav-title, html[theme*="dark"] .bili-dyn-my-info__stat__item__count, html[theme*="dark"] .bili-dyn-my-info__name, html[theme*="dark"] .bili-dyn-live-users__title, html[theme*="dark"] .bili-dyn-live-users__item__uname, html[theme*="dark"] .bili-dyn-banner__title, html[theme*="dark"]  .bili-popover, html[theme*="dark"]  .user-card .info .user .name, html[theme*="dark"]  .user-card .info .social a,  html[theme*="dark"] .user-card .info p,  html[theme*="dark"] .normal-article-holder, html[theme*="dark"]  .article-container .title-container .title, html[theme*="dark"] .fixed-top-header .inner>p, html[theme*="dark"] .fixed-top-header .inner .up-info, html[theme*="dark"] .recommend-list .recommend-article-list .left-panel .article-title, html[theme*="dark"] .comment-wrapper .comment-m .b-head,  html[theme*="dark"] .article-up-info .up-name[data-v-904253a6],   html[theme*="dark"] .international-header .mini-type .nav-link .nav-link-ul .nav-link-item .link,   html[theme*="dark"] .van-popover .mini-type .nav-link .nav-link-ul .nav-link-item .link, html[theme*="dark"] .mini-type .nav-user-center .user-con .item .name, html[theme*="dark"] .suggest-wrap[data-v-87de088c]{
+html[theme*="dark"] .bili-rich-text span, html[theme*="dark"] .bili-dyn-card-video__title, html[theme*="dark"] .bili-dyn-title__text, html[theme*="dark"] .bili-dyn-card-pgc__title, html[theme*="dark"] .bili-dyn-card-article__title, html[theme*="dark"] .dyn-additional-common__detail__title, html[theme*="dark"] .bili-rich-textarea__inner, html[theme*="dark"] .bili-topic-item__cloud__name, html[theme*="dark"] .topic-panel__nav-title, html[theme*="dark"] .bili-dyn-my-info__stat__item__count, html[theme*="dark"] .bili-dyn-my-info__name, html[theme*="dark"] .bili-dyn-live-users__title, html[theme*="dark"] .bili-dyn-live-users__item__uname, html[theme*="dark"] .bili-dyn-banner__title, html[theme*="dark"] .bili-popover, html[theme*="dark"] .user-card .info .user .name, html[theme*="dark"] .user-card .info .social a, html[theme*="dark"] .user-card .info p, html[theme*="dark"] .normal-article-holder, html[theme*="dark"] .article-container .title-container .title, html[theme*="dark"] .fixed-top-header .inner > p, html[theme*="dark"] .fixed-top-header .inner .up-info, html[theme*="dark"] .recommend-list .recommend-article-list .left-panel .article-title, html[theme*="dark"] .comment-wrapper .comment-m .b-head, html[theme*="dark"] .article-up-info .up-name, html[theme*="dark"] .international-header .mini-type .nav-link .nav-link-ul .nav-link-item .link, html[theme*="dark"] .van-popover .mini-type .nav-link .nav-link-ul .nav-link-item .link, html[theme*="dark"] .mini-type .nav-user-center .user-con .item .name, html[theme*="dark"] .suggest-wrap {
     color: var(--text1);
 }
 
-html[theme*="dark"] .emoji-box .emoji-tabs .tab-link.on, html[theme*="dark"] .emoji-box .emoji-tabs .tab-link:hover, html[theme*="dark"] .bili-dyn-card-video__body, html[theme*="dark"] .bili-dyn-card-live__body, html[theme*="dark"] .bili-dyn-list-tabs, html[theme*="dark"] .bili-dyn-card-pgc__body, html[theme*="dark"] .bili-dyn-card-article, html[theme*="dark"] .bili-dyn-list-loading, html[theme*="dark"] .bili-dyn-up-list, html[theme*="dark"] .bili-dyn-publishing, html[theme*="dark"] .bili-rich-textarea__inner, html[theme*="dark"] .bili-dyn-banner, html[theme*="dark"] .topic-panel, html[theme*="dark"] .bili-dyn-my-info, html[theme*="dark"] .bili-dyn-live-users, html[theme*="dark"] .bili-dyn-my-info--skeleton, html[theme*="dark"] .bili-comment-option__item:hover, html[theme*="dark"] .bili-emoji__footer, html[theme*="dark"] .bb-comment .comment-list .list-item .info .btn-hover:hover,  html[theme*="dark"] .comment-bilibili-fold .comment-list .list-item .info .btn-hover:hover,  html[theme*="dark"] .bb-comment .comment-send-lite.comment-send-lite, html[theme*="dark"]  .article-container, html[theme*="dark"] .fixed-top-header, html[theme*="dark"] .article-up-info[data-v-904253a6], html[theme*="dark"] .recommend-list, html[theme*="dark"] .comment-wrapper .comment-m, html[theme*="dark"] .van-popover, html[theme*="dark"] .right-side-bar .side-toolbar[data-v-79113dbb], html[theme*="dark"] .right-side-bar.on .to-top[data-v-79113dbb], html[theme*="dark"] .suggest-wrap[data-v-87de088c]{
+html[theme*="dark"] .emoji-box .emoji-tabs .tab-link.on, html[theme*="dark"] .emoji-box .emoji-tabs .tab-link:hover, html[theme*="dark"] .bili-dyn-card-video__body, html[theme*="dark"] .bili-dyn-card-live__body, html[theme*="dark"] .bili-dyn-list-tabs, html[theme*="dark"] .bili-dyn-card-pgc__body, html[theme*="dark"] .bili-dyn-card-article, html[theme*="dark"] .bili-dyn-list-loading, html[theme*="dark"] .bili-dyn-up-list, html[theme*="dark"] .bili-dyn-publishing, html[theme*="dark"] .bili-rich-textarea__inner, html[theme*="dark"] .bili-dyn-banner, html[theme*="dark"] .topic-panel, html[theme*="dark"] .bili-dyn-my-info, html[theme*="dark"] .bili-dyn-live-users, html[theme*="dark"] .bili-dyn-my-info--skeleton, html[theme*="dark"] .bili-comment-option__item:hover, html[theme*="dark"] .bili-emoji__footer, html[theme*="dark"] .bb-comment .comment-list .list-item .info .btn-hover:hover, html[theme*="dark"] .comment-bilibili-fold .comment-list .list-item .info .btn-hover:hover, html[theme*="dark"] .bb-comment .comment-send-lite.comment-send-lite, html[theme*="dark"] .article-container, html[theme*="dark"] .fixed-top-header, html[theme*="dark"] .article-up-info, html[theme*="dark"] .recommend-list, html[theme*="dark"] .comment-wrapper .comment-m, html[theme*="dark"] .right-side-bar .side-toolbar, html[theme*="dark"] .right-side-bar.on .to-top, html[theme*="dark"] .suggest-wrap, html[theme*="dark"] .van-popper-avatar .links .sub-links, html[theme*="dark"] .channel-menu-mini {
     background-color: var(--bg1);
 }
 
-html[theme*="dark"] body,html[theme*="dark"]  #app, html[theme*="dark"] .van-popover.van-followed .follow_dropdown li:hover, html[theme*="dark"] .international-header .mini-type, html[theme*="dark"] .van-popover .mini-type,  html[theme*="dark"] .suggest-wrap .trending-item.active[data-v-87de088c],  html[theme*="dark"] .suggest-wrap .trending-item[data-v-87de088c]:hover,  html[theme*="dark"] .suggest-wrap .trending-item[data-v-87de088c]:focus{
+html[theme*="dark"] .van-popover{
     background-color: var(--bg1_float);
 }
 
-html[theme*="dark"] .bili-topic-item__cloud[data-v-df315e38]:hover, html[theme*="dark"] .bili-topic-search__popover.active .bili-topic-search__input, html[theme*="dark"] .bili-at-popup,  html[theme*="dark"] .bili-emoji__pkg.active,  html[theme*="dark"] .bb-comment .operation .opera-list, html[theme*="dark"]  .comment-bilibili-fold .operation .opera-list, html[theme*="dark"] .user-card, html[theme*="dark"] .user-card .btn-box .message,  html[theme*="dark"] .suggest-wrap .histories .history-item[data-v-87de088c]{
+html[theme*="dark"] .van-popover.van-followed .follow_dropdown li:hover{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .international-header .mini-type, html[theme*="dark"] .van-popover .mini-type, html[theme*="dark"] .suggest-wrap .trending-item.active, html[theme*="dark"] .suggest-wrap .trending-item:hover, html[theme*="dark"] .suggest-wrap .trending-item:focus, html[theme*="dark"] .van-popper-avatar .links .link-item:hover, html[theme*="dark"] .van-popper-avatar .logout span:hover, html[theme*="dark"] .channel-menu-mini .box a:hover {
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .bili-topic-item__cloud:hover, html[theme*="dark"] .bili-topic-search__popover.active .bili-topic-search__input, html[theme*="dark"] .bili-at-popup, html[theme*="dark"] .bili-emoji__pkg.active, html[theme*="dark"] .bb-comment .operation .opera-list, html[theme*="dark"] .comment-bilibili-fold .operation .opera-list, html[theme*="dark"] .user-card, html[theme*="dark"] .user-card .btn-box .message, html[theme*="dark"] .suggest-wrap .histories .history-item {
     background-color: var(--bg2);
 }
 
-html[theme*="dark"] .emoji-box .emoji-tabs, html[theme*="dark"] .bili-emoji__pkg:hover{
+html[theme*="dark"] .emoji-box .emoji-tabs, html[theme*="dark"] .bili-emoji__pkg:hover {
     background-color: var(--bg3);
 }
 
-html[theme*="dark"] .emoji-box, html[theme*="dark"] .followed[data-v-d9ea6c32]{
+html[theme*="dark"] .emoji-box, html[theme*="dark"] .followed {
     background-color: var(--bg1);
     border: 1px solid var(--Ga2);
 }
 
-html[theme*="dark"] .bb-comment .comment-list .list-item .con, html[theme*="dark"] .comment-bilibili-fold .comment-list .list-item .con, html[theme*="dark"] .bb-comment .bottom-page.center, html[theme*="dark"] .bili-dyn-forward__item, .bili-dyn-forward__more,  html[theme*="dark"] .bili-dyn-forward__item, .bili-dyn-forward__more, html[theme*="dark"] .bili-dyn-item__extra.border-top{
+html[theme*="dark"] .bb-comment .comment-list .list-item .con, html[theme*="dark"] .comment-bilibili-fold .comment-list .list-item .con, html[theme*="dark"] .bb-comment .bottom-page.center, html[theme*="dark"] .bili-dyn-forward__item, .bili-dyn-forward__more, html[theme*="dark"] .bili-dyn-forward__item, .bili-dyn-forward__more, html[theme*="dark"] .bili-dyn-item__extra.border-top {
     border-top: 1px solid var(--Ga2);
 }
 
-html[theme*="dark"] .bb-comment .comment-list .list-item .user .text-con, html[theme*="dark"] .comment-bilibili-fold .comment-list .list-item .user .text-con, html[theme*="dark"] .bili-user-profile-view__info__uname, html[theme*="dark"] .bili-at-popup__user-name{
+html[theme*="dark"] .bb-comment .comment-list .list-item .user .text-con, html[theme*="dark"] .comment-bilibili-fold .comment-list .list-item .user .text-con, html[theme*="dark"] .bili-user-profile-view__info__uname, html[theme*="dark"] .bili-at-popup__user-name, html[theme*="dark"] .channel-menu-mini .box a:hover {
     color: var(--text1);
 }
 
-html[theme*="dark"] .bb-comment .comment-header, html[theme*="dark"] .comment-bilibili-fold .comment-header, html[theme*="dark"] .bili-popover-modal__footer:after,html[theme*="dark"]  .article-container__content{
+html[theme*="dark"] .bb-comment .comment-header, html[theme*="dark"] .comment-bilibili-fold .comment-header, html[theme*="dark"] .bili-popover-modal__footer:after, html[theme*="dark"] .article-container__content, html[theme*="dark"] .van-popper-avatar .links, html[theme*="dark"] .van-popper-avatar .coins, html[theme*="dark"] .van-popper-avatar .counts {
     border-bottom: 1px solid var(--Ga2);
 }
 
-html[theme*="dark"] .bb-comment .comment-header .tabs-order li, html[theme*="dark"] .comment-bilibili-fold .comment-header .tabs-order li, html[theme*="dark"] .relevant-topic__title, html[theme*="dark"] .bili-dyn-live-users__title span, html[theme*="dark"] .bili-dyn-live-users__more, html[theme*="dark"] .emoji-box .emoji-text, html[theme*="dark"] .bili-at-popup__group-name, html[theme*="dark"] .bili-create-poll__opt__title, html[theme*="dark"] .bili-comment-option__item, html[theme*="dark"] .bili-emoji, html[theme*="dark"] .recommend-list .recommend-header .title{
+html[theme*="dark"] .bb-comment .comment-header .tabs-order li, html[theme*="dark"] .comment-bilibili-fold .comment-header .tabs-order li, html[theme*="dark"] .relevant-topic__title, html[theme*="dark"] .bili-dyn-live-users__title span, html[theme*="dark"] .bili-dyn-live-users__more, html[theme*="dark"] .emoji-box .emoji-text, html[theme*="dark"] .bili-at-popup__group-name, html[theme*="dark"] .bili-create-poll__opt__title, html[theme*="dark"] .bili-comment-option__item, html[theme*="dark"] .bili-emoji, html[theme*="dark"] .recommend-list .recommend-header .title, html[theme*="dark"] .van-popper-avatar .level-info .grade, html[theme*="dark"] .international-header a, html[theme*="dark"] .van-popover a, html[theme*="dark"] .van-popper-avatar .count-item .item-value, html[theme*="dark"] .van-popper-avatar .links .link-title, html[theme*="dark"] .van-popper-avatar .logout, html[theme*="dark"] .van-popper-avatar .logout span:hover {
     color: var(--text2);
 }
 
-html[theme*="dark"] .emoji-box, html[theme*="dark"] .bili-at-popup{
+html[theme*="dark"] .emoji-box, html[theme*="dark"] .bili-at-popup {
     box-shadow: 0 11px 12px 0 rgb(50 50 50 / 30%);
 }
 
-html[theme*="dark"] .bb-comment .comment-send .textarea-container .ipt-txt, html[theme*="dark"] .comment-bilibili-fold .comment-send .textarea-container .ipt-txt, html[theme*="dark"] .bb-comment .comment-send-lite .textarea-container .ipt-txt, html[theme*="dark"] .comment-bilibili-fold .comment-send-lite .textarea-container .ipt-txt{
+html[theme*="dark"] .bb-comment .comment-send .textarea-container .ipt-txt, html[theme*="dark"] .comment-bilibili-fold .comment-send .textarea-container .ipt-txt, html[theme*="dark"] .bb-comment .comment-send-lite .textarea-container .ipt-txt, html[theme*="dark"] .comment-bilibili-fold .comment-send-lite .textarea-container .ipt-txt {
     background-color: var(--bg3);
     color: var(--text1);
     border: 1px solid var(--Ga1);
 }
 
-html[theme*="dark"] .dyn-reserve__title, html[theme*="dark"] .bili-dyn-card-live__title{
+html[theme*="dark"] .dyn-reserve__title, html[theme*="dark"] .bili-dyn-card-live__title {
     color: var(--text1);
 }
 
-html[theme*="dark"] .bili-dyn-content__orig.reference, html[theme*="dark"] .dyn-reserve__card, html[theme*="dark"] .bili-popover, .bili-popover__arrow, html[theme*="dark"] .dyn-additional-common__wrap, html[theme*="dark"] .bili-at-popup__user--selected, html[theme*="dark"] .bili-dyn-publishing-timing-setting{
+html[theme*="dark"] .bili-dyn-content__orig.reference, html[theme*="dark"] .dyn-reserve__card, html[theme*="dark"] .bili-popover, .bili-popover__arrow, html[theme*="dark"] .dyn-additional-common__wrap, html[theme*="dark"] .bili-at-popup__user--selected, html[theme*="dark"] .bili-dyn-publishing-timing-setting {
     background-color: var(--bg3);
 }
 
-html[theme*="dark"] .bili-popover, html[theme*="dark"] .bili-popover__arrow, html[theme*="dark"] .user-card .btn-box a, html[theme*="dark"] .van-popover.van-followed{
+html[theme*="dark"] .bili-popover, html[theme*="dark"] .bili-popover__arrow, html[theme*="dark"] .user-card .btn-box a, html[theme*="dark"] .van-popover.van-followed {
     border-color: var(--Ga2);
 }
 
-html[theme*="dark"] .bili-popover__arrow{
+html[theme*="dark"] .bili-popover__arrow {
     border-left: 1px solid var(--Ga2);
     border-top: 1px solid var(--Ga2);
     background-color: var(--bg2);
 }
 
-html[theme*="dark"] .bili-dyn-more__menu{
-    color: var(--text3)!important;
+html[theme*="dark"] .bili-dyn-more__menu {
+    color: var(--text3) !important;
 }
 
-html[theme*="dark"] .bili-at-popup__hint, html[theme*="dark"]  .bb-comment .operation .opera-list, html[theme*="dark"]  .comment-bilibili-fold .operation .opera-list{
+html[theme*="dark"] .bili-at-popup__hint, html[theme*="dark"] .bb-comment .operation .opera-list, html[theme*="dark"] .comment-bilibili-fold .operation .opera-list {
     color: var(--text3);
 }
 
-html[theme*="dark"] .bili-dyn-card-video, html[theme*="dark"] .bili-dyn-card-live, html[theme*="dark"] .bili-dyn-card-pgc, html[theme*="dark"] .bili-dyn-card-article, html[theme*="dark"] .bili-at-popup, html[theme*="dark"] .bili-input:before,  html[theme*="dark"] .bili-dyn-forward-publishing__editor,html[theme*="dark"]  .bili-dyn-forward-publishing__emoji, html[theme*="dark"] .bb-comment .comment-send .comment-emoji, html[theme*="dark"] .comment-bilibili-fold .comment-send .comment-emoji, html[theme*="dark"] .bb-comment .comment-send-lite .comment-emoji, html[theme*="dark"] .comment-bilibili-fold .comment-send-lite .comment-emoji,  html[theme*="dark"] .suggest-wrap[data-v-87de088c]{
+html[theme*="dark"] .bili-dyn-card-video, html[theme*="dark"] .bili-dyn-card-live, html[theme*="dark"] .bili-dyn-card-pgc, html[theme*="dark"] .bili-dyn-card-article, html[theme*="dark"] .bili-at-popup, html[theme*="dark"] .bili-input:before, html[theme*="dark"] .bili-dyn-forward-publishing__editor, html[theme*="dark"] .bili-dyn-forward-publishing__emoji, html[theme*="dark"] .bb-comment .comment-send .comment-emoji, html[theme*="dark"] .comment-bilibili-fold .comment-send .comment-emoji, html[theme*="dark"] .bb-comment .comment-send-lite .comment-emoji, html[theme*="dark"] .comment-bilibili-fold .comment-send-lite .comment-emoji, html[theme*="dark"] .suggest-wrap {
     border: 1px solid var(--Ga2);
 }
 
-html[theme*="dark"] .bili-dyn-up-list__item__face{
+html[theme*="dark"] .bili-dyn-up-list__item__face {
     border: 2px solid var(--bg1);
     box-shadow: 0 0 0 1px var(--bg1);
 }
 
-html[theme*="dark"] .bili-user-profile{
+html[theme*="dark"] .bili-user-profile {
     background-color: var(--bg2);
 }
 
-html[theme*="dark"] .bili-user-profile-view__info__stat span, html[theme*="dark"] .bili-input__inner{
+html[theme*="dark"] .bili-user-profile-view__info__stat span, html[theme*="dark"] .bili-input__inner {
     color: var(--text3);
 }
 
-html[theme*="dark"] .bili-user-profile-view__info__button.chat{
+html[theme*="dark"] .bili-user-profile-view__info__button.chat {
     background-color: #000;
     border-color: var(--Ga5);
 }
 
-html[theme*="dark"] .bili-user-profile-view__info__button.follow.checked, html[theme*="dark"] .bili-topic-search__popover{
+html[theme*="dark"] .bili-user-profile-view__info__button.follow.checked, html[theme*="dark"] .bili-topic-search__popover {
     background-color: var(--Ga2);
     border-color: var(--Ga2);
 }
 
-html[theme*="dark"] .bili-user-profile__loading, html[theme*="dark"] .bili-input__inner{
+html[theme*="dark"] .bili-user-profile__loading, html[theme*="dark"] .bili-input__inner {
     background-color: var(--bg2);
 }
 
-html[theme*="dark"] .bili-dyn-forward-publishing__emoji, html[theme*="dark"] .bb-comment .comment-send .comment-emoji, html[theme*="dark"] .comment-bilibili-fold .comment-send .comment-emoji, html[theme*="dark"] .bb-comment .comment-send-lite .comment-emoji, html[theme*="dark"] .comment-bilibili-fold .comment-send-lite .comment-emoji{
+html[theme*="dark"] .bili-dyn-forward-publishing__emoji, html[theme*="dark"] .bb-comment .comment-send .comment-emoji, html[theme*="dark"] .comment-bilibili-fold .comment-send .comment-emoji, html[theme*="dark"] .bb-comment .comment-send-lite .comment-emoji, html[theme*="dark"] .comment-bilibili-fold .comment-send-lite .comment-emoji {
     box-shadow: 0 1px 10px 0 rgb(50 50 50 / 25%);
 }
 
-html[theme*="dark"] .bb-comment .operation .opera-list li:hover, html[theme*="dark"] .comment-bilibili-fold .operation .opera-list li:hover{
+html[theme*="dark"] .bb-comment .operation .opera-list li:hover, html[theme*="dark"] .comment-bilibili-fold .operation .opera-list li:hover {
     background-color: var(--Ga2);
 }
 
-html[theme*="dark"] .article-breadcrumb .breadcrumb-name,html[theme*="dark"]  .article-breadcrumb .slash{
-    color: rgba(255,255,255,.45);
+html[theme*="dark"] .article-breadcrumb .breadcrumb-name, html[theme*="dark"] .article-breadcrumb .slash {
+    color: rgba(255, 255, 255, .45);
 }
 
-html[theme*="dark"] .international-header .mini-type .nav-search #nav_searchform, html[theme*="dark"] .van-popover .mini-type .nav-search #nav_searchform{
+html[theme*="dark"] .international-header .mini-type .nav-search #nav_searchform, html[theme*="dark"] .van-popover .mini-type .nav-search #nav_searchform {
     background: #000;
     border: 1px solid var(--Ga2);
 }
 
-html[theme*="dark"] .bili-header-m .nav-search .nav-search-btn, html[theme*="dark"] .international-header .nav-search .nav-search-btn{
-    background: #000;
+html[theme*="dark"] .bili-header-m .nav-search .nav-search-btn, html[theme*="dark"] .international-header .nav-search .nav-search-btn {
+    background: var(--Ga2);
 }
 
-html[theme*="dark"] .n .n-inner{
+html[theme*="dark"] .n .n-inner {
     background: var(--bg1);
     box-shadow: 0 0 0 1px var(--bg1);
 }
 
-html[theme*="dark"] .n .n-text{
+html[theme*="dark"] .n .n-text, html[theme*="dark"] .vip-m .bubble-traditional .recommand .title, html[theme*="dark"] .vip-m .bubble-traditional .recommand .bubble-col .item .recommand-link {
     color: var(--text2);
 }
 
-html[theme*="dark"] .n .n-data .n-data-v, html[theme*="dark"] .international-header .nav-search .nav-search-keyword{
+html[theme*="dark"] .n .n-data .n-data-v, html[theme*="dark"] .international-header .nav-search .nav-search-keyword {
     color: var(--text1);
 }
 
-html[theme*="dark"] .g-search input{
+html[theme*="dark"] .g-search input {
     background-color: var(--bg2);
     border: 1px solid var(--Ga2);
     color: var(--text1);
 }
 
-html[theme*="dark"].suggest-wrap .suggest-item.active[data-v-87de088c],html[theme*="dark"] .suggest-wrap .suggest-item[data-v-87de088c]:hover,html[theme*="dark"] .suggest-wrap .suggest-item[data-v-87de088c]:focus{
+html[theme*="dark"].suggest-wrap .suggest-item.active, html[theme*="dark"] .suggest-wrap .suggest-item:hover, html[theme*="dark"] .suggest-wrap .suggest-item:focus {
     background-color: var(--bg1_float);
 }
 
-html[theme*="dark"]{
+html[theme*="dark"] {
     background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .channel-menu-mini .r-box {
+    border-left: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .van-popper[x-placement^=bottom] .popper__arrow {
+    border-bottom-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .van-popper[x-placement^=bottom] .popper__arrow::after {
+    border-bottom-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .nav-user-center .nav-item-message .i-frame::before {
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .im-list-box {
+    background-color: var(--bg1_float);
+    color: var(--text2) !important;
+}
+
+html[theme*="dark"] .im-list:hover {
+    background-color: var(--bg1) !important;
+    color: var(--text2) !important;
+}
+
+html[theme*="dark"] .out-container, html[theme*="dark"] .nav-user-center .nav-item-dynamic .i-frame::before {
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .name-line, html[theme*="dark"] .van-popper-favorite .tab-item--normal {
+    color: var(--text1);
+}
+
+html[theme*="dark"] .content, html[theme*="dark"] .header-video-card .video-info .line-2 {
+    color: var(--text2);
+}
+
+html[theme*="dark"] .tab-bar, html[theme*="dark"] .van-popper-history .tab-header {
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .all a:hover, html[theme*="dark"] .act-list .list-item:hover, html[theme*="dark"] .popularity-list .item-list .list-item:hover {
+    background-color: var(--bg1_float);
+}
+html[theme*="dark"] .list-item:hover{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .van-popper-favorite .tabs-panel {
+    border-right: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .header-video-card:hover, html[theme*="dark"] .van-popper-favorite .tab-item--normal:hover, html[theme*="dark"] .van-popper-favorite .play-all:hover{
+    background-color: var(--bg1);
+}
+html[theme*="dark"] .van-popper-favorite .play-all {
+    background-color: var(--bg1_float);
+    border-top: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .van-popper-favorite .play-all.view {
+    color: var(--text2);
+}
+
+html[theme*="dark"] .box {
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .all a {
+    color: var(--text2);
+}
+
+html[theme*="dark"] .van-popover.van-popper.popover-game, html[theme*="dark"] .van-popover.van-popper.popover-manga {
+    background-color: transparent;
+}
+
+html[theme*="dark"] .brief span, html[theme*="dark"] .room-list .list-item .uname {
+    color: var(--text1);
+}
+
+html[theme*="dark"] .live-box {
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .app-layout {
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .recommendation-list .list-item .item-title {
+    color: var(--text1);
+}
+
+html[theme*="dark"] .popularity-list .list-title {
+    color: var(--text1);
+}
+
+html[theme*="dark"] .popularity-list .item-list .list-item {
+    color: var(--text1);
+}
+
+html[theme*="dark"] .recommendation-list .list-item:before {
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .be-dropdown-menu {
+    background-color: var(--bg1);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .be-dropdown-item {
+    color: var(--text1);
+}
+
+html[theme*="dark"] .be-dropdown-item:hover {
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] #page-index .col-2 .section, html[theme*="dark"] #page-index .col-1 {
+    background: var(--bg1);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] #page-index .col-2 .section .user-auth.no-auth .no-auth-title .goto-auth {
+    color: var(--text1);
+}
+
+html[theme*="dark"] .section:last-child {
+    border-bottom: none;
+}
+
+html[theme*="dark"] #page-index #i-ann-content textarea, html[theme*="dark"] .list-create {
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .section-title, html[theme*="dark"] .user-info .user-info-title .info-title {
+    color: var(--text1);
+}
+
+html[theme*="dark"] #page-index .col-2 .section-title, html[theme*="dark"] .i-pin-v .be-tab {
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .be-tab-item {
+    color: var(--text1);
+}
+
+html[theme*="dark"] .be-tab-item.is-active {
+    color: #00a1d6;
+}
+
+html[theme*="dark"] .section {
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .section .count {
+    background-color: var(--bg2);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .section .count:before {
+    filter: brightness(0.052);
+}
+
+html[theme*="dark"] .i-m-r2, html[theme*="dark"] .download-client-entry {
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .user-info .user-info-title {
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .i-m-upload {
+    border-right: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .van-popover.van-popper .download-wrapper .download-top-center {
+    background: var(--Ga2);
+}
+
+html[theme*="dark"] .van-popover.van-popper .download-wrapper .download-top-title .main {
+    color: var(--text1);
+}
+
+html[theme*="dark"] .download-wrapper .download-top-title .main svg path {
+    fill: var(--text1);
+}
+
+html[theme*="dark"] .col-full {
+    background-color: var(--bg1);
+    box-shadow: 0 0 0 1px var(--Ga2);
+}
+
+html[theme*="dark"] #page-setting .setting-privacy-item .setting-privacy-name {
+    color: var(--text2);
+}
+
+html[theme*="dark"] #page-setting .setting-index-container {
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] #page-setting .setting-index-module {
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] #page-setting .setting-index-module, html[theme*="dark"] .sortable-chosen {
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] #page-setting .setting-index-module-icon {
+    filter: brightness(0.5);
+}
+
+html[theme*="dark"] #page-setting .setting-index-module.sortable-chosen + .setting-index-module {
+    border-top: 1px solid var(--Ga2) !important;
+}
+
+html[theme*="dark"] #setting-index-modules.is-dragging .setting-index-module:hover {
+    background: var(--bg1) !important;
+    color: var(--text2) !important;
+}
+
+html[theme*="dark"] .col-full #setting-tags {
+    border: none;
+}
+
+html[theme*="dark"] .space_input {
+    border: 1px solid var(--Ga2);
+    background-color: var(--bg1);
+    color: var(--text2);
+}
+
+html[theme*="dark"] #page-setting #setting-new-tag-btn {
+    background: linear-gradient(var(--bg2), var(--bg1));
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .split-line::before {
+    border-top: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .split-line .history-tip {
+    background: var(--bg1_float);
+}
+
+html[theme*="dark"] .link-navbar {
+    box-shadow: 0 0 5px 1px rgb(50 50 50 / 50%);
+}
+
+html[theme*="dark"] #page-dynamic .col-2 .section {
+    background: var(--bg1);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .user-info .info-content .info-value {
+    color: var(--text2);
+}
+
+html[theme*="dark"] .elec .elec-status, html[theme*="dark"] .elec .elec-trigger:hover + .elec-map .elec-status {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJwAAABKCAYAAABO3z1/AAAACXBIWXMAAAsTAAALEwEAmpwYAAA4JWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMzggNzkuMTU5ODI0LCAyMDE2LzA5LzE0LTAxOjA5OjAxICAgICAgICAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIKICAgICAgICAgICAgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIgogICAgICAgICAgICB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIKICAgICAgICAgICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIj4KICAgICAgICAgPHhtcDpDcmVhdG9yVG9vbD5BZG9iZSBQaG90b3Nob3AgQ0MgMjAxNyAoV2luZG93cyk8L3htcDpDcmVhdG9yVG9vbD4KICAgICAgICAgPHhtcDpDcmVhdGVEYXRlPjIwMjItMDgtMTFUMjI6MTg6MzArMTA6MDA8L3htcDpDcmVhdGVEYXRlPgogICAgICAgICA8eG1wOk1vZGlmeURhdGU+MjAyMi0wOC0xMVQyMjoyMTo0OSsxMDowMDwveG1wOk1vZGlmeURhdGU+CiAgICAgICAgIDx4bXA6TWV0YWRhdGFEYXRlPjIwMjItMDgtMTFUMjI6MjE6NDkrMTA6MDA8L3htcDpNZXRhZGF0YURhdGU+CiAgICAgICAgIDxkYzpmb3JtYXQ+aW1hZ2UvcG5nPC9kYzpmb3JtYXQ+CiAgICAgICAgIDxwaG90b3Nob3A6Q29sb3JNb2RlPjM8L3Bob3Rvc2hvcDpDb2xvck1vZGU+CiAgICAgICAgIDx4bXBNTTpJbnN0YW5jZUlEPnhtcC5paWQ6NzI2NGNlZjgtYjhhNC1hMTQ5LThlZmMtMzU5YjJjYWZjYjA0PC94bXBNTTpJbnN0YW5jZUlEPgogICAgICAgICA8eG1wTU06RG9jdW1lbnRJRD54bXAuZGlkOjcyNjRjZWY4LWI4YTQtYTE0OS04ZWZjLTM1OWIyY2FmY2IwNDwveG1wTU06RG9jdW1lbnRJRD4KICAgICAgICAgPHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD54bXAuZGlkOjcyNjRjZWY4LWI4YTQtYTE0OS04ZWZjLTM1OWIyY2FmY2IwNDwveG1wTU06T3JpZ2luYWxEb2N1bWVudElEPgogICAgICAgICA8eG1wTU06SGlzdG9yeT4KICAgICAgICAgICAgPHJkZjpTZXE+CiAgICAgICAgICAgICAgIDxyZGY6bGkgcmRmOnBhcnNlVHlwZT0iUmVzb3VyY2UiPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6YWN0aW9uPmNyZWF0ZWQ8L3N0RXZ0OmFjdGlvbj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0Omluc3RhbmNlSUQ+eG1wLmlpZDo3MjY0Y2VmOC1iOGE0LWExNDktOGVmYy0zNTliMmNhZmNiMDQ8L3N0RXZ0Omluc3RhbmNlSUQ+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDp3aGVuPjIwMjItMDgtMTFUMjI6MTg6MzArMTA6MDA8L3N0RXZ0OndoZW4+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDpzb2Z0d2FyZUFnZW50PkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE3IChXaW5kb3dzKTwvc3RFdnQ6c29mdHdhcmVBZ2VudD4KICAgICAgICAgICAgICAgPC9yZGY6bGk+CiAgICAgICAgICAgIDwvcmRmOlNlcT4KICAgICAgICAgPC94bXBNTTpIaXN0b3J5PgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICAgICA8dGlmZjpYUmVzb2x1dGlvbj43MjAwMDAvMTAwMDA8L3RpZmY6WFJlc29sdXRpb24+CiAgICAgICAgIDx0aWZmOllSZXNvbHV0aW9uPjcyMDAwMC8xMDAwMDwvdGlmZjpZUmVzb2x1dGlvbj4KICAgICAgICAgPHRpZmY6UmVzb2x1dGlvblVuaXQ+MjwvdGlmZjpSZXNvbHV0aW9uVW5pdD4KICAgICAgICAgPGV4aWY6Q29sb3JTcGFjZT42NTUzNTwvZXhpZjpDb2xvclNwYWNlPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24+MTU2PC9leGlmOlBpeGVsWERpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6UGl4ZWxZRGltZW5zaW9uPjc0PC9leGlmOlBpeGVsWURpbWVuc2lvbj4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24+CiAgIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgCjw/eHBhY2tldCBlbmQ9InciPz5Y/op7AAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAEySURBVHja7N2xDYQwEEXBLcOi/z6hAiQQks1+T/CSC2EC1j5wjXGc0qzKRRBwAk4CTsCpRXUTcJqGbQq6CrtYet7dtQUONuBgAy4WHBzALcHmgd/QAJtlkQxwsFn4hU154N5i8/DfrIJNO4KDDTjYlAfuCzYP4U2Hhj+uesMGHGzqDw424GCTvVQ3CzjYZC9VwMGm/63DFWzAwaZ4cG4KcLDJm/cCTgJOwMnQYGgQcAIOOAEnQ4MEnIATcJKhQcBBJ3/AFHDQyUs0Ag464KCTTz3I0OBjNmozpUIHHHQbtPQkGuhg2+asLejWXfOnv8dNqT6b7/hK6IDLX4eDDjjoQLSXqubLIra1ZC8VOuCg0xZvbXmQd3wldMoGBx1w0CkfnAwNEnACTgJOk7sAAAD//wMAok2UFSSx4nEAAAAASUVORK5CYII=);
+}
+
+html[theme*="dark"] #page-index .col-2 .section .user-auth .auth-description {
+    color: var(--text2);
+}
+
+html[theme*="dark"] #page-index .channel.guest .channel-item .channel-title .channel-name {
+    color: var(--text1);
+}
+
+html[theme*="dark"] .i-live .i-live-unfo-btn, html[theme*="dark"] .i-live .i-live-fo-count {
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .large-item .title, html[theme*="dark"] .sub-tabs span, html[theme*="dark"] .pgc-space-follow-item .pgc-item-info .pgc-item-title, html[theme*="dark"] .pgc-space-follow-item .pgc-item-info .pgc-item-desc {
+    color: var(--text1);
+}
+
+html[theme*="dark"] #page-video #submit-video-type-filter, html[theme*="dark"] .album-list__tabs {
+    background: var(--bg1_float);
+}
+
+html[theme*="dark"] a {
+    color: var(--text1);
+}
+
+html[theme*="dark"] .be-pager-item, html[theme*="dark"] .be-pager-next, html[theme*="dark"] .be-pager-prev {
+    background: var(--bg1);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .be-pager-item-active {
+    background-color: #00a1d6;
+    border-color: #00a1d6;
+}
+
+html[theme*="dark"] .contribution-sidenav ~ .main-content {
+    border-left: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .contribution-sidenav .contribution-item:hover {
+    background: var(--bg1_float);
+}
+
+html[theme*="dark"] .contribution-sidenav .contribution-item.cur {
+    background-color: #00a1d6;
+}
+
+html[theme*="dark"] #page-video .page-head__left .video-title, html[theme*="dark"] .breadcrumb .item.cur, html[theme*="dark"] #page-article .row .breadcrumb .item, html[theme*="dark"] .album-list__title, html[theme*="dark"] .album-list__tab-name {
+    color: var(--text1);
+}
+
+html[theme*="dark"] .favInfo-box .favInfo-details .fav-name, html[theme*="dark"] #page-fav .fav-main .filter-item {
+    color: var(--text1);
+}
+
+html[theme*="dark"] #page-fav .fav-main .small-item {
+    border: 1px solid var(--bg1);
+}
+
+html[theme*="dark"] #page-fav .fav-main .favList-info, html[theme*="dark"] #page-fav .fav-sidenav .nav-container {
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] #page-fav .fav-main {
+    border-left: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] #page-fav .fav-sidenav .nav-container:last-of-type {
+    border-bottom: none;
+}
+
+html[theme*="dark"] #page-fav .fav-main .filter-item.search {
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] #page-fav .fav-main .search-types {
+    border-right: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] #page-fav .fav-main .search-input input {
+    color: var(--text2);
+}
+
+html[theme*="dark"] #page-fav .fav-main .filter-item .filter-type .be-dropdown-item span {
+    color: var(--text1);
+}
+
+html[theme*="dark"] #page-fav .fav-main .filter-item .filter-type .be-dropdown-item:hover {
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] #page-fav .fav-main .filter-item .filter-type .be-dropdown-item:hover i, html[theme*="dark"] #page-fav .fav-main .filter-item .filter-type .be-dropdown-item:hover span {
+    color: #00a1d6;
+}
+
+html[theme*="dark"] #page-fav .fav-sidenav .fav-item:hover {
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .bb-comment .reply-notice .notice-item, html[theme*="dark"] .comment-bilibili-fold .reply-notice .notice-item {
+    filter: brightness(0.7);
+}
+
+html[theme*="dark"] body {
+    color: var(--text1);
+}
+
+html[theme*="dark"] .reply-item .root-reply-container .content-warp .user-info .user-name {
+    color: var(--text2);
+}
+
+html[theme*="dark"] .contribution-sidenav {
+    border-right: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] #page-myalbum .album-content {
+    border-left: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .series-item .split-line {
+    background-color: var(--Ga2);
+}
+
+html[theme*="dark"] .bangumi-pagelistbox .p {
+    color: var(--text1);
+    background-color: var(--bg1);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .bangumi-pagelistbox .p:hover, html[theme*="dark"] .bangumi-pagelistbox .p.active {
+    background-color: #00a1d6;
+    color: #fff;
+    border-color: #00a1d6;
+}
+
+html[theme*="dark"] .bangumi-pagelistbox .custom-right .custom-right-inner.custompage {
+    border: 1px solid var(--Ga2);
+    background-color: var(--bg1);
+    color: var(--text1);
+}
+
+html[theme*="dark"] .ep-section-module , html[theme*="dark"] .main-container .ep-list-wrapper{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .ep-list-wrapper .ep-item a, html[theme*="dark"] .section-ep-wrapper .ep-item a {
+    color: var(--text1);
+}
+
+html[theme*="dark"] .ep-list-wrapper .ep-item:hover, html[theme*="dark"] .section-ep-wrapper .ep-item:hover{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] .main-container .media-info .media-right .media-tool-bar .btn-rating{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .main-container .media-info .media-right .media-title, html[theme*="dark"] .main-container .media-info .media-right .media-desc{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .main-container .plp-l .player-mask .bar-wrapper{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] .main-container .plp-l .player-mask .bar-wrapper .left-bar, html[theme*="dark"] .main-container .plp-l .player-mask .bar-wrapper .right-bar{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .main-container .ep-list-wrapper .list-wrapper.simple ul .ep-item{
+    background-color: var(--bg1);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .main-container .ep-list-wrapper .list-wrapper.simple ul .ep-item.cursor{
+    border-color: #00a1d6;
+    background-color: #00a1d6;
+}
+
+html[theme*="dark"] .main-container .ep-list-wrapper .list-title h4{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .main-container .tool-bar .coin-info span, html[theme*="dark"] .main-container .tool-bar .like-info span{
+    color: var(--text2);
+}
+
+html[theme*="dark"] .main-container .season-list .series-title, html[theme*="dark"] .main-container .season-list .ss-list-wrapper .ss-item .ss-info .ss-title,  html[theme*="dark"] .main-container .recom-wrapper .recom-list .recom-item .info-wrapper .video-title,  html[theme*="dark"] .main-container .review-module .module-title{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .main-container .media-info, html[theme*="dark"] .main-container .plp-l .split-line{
+    border-top: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .main-container .review-module{
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .main-container .recom-wrapper .recom-list .recom-item .info-wrapper .video-title:hover, html[theme*="dark"] .main-container .season-list .ss-list-wrapper .ss-item .ss-info .ss-title:hover{
+    color: #00a1d6;
+}
+
+html[theme*="dark"] .main-container .media-info .media-right .media-desc i{
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .main-container .review-module .review-list .review-item .review-body{
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .main-container .review-module .review-list .review-item .review-title, html[theme*="dark"] .main-container .review-module .review-list .review-item .review-content, html[theme*="dark"] .main-container .review-module .module-title .more-link{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .main-container .review-module .review-list .review-item .review-header #review-author-nick-name.review-author{
+    color: var(--text2);
+}
+
+html[theme*="dark"] .main-container .review-module .review-list .review-item .review-header #review-author-nick-name.review-author:hover, html[theme*="dark"] .main-container .review-module .module-title .more-link:hover{
+    color: #00a1d6;
+}
+
+html[theme*="dark"] .bb-comment a, .comment-bilibili-fold a{
+    color: #00a1d6;
+}
+
+html[theme*="dark"] .bb-comment a:hover, html[theme*="dark"] .comment-bilibili-fold a:hover{
+    color: #f25d8e;
+}
+
+html[theme*="dark"] .bangumi-rate-panel .info .title{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .right-side-bar .catalog{
+    background: var(--bg1);
+}
+
+html[theme*="dark"] .recommend-list .recommend-article-list .article-item, html[theme*="dark"] .recommend-list .recommend-header{
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .recommend-list .recommend-article-list .article-item:last-child{
+    border-bottom:none;
+}
+
+html[theme*="dark"] .brief a:hover{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] body{
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .main-container .nav-tools .tool-item{
+    background: var(--bg1);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .main-container .nav-tools .tool-item:hover{
+    background-color: #00a1d6;
+    border-color: #00a1d6;
+}
+
+html[theme*="dark"] .main-container .tool-bar .share-info .share-more, html[theme*="dark"] .main-container .tool-bar .mobile-info .mobile-more, html[theme*="dark"] .main-container .tool-bar .watch-info .watch-more{
+    background: var(--bg1_float);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .main-container .tool-bar .mobile-info .mobile-more .top-wrapper .video-title, html[theme*="dark"] .main-container .tool-bar .mobile-info .mobile-more p, html[theme*="dark"] .main-container .tool-bar .watch-info .watch-more .title{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .ep-list-wrapper .ep-item.cursor, html[theme*="dark"] .section-ep-wrapper .ep-item.cursor{
+    background: var(--bg1_float);
+}
+
+html[theme*="dark"] .space-right .space-right-top .title[data-v-1c9150a9]{
+    background-color: var(--bg1);
+    box-shadow: 0 2px 4px 0 rgb(50 50 50 / 54%);
+}
+
+html[theme*="dark"] .card[data-v-fb77dc7a]{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .divider[data-v-1df9d092]{
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .line-1[data-v-657577a0]{
+    color: var(--text2);
+}
+
+html[theme*="dark"] .line-2[data-v-657577a0]{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .space-left[data-v-1c9150a9], html[theme*="dark"] .space-right[data-v-1c9150a9]{
+    background-color: rgba(36, 38, 40,0.8);
+}
+
+html[theme*="dark"] .title[data-v-09801ae7]{
+    color: var(--text2);
+}
+
+html[theme*="dark"] .link-progress-tv[data-v-42e02e95]{
+    background-color: var(--bg1) !important;
+}
+
+html[theme*="dark"] .config[data-v-c33503c6]{
+    background-color: var(--bg1);
+    box-shadow: 0 2px 4px 0 rgb(50 50 50 / 54%);
+    color: var(--text2);
+}
+
+html[theme*="dark"] .radio-selector{
+    color: var(--text2);
+}
+
+html[theme*="dark"] .tip[data-v-c33503c6] {
+    color: var(--text3);
+}
+
+html[theme*="dark"] .bili-im[data-v-f135e21e]{
+    background-color: var(--bg1);
+    color: var(--text2);
+    box-shadow: 0 2px 4px 0 rgb(50 50 50 / 54%);
+}
+
+html[theme*="dark"] .message-list[data-v-df6aba8c]{
+    background-color: var(--bg2_float);
+}
+
+html[theme*="dark"] .title[data-v-4a957adf]{
+    border-bottom: 1px solid var(--Ga2);
+    color: var(--text1);
+}
+
+html[theme*="dark"] .bili-im .left[data-v-f135e21e]{
+    border-right: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .action-menu .menu-list[data-v-d43989d2]{
+    background-color: var(--bg1);
+    border: 1px solid var(--Ga2);
+    box-shadow: 0 6px 12px 0 rgb(50 50 50 / 22%);
+}
+
+html[theme*="dark"] .action-menu .menu-list[data-v-d43989d2]:before{
+    background-color: var(--bg1);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .action-menu .menu-list a[data-v-d43989d2]{
+    color: var(--text2);
+}
+
+html[theme*="dark"] .action-menu .menu-list a[data-v-d43989d2]:hover {
+    color: #2faee3;
+    background: var(--bg1_float);
+}
+
+html[theme*="dark"] .active[data-v-5eb7422a] {
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .bili-im .left .title[data-v-f135e21e]{
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .list-item .name[data-v-5eb7422a]{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .send-box[data-v-7762b962]{
+    background-color: var(--bg2_float);
+    border-top: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .core-style[data-v-715777d4]{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .send-btn[data-v-7762b962]{
+    background-color: var(--bg1);
+    color: var(--text2);
+    border: 1px solid  var(--Ga2);
+}
+
+html[theme*="dark"] .static-popup[data-v-00b4b4ea]{
+    border: 1px solid var(--Ga2);
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .emoji[data-v-60ae9c4d]{
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .title[data-v-00b4b4ea]{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .pagination[data-v-97c4281e]{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .emoji-cover.selected[data-v-97c4281e]{
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .page-controller .prev[data-v-97c4281e]:hover, html[theme*="dark"] .page-controller .next[data-v-97c4281e]:hover{
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .title[data-v-196262e8]{
+    color: var(--text2);
+}
+
+html[theme*="dark"] .message-list[data-v-782bc784]{
+    background-color: var(--bg2_float);
+}
+
+html[theme*="dark"] .list[data-v-4664fbbe]{
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .active[data-v-130e22a0]{
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .list-item .name[data-v-130e22a0]{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .list-title[data-v-4664fbbe]{
+    border-bottom: 1px solid var(--Ga2);
+    color: var(--text1);
+}
+
+html[theme*="dark"] .title[data-v-31740c3f]{
+    border-bottom: 1px solid var(--Ga2);
+    color: var(--text1);
 }
