@@ -23,6 +23,8 @@
     const unread = document.getElementById('unreadSwitch');
     const dynamic = document.getElementById('dynamicSwitch');
     const logo = document.getElementById('logo');
+    const darkMode = document.getElementById('darkMode');
+    const darkModeSystem = document.getElementById('darkModeSystem');
 
     const qn_table = ["原画", "蓝光","超清","高清","流畅"];
     const qnItem = setting7.getElementsByClassName("qn-i");
@@ -197,6 +199,24 @@
         chrome.storage.sync.set({"prerecord":value}, function (){});
     });
 
+    darkMode.addEventListener("change", function (){
+        let checked = this.checked;
+        if (checked){
+            darkModeSystem.checked = false;
+            chrome.storage.sync.set({"darkModeSystem": false}, function (){});
+        }
+        chrome.storage.sync.set({"darkMode": checked}, function (){});
+    });
+
+    darkModeSystem.addEventListener("change", function (){
+        let checked = this.checked;
+        if (this.checked){
+            darkMode.checked = false;
+            chrome.storage.sync.set({"darkMode": false}, function (){});
+        }
+        chrome.storage.sync.set({"darkModeSystem": checked}, function (){});
+    });
+
 
     function buttonDisabled(checked, obj){
         if(checked) {
@@ -239,7 +259,7 @@
             }
         });
 
-        chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch"], function(result){
+        chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem"], function(result){
             if (os === 'win')
                 buttonDisabled(result.notification, imageNotice);
             liveNotification.checked = result.notification;
@@ -259,6 +279,9 @@
 
             qnvalue = qn_table.indexOf(result.qnvalue);
             scrollAnim(qnvalue);
+
+            darkMode.checked = result.darkMode;
+            darkModeSystem.checked = result.darkModeSystem;
 
             if (result.enhancedHiddenEntry){
                 hiddenEntry.setAttribute("disabled","");

@@ -24,7 +24,32 @@
 <div class="setting">
     <div style="font-size: 20px; padding-top: 10px; padding-left: 15px; user-select: none"><span>设置</span><a id="more-setting" href="notifySetting.html" style="margin-left: 15px; font-size: 14px" target="_blank"><span>更多设置</span><span style="position: relative; top: 4px;"><svg width="10" height="10" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" class="right-arrow" style="transform: rotate(90deg);"><rect x="10" y="10" rx="5" ry="5" width="35" height="10" style="transform: rotate(45deg); transform-origin: center;"/><rect x="10" y="30" rx="5" ry="5" width="35" height="10" style="transform: rotate(135deg); transform-origin: center;"/></svg></span>
     </a></div>
-    <div style="font-size: 16px; padding-top: 10px; padding-left: 25px; user-select: none">直播相关</div>
+    <div class="setting-title">主题</div>
+    <div class="host" style="margin: 0 25px;height: 40px;">
+        <div class="button-host" id="btn14">
+            <span class="tooltip">深色模式
+                <span class="tooltiptext tooltiptext-left">将b站设为深色模式。</span>
+            </span>
+            <section class="button">
+                <div class="checkbox">
+                    <input type="checkbox" id="darkMode">
+                    <label></label>
+                </div>
+            </section>
+        </div>
+        <div class="button-host" id="btn15">
+            <span class="tooltip">跟随系统
+                <span class="tooltiptext tooltiptext-right">主题跟随系统自动切换。</span>
+            </span>
+            <section class="button">
+                <div class="checkbox">
+                    <input type="checkbox" id="darkModeSystem">
+                    <label></label>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div class="setting-title">直播相关</div>
     <div class="host" style="margin: 0 25px;height: 200px;">
         <div class="button-host" id="btn1">
             <span class="tooltip">开播通知
@@ -127,7 +152,7 @@
             </section>
         </div>
     </div>
-    <div style="font-size: 16px; padding-top: 10px; padding-left: 25px; user-select: none">切片录制</div>
+    <div class="setting-title">切片录制</div>
     <div class="host" style="margin: 0 25px;height: 80px;">
         <div class="button-host" id="btn9">
             <span class="tooltip record-manual" style="cursor: pointer;">录制切片
@@ -158,7 +183,7 @@
             </div>
         </div>
     </div>
-    <div style="font-size: 16px; padding-top: 10px; padding-left: 25px; user-select: none">主站相关</div>
+    <div class="setting-title">主站相关</div>
     <div class="host" style="margin: 0 25px;height: 40px;">
         <div class="button-host" id="btn5">
             <span class="tooltip">B币兑换

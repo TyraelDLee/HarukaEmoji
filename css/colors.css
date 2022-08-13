@@ -1328,3 +1328,78 @@ html[theme*="dark"] .title[data-v-31740c3f]{
     border-bottom: 1px solid var(--Ga2);
     color: var(--text1);
 }
+
+html[theme*="dark"] .van-popper-avatar .coins .info .login-award{
+    background: var(--bg1_float);
+}
+
+html[theme*="dark"] .more-btn[data-v-0de37f37]{
+    color: var(--text2);
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .more-btn[data-v-0de37f37]:hover {
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"]  .bili-dyn-list__notification{
+    filter: brightness(0.7);
+}
+
+html[theme*="dark"]  .bili-dyn-item__tag{
+    box-shadow: inset 0 -1px 0 var(--Ga2);
+}
+
+html[theme*="dark"] .article-content, html[theme*="dark"] .s-content{
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .article-con a, html[theme*="dark"] .article-img{
+    color: var(--text2);
+}
+
+html[theme*="dark"] .right-side-bar .to-top[data-v-79113dbb]{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .active-card, html[theme*="dark"] .switch-tab{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .active-card .active-content__desc{
+    color: var(--text2);
+}
+
+html[theme*="dark"] .launch-user__name{
+    color: var(--text2);
+}
+
+html[theme*="dark"] .bili-dyn-follow-btn{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .bili-dyn-follow-btn:not(.checked):hover {
+    background-color: #00a1d6;
+    color: var(--text1);
+}
+
+html[theme*="dark"] .topic-nav{
+    background-color: var(--bg1);
+    box-shadow: inset 0 -1px 0 var(--Ga2);
+}
+
+html[theme*="dark"] .topic-nav span{
+    color: var(--text2);
+}
+
+html[theme*="dark"] .topic-detail .topic-detail__header{
+    background: linear-gradient(rgba(36, 127, 255, 0.12), rgba(36, 127, 255, 0))!important;
+}
+
+html[theme*="dark"] .topic-detail .topic-detail__header .main-part .topic-tv-icon svg path{
+    fill: rgb(36, 127, 255);
+}
+
+html[theme*="dark"] .relevant-topic__exposed{
+    color: var(--text3);
+}

@@ -1,55 +1,55 @@
 /*Copyright (c) 2021 Tyrael, Y. LI*/
 :root {
     color-scheme: light dark;
-/*    for safari popup page. */
+    /*    for safari popup page. */
 }
 
-body{
+body {
     background: #fff;
     width: 300px;
     height: 400px;
     font-family: system-ui, "PingFang SC", STHeiti, sans-serif;
 }
 
-hr{
+hr {
     width: 90%;
     height: 1px;
     margin-top: 10px;
-    border:none;
+    border: none;
 }
 
-select{
+select {
     padding: 0 2%;
     border: 0;
     border-bottom: 2px solid #fb7299;
-    scrollbar-width:thin;
+    scrollbar-width: thin;
     outline: none !important;
     transition: 0.4s;
     -webkit-transition: 0.4s;
 }
 
-select::-webkit-scrollbar{
+select::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 
-select::-webkit-scrollbar-thumb{
+select::-webkit-scrollbar-thumb {
     border-radius: 6px;
     background-color: #aaa;
 }
 
-option{
+option {
     text-align: center;
 }
 
-.dropbox{
+.dropbox {
     width: 40px;
     position: absolute;
     right: -4px;
     top: 12px;
 }
 
-.bottom{
+.bottom {
     background: #fff;
     text-align: center;
     width: 300px;
@@ -59,14 +59,14 @@ option{
     z-index: 50;
 }
 
-.bottom-item{
+.bottom-item {
     cursor: pointer;
     position: relative;
     float: left;
     margin: 0 5px;
 }
 
-.button-host{
+.button-host {
     position: relative;
     float: left;
     width: 100px;
@@ -74,39 +74,39 @@ option{
     margin: 0 10px;
 }
 
-.button-host span{
+.button-host span {
     font-size: 14px;
     left: 0;
     top: 12px;
 }
 
-.button-host section{
+.button-host section {
     right: 0;
     position: absolute;
 }
 
-.button:disabled{
+.button:disabled {
     opacity: 0.5;
 }
 
-.host{
+.host {
     margin-top: 25px;
     text-align: center;
 }
 
-.setting{
+.setting {
     overflow-y: scroll;
     overflow-x: hidden;
     height: 185px;
-    scrollbar-width:thin;
+    scrollbar-width: thin;
 }
 
-.setting::-webkit-scrollbar{
+.setting::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 
-.setting::-webkit-scrollbar-thumb{
+.setting::-webkit-scrollbar-thumb {
     border-radius: 6px;
     background-color: #aaa;
 }
@@ -131,12 +131,12 @@ option{
     z-index: 10;
 }
 
-.tooltiptext-top{
+.tooltiptext-top {
     top: unset !important;
     bottom: 150% !important;
 }
 
-.tooltiptext-top::after{
+.tooltiptext-top::after {
     top: 100% !important;
     bottom: unset !important;
     border-color: black transparent transparent transparent !important;
@@ -152,27 +152,27 @@ option{
     border-color: transparent transparent black transparent;
 }
 
-.tooltip .tooltiptext-middle{
+.tooltip .tooltiptext-middle {
     margin-left: -150px;
 }
 
-.tooltip .tooltiptext-left{
+.tooltip .tooltiptext-left {
     margin-left: -50px;
 }
 
-.tooltip .tooltiptext-right{
+.tooltip .tooltiptext-right {
     margin-left: -170px;
 }
 
-.tooltip .tooltiptext-middle::after{
+.tooltip .tooltiptext-middle::after {
     left: 60%;
 }
 
-.tooltip .tooltiptext-left::after{
+.tooltip .tooltiptext-left::after {
     left: 20%;
 }
 
-.tooltip .tooltiptext-right::after{
+.tooltip .tooltiptext-right::after {
     left: 68%;
 }
 
@@ -186,45 +186,52 @@ option{
     opacity: 75%;
 }
 
-.right-arrow{
+.right-arrow {
     fill: #06c;
     position: absolute;
     top: 0;
 }
 
-.qn-i{
+.setting-title {
+    font-size: 16px;
+    padding-top: 10px;
+    padding-left: 25px;
+    user-select: none
+}
+
+.qn-i {
     height: 18px;
     line-height: 20px;
     font-size: 14px;
     user-select: none;
 }
 
-#btn2 span{
+#btn2 span {
     right: 25px;
 }
 
-#logo{
+#logo {
     width: 175px;
     height: 175px;
     cursor: pointer;
     margin: -30px;
 }
 
-#version{
+#version {
     display: inline-block;
     cursor: pointer;
 }
 
-#btn7{
+#btn7 {
     overflow: hidden;
     cursor: pointer;
 }
 
-#btn7 input{
+#btn7 input {
     margin: 5px 15px;
 }
 
-#btn7 span{
+#btn7 span {
     position: absolute;
     font-size: 15px;
     height: 20px;
@@ -234,21 +241,21 @@ option{
 
 }
 
-#qn-items{
+#qn-items {
     position: absolute;
     width: 100px;
 }
 
-#github-icon{
+#github-icon {
     fill: #000;
 }
 
-#more-setting{
+#more-setting {
     text-decoration: none;
     color: #06c;
 }
 
-#more-setting:hover{
+#more-setting:hover {
     text-decoration: underline;
 }
 
@@ -257,35 +264,42 @@ option{
         background: #292a2d;
         color: #fff;
     }
-    .dropbox select{
+
+    .dropbox select {
         background: #292a2d;
         color: #fff;
         border-color: #23ade5;
     }
-    .bottom{
+
+    .bottom {
         background: #292a2d;
     }
+
     .button .checkbox input:checked + label {
         background: #23ade5 !important;
     }
+
     .button .checkbox input:checked + label:after {
         background: #26afe9 !important;
     }
-    .right-arrow{
+
+    .right-arrow {
         fill: #2997ff;
     }
-    #btn7 span{
+
+    #btn7 span {
         color: #23ade5 !important;
     }
-    #github-icon{
+
+    #github-icon {
         fill: #fff;
     }
 
-    #more-setting{
+    #more-setting {
         color: #2997ff;
     }
 
-    :root{
-        --bubble:#fff;
+    :root {
+        --bubble: #fff;
     }
 }

@@ -299,6 +299,8 @@ chrome.runtime.onInstalled.addListener(async function (obj){
     setInitValue('blackListLive', []);
     setInitValue('blackListDynamic',[]);
     setInitValue('blackListVideo', []);
+    setInitValue('darkMode', false);
+    setInitValue('darkModeSystem', false);
     /**
      * Context menu section.
      *

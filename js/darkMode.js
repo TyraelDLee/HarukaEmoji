@@ -1,24 +1,43 @@
 !function (){
-    let zhuanlan =new RegExp("https://www.bilibili.com/read/cv\\d*");
+    let systemDark = false;
 
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        setDark()
+    //for new page.
+    chrome.storage.sync.get(["darkMode", "darkModeSystem"], (result)=>{
+        if(result.darkMode)
+            setDark();
+        if (result.darkModeSystem){//if following system, then check the system scheme instantly for new page.
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                setDark();
+        }
+        systemDark = result.darkModeSystem;
+    });
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && systemDark) {
+        setDark();
     }
+
+    //for existed pages.
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-        event.matches ? setDark() : document.documentElement.removeAttribute("theme");
+        if(systemDark){
+            event.matches ? setDark() : setLight();
+        }
     });
     chrome.storage.onChanged.addListener(function (changes, namespace) {
-
         for (let [key, {oldValue, newValue}] of Object.entries(changes)) {
             switch (key) {
                 case "darkMode":
-
+                    console.log(newValue)
+                    if(newValue) setDark();
+                    else setLight();
                     break;
-                case "lightMode":
-
-                    break;
-                case "systemMode":
-
+                case "darkModeSystem":
+                    systemDark = newValue;
+                    if (!newValue)
+                        setLight();
+                    else{
+                        //if following system, then check the system scheme instantly for existed pages.
+                        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                            setDark();
+                    }
                     break;
             }
         }
@@ -32,6 +51,9 @@
         }
     }
 
+    function setLight(){
+        document.documentElement.removeAttribute("theme")
+    }
 }();
 
 // {
