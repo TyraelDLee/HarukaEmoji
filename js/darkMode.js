@@ -49,17 +49,15 @@
             document.documentElement.style.backgroundColor = "transparent";
             document.body.style.backgroundColor = "transparent";
         }
+        if (window.location.href.includes('message.bilibili.com')){
+            document.body.style.background = `url(${chrome.runtime.getURL("../images/misc/infocenterbg.dark.webp")}) top/cover no-repeat fixed`;
+        }
     }
 
     function setLight(){
-        document.documentElement.removeAttribute("theme")
+        document.documentElement.removeAttribute("theme");
+        if (window.location.href.includes('message.bilibili.com')){
+            document.body.style.background = `url(${chrome.runtime.getURL("../images/misc/infocenterbg.light.webp")}) top/cover no-repeat fixed`;
+        }
     }
 }();
-
-// {
-//     "all_frames": true,
-//     "css": ["css/colors.min.css"],
-//     "js": ["js/darkMode.min.js"],
-//     "matches": ["*://*.bilibili.com/*"],
-//     "run_at": "document_start"
-// },

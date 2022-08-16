@@ -1403,3 +1403,80 @@ html[theme*="dark"] .topic-detail .topic-detail__header .main-part .topic-tv-ico
 html[theme*="dark"] .relevant-topic__exposed{
     color: var(--text3);
 }
+
+html[theme*="dark"] .history-wrap .b-head .b-head-t{
+    color: var(--text1);
+}
+
+
+html[theme*="dark"] .b-head-search_input{
+    background-color: var(--bg1_float);
+    color: var(--text2);
+}
+
+html[theme*="dark"] .bili-header-m .nav-search #nav_searchform, html[theme*="dark"] .international-header .nav-search #nav_searchform{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .history-list .r-info{
+    background: var(--bg1_float);
+}
+
+html[theme*="dark"] .history-list .r-info .title{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .history-list .r-info .r-txt{
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .history-list .l-info .lastplay-time .history-red-round{
+    border: 5px dashed var(--Ga2);
+    border-right-width: 0;
+    border-left-style: solid;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+}
+
+html[theme*="dark"] .history-list .l-info{
+    border-right: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .history-wrap .time-label:before{
+    border-left: 8px solid var(--bg1_float);
+}
+
+html[theme*="dark"] .history-wrap .active:before{
+    border-left: 8px solid #ff74a5;
+}
+
+html[theme*="dark"] .go-top-m .go-top[_v-7ed6730a]{
+    background-color: var(--bg1);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .go-top-m .go-top[_v-7ed6730a]:hover{
+    background-color: #00a1d6;
+    border-color: #00a1d6;
+}
+
+html[theme*="dark"] .bili-footer .footer-wrp{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .act-rich-style-init2 .public-DraftEditor-content h1, html[theme*="dark"] .act-rich-style-init2 .public-DraftEditor-content h2, html[theme*="dark"] .act-rich-style-init2 .public-DraftEditor-content h3, html[theme*="dark"] .act-rich-style-init2 .public-DraftEditor-content h4, html[theme*="dark"] .act-rich-style-init2 .public-DraftEditor-content h5, html[theme*="dark"] .act-rich-style-init2 .public-DraftEditor-content h6, html[theme*="dark"] .act-rich-style-init2 .act-rich-render-content h1, html[theme*="dark"] .act-rich-style-init2 .act-rich-render-content h2, html[theme*="dark"] .act-rich-style-init2 .act-rich-render-content h3, html[theme*="dark"] .act-rich-style-init2 .act-rich-render-content h4, html[theme*="dark"] .act-rich-style-init2 .act-rich-render-content h5, html[theme*="dark"] .act-rich-style-init2 .act-rich-render-content h6{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .activity-questions-list-wrap .activity-questions-item{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .q-input, html[theme*="dark"] .q-textarea{
+    color: var(--text1);
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .error-container{
+    background-color: var(--bg1);
+}

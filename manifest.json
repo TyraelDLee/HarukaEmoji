@@ -40,6 +40,7 @@
     "css": ["css/colors.min.css"],
     "js": ["js/darkMode.min.js"],
     "matches": ["*://*.bilibili.com/*"],
+    "exclude_matches": ["*://*.bilibili.com/v/customer-service*", "*://link.bilibili.com/p/center/index*", "*://link.bilibili.com/p/help/index*", "*://account.bilibili.com/account*", "*://passport.bilibili.com/account/security*"],
     "run_at": "document_end"
   },{
     "all_frames": true,
