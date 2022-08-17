@@ -990,9 +990,9 @@ html[theme*="dark"] body {
     color: var(--text1);
 }
 
-html[theme*="dark"] .reply-item .root-reply-container .content-warp .user-info .user-name {
-    color: var(--text2);
-}
+/*html[theme*="dark"] .reply-item .root-reply-container .content-warp .user-info .user-name {*/
+/*    color: var(--text2);*/
+/*}*/
 
 html[theme*="dark"] .contribution-sidenav {
     border-right: 1px solid var(--Ga2);
@@ -1182,8 +1182,12 @@ html[theme*="dark"] .line-2[data-v-657577a0]{
     color: var(--text1);
 }
 
-html[theme*="dark"] .space-left[data-v-1c9150a9], html[theme*="dark"] .space-right[data-v-1c9150a9]{
+html[theme*="dark"] .space-left[data-v-1c9150a9] {
     background-color: rgba(36, 38, 40,0.8);
+}
+
+html[theme*="dark"] .space-right[data-v-1c9150a9]{
+    background-color: rgba(36, 38, 40,0.5);
 }
 
 html[theme*="dark"] .title[data-v-09801ae7]{
@@ -1479,4 +1483,187 @@ html[theme*="dark"] .q-input, html[theme*="dark"] .q-textarea{
 
 html[theme*="dark"] .error-container{
     background-color: var(--bg1);
+}
+
+html[theme*="dark"] #page-follows .follow-main .follow-header.follow-header-info, html[theme*="dark"] #page-follows .list-item, #page-follows .list-item:last-child{
+    border-bottom: 1px solid var(--Ga2);
+}
+
+/*html[theme*="dark"] .list-item:last-child{*/
+/*    border-bottom: none;*/
+/*}*/
+
+html[theme*="dark"] #page-follows .follow-sidenav .nav-container.follow-container{
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] #page-follows .follow-sidenav{
+    border-right: 1px solid var(--Ga2);
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] #page-follows .follow-main{
+    border-left: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] #page-follows .follow-tabs{
+    color: var(--text1);
+}
+
+html[theme*="dark"] #page-follows .follow-tabs span:hover{
+    color: #00a1d6;
+}
+
+html[theme*="dark"] #page-follows .follow-sidenav .follow-list-container .follow-item:hover{
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] #page-follows .follow-sidenav .follow-list-container .follow-item.cur{
+    background-color:  #00a1d6;
+}
+
+html[theme*="dark"] .search-component-input input[data-v-52497d84]{
+    color: var(--text1);
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .modal-wrapper{
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .modal-wrapper .modal-title{
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .be-input_inner{
+    background-color: var(--bg1);
+    border: 1px solid var(--Ga2);
+    color: var(--text1);
+}
+
+html[theme*="dark"] .btn.default[data-v-53027a10]{
+    background-color: var(--bg1_float);
+    color: var(--text1);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .btn[data-v-53027a10]:focus, html[theme*="dark"] .btn[data-v-53027a10]:hover{
+    color: #00a1d6;
+    background-color: var(--bg1_float);
+    border-color: #00a1d6;
+}
+
+html[theme*="dark"] .fans-action-follow{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] #id-card{
+    background-color: var(--bg2_float);
+}
+
+html[theme*="dark"] .btn.ghost[data-v-53027a10], html[theme*="dark"] .btn.ghost[data-v-53027a10]:focus, .btn.ghost[data-v-53027a10]:hover{
+    background-color: var(--bg2);
+    border-color: var(--Ga2);
+}
+
+html[theme*="dark"] .list-item .cover img{
+    box-shadow: 0 0 0 1px var(--bg1);
+}
+
+html[theme*="dark"] .divided-line[data-v-09801ae7]{
+    border-top: 1px solid var(--bg2);
+}
+
+html[theme*="dark"] .card[data-v-fb77dc7a]{
+    box-shadow: 0 2px 4px 0 rgb(50 50 50 / 54%);
+}
+
+html[theme*="dark"] .van-popover.van-share-new .share_dropdown{
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .van-popover.van-share-new .share_dropdown .share-pos .box-top .box-top-right{
+    box-shadow: -0.5px 0 0 var(--Ga2);
+}
+
+html[theme*="dark"] .van-popover.van-share-new .share_dropdown .share-pos .box-bottom{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .van-popover.van-share-new .share_dropdown .share-pos .box-top .box-top-left .capture-bar .bar-left > label #check-timestamp{
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] #page-index .channel .channel-item{
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .search-page[data-v-e666e3f4]{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .search-nav-item[data-v-5e0f1f52]:hover {
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .feed-dynamic-header-title[data-v-793366f2]{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .card[data-v-2dbadba2]{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .feed-dynamic[data-v-793366f2]{
+    border-left: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .feed-dynamic-content[data-v-793366f2] .card{
+    border-bottom: 1px solid var(--Ga2)!important;
+}
+
+html[theme*="dark"] .card .main-content .user-name a[data-v-2dbadba2], html[theme*="dark"] .video-container .text-area .title[data-v-59c85a8c]{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .video-container[data-v-59c85a8c]{
+    background: var(--bg1);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .card-content .repost[data-v-3086e751], html[theme*="dark"] .card-content .not-support[data-v-3086e751], .card-content .deleted[data-v-3086e751]{
+    background: var(--bg2);
+}
+
+html[theme*="dark"] .bg-white{
+    background: var(--bg1);
+}
+
+html[theme*="dark"] .card .more-panel[data-v-2dbadba2]{
+    background: var(--bg1);
+    border: 1px solid var(--Ga2);
+    box-shadow: 0 11px 12px 0 rgb(50 50 50 / 12%);
+    color: var(--text1);
+}
+
+html[theme*="dark"] .card .more-panel[data-v-2dbadba2]:after{
+    border-top: 1px solid var(--Ga2);
+    border-left: 1px solid var(--Ga2);
+    background: var(--bg1);
+}
+
+html[theme*="dark"] .bili-album__watch__control{
+    background: var(--bg2_float);
+}
+
+html[theme*="dark"] .bili-album__watch__content{
+    background: var(--bg1);
+}
+
+html[theme*="dark"] .reference .dyn-goods__wrap{
+    background: var(--bg1);
+}
+
+html[theme*="dark"] .dyn-goods__one__detail__name{
+    color: var(--text2);
 }
