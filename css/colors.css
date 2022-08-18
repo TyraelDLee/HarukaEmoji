@@ -1667,3 +1667,79 @@ html[theme*="dark"] .reference .dyn-goods__wrap{
 html[theme*="dark"] .dyn-goods__one__detail__name{
     color: var(--text2);
 }
+
+html[theme*="dark"] .bpx-player-auxiliary .bpx-player-collapse .bui-collapse-body{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .bpx-docker-minor:not(:empty), html[theme*="dark"] .bpx-player-auxiliary .bpx-player-dm-function, html[theme*="dark"] .bpx-player-auxiliary .bpx-player-dm-wrap{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .bui-collapse .bui-collapse-header, html[theme*="dark"] .bpx-player-auxiliary .bpx-player-dm-btn-history{
+    background-color: var(--bg2_float);
+    color: var(--text1);
+}
+
+html[theme*="dark"] .bpx-player-auxiliary .bpx-player-dm-load-status{
+    background: var(--bg1);
+    color: var(--text1);
+}
+
+html[theme*="dark"] .bpx-player-auxiliary .bpx-player-dm-container .dm-info-row .dm-info-dm{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .bpx-player-contextmenu.bpx-player-white{
+    border: 1px solid var(--Ga2);
+    background: var(--bg1);
+}
+
+html[theme*="dark"] .bpx-player-auxiliary .bpx-player-contextmenu.bpx-player-white>li{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .bpx-player-contextmenu.bpx-player-white>li:hover{
+    background-color: var(--bg2_float);
+}
+
+html[theme*="dark"] .bpx-player-sending-bar{
+    background: var(--bg1);
+}
+
+html[theme*="dark"] .bpx-player-sending-bar .bpx-player-video-inputbar .bpx-player-dm-input{
+    background-color: var(--bg2_float);
+    color: var(--text1);
+}
+
+html[theme*="dark"] .bpx-player-sending-bar .bpx-player-video-inputbar-wrap{
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .bpx-player-sending-bar .bpx-player-video-inputbar{
+    background: var(--bg2_float);
+}
+
+html[theme*="dark"] .bpx-player-container{
+    box-shadow: 0 0 8px var(--Ga2);
+}
+
+html[theme*="dark"] #comment_module .bb-comment,html[theme*="dark"] #comment_module .bb-comment .comment-send-lite{
+    background: var(--bg1_float)!important;
+}
+
+html[theme*="dark"] #comment_module .bb-comment .list-item:hover {
+    background: var(--bg1_float)!important;
+}
+
+html[theme*="dark"] .bili-rich-text-link, html[theme*="dark"] .bili-rich-text-module, html[theme*="dark"] .bili-rich-text-topic{
+    color: #178bcf!important;
+}
+
+html[theme*="dark"] .bili-rich-text-link:hover, html[theme*="dark"] .bili-rich-text-module:hover, html[theme*="dark"] .bili-rich-text-topic:hover{
+    background-color: var(--Ga2);
+}
+
+html[theme*="dark"] .bb-comment .comment-list .list-item .reply-box .view-more .btn-more:hover, html[theme*="dark"] .comment-bilibili-fold .comment-list .list-item .reply-box .view-more .btn-more:hover{
+    background: var(--Ga2);
+}
