@@ -250,12 +250,15 @@ option {
     fill: #000;
 }
 
-#more-setting {
+.a-link {
     text-decoration: none;
     color: #06c;
+    margin-left: 15px;
+    font-size: 14px;
+    cursor:pointer;
 }
 
-#more-setting:hover {
+.a-link:hover {
     text-decoration: underline;
 }
 
@@ -295,7 +298,7 @@ option {
         fill: #fff;
     }
 
-    #more-setting {
+    .a-link {
         color: #2997ff;
     }
 

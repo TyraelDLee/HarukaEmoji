@@ -25,6 +25,8 @@
     const logo = document.getElementById('logo');
     const darkMode = document.getElementById('darkMode');
     const darkModeSystem = document.getElementById('darkModeSystem');
+    const commentEmoji = document.getElementById("commentEmoji");
+    const reloadScript = document.getElementById("reload");
 
     const qn_table = ["原画", "蓝光","超清","高清","流畅"];
     const qnItem = setting7.getElementsByClassName("qn-i");
@@ -154,11 +156,16 @@
     unread.addEventListener('change', function(){
         let checked = this.checked;
         chrome.storage.sync.set({"unreadSwitch":checked}, function (){});
-    })
+    });
 
     dynamic.addEventListener('change', function(){
         let checked = this.checked;
         chrome.storage.sync.set({"dynamicSwitch":checked}, function (){});
+    });
+
+    commentEmoji.addEventListener('change', function(){
+        let checked = this.checked;
+        chrome.storage.sync.set({"commentEmoji":checked}, function (){});
     })
 
     hiddenEntry.addEventListener("change", function (){
@@ -217,6 +224,16 @@
         chrome.storage.sync.set({"darkModeSystem": checked}, function (){});
     });
 
+    reloadScript.addEventListener("click", function (){
+        chrome.runtime.sendMessage({msg:"requestReload"}, function (result){
+            console.log('服务重启成功')
+            // os = result.os;
+            // if (result.os !== 'win'){
+            //     buttonDisabled(false, imageNotice);
+            // }
+        });
+    });
+
 
     function buttonDisabled(checked, obj){
         if(checked) {
@@ -259,7 +276,7 @@
             }
         });
 
-        chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem"], function(result){
+        chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem", "commentEmoji"], function(result){
             if (os === 'win')
                 buttonDisabled(result.notification, imageNotice);
             liveNotification.checked = result.notification;
@@ -272,6 +289,7 @@
             dynamic.checked = result.dynamicSwitch;
             hiddenEntry.checked = result.hiddenEntry;
             daka.checked = result.daka;
+            commentEmoji.checked = result.commentEmoji;
 
             qualitySetting.checked = result.qn;
             qn = result.qn;

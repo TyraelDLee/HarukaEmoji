@@ -266,8 +266,11 @@ chrome.windows.onFocusChanged.addListener(function (wID){
         });
     }
 });
-chrome.runtime.onInstalled.addListener(async function (obj){
+chrome.runtime.onInstalled.addListener(initialize);
+
+async function initialize(reload=false){
     // init setting
+    await chrome.alarms.clearAll();
     chrome.notifications.getAll((notifications)=>{
         for (let k in notifications)
             chrome.notifications.clear(k);
@@ -301,18 +304,20 @@ chrome.runtime.onInstalled.addListener(async function (obj){
     setInitValue('blackListVideo', []);
     setInitValue('darkMode', false);
     setInitValue('darkModeSystem', false);
+    setInitValue('commentEmoji', true);
     /**
      * Context menu section.
      *
      * no need change for mv3 update.
      * */
-    chrome.contextMenus.create({contexts: ["selection", "link"], title: "用bilibili搜索", type: "normal", id:"rua-contextMenu-v3"});
+    if (!reload)
+        chrome.contextMenus.create({contexts: ["selection", "link"], title: "用bilibili搜索", type: "normal", id:"rua-contextMenu-v3"});
 
     // local states
     chrome.alarms.create('checkUpd', {'when':Date.now(), periodInMinutes:60*12});
     await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "dynamic_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0/*'{"biz_msg_follow_unread":0,"biz_msg_unfollow_unread":0,"dustbin_push_msg":0,"dustbin_unread":0,"follow_unread":0,"unfollow_push_msg":0,"unfollow_unread":0}'*/, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[]}, ()=>{});
     chrome.alarms.create('getUID_CSRF', {'when': Date.now(), periodInMinutes:0.3});
-});
+}
 
 function setInitValue(key, defaultVal){
     chrome.storage.sync.get([key], function (value){
@@ -450,6 +455,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
         if(request.msg === 'requestOSInfo'){
             chrome.runtime.getPlatformInfo((info)=>{
                 sendResponse({'os':info.os});
+            });
+        }
+        if(request.msg === 'requestReload'){
+            initialize(true).then(r=>{
+                sendResponse({res:"ok"});
             });
         }
         if(request.msg.includes("QNV")){

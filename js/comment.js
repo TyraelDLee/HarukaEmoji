@@ -33,44 +33,48 @@
     }
 
     !async function () {
-        if ((pageUrl === 't.bilibili.com' || pageID.toUpperCase().includes('AV') || pageID.toUpperCase().includes('BV') || pageID.toUpperCase().includes('CV') || exp.test(window.location.href)) && pageID.length>0) {
-            let mid = await getOwnerID();
-            let emojis = await getOwnerEmote(mid);
-            let emojisType = await getUserEmote(mid);
-            //if(emojis!==null && typeof emojis !== 'undefined'){
-                if(pageUrl==='t.bilibili.com' || exp.test(window.location.href) || pageID.toUpperCase().includes('CV')) {
-                    boundDynamicModule(emojisType, emojis);
-                    boundButtons('comment-emoji-lite');
-                    boundButtons('comment-emoji');
-                }
-                else{
-                    new MutationObserver(async ()=>{
-                        const nvid = window.location["pathname"].replaceAll("/", "").replace("video","").replace('bangumi','').replace('play','').replace('read', '');
-                        if(nvid!==null && nvid!==pageID){
-                            pageID = nvid;
-                            mid = await getOwnerID();
-                            emojis = await getOwnerEmote(mid);
-                            emojisType = await getUserEmote(mid);
-                        }
-                    }).observe(document, {subtree: true, childList: true});
-                    new MutationObserver((m) => {
-                        m.forEach(function (mutation) {
-                            if (mutation.type === "childList" && mutation.target.classList.contains("box-active") && mutation.addedNodes.length > 0) {
-                                textArea = mutation.target.childNodes[0].childNodes[1].childNodes[0];
-                                let block = mutation.addedNodes[0].childNodes[0].childNodes[0];
-                                block.addEventListener('click', () => {
-                                    if (mutation.target.classList.contains("fixed-box"))
-                                        mutation.addedNodes[0].childNodes[0].appendChild(drawUI(emojisType, emojis, [-393, 0]));
-                                    else
-                                        mutation.addedNodes[0].childNodes[0].appendChild(drawUI(emojisType, emojis, [30, 0]));
-                                });
-
+        chrome.storage.sync.get(['commentEmoji'], async (result)=>{
+            if (result.commentEmoji){
+                if ((pageUrl === 't.bilibili.com' || pageID.toUpperCase().includes('AV') || pageID.toUpperCase().includes('BV') || pageID.toUpperCase().includes('CV') || exp.test(window.location.href)) && pageID.length>0) {
+                    let mid = await getOwnerID();
+                    let emojis = await getOwnerEmote(mid);
+                    let emojisType = await getUserEmote(mid);
+                    //if(emojis!==null && typeof emojis !== 'undefined'){
+                    if(pageUrl==='t.bilibili.com' || exp.test(window.location.href) || pageID.toUpperCase().includes('CV')) {
+                        boundDynamicModule(emojisType, emojis);
+                        boundButtons('comment-emoji-lite');
+                        boundButtons('comment-emoji');
+                    }
+                    else{
+                        new MutationObserver(async ()=>{
+                            const nvid = window.location["pathname"].replaceAll("/", "").replace("video","").replace('bangumi','').replace('play','').replace('read', '');
+                            if(nvid!==null && nvid!==pageID){
+                                pageID = nvid;
+                                mid = await getOwnerID();
+                                emojis = await getOwnerEmote(mid);
+                                emojisType = await getUserEmote(mid);
                             }
-                        });
-                    }).observe(document, {subtree: true, childList: true, attributes: true});
+                        }).observe(document, {subtree: true, childList: true});
+                        new MutationObserver((m) => {
+                            m.forEach(function (mutation) {
+                                if (mutation.type === "childList" && mutation.target.classList.contains("box-active") && mutation.addedNodes.length > 0) {
+                                    textArea = mutation.target.childNodes[0].childNodes[1].childNodes[0];
+                                    let block = mutation.addedNodes[0].childNodes[0].childNodes[0];
+                                    block.addEventListener('click', () => {
+                                        if (mutation.target.classList.contains("fixed-box"))
+                                            mutation.addedNodes[0].childNodes[0].appendChild(drawUI(emojisType, emojis, [-393, 0]));
+                                        else
+                                            mutation.addedNodes[0].childNodes[0].appendChild(drawUI(emojisType, emojis, [30, 0]));
+                                    });
+
+                                }
+                            });
+                        }).observe(document, {subtree: true, childList: true, attributes: true});
+                    }
+                    //}
                 }
-            //}
-        }
+            }
+        });
     }();
 
     /**
