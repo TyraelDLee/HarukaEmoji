@@ -1755,3 +1755,16 @@ html[theme*="dark"] #page-dynamic .col-2 .section-title{
 html[theme*="dark"] .bili-dyn-interaction__item__desc .bili-rich-text-module{
     color: var(--text1);
 }
+
+html[theme*="dark"] .bpx-player-container[data-screen=full] .bpx-player-sending-bar .bpx-player-video-inputbar, html[theme*="dark"] .bpx-player-container[data-screen=web] .bpx-player-sending-bar .bpx-player-video-inputbar{
+    background-color: hsla(220, 5%, 13%,.3);
+    color: hsla(220, 5%, 13%,.6);
+}
+
+html[theme*="dark"] .bpx-player-container[data-screen=full] .bpx-player-dm-input{
+    background-color: unset;
+}
+
+html[theme*="dark"] .bpx-player-container[data-screen=full] .bpx-player-sending-bar .bpx-player-video-inputbar .bpx-player-dm-hint a, html[theme*="dark"] .bpx-player-container[data-screen=web] .bpx-player-sending-bar .bpx-player-video-inputbar .bpx-player-dm-hint a{
+    fill: hsla(220, 5%, 13%,.6);
+}
