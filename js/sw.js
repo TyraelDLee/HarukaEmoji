@@ -268,7 +268,7 @@ chrome.windows.onFocusChanged.addListener(function (wID){
 });
 chrome.runtime.onInstalled.addListener(initialize);
 
-async function initialize(reload=false){
+async function initialize(reload){
     // init setting
     await chrome.alarms.clearAll();
     chrome.notifications.getAll((notifications)=>{
@@ -310,7 +310,7 @@ async function initialize(reload=false){
      *
      * no need change for mv3 update.
      * */
-    if (!reload)
+    if (!reload || typeof reload!=="boolean")
         chrome.contextMenus.create({contexts: ["selection", "link"], title: "用bilibili搜索", type: "normal", id:"rua-contextMenu-v3"});
 
     // local states
