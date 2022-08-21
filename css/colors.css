@@ -458,7 +458,7 @@ html[theme*="dark"] .reply-tag-item {
     background-color: rgb(11, 11, 11) !important;
 }
 
-html[theme*="dark"] .bili-rich-text span, html[theme*="dark"] .bili-dyn-card-video__title, html[theme*="dark"] .bili-dyn-title__text, html[theme*="dark"] .bili-dyn-card-pgc__title, html[theme*="dark"] .bili-dyn-card-article__title, html[theme*="dark"] .dyn-additional-common__detail__title, html[theme*="dark"] .bili-rich-textarea__inner, html[theme*="dark"] .bili-topic-item__cloud__name, html[theme*="dark"] .topic-panel__nav-title, html[theme*="dark"] .bili-dyn-my-info__stat__item__count, html[theme*="dark"] .bili-dyn-my-info__name, html[theme*="dark"] .bili-dyn-live-users__title, html[theme*="dark"] .bili-dyn-live-users__item__uname, html[theme*="dark"] .bili-dyn-banner__title, html[theme*="dark"] .bili-popover, html[theme*="dark"] .user-card .info .user .name, html[theme*="dark"] .user-card .info .social a, html[theme*="dark"] .user-card .info p, html[theme*="dark"] .normal-article-holder, html[theme*="dark"] .article-container .title-container .title, html[theme*="dark"] .fixed-top-header .inner > p, html[theme*="dark"] .fixed-top-header .inner .up-info, html[theme*="dark"] .recommend-list .recommend-article-list .left-panel .article-title, html[theme*="dark"] .comment-wrapper .comment-m .b-head, html[theme*="dark"] .article-up-info .up-name, html[theme*="dark"] .international-header .mini-type .nav-link .nav-link-ul .nav-link-item .link, html[theme*="dark"] .van-popover .mini-type .nav-link .nav-link-ul .nav-link-item .link, html[theme*="dark"] .mini-type .nav-user-center .user-con .item .name, html[theme*="dark"] .suggest-wrap {
+html[theme*="dark"] .bili-rich-text__content, html[theme*="dark"] .bili-dyn-card-video__title, html[theme*="dark"] .bili-dyn-title__text, html[theme*="dark"] .bili-dyn-card-pgc__title, html[theme*="dark"] .bili-dyn-card-article__title, html[theme*="dark"] .dyn-additional-common__detail__title, html[theme*="dark"] .bili-rich-textarea__inner, html[theme*="dark"] .bili-topic-item__cloud__name, html[theme*="dark"] .topic-panel__nav-title, html[theme*="dark"] .bili-dyn-my-info__stat__item__count, html[theme*="dark"] .bili-dyn-my-info__name, html[theme*="dark"] .bili-dyn-live-users__title, html[theme*="dark"] .bili-dyn-live-users__item__uname, html[theme*="dark"] .bili-dyn-banner__title, html[theme*="dark"] .bili-popover, html[theme*="dark"] .user-card .info .user .name, html[theme*="dark"] .user-card .info .social a, html[theme*="dark"] .user-card .info p, html[theme*="dark"] .normal-article-holder, html[theme*="dark"] .article-container .title-container .title, html[theme*="dark"] .fixed-top-header .inner > p, html[theme*="dark"] .fixed-top-header .inner .up-info, html[theme*="dark"] .recommend-list .recommend-article-list .left-panel .article-title, html[theme*="dark"] .comment-wrapper .comment-m .b-head, html[theme*="dark"] .article-up-info .up-name, html[theme*="dark"] .international-header .mini-type .nav-link .nav-link-ul .nav-link-item .link, html[theme*="dark"] .van-popover .mini-type .nav-link .nav-link-ul .nav-link-item .link, html[theme*="dark"] .mini-type .nav-user-center .user-con .item .name, html[theme*="dark"] .suggest-wrap {
     color: var(--text1);
 }
 
@@ -1733,7 +1733,7 @@ html[theme*="dark"] #comment_module .bb-comment .list-item:hover {
 }
 
 html[theme*="dark"] .bili-rich-text-link, html[theme*="dark"] .bili-rich-text-module, html[theme*="dark"] .bili-rich-text-topic{
-    color: #178bcf!important;
+    color: #178bcf;
 }
 
 html[theme*="dark"] .bili-rich-text-link:hover, html[theme*="dark"] .bili-rich-text-module:hover, html[theme*="dark"] .bili-rich-text-topic:hover{
@@ -1742,4 +1742,16 @@ html[theme*="dark"] .bili-rich-text-link:hover, html[theme*="dark"] .bili-rich-t
 
 html[theme*="dark"] .bb-comment .comment-list .list-item .reply-box .view-more .btn-more:hover, html[theme*="dark"] .comment-bilibili-fold .comment-list .list-item .reply-box .view-more .btn-more:hover{
     background: var(--Ga2);
+}
+
+html[theme*="dark"] .subscribe-list li .subscribe-title[data-v-c1c7c0ee]{
+    color: var(--text1);
+}
+
+html[theme*="dark"] #page-dynamic .col-2 .section-title{
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .bili-dyn-interaction__item__desc .bili-rich-text-module{
+    color: var(--text1);
 }
