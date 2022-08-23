@@ -1768,3 +1768,15 @@ html[theme*="dark"] .bpx-player-container[data-screen=full] .bpx-player-dm-input
 html[theme*="dark"] .bpx-player-container[data-screen=full] .bpx-player-sending-bar .bpx-player-video-inputbar .bpx-player-dm-hint a, html[theme*="dark"] .bpx-player-container[data-screen=web] .bpx-player-sending-bar .bpx-player-video-inputbar .bpx-player-dm-hint a{
     fill: hsla(220, 5%, 13%,.6);
 }
+
+html[theme*="dark"] .error-body{
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .error-container .error-text{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .divider-last[data-v-1df9d092]::before, html[theme*="dark"] .divider-last[data-v-1df9d092]::after{
+    background-color: var(--Ga2);
+}
