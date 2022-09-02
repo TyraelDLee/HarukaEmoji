@@ -226,13 +226,17 @@ html[theme*="dark"] .rua-danmaku-time:hover, html[theme*="dark"] .rua-danmaku-co
     width: 300px;
     height: 100px;
     position: absolute;
-    background: #ffffff;
+    background: var(--bg1);
     border-radius: 5px;
     box-shadow: rgb(127 127 127) 0 0 9px;
     user-select: none;
     animation-name: mousein;
     animation-duration: 500ms;
     animation-fill-mode: forwards;
+}
+
+html[theme*="dark"] .rua-danmaku-user-host{
+    box-shadow: var(--Ga2) 0 0 9px;
 }
 
 .rua-video-right-info{

@@ -20,6 +20,7 @@
         <item url="file://$PROJECT_DIR$/js/comment.min.js" />
         <item url="file://$PROJECT_DIR$/js/darkMode.min.js" />
         <item url="file://$PROJECT_DIR$/js/haruka.min.js" />
+        <item url="file://$PROJECT_DIR$/js/liveStay.min.js" />
         <item url="file://$PROJECT_DIR$/js/nana.min.js" />
         <item url="file://$PROJECT_DIR$/js/popup.min.js" />
         <item url="file://$PROJECT_DIR$/js/protobuf.min.js" />
@@ -28,6 +29,7 @@
         <item url="file://$PROJECT_DIR$/js/seki.min.js" />
         <item url="file://$PROJECT_DIR$/js/setting.min.js" />
         <item url="file://$PROJECT_DIR$/js/sw.min.js" />
+        <item url="file://$PROJECT_DIR$/js/test.min.js" />
         <item url="file://$PROJECT_DIR$/js/yuka.min.js" />
       </sourceFilesUrls>
     </properties>
@@ -50,6 +52,7 @@
       <root url="file://$PROJECT_DIR$/js/comment.min.js" />
       <root url="file://$PROJECT_DIR$/js/darkMode.min.js" />
       <root url="file://$PROJECT_DIR$/js/haruka.min.js" />
+      <root url="file://$PROJECT_DIR$/js/liveStay.min.js" />
       <root url="file://$PROJECT_DIR$/js/nana.min.js" />
       <root url="file://$PROJECT_DIR$/js/popup.min.js" />
       <root url="file://$PROJECT_DIR$/js/protobuf.min.js" />
@@ -58,6 +61,7 @@
       <root url="file://$PROJECT_DIR$/js/seki.min.js" />
       <root url="file://$PROJECT_DIR$/js/setting.min.js" />
       <root url="file://$PROJECT_DIR$/js/sw.min.js" />
+      <root url="file://$PROJECT_DIR$/js/test.min.js" />
       <root url="file://$PROJECT_DIR$/js/yuka.min.js" />
     </CLASSES>
     <JAVADOC />

@@ -40,7 +40,7 @@
     "css": ["css/colors.min.css"],
     "js": ["js/darkMode.min.js"],
     "matches": ["*://*.bilibili.com/*"],
-    "exclude_matches": ["*://*.bilibili.com/v/customer-service*", "*://link.bilibili.com/p/center/index*", "*://link.bilibili.com/p/help/index*", "*://account.bilibili.com/account*", "*://passport.bilibili.com/account/security*", "*://www.bilibili.com/appeal/*", "*://live.bilibili.com/p/html/live-lottery/anchor-join.html*", "*://live.bilibili.com/p/html/live-app-hotrank/result.html*"],
+    "exclude_matches": ["*://*.bilibili.com/v/customer-service*", "*://link.bilibili.com/p/center/index*", "*://link.bilibili.com/p/help/index*", "*://account.bilibili.com/account*", "*://passport.bilibili.com/account/security*", "*://www.bilibili.com/appeal/*", "*://live.bilibili.com/p/html/live-lottery/anchor-join.html*", "*://live.bilibili.com/p/html/live-app-hotrank/result.html*", "*://live.bilibili.com/p/html/live-fansmedal-wall/*"],
     "run_at": "document_end"
   },{
     "all_frames": true,
@@ -110,6 +110,7 @@
   },
   "host_permissions": [
     "https://api.live.bilibili.com/*",
+    "https://live-trace.bilibili.com/*",
     "https://api.bilibili.com/*",
     "https://live.bilibili.com/",
     "https://www.bilibili.com/",

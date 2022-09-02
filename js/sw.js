@@ -315,7 +315,7 @@ async function initialize(reload){
 
     // local states
     chrome.alarms.create('checkUpd', {'when':Date.now(), periodInMinutes:60*12});
-    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "dynamic_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0/*'{"biz_msg_follow_unread":0,"biz_msg_unfollow_unread":0,"dustbin_push_msg":0,"dustbin_unread":0,"follow_unread":0,"unfollow_push_msg":0,"unfollow_unread":0}'*/, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[]}, ()=>{});
+    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "dynamic_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0/*'{"biz_msg_follow_unread":0,"biz_msg_unfollow_unread":0,"dustbin_push_msg":0,"dustbin_unread":0,"follow_unread":0,"unfollow_push_msg":0,"unfollow_unread":0}'*/, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[], 'watchingList': {}}, ()=>{});
     chrome.alarms.create('getUID_CSRF', {'when': Date.now(), periodInMinutes:0.3});
 }
 
@@ -491,8 +491,9 @@ function convertMSToS(time){
  * @param {array} uids the group of followed uid.
  * */
 function queryLivingRoom(uids) {
-    chrome.storage.local.get(['uuid', 'notificationList'],(info)=>{
+    chrome.storage.local.get(['uuid', 'notificationList', 'watchingList'],(info)=>{
         let notificationList = info.notificationList;
+        let watchingList = info.watchingList;
         let body = '{"uids": [' + uids +']}';
         fetch("https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids?requestFrom=rua5",{
             method:"POST",
@@ -516,9 +517,11 @@ function queryLivingRoom(uids) {
                                 if(data[uids[i]]["live_status"] !== 1 && notificationList.indexOf(data[uids[i]]["room_id"]) !== -1){
                                     chrome.notifications.clear(`${uids[i]}:${data[uids[i]]["room_id"]}:live.bilibili.com/`);
                                     notificationList.splice(notificationList.indexOf(data[uids[i]]["room_id"]),1);
+                                    watchingList[data[uids[i]]["room_id"]+""] = -2;
                                 }
                                 if (data[uids[i]]["live_status"] === 1 && notificationList.indexOf(data[uids[i]]["room_id"]) === -1) {
                                     notificationList.push(data[uids[i]]["room_id"]);
+                                    watchingList[data[uids[i]]["room_id"]+""] = 0;
                                     chrome.storage.sync.get(["notification"], (result)=>{
                                         if(result.notification) {
                                             console.log(data[uids[i]]["title"] + " " + data[uids[i]]["uname"] + " " + new Date());
@@ -528,7 +531,7 @@ function queryLivingRoom(uids) {
                                 }
                             }
                         }
-                        chrome.storage.local.set({'notificationList': notificationList}, ()=>{});
+                        chrome.storage.local.set({'notificationList': notificationList, 'watchingList': watchingList}, ()=>{});
                     });
 
                 }
@@ -625,6 +628,7 @@ function scheduleCheckIn(shift){
     chrome.alarms.create('checkIn', {'when':Date.now()+shift, periodInMinutes:60*12});
     chrome.alarms.create('bcoin', {'when':Date.now()+1000+shift, periodInMinutes:60*12});
     chrome.alarms.create('daka', {'when':Date.now()+2000+shift, periodInMinutes:60*6});
+    // chrome.alarms.create('watching', {'when':Date.now()+2000+shift, periodInMinutes:0.34});
 }
 
 /**
@@ -692,6 +696,9 @@ chrome.alarms.onAlarm.addListener((alarm)=>{
                 break;
             case 'dakaRoom':
                 daka(info.dakaUid, info.jct, "打卡");
+                break;
+            case 'watching':
+                watching();
                 break;
         }
     });
@@ -807,7 +814,6 @@ function queryBcoin(){
                 }).catch(msg =>{errorHandler('bcoin', msg, 'queryBcoin(); line 765');});
         }
     });
-
 }
 
 /**
@@ -863,7 +869,6 @@ function videoNotify(UUID){
                 });
             })
             .catch(msg =>{errorHandler('getNewVideos',msg, 'videoNotify(); line 819');});
-
     });
 }
 
@@ -1144,6 +1149,71 @@ function setBadge(title, text){
     chrome.action.setTitle({title: title});
     chrome.action.setBadgeText({text: text});
 }
+
+// function encodeRoomID(nextInterval, roomId) {
+//     var e = nextInterval
+//         , r = roomId
+//         , n = 1
+//         , o = void 0 === n ? 1 : n
+//         , i = 0;
+//     return function(t) {
+//         for (var e, r, n = String(t), o = "", i = 0, a = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="; n.charAt(0 | i) || (a = "=", i % 1); o += a.charAt(63 & e >> 8 - i % 1 * 8)) {
+//             if ((r = n.charCodeAt(i += 3 / 4)) > 255)
+//                 throw new Error("String contains an invalid character");
+//             e = e << 8 | r
+//         }
+//         return o
+//     }(e + "|" + r + "|" + o + "|" + (void 0 === i ? 0 : i));
+// }
+
+// function sendHB(roomId, nextInterval){
+//     return fetch(`https://live-trace.bilibili.com/xlive/rdata-interface/v1/heartbeat/webHeartBeat?hb=${encodeURIComponent(encodeRoomID(nextInterval, roomId))}&pf=web`, {
+//         method:"GET",
+//         credentials:"include",
+//         body:null
+//     }).then(r=>r.json())
+//         .then(json=>{
+//             if(json['code']===0){
+//                 return json['data']['next_interval'];
+//             }
+//             else return -1;
+//         })
+//         .catch(e=>{return -1;});
+// }
+
+function watching(){
+    chrome.storage.local.get(['watchingList'], async (r)=>{
+        let obj = r['watchingList'];
+        for(let key in obj){
+            if (obj[key]>0){
+                //await sendHB(key, obj[key]).then(r=>{obj[key]=r});
+            }
+        }
+        console.log(obj);
+        chrome.storage.local.set({'watchingList':obj}, ()=>{});
+    });
+}
+//https://live-trace.bilibili.com/xlive/data-interface/v1/x25Kn/E, https://live-trace.bilibili.com/xlive/data-interface/v1/x25Kn/X
+// id: [9,371,0,573893] => id: [9,371,index,roomid]
+// device: ["AUTO1516613312215602","6dff2d9c-3d97-4dcf-b5f0-a4a6b9160737"]
+// ruid: liver uid
+// ts: 1661334111626 timestamp
+// is_patch: 1
+// ua: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36
+// csrf
+// heart_beat: [
+//  {"s":"fab13809cca303cf381115bc5458544c4e511b641612932c5f69300c82553626cd66d005b003124a27625a497a14e00cfd7a211b4668f363458846e07d0d6b40",
+//      "id":"[9,371,40,573893]","device":"[\"AUTO1516613312215602\",\"6ab44b77-1d1b-40e8-848c-5a0ce5df1db6\"]",
+//      "ruid":15641218,
+//      "ets":1661334031,
+//      "benchmark":"seacasdgyijfhofiuxoannn",
+//      "time":46,
+//      "ts":1661334097662,
+//      "ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"}
+//]
+// ets: last request ts
+
+
 
 // This is the service worker for mv3 which some functions may not support yet.
 

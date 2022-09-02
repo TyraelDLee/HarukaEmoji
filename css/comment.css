@@ -146,7 +146,7 @@
     fill: currentColor;
 }
 
-.emoji-panel{
+html[emoji*="up"] .emoji-panel{
     display: none!important;
 }
 

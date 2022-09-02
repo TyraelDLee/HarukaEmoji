@@ -52,12 +52,18 @@
         if (window.location.href.includes('message.bilibili.com')){
             document.body.style.background = `url(${chrome.runtime.getURL("../images/misc/infocenterbg.dark.webp")}) top/cover no-repeat fixed`;
         }
+        if(window.location.href.includes('t.bilibili.com/vote/h5/index/')){
+            document.body.classList.replace('light', 'dark');
+        }
     }
 
     function setLight(){
         document.documentElement.removeAttribute("theme");
         if (window.location.href.includes('message.bilibili.com')){
             document.body.style.background = `url(${chrome.runtime.getURL("../images/misc/infocenterbg.light.webp")}) top/cover no-repeat fixed`;
+        }
+        if(window.location.href.includes('t.bilibili.com/vote/h5/index/')){
+            document.body.classList.replace('dark', 'light');
         }
     }
 }();

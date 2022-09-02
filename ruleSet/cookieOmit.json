@@ -254,5 +254,21 @@
     "condition": {
       "regexFilter": "api\\.bilibili\\.com/x/web-interface/nav.*"
     }
+  },
+  {
+    "id": 116,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Cookie",
+          "operation": "remove"
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "live-trace\\.bilibili\\.com/xlive/rdata-interface/v1/heartbeat/webHeartBeat*"
+    }
   }
 ]

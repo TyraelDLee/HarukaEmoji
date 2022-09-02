@@ -1780,3 +1780,116 @@ html[theme*="dark"] .error-container .error-text{
 html[theme*="dark"] .divider-last[data-v-1df9d092]::before, html[theme*="dark"] .divider-last[data-v-1df9d092]::after{
     background-color: var(--Ga2);
 }
+
+html[theme*="dark"] .bili-dyn-list-empty{
+    background: var(--bg1);
+}
+
+html[theme*="dark"] .go-top-m .go-top[_v-8b9a26a2]{
+    background-color: var(--bg2);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .go-top-m .go-top[_v-8b9a26a2]:hover{
+    background-color: #00a1d6;
+    border-color: #00a1d6;
+}
+
+html[theme*="dark"] .normal-article-holder .color-default, html[theme*="dark"] .read-article-holder .article-card-holder .article-card-wrap .title, html[theme*="dark"] .normal-article-holder h1{
+    color: var(--text1);
+}
+
+html[theme*="dark"] #page-follows .follow-main .follow-action-top .back-to-info{
+    color: var(--text1);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] #page-follows .follow-search-result{
+    color: var(--text1);
+}
+
+html[theme*="dark"] #page-follows .follow-main .follow-action-top, html[theme*="dark"] #page-collection-detail .filter{
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] #page-follows .follow-main .follow-action-top .back-to-info:hover{
+    color: #00a1d6;
+    border-color: #00a1d6;
+}
+
+html[theme*="dark"] .i-pin-c{
+    box-shadow: 0 0 0 1px var(--Ga2);
+}
+
+html[theme*="dark"] #page-collection-detail .channel-detail .content .breadcrumb .item, html[theme*="dark"] #page-collection-detail .channel-detail .content .breadcrumb .item{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .view-note .ql-editor{
+    background:var(--bg1);
+    color:var(--text2);
+}
+
+html[theme*="dark"] .view-note h1, html[theme*="dark"] .view-note h2, html[theme*="dark"] .view-note h3, html[theme*="dark"] .view-note h4, html[theme*="dark"] .view-note h5, html[theme*="dark"] .view-note h6{
+    color:var(--text1);
+}
+
+html[theme*="dark"] .article-content .view-note .ql-editor .time-tag-item{
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .view-note .ql-tag-blot .time-tag-item{
+    background: var(--bg2_float);
+}
+
+html[theme*="dark"] .view-note .ql-tag-blot .bili-note-iconfont{
+    color:var(--text3);
+}
+
+html[theme*="dark"] .view-note .ql-tag-blot .time-tag-item__text{
+    color:var(--text3);
+}
+
+html[theme*="dark"] .dyn-vote__body{
+    background-color: var(--bg2_float);
+}
+
+html[theme*="dark"] .dyn-vote__body:hover{
+    box-shadow: 0 3px 10px 0 hsl(210deg 8% 25% / 44%);
+}
+
+html[theme*="dark"] .dyn-vote{
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .dyn-vote__cover{
+    background-color: rgb(0, 23, 31);
+}
+
+html[theme*="dark"] .dyn-vote__detail__title{
+    color:var(--text1);
+}
+
+html[theme*="dark"] .dyn-vote__body:hover .dyn-vote__detail__title{
+    color: #00a1d6;
+}
+
+html[theme*="dark"] .bili-popup__header{
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .bili-popup__wrap{
+    background-color: var(--bg1_float)!important;
+}
+
+html[theme*="dark"] .bili-popup__header__title{
+    color:var(--text1);
+}
+
+html[theme*="dark"] .vote-result-comment{
+    background-color: var(--bg1_float)
+}
+
+html[theme*="dark"] .user-card .card-content .card-user-info .card-user-name[data-v-432df8b3]{
+    color: var(--b6ab3cea,var(--text1));
+}
