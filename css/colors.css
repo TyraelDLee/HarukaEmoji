@@ -1893,3 +1893,80 @@ html[theme*="dark"] .vote-result-comment{
 html[theme*="dark"] .user-card .card-content .card-user-info .card-user-name[data-v-432df8b3]{
     color: var(--b6ab3cea,var(--text1));
 }
+
+html[theme*="dark"] .main-container .season-list .ss-list-wrapper .expand-more{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] .reply-tags span{
+    background-color: var(--bg2)!important;
+}
+
+html[theme*="dark"] .dyn-reserve__card.cover-style{
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .bili-dyn-forward__item, html[theme*="dark"] .bili-dyn-forward__more{
+    border-top: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .pr-loading-cover__bar{
+    background: var(--bg1);
+}
+
+html[theme*="dark"] .pr-loading-cover__bar .inner-bar{
+    background: var(--bg2_float);
+}
+
+html[theme*="dark"] .pr-loading-cover__bar .inner-bar .inner-bar__btn{
+    background: var(--bg1_float);
+}
+
+html[theme*="dark"] .pr-chat-inner .pr-chat-header{
+    background-color: var(--bg2);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .chat-container .input-area-default[data-v-64664322]{
+    border-top: 1px solid var(--Ga2);
+    background: var(--bg2);
+}
+
+html[theme*="dark"] .chat-container .input-area-default .input-c[data-v-64664322]{
+    background: var(--bg2_float);
+}
+
+html[theme*="dark"] .chat-container .input-area-default .input-c.border[data-v-64664322]{
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .static-popup[data-v-58db55ec]{
+    border: 1px solid var(--Ga2);
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .emoji[data-v-348ac5d4]{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .title[data-v-58db55ec]{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .pagination[data-v-ea36f0c2]{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] .emoji-cover.selected[data-v-ea36f0c2]{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .page-controller .prev[data-v-ea36f0c2]:hover, html[theme*="dark"] .page-controller .next[data-v-ea36f0c2]:hover{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .paging-box-big .current,html[theme*="dark"]  .paging-box-big .next, html[theme*="dark"] .paging-box-big .prev, html[theme*="dark"] .paging-box-big .tcd-number, html[theme*="dark"] .paging-box-big .dian{
+    background-color: var(--bg2);
+    border: solid 1px var(--Ga2);
+}
+
