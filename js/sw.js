@@ -653,9 +653,9 @@ function reloadCookies() {
                 if (uids.uuid !== -1 && uids.uuid !== uids.p_uuid) {
                     // log in info changed then load following list and start update liver stream info every 3 min.
                     console.log("Session info got.");
-                    chrome.alarms.create('getNewVideos',{'when': Date.now(), periodInMinutes: 0.2});
+                    chrome.alarms.create('getNewVideos',{'when': Date.now(), periodInMinutes: 0.5});
                     chrome.alarms.create('getNewUnreads', {'when': Date.now()+1000, periodInMinutes: 0.2});
-                    chrome.alarms.create('getNewDynamics', {'when': Date.now()+2000, periodInMinutes: 0.2});
+                    //chrome.alarms.create('getNewDynamics', {'when': Date.now()+2000, periodInMinutes: 0.2});
                     scheduleCheckIn(3000);
                 }
                 chrome.storage.local.set({'p_uuid': uids.uuid},()=>{});
@@ -683,7 +683,7 @@ chrome.alarms.onAlarm.addListener((alarm)=>{
                 getNewUnread();
                 break;
             case 'getNewDynamics':
-                dynamicNotify();
+                //dynamicNotify();
                 break;
             case 'checkIn':
                 checkingIn();
@@ -865,6 +865,7 @@ function videoNotify(UUID){
                             chrome.storage.local.set({"dynamic_id_list": dynamic_id_list}, ()=>{});
                         }
                     }
+                    dynamicNotify(); // sync
                     chrome.storage.local.set({'videoInit': false}, ()=>{});
                 });
             })
