@@ -10,25 +10,25 @@
             textArea = document.activeElement;
         }
     }
-    function boundDynamicModule(emojisType, emojis){
-        document.getElementById('app').addEventListener('click', appEvent);
+    function boundDynamicModule(emojisType, emojis, emojiTray){
         try{
-            document.getElementsByClassName('emoji-box')[0].innerHTML = '';
-            document.getElementsByClassName('emoji-box')[0].appendChild(drawUI(emojisType, emojis, [0, 0]));
+            document.getElementById('app').removeEventListener('click', appEvent);
+            document.getElementById('app').addEventListener('click', appEvent);
+            emojiTray.appendChild(drawUI(emojisType, emojis, [0, 0]));
         }catch (e){
             document.getElementById('app').removeEventListener('click', appEvent);
-            setTimeout(()=>{boundDynamicModule(emojisType, emojis)}, 1000);
         }
     }
 
     function boundButtons(className){
         try{
-            document.getElementsByClassName(className)[0].addEventListener('click', ()=>{
-                textArea = document.getElementsByClassName(className)[0].parentElement.getElementsByClassName('textarea-container')[0].getElementsByTagName('textarea')[0];
-            });
+            for (let i = 0; i < document.getElementsByClassName(className).length; i++) {
+                document.getElementsByClassName(className)[i].addEventListener('click', ()=>{
+                    textArea = document.getElementsByClassName(className)[i].parentElement.getElementsByClassName('textarea-container')[0].getElementsByTagName('textarea')[0];
+                });
+            }
         }catch (e) {
             console.log(e);
-            setTimeout(()=>{boundButtons(className)}, 1000);
         }
     }
 
@@ -40,11 +40,29 @@
                     let mid = await getOwnerID();
                     let emojis = await getOwnerEmote(mid);
                     let emojisType = await getUserEmote(mid);
-                    //if(emojis!==null && typeof emojis !== 'undefined'){
                     if(pageUrl==='t.bilibili.com' || exp.test(window.location.href) || pageID.toUpperCase().includes('CV')) {
-                        boundDynamicModule(emojisType, emojis);
-                        boundButtons('comment-emoji-lite');
-                        boundButtons('comment-emoji');
+                        new MutationObserver((m)=>{
+                            m.forEach((mutation)=>{
+                                if (mutation.type === "childList" && mutation.target.classList.contains("bb-comment") && mutation.addedNodes.length > 0){
+                                    boundButtons('comment-emoji');
+                                }
+                                if (mutation.type === "childList" && mutation.target.classList.contains("emoji-wrap")){
+                                    boundDynamicModule(emojisType, emojis, mutation.target.parentElement);
+                                }
+                            });
+                        }).observe(document, {subtree:true, childList:true, attributes:true});
+                        //add listener to listen "rua-emoji-panel" removed and add it back.
+                        // const obs = new MutationObserver((m)=>{
+                        //     m.forEach((mutation)=>{
+                        //         mutation.removedNodes.forEach((removedNode)=>{
+                        //             if(removedNode.id === 'rua-emoji-panel') {
+                        //                 boundDynamicModule(emojisType, emojis, removedNode.parentElement);
+                        //                 //obs.disconnect();
+                        //             }
+                        //         });
+                        //     });
+                        // });
+                        obs.observe(document, {subtree:true, childList:true, attributes:true});
                     }
                     else{
                         new MutationObserver(async ()=>{
@@ -72,7 +90,6 @@
                             });
                         }).observe(document, {subtree: true, childList: true, attributes: true});
                     }
-                    //}
                 }
             }
         });

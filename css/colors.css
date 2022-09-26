@@ -1985,3 +1985,15 @@ html[theme*="dark"] .paging-box .tcd-number{
 html[theme*="dark"] .bb-comment .comment-list .list-item:last-child .con, html[theme*="dark"] .comment-bilibili-fold .comment-list .list-item:last-child .con{
     border-bottom-color: var(--Ga2);
 }
+
+html[theme*="dark"] rect.st0 {
+    fill: none!important;
+}
+
+html[theme*="dark"] .user-card{
+
+}
+
+html[theme*="dark"] #page-series-detail .channel-detail .content .breadcrumb .item, html[theme*="dark"] #page-series-index .channel-item .channel-name[data-v-75cb0f6e]{
+    color: var(--text1);
+}
