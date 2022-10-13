@@ -824,6 +824,10 @@ function queryBcoin(){
 function videoNotify(UUID){
     chrome.storage.local.get(['dynamic_id_list', 'videoInit'], (info)=>{
         let dynamic_id_list = info.dynamic_id_list, nowTS = Date.now() / 1000.0;
+        //https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all?timezone_offset=-660&type=all&page=1
+        //https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all?timezone_offset=-660&type=video&page=1 //视频
+        //https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all?timezone_offset=-660&type=pgc&page=1 // 番剧
+        //https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all?timezone_offset=-660&type=article&page=1 // 专栏
         fetch("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=8,512,4097,4098,4099,4100,4101",{
             method:"GET",
             credentials: 'include',
@@ -1230,3 +1234,4 @@ function watching(){
 //todo: hidden √
 //todo: mock Android app request. no needed anymore
 //todo: add support for mv2.😅 √
+//todo: change the dynamic api.

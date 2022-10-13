@@ -1997,3 +1997,15 @@ html[theme*="dark"] .user-card{
 html[theme*="dark"] #page-series-detail .channel-detail .content .breadcrumb .item, html[theme*="dark"] #page-series-index .channel-item .channel-name[data-v-75cb0f6e]{
     color: var(--text1);
 }
+
+html[theme*="dark"] .favInfo-box .collection-details .title .title-name{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .favInfo-box .collection-cover .shadow-first{
+    background: #343434;
+}
+
+html[theme*="dark"] .favInfo-box .collection-cover .shadow-second{
+    background: #565656;
+}
