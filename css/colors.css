@@ -2009,3 +2009,15 @@ html[theme*="dark"] .favInfo-box .collection-cover .shadow-first{
 html[theme*="dark"] .favInfo-box .collection-cover .shadow-second{
     background: #565656;
 }
+
+html[theme*="dark"] .song-title[data-v-60025db2], html[theme*="dark"] .song-intro[data-v-60025db2], html[theme*="dark"] .song-play-num span[data-v-60025db2], html[theme*="dark"] .b-head-t[data-v-60025db2], html[theme*="dark"] .b-head[data-v-60025db2]{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .follow-container .follow-right .follow-intro[data-v-5d8dc527]{
+    color: var(--text1);
+}
+
+html[theme*="dark"] #song-marks .bb-comment{
+    background-color: var(--bg1_float) !important;
+}
