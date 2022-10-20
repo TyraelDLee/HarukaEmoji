@@ -211,10 +211,10 @@
         emojiContent.classList.add('rua-emoji-content');
         emojiTab.classList.add('rua-emoji-tab');
         emojiSlider.classList.add('rua-emoji-slider');
-        emojiLeftArrow.setAttribute('style', '--e6027e24:#c9ccd0; --78307116:16px;');
+        emojiLeftArrow.setAttribute('style', 'color: rgb(97, 102, 109); --c1c9b008:#61666d;');
         emojiLeftArrow.classList.add('svg-icon','left-arrow','use-color','slider-pre', 'rua-arrow');
         emojiLeftArrow.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.67413 1.57564C7.90844 1.80995 7.90844 2.18985 7.67413 2.42417L4.09839 5.9999L7.67413 9.57564C7.90844 9.80995 7.90844 10.1899 7.67413 10.4242C7.43981 10.6585 7.05992 10.6585 6.8256 10.4242L3.00238 6.60094C2.67043 6.269 2.67043 5.73081 3.00238 5.39886L6.8256 1.57564C7.05992 1.34132 7.43981 1.34132 7.67413 1.57564Z" fill="#A2A7AE"></path></svg>`;
-        (emojiCat['packages'].length>5)?emojiRightArrow.setAttribute('style', '--e6027e24:#61666d; --78307116:16px;'):emojiRightArrow.setAttribute('style', '--e6027e24:#c9ccd0; --78307116:16px;');
+        (emojiCat['packages'].length>5)?emojiRightArrow.setAttribute('style', 'color: rgb(201, 204, 208); --c1c9b008:#c9ccd0;'):emojiRightArrow.setAttribute('style', '--e6027e24:#c9ccd0; --78307116:16px;');
         emojiRightArrow.classList.add('svg-icon','right-arrow','use-color','slider-pre', 'rua-arrow');
         emojiRightArrow.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.82576 2.07564C5.59145 2.30995 5.59145 2.68985 5.82576 2.92417L10.9015 7.9999L5.82576 13.0756C5.59145 13.31 5.59145 13.6899 5.82576 13.9242C6.06008 14.1585 6.43997 14.1585 6.67429 13.9242L11.9386 8.65987C12.3031 8.29538 12.3031 7.70443 11.9386 7.33994L6.67429 2.07564C6.43997 1.84132 6.06008 1.84132 5.82576 2.07564Z" fill="#E19C2C"></path></svg>`;
 
@@ -234,12 +234,13 @@
                 if (i>1){
                     i-=10;
                     i= Math.max(i,1);
+
                     if(i<emojiCat['packages'].length)
-                        emojiRightArrow.setAttribute('style', '--e6027e24:#61666d; --78307116:16px;');
+                        emojiRightArrow.setAttribute('style', 'color: rgb(201, 204, 208); --c1c9b008:#c9ccd0;');
                     if(i===1)
-                        emojiLeftArrow.setAttribute('style', '--e6027e24:#c9ccd0; --78307116:16px;');
+                        emojiLeftArrow.setAttribute('style', 'color: rgb(97, 102, 109); --c1c9b008:#61666d;');
                     else
-                        emojiLeftArrow.setAttribute('style', '--e6027e24:#61666d; --78307116:16px;');
+                        emojiLeftArrow.setAttribute('style', 'color: rgb(201, 204, 208); --c1c9b008:#c9ccd0;');
                     let x = i+5;
                     updateSlider(x);
                 }
@@ -251,11 +252,11 @@
                 if (i<emojiCat['packages'].length) {
                     i= Math.min(i,emojiCat['packages'].length-1);
                     if(i>1)
-                        emojiLeftArrow.setAttribute('style', '--e6027e24:#61666d; --78307116:16px;');
-                    if(i+5>emojiCat['packages'].length-1)
-                        emojiRightArrow.setAttribute('style', '--e6027e24:#c9ccd0; --78307116:16px;');
+                        emojiLeftArrow.setAttribute('style', 'color: rgb(201, 204, 208); --c1c9b008:#c9ccd0;');
+                    if(i+5<emojiCat['packages'].length-1)
+                        emojiRightArrow.setAttribute('style', 'color: rgb(201, 204, 208); --c1c9b008:#c9ccd0;');
                     else
-                        emojiRightArrow.setAttribute('style', '--e6027e24:#61666d; --78307116:16px;');
+                        emojiRightArrow.setAttribute('style', 'color: rgb(97, 102, 109); --c1c9b008:#61666d;');
                     let x = i+5;
                     updateSlider(x);
                 }

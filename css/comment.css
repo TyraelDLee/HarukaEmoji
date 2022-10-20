@@ -137,9 +137,9 @@
 }
 
 .rua-arrow{
-    color: var(--2c6ec6e4);
-    width: var(--72eca176);
-    height: var(--72eca176);
+    color: var(--c1c9b008);
+    width: 16px;
+    height: 16px;
 }
 
 .rua-arrow svg path{

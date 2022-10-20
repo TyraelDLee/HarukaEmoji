@@ -1235,3 +1235,5 @@ function watching(){
 //todo: mock Android app request. no needed anymore
 //todo: add support for mv2.😅 √
 //todo: change the dynamic api.
+
+//new followed list: https://api.bilibili.com/x/v2/reply/at
