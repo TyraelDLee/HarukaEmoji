@@ -526,8 +526,10 @@
                 await chrome.runtime.sendMessage({ msg: "get_LoginStatus" }, function (vip){
                     vipStatus = vip;
                 });
-                await getHDR8K(cid, 125, 'hdr', 'HDR');
-                await getHDR8K(cid, 127, '8k', '8K 超高清');
+                await getDASH(cid, 125, 'hdr', 'HDR');
+                await getDASH(cid, 127, '8k', '8K 超高清');
+                await getDASH(cid, 120, '4kdash', '4K DASH');
+                await getDASH(cid, 116, 'fhd60', '1080P 60');
                 for (let i = 0; i < json["data"]["durl"].length; i++) {
                     videoDuration += json["data"]["durl"][i]["length"]-1+1;
                 }
@@ -608,7 +610,7 @@
      * @param {string} type request audio.
      * @param {string} title the text shown on button.
      * */
-    async function getHDR8K(cid, qn, type, title){
+    async function getDASH(cid, qn, type, title){
         await fetch(`https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=${qn}&fourk=1&fnver=0&fnval=4048`,{
             method:'GET',
             credentials:'include',

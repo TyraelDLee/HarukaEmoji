@@ -312,10 +312,13 @@ async function initialize(reload){
      * */
     if (!reload || typeof reload!=="boolean")
         chrome.contextMenus.create({contexts: ["selection", "link"], title: "用bilibili搜索", type: "normal", id:"rua-contextMenu-v3"});
-
+    else{
+        chrome.alarms.clear('checkUpd').then(r=>{console.log(`checkUpd was cleared ${r}`);});
+        chrome.alarms.clear('getUID_CSRF').then(r=>{console.log(`getUID_CSRF was cleared ${r}`);});
+    }
     // local states
     chrome.alarms.create('checkUpd', {'when':Date.now(), periodInMinutes:60*12});
-    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "dynamic_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0/*'{"biz_msg_follow_unread":0,"biz_msg_unfollow_unread":0,"dustbin_push_msg":0,"dustbin_unread":0,"follow_unread":0,"unfollow_push_msg":0,"unfollow_unread":0}'*/, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[], 'watchingList': {}}, ()=>{});
+    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "video_id_list": [],"pgc_id_list": [],"article_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0/*'{"biz_msg_follow_unread":0,"biz_msg_unfollow_unread":0,"dustbin_push_msg":0,"dustbin_unread":0,"follow_unread":0,"unfollow_push_msg":0,"unfollow_unread":0}'*/, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[], 'watchingList': {}}, ()=>{});
     chrome.alarms.create('getUID_CSRF', {'when': Date.now(), periodInMinutes:0.3});
 }
 
@@ -481,6 +484,42 @@ function convertMSToS(time){
     return hour+mint+":"+secs;
 }
 
+function getFollowingList(){
+    let flag = new AbortController();
+    setTimeout(()=>{
+        flag.abort('timeout');
+    }, 2000);
+    fetch(`https://api.bilibili.com/x/v2/reply/at`, {
+        method:'GET',
+        credentials: 'include',
+        signal: flag.signal,
+        body:null
+    }).then(r=>r.json())
+        .then(json=>{
+            if (json['code']===0){
+                chrome.storage.sync.get(["blackListLive"], (result)=>{
+                    let followList = [];
+                    for (let i = 0; i < json['data']['groups'].length; i++) {
+                        if (json['data']['groups'][''+i]['group_name'] === '我的关注'){
+                            for (let j = 0; j < json['data']['groups'][''+i]['items'].length; j++) {
+                                followList.push(json['data']['groups'][''+i]['items'][j+'']['mid']);
+                            }
+                        }
+                    }
+                    for (let i = 0; i < result['blackListLive'].length; i++) {
+                        if (followList.includes(result['blackListLive'][i]))
+                            followList.splice(followList.indexOf(result['blackListLive'][i]),1);
+                    }
+                    console.log(`Load following list complete. ${followList.length+result['blackListLive'].length} followings found, ${result['blackListLive'].length} live notifications are ignored.`);
+                    queryLivingRoom(followList);
+                });
+
+            }
+        })
+        .catch(e=>{
+            errorHandler('getFollowing', e, 'getFollowingList(); line 500');
+        });
+}
 /**
  * Check live room status once for all.
  *
@@ -491,6 +530,10 @@ function convertMSToS(time){
  * @param {array} uids the group of followed uid.
  * */
 function queryLivingRoom(uids) {
+    let flag = new AbortController();
+    setTimeout(()=>{
+        flag.abort('timeout');
+    }, 2000);
     chrome.storage.local.get(['uuid', 'notificationList', 'watchingList'],(info)=>{
         let notificationList = info.notificationList;
         let watchingList = info.watchingList;
@@ -498,6 +541,7 @@ function queryLivingRoom(uids) {
         fetch("https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids?requestFrom=rua5",{
             method:"POST",
             credentials: "omit",
+            signal:flag.signal,
             body:body
         })
             .then(res => res.json())
@@ -653,9 +697,10 @@ function reloadCookies() {
                 if (uids.uuid !== -1 && uids.uuid !== uids.p_uuid) {
                     // log in info changed then load following list and start update liver stream info every 3 min.
                     console.log("Session info got.");
-                    chrome.alarms.create('getNewVideos',{'when': Date.now(), periodInMinutes: 0.3});
-                    chrome.alarms.create('getNewUnreads', {'when': Date.now()+1000, periodInMinutes: 0.2});
-                    chrome.alarms.create('getNewDynamics', {'when': Date.now()+10000, periodInMinutes: 0.3});
+                    chrome.alarms.create('getNewVideos',{'when': Date.now(), periodInMinutes: 0.33});
+                    chrome.alarms.create('getFollowing', {'when': Date.now(), periodInMinutes: 0.2});
+                    chrome.alarms.create('getNewUnreads', {'when': Date.now()+5000, periodInMinutes: 0.2});
+                    chrome.alarms.create('getNewDynamics', {'when': Date.now()+11000, periodInMinutes: 0.33});
                     scheduleCheckIn(3000);
                 }
                 chrome.storage.local.set({'p_uuid': uids.uuid},()=>{});
@@ -676,6 +721,9 @@ chrome.alarms.onAlarm.addListener((alarm)=>{
     }
     chrome.storage.local.get(['uuid', 'jct', "dakaUid"], (info)=>{
         switch (alarm.name) {
+            case 'getFollowing':
+                getFollowingList();
+                break;
             case 'getNewVideos':
                 videoNotify(info.uuid);
                 break;
@@ -745,7 +793,7 @@ function errorHandler(handler, msg, at){
         chrome.alarms.clear(handler).then(c =>{
             chrome.alarms.create(handler, {'when': Date.now()+1500000, periodInMinutes: minutes});
         });
-    }else{
+    }else if (!(msg+"").includes('AbortError: The user aborted a request')){
         chrome.alarms.clear(handler).then(c =>{
             chrome.alarms.create(handler, {'when': Date.now()+20000, periodInMinutes: minutes});
         });
@@ -821,60 +869,138 @@ function queryBcoin(){
  *
  * new video part.
  * */
-function videoNotify(UUID){
-    chrome.storage.local.get(['dynamic_id_list', 'videoInit'], (info)=>{
-        let dynamic_id_list = info.dynamic_id_list, nowTS = Date.now() / 1000.0;
-        //https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all?timezone_offset=-660&type=all&page=1
-        //https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all?timezone_offset=-660&type=video&page=1 //视频
-        //https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all?timezone_offset=-660&type=pgc&page=1 // 番剧
-        //https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all?timezone_offset=-660&type=article&page=1 // 专栏
-        fetch("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=8,512,4097,4098,4099,4100,4101",{
-            method:"GET",
-            credentials: 'include',
-            body: null
-        })
-            .then(res => res.json())
-            .then(json => {
-                chrome.storage.sync.get(["dynamicPush", "blackListLive", "blackListVideo"], (result)=>{
-                    if (json['code']!==0) errorHandler('getNewVideos', json['code'], 'videoNotify(); line 822');
-                    else if(json["code"] === 0){
-                        if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
-                            let data = json["data"]["attentions"]['uids'];
-                            data.splice(json["data"]["attentions"]['uids'].indexOf(UUID-1+1),1);
-                            for (let i = 0; i < result['blackListLive'].length; i++) {
-                                if (data.includes(result['blackListLive'][i]))
-                                data.splice(data.indexOf(result['blackListLive'][i]),1);
-                            }
-                            console.log(`Load following list complete. ${data.length+result['blackListLive'].length} followings found, ${result['blackListLive'].length} live notifications are ignored.`);
-                            queryLivingRoom(data);
-                        }
-                        if(result.dynamicPush){
-                            let o = json["data"]["cards"];
-                            for (let i = 0; i < o.length; i++) {
-                                let c = JSON.parse(o[i+""]["card"]);
-                                let type = o[i+""]["desc"]["type"], uid = o[i+""]["desc"]["uid"]-0;
-                                if(!info.videoInit && !dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"]) && !result['blackListVideo'].includes(uid) && (nowTS - (o[i+""]["desc"]["timestamp"]-0)) < 300){
-                                    if(type === 8){
-                                        console.log("你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！"+c["title"]+" see:"+o[i+""]["desc"]["bvid"]);
-                                        basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], o[i+'']["desc"]["user_profile"]["info"]["face"], "b23.tv/");
-                                    }else if(type >= 512 && type <= 4101){
-                                        console.log("你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！"+c["index"]+" see:"+c["url"]);
-                                        basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！",c["new_desc"],c["url"].replace("https://www.bilibili.com/",""), c["cover"],"www.bilibili.com/");
+
+function getNewPost(requestType){
+    let flag = new AbortController();
+    setTimeout(()=>{
+        flag.abort('timeout');
+    }, 2000);
+    return new Promise((resolve, reject)=>{
+        chrome.storage.local.get(['video_id_list', 'pgc_id_list', 'article_id_list', 'videoInit'], (info)=>{
+            let dynamic_id_list = requestType==='video'?info.video_id_list:(requestType==='pgc'?info.pgc_id_list:info.article_id_list), nowTS = Date.now() / 1000.0;
+            fetch(`https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all?page=1&type=${requestType}`, {
+                method:'GET',
+                credentials: 'include',
+                signal: flag.signal,
+                body:null
+            }).then(r=>r.json())
+                .then(json=>{
+                    chrome.storage.sync.get(["dynamicPush", "blackListVideo"], (result)=>{
+                        if (json['code']!==0) reject(json['code']);
+                        else if(json["code"] === 0){
+                            if(result.dynamicPush){
+                                let o = json["data"]["items"];
+                                for (let i = 0; i < o.length; i++) {
+                                    let dynamicMajor = o[i+""]["modules"]['module_dynamic']['major'];
+                                    let dynamicContent = requestType==='video'?dynamicMajor['archive']:(requestType==='pgc'?dynamicMajor['pgc']:dynamicMajor['article']);
+                                    let dynamicUser = o[i+""]["modules"]["module_author"];
+                                    let uid = dynamicUser['mid']-0;
+                                    if(!dynamic_id_list.includes(o[i+""]["id_str"]) && !result['blackListVideo'].includes(uid)){
+                                        if (!info.videoInit && requestType==='video'){
+                                            console.log(`你关注的up ${dynamicUser['name']} 投稿了新视频！${dynamicContent['title']} see:${dynamicContent['bvid']}`);
+                                            basicNotification(o[i+""]["id_str"], `你关注的up ${dynamicUser['name']} 投稿了新视频！`, dynamicContent["title"], dynamicContent['bvid'], dynamicUser["face"], "b23.tv/");
+                                        }
+                                        if (!info.videoInit && requestType === 'pgc'){
+                                            console.log("你关注的番剧 "+dynamicUser['name']+" 更新了！"+dynamicContent["title"]+" see:"+dynamicContent["jump_url"]);
+                                            basicNotification(o[i+""]["id_str"], "你关注的番剧 "+dynamicUser['name']+" 更新了！",dynamicContent["title"],dynamicContent["jump_url"].replaceAll('https://','').replaceAll('http://',''), dynamicContent["cover"],"");
+                                        }
+                                        if (!info.videoInit && requestType === 'article'){
+                                            console.log(`你关注的up ${dynamicUser['name']} 投稿了文章！${dynamicContent['title']} see:${dynamicContent['id']}`);
+                                            basicNotification(o[i+'']['id_str'], `你关注的up ${dynamicUser['name']} 投稿了文章！`, dynamicContent['title'], dynamicContent['id'], dynamicUser["face"], "www.bilibili.com/read/cv");
+                                        }
+                                        dynamic_id_list.push(o[i+""]["id_str"]);
                                     }
                                 }
-                                dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
-                                if(dynamic_id_list.length>30)
-                                    dynamic_id_list.splice(0,1);
+                                if (dynamic_id_list.length >= 40){
+                                    dynamic_id_list.splice(0,10);
+                                }
+                                // for (let i = 0; i < o.length; i++) {
+                                //     if(dynamic_id_list.length>30)
+                                //         dynamic_id_list.splice(0,1);
+                                // }
+                                switch (requestType){
+                                    case 'video':
+                                        chrome.storage.local.set({"video_id_list": dynamic_id_list}, ()=>{});
+                                        break;
+                                    case 'pgc':
+                                        chrome.storage.local.set({"pgc_id_list": dynamic_id_list}, ()=>{});
+                                        break;
+                                    case 'article':
+                                        chrome.storage.local.set({"article_id_list": dynamic_id_list}, ()=>{});
+                                        break;
+                                }
+                                resolve(200);
                             }
-                            chrome.storage.local.set({"dynamic_id_list": dynamic_id_list}, ()=>{});
                         }
-                    }
-                    //dynamicNotify(); // sync
-                    chrome.storage.local.set({'videoInit': false}, ()=>{});
-                });
-            })
-            .catch(msg =>{errorHandler('getNewVideos',msg, 'videoNotify(); line 819');});
+                    });
+                }).catch(e=>{reject(e);});
+        });
     });
+
+}
+
+async function videoNotify(UUID){
+    try {
+        await getNewPost('video');
+        await getNewPost('pgc');
+        await getNewPost('article');
+    }catch (e) {
+        console.log(e);
+        errorHandler('getNewVideos',e, 'videoNotify(); line 934');
+    }
+
+    await chrome.storage.local.set({'videoInit': false}, ()=>{});
+    // chrome.storage.local.get(['dynamic_id_list', 'videoInit'], async (info)=>{
+    //
+    //     // let dynamic_id_list = info.dynamic_id_list, nowTS = Date.now() / 1000.0;
+    //     // fetch("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=8,512,4097,4098,4099,4100,4101",{
+    //     //     method:"GET",
+    //     //     credentials: 'include',
+    //     //     signal: flag.signal,
+    //     //     body: null
+    //     // })
+    //     //     .then(res => res.json())
+    //     //     .then(json => {
+    //     //         chrome.storage.sync.get(["dynamicPush", "blackListLive", "blackListVideo"], (result)=>{
+    //     //             if (json['code']!==0) errorHandler('getNewVideos', json['code'], 'videoNotify(); line 822');
+    //     //             else if(json["code"] === 0){
+    //     //                 if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
+    //     //                     let data = json["data"]["attentions"]['uids'];
+    //     //                     data.splice(json["data"]["attentions"]['uids'].indexOf(UUID-1+1),1);
+    //     //                     for (let i = 0; i < result['blackListLive'].length; i++) {
+    //     //                         if (data.includes(result['blackListLive'][i]))
+    //     //                         data.splice(data.indexOf(result['blackListLive'][i]),1);
+    //     //                     }
+    //     //                     //console.log(`Load following list complete. ${data.length+result['blackListLive'].length} followings found, ${result['blackListLive'].length} live notifications are ignored.`);
+    //     //                     //queryLivingRoom(data);
+    //     //                 }
+    //     //                 if(result.dynamicPush){
+    //     //                     let o = json["data"]["cards"];
+    //     //                     for (let i = 0; i < o.length; i++) {
+    //     //                         let c = JSON.parse(o[i+""]["card"]);
+    //     //                         let type = o[i+""]["desc"]["type"], uid = o[i+""]["desc"]["uid"]-0;
+    //     //                         if(!info.videoInit && !dynamic_id_list.includes(o[i+""]["desc"]["dynamic_id"]) && !result['blackListVideo'].includes(uid) && (nowTS - (o[i+""]["desc"]["timestamp"]-0)) < 300){
+    //     //                             if(type === 8){
+    //     //                                 console.log("你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！"+c["title"]+" see:"+o[i+""]["desc"]["bvid"]);
+    //     //                                 basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的up "+o[i+'']["desc"]["user_profile"]["info"]["uname"]+" 投稿了新视频！", c["title"], o[i+""]["desc"]["bvid"], o[i+'']["desc"]["user_profile"]["info"]["face"], "b23.tv/");
+    //     //                             }else if(type >= 512 && type <= 4101){
+    //     //                                 console.log("你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！"+c["index"]+" see:"+c["url"]);
+    //     //                                 basicNotification(o[i+""]["desc"]["dynamic_id"], "你关注的番剧 "+c["apiSeasonInfo"]["title"]+" 更新了！",c["new_desc"],c["url"].replace("https://www.bilibili.com/",""), c["cover"],"www.bilibili.com/");
+    //     //                             }
+    //     //                         }
+    //     //                         dynamic_id_list.push(o[i+""]["desc"]["dynamic_id"]);
+    //     //                         if(dynamic_id_list.length>30)
+    //     //                             dynamic_id_list.splice(0,1);
+    //     //                     }
+    //     //                     chrome.storage.local.set({"dynamic_id_list": dynamic_id_list}, ()=>{});
+    //     //                 }
+    //     //             }
+    //     //             //dynamicNotify(); // sync
+    //     //             chrome.storage.local.set({'videoInit': false}, ()=>{});
+    //     //         });
+    //     //     })
+    //     //     .catch(msg =>{errorHandler('getNewVideos',msg, 'videoNotify(); line 819');});
+    // });
 }
 
 /**
@@ -884,11 +1010,16 @@ function videoNotify(UUID){
  * and different callback cards.
  * */
 function dynamicNotify(){
+    let flag = new AbortController();
+    setTimeout(()=>{
+        flag.abort('timeout');
+    }, 2000);
     chrome.storage.local.get(['dynamicList', 'dynamicInit'], (r)=>{
         let dynamic_id_list = r.dynamicList, nowTS = Date.now() / 1000.0;
         fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=1,2,4`,{
             method:'GET',
             credentials:'include',
+            signal: flag.signal,
             body:null
         })
             .then(r=>r.json())
@@ -1237,3 +1368,4 @@ function watching(){
 //todo: change the dynamic api.
 
 //new followed list: https://api.bilibili.com/x/v2/reply/at
+

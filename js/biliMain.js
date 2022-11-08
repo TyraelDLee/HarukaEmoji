@@ -39,6 +39,8 @@
     let elevatorListener = new MutationObserver((m)=>{
         m.forEach((mutation)=>{
             if (mutation.type === "childList"){
+                if (document.getElementsByClassName('adblock-tips')[0]!==null && typeof document.getElementsByClassName('adblock-tips')[0] !=='undefined')
+                    document.getElementsByClassName('adblock-tips')[0].setAttribute('style', 'display: none;');
                 if(mutation.addedNodes[0]!==undefined&&mutation.addedNodes[0].className==="n-drawer-container"){
                     getCats(mutation.addedNodes[0].childNodes[1]);
                     catListener.observe(document.body.getElementsByClassName('n-drawer-container')[0], {childList:true});
