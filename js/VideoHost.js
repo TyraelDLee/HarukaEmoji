@@ -591,7 +591,7 @@
                         innerDownloadBlock(cid, 'flac', 'Hi-Res');
                     }
                 }catch (e) {}
-                if(json["data"]["dash"]["dolby"]!==null && dolby){
+                if(json["data"]["dash"]["dolby"]['audio']!==null && dolby){
                     innerDownloadBlock(cid, 'dolby', '杜比全景声');
                 }
                 if(json["data"]["dash"]["audio"][0]["base_url"]!==null && audio){
@@ -1245,3 +1245,4 @@
 }();
 
 //todo: code review
+//todo: 720p and 480p DASH protocol stream.

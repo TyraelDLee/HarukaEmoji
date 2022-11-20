@@ -34,6 +34,7 @@
     --graph_medium: var(--Ga5);
     --graph_icon: var(--Ga7);
     --shadow: var(--Ba0);
+    --bpx-dmsend-info-font: var(--text2);
 
     --Ga0: #F6F7F8;
     --Ga0_s: #F6F7F8;
@@ -435,7 +436,7 @@ html[theme*="dark"] .reply-content {
 }
 
 html[theme*="dark"] .bili-dyn-item, html[theme*="dark"] .bb-comment {
-    background-color: var(--bg1) !important;
+    background-color: var(--bg2) !important;
 }
 
 html[theme*="dark"] .bg-bright-filter:before {
@@ -596,7 +597,7 @@ html[theme*="dark"] .bili-header-m .nav-search .nav-search-btn, html[theme*="dar
 }
 
 html[theme*="dark"] .n .n-inner {
-    background: var(--bg1);
+    background: var(--bg2);
     box-shadow: 0 0 0 1px var(--bg1);
 }
 
@@ -619,7 +620,7 @@ html[theme*="dark"].suggest-wrap .suggest-item.active, html[theme*="dark"] .sugg
 }
 
 html[theme*="dark"] {
-    background-color: var(--bg1_float);
+    background-color: var(--bg1);
 }
 
 html[theme*="dark"] .channel-menu-mini .r-box {
@@ -741,7 +742,7 @@ html[theme*="dark"] .be-dropdown-item:hover {
 }
 
 html[theme*="dark"] #page-index .col-2 .section, html[theme*="dark"] #page-index .col-1 {
-    background: var(--bg1);
+    background: var(--bg2);
     border: 1px solid var(--Ga2);
 }
 
@@ -754,7 +755,7 @@ html[theme*="dark"] .section:last-child {
 }
 
 html[theme*="dark"] #page-index #i-ann-content textarea, html[theme*="dark"] .list-create {
-    background-color: var(--bg1);
+    background-color: var(--bg2);
 }
 
 html[theme*="dark"] .section-title, html[theme*="dark"] .user-info .user-info-title .info-title {
@@ -811,8 +812,21 @@ html[theme*="dark"] .download-wrapper .download-top-title .main svg path {
 }
 
 html[theme*="dark"] .col-full {
-    background-color: var(--bg1);
+    background-color: var(--bg2);
     box-shadow: 0 0 0 1px var(--Ga2);
+}
+
+html[theme*="dark"] #page-fav .fav-sidenav .nav-title .text{
+    color: var(--text1);
+}
+
+html[theme*="dark"] #page-fav .fav-sidenav .watch-later{
+    border-top: 1px solid var(--Ga2);
+    border-bottom: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] #page-series-index .channel-option.no-channel{
+    background-color: var(--bg2);
 }
 
 html[theme*="dark"] #page-setting .setting-privacy-item .setting-privacy-name {
@@ -872,7 +886,7 @@ html[theme*="dark"] .link-navbar {
 }
 
 html[theme*="dark"] #page-dynamic .col-2 .section {
-    background: var(--bg1);
+    background: var(--bg2);
     border: 1px solid var(--Ga2);
 }
 
@@ -1135,7 +1149,7 @@ html[theme*="dark"] .brief a:hover{
 }
 
 html[theme*="dark"] body{
-    background-color: var(--bg1_float);
+    background-color: var(--bg1);
 }
 
 html[theme*="dark"] .main-container .nav-tools .tool-item{
@@ -1677,8 +1691,8 @@ html[theme*="dark"] .bpx-docker-minor:not(:empty), html[theme*="dark"] .bpx-play
 }
 
 html[theme*="dark"] .bui-collapse .bui-collapse-header, html[theme*="dark"] .bpx-player-auxiliary .bpx-player-dm-btn-history{
-    background-color: var(--bg2_float);
-    color: var(--text1);
+    background-color: var(--bg2_float)!important;
+    color: var(--text1)!important;
 }
 
 html[theme*="dark"] .bpx-player-auxiliary .bpx-player-dm-load-status{
@@ -1686,8 +1700,8 @@ html[theme*="dark"] .bpx-player-auxiliary .bpx-player-dm-load-status{
     color: var(--text1);
 }
 
-html[theme*="dark"] .bpx-player-auxiliary .bpx-player-dm-container .dm-info-row .dm-info-dm{
-    color: var(--text1);
+html[theme*="dark"] .bpx-player-auxiliary .bpx-player-dm-container .dm-info-row .dm-info-dm, .player-auxiliary-area .player-auxiliary-filter-title{
+    color: var(--text1)!important;
 }
 
 html[theme*="dark"] .bpx-player-contextmenu.bpx-player-white{
@@ -2020,4 +2034,109 @@ html[theme*="dark"] .follow-container .follow-right .follow-intro[data-v-5d8dc52
 
 html[theme*="dark"] #song-marks .bb-comment{
     background-color: var(--bg1_float) !important;
+}
+
+html[theme*="dark"] .bilibili-player{
+    box-shadow: 0 0 8px var(--Ga2);
+}
+
+html[theme*="dark"] .bilibili-player-video-sendbar{
+    background: var(--bg1);
+}
+
+html[theme*="dark"] .bilibili-player-video-info{
+    color: var(--bpx-dmsend-info-font,#505050);
+}
+
+html[theme*="dark"] .bilibili-player-video-sendbar .bilibili-player-video-inputbar{
+    background: var(--bg2_float);
+}
+
+html[theme*="dark"] .bilibili-player-video-sendbar .bilibili-player-video-inputbar .bilibili-player-video-danmaku-input{
+    background-color: var(--bg2_float);
+    color: var(--text1);
+}
+
+html[theme*="dark"] .bilibili-player-video-sendbar .bilibili-player-video-inputbar .bilibili-player-video-inputbar-wrap{
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .video-toolbar .ops>span, html[theme*="dark"] .video-toolbar .appeal-text{
+    color: var(--text2);
+}
+
+html[theme*="dark"] .video-toolbar, html[theme*="dark"] .v-wrap .s_tag[data-v-7d651e8b]{
+    border-bottom: 1px solid var(--line_regular);
+}
+
+html[theme*="dark"] .s_tag .tag-area .tag-item{
+    background: var(--bg3);
+    color: var(--text2);
+    border: none;
+}
+
+html[theme*="dark"] .s_tag .tag-area .tag-item .tag-link, html[theme*="dark"] .s_tag .tag-area .tag-item .topic-link{
+    color: var(--text2);
+}
+
+html[theme*="dark"] .player-auxiliary, html[theme*="dark"] .player-auxiliary-area{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .player-auxiliary-area .player-auxiliary-collapse-playlist .bui-collapse-body, html[theme*="dark"] .player-auxiliary-area .player-auxiliary-collapse .bui-collapse-body{
+    background-color: var(--bg2_float)
+}
+
+html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap .player-auxiliary-danmaku-list .danmaku-info-row{
+    color: var(--text2);
+}
+
+html[theme*="dark"] .player-auxiliary-playlist-item-title, html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap .player-auxiliary-danmaku-list .danmaku-info-row span.danmaku-info-danmaku, html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap .player-auxiliary-danmaku-load-status.disabled{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .player-auxiliary-area .player-auxiliary-danmaku .player-auxiliary-danmaku-function [class*=player-auxiliary-danmaku-btn-], html[theme*="dark"] .player-auxiliary-area .player-auxiliary-danmaku .player-auxiliary-danmaku-function .player-auxiliary-danmaku-multiple-control,  html[theme*="dark"]  .player-auxiliary-area .player-auxiliary-danmaku .player-auxiliary-danmaku-function,   html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap, html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap .player-auxiliary-danmaku-load-status,  html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-btn-footer{
+    background-color: var(--bg1)
+}
+
+html[theme*="dark"] .bui-button.bui-button-gray2{
+    background-color: var(--bg1);
+    color: var(--text1);
+}
+
+html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap .player-auxiliary-danmaku-list .danmaku-info-row .danmaku-info-block-btn, html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap .player-auxiliary-danmaku-list .danmaku-info-row .danmaku-info-protect-btn, html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap .player-auxiliary-danmaku-list .danmaku-info-row .danmaku-info-report-btn{
+    background-color: var(--bg1);
+}
+html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap .player-auxiliary-danmaku-list .danmaku-info-row .danmaku-info-block-btn:hover, html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap .player-auxiliary-danmaku-list .danmaku-info-row .danmaku-info-protect-btn:hover, html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap .player-auxiliary-danmaku-list .danmaku-info-row .danmaku-info-report-btn:hover{
+    background-color: #03a0d6;
+}
+
+html[theme*="dark"] .player-auxiliary-context-menu-container{
+    border: 1px solid var(--Ga2);
+    background: var(--bg1);
+    box-shadow: 0 0 5px var(--Ga2);
+}
+
+html[theme*="dark"] .player-auxiliary-context-menu-container ul>li a.hover, html[theme*="dark"] .player-auxiliary-context-menu-container ul>li a:hover, html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap .player-auxiliary-danmaku-list .danmaku-info-row.bpui-selected, html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap .player-auxiliary-danmaku-list .danmaku-info-row.bpui-selected>span, html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap .player-auxiliary-danmaku-list .danmaku-info-row.bpui-selecting, html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap .player-auxiliary-danmaku-list .danmaku-info-row.bpui-selecting>span{
+    background: var(--bg2_float);
+}
+
+html[theme*="dark"] .player-auxiliary-context-menu-container ul>li a{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap .bscroll-vertical-scrollbar.mousedown, html[theme*="dark"] .danmaku-wrap .player-auxiliary-area .player-auxiliary-danmaku-wrap:hover .bscroll-vertical-scrollbar{
+    background-color: var(--bg1)!important;
+}
+
+html[theme*="dark"] .player-auxiliary-area .player-auxiliary-bscrollbar .bscroll-vertical-scrollbar.mousedown, html[theme*="dark"] .player-auxiliary-area .player-auxiliary-bscrollbar:hover .bscroll-vertical-scrollbar{
+    background-color: var(--bg2_float)!important;
+}
+
+html[theme*="dark"] .rcmd-list-title[data-v-701124b2], html[theme*="dark"] .video-desc .desc-info, html[theme*="dark"] .comment-m .b-head{
+    color: var(--text1);
+}
+
+html[theme*="dark"] div[data-v-7d651e8b] .bb-comment, html[theme*="dark"] div[data-v-7d651e8b] .bb-comment .comment-send-lite{
+    background-color: var(--bg1)!important;
 }

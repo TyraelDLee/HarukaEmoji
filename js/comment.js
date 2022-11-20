@@ -287,7 +287,7 @@
     }
 
     function drawBlock(url, content, type, size, unlocked, reason){
-        url = url.replace('http', 'https');
+        //url = url.replace('http', 'https');
         let div = document.createElement('div');
         div.classList.add('rua-emoji-info');
         div.setAttribute('content', content);
