@@ -1904,8 +1904,8 @@ html[theme*="dark"] .vote-result-comment{
     background-color: var(--bg1_float)
 }
 
-html[theme*="dark"] .user-card .card-content .card-user-info .card-user-name[data-v-432df8b3]{
-    color: var(--b6ab3cea,var(--text1));
+html[theme*="dark"] .user-card .card-content .card-user-info .card-user-name{
+    color: var(--292aca4c,var(--text1));
 }
 
 html[theme*="dark"] .main-container .season-list .ss-list-wrapper .expand-more{

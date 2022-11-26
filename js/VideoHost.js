@@ -528,8 +528,9 @@
                 });
                 await getDASH(cid, 125, 'hdr', 'HDR');
                 await getDASH(cid, 127, '8k', '8K 超高清');
-                await getDASH(cid, 120, '4kdash', '4K DASH');
-                await getDASH(cid, 116, 'fhd60', '1080P 60');
+                // await getDASH(cid, 120, '4kdash', '4K DASH');
+                // await getDASH(cid, 116, 'fhd60', '1080P 60');
+                await getAcceptQuality(cid);
                 for (let i = 0; i < json["data"]["durl"].length; i++) {
                     videoDuration += json["data"]["durl"][i]["length"]-1+1;
                 }
@@ -588,17 +589,35 @@
             if(json["code"]===0 && json["data"]!==null && json['data']['dash']!==null && json['data']['dash']!==undefined){
                 try{
                     if(json["data"]["dash"]["flac"]['audio']['base_url']!==null && hires){
-                        innerDownloadBlock(cid, 'flac', 'Hi-Res');
+                        innerDownloadBlock(cid, 'flac', 'Hi-Res', 0);
                     }
                 }catch (e) {}
                 if(json["data"]["dash"]["dolby"]['audio']!==null && dolby){
-                    innerDownloadBlock(cid, 'dolby', '杜比全景声');
+                    innerDownloadBlock(cid, 'dolby', '杜比全景声', 0);
                 }
                 if(json["data"]["dash"]["audio"][0]["base_url"]!==null && audio){
-                    innerDownloadBlock(cid, 'audio', 'Sound Only');
+                    innerDownloadBlock(cid, 'audio', 'Sound Only', 0);
                 }
             }
         });
+    }
+
+    async function getAcceptQuality(cid){
+        await fetch(`https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=127&fourk=1&fnver=0&fnval=4048`, {
+            method:'GET',
+            credentials: 'include',
+            body:null
+        }).then(r=>r.json())
+            .then(json=>{
+                if(json['code'] === 0){
+                    let acceptDescription = json['data']['accept_description'];
+                    let acceptQuality = json['data']['accept_quality'];
+                    for (let i = 0; i < acceptQuality.length; i++) {
+                        console.log(acceptDescription[i]+" "+acceptQuality[i]);
+                        innerDownloadBlock(cid, 'dash', acceptDescription[i], acceptQuality[i]-0)
+                    }
+                }
+            });
     }
 
     /**
@@ -620,7 +639,7 @@
             .then(json => {
                 if(json["code"]===0 && json["data"]!==null && json['data']['dash']!==null && json['data']['dash']!==undefined){
                     if (json['data']['dash']['video'][0]['id']===qn){
-                        innerDownloadBlock(cid, type, title);
+                        innerDownloadBlock(cid, type, title, qn);
                     }
                 }
             });
@@ -633,8 +652,10 @@
      * @param {string | number} cid the video file id for download.
      * @param {string} type the request type [hdr, 8k, audio, dolby].
      * @param {string} title the text shown on button.
+     * @param {number} qn the quality index.
      * */
-    function innerDownloadBlock(cid, type, title){
+    // Dash for 4k, 1080P, 720P modify here.
+    function innerDownloadBlock(cid, type, title, qn){
         const url = [`https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=125&fnval=336`, `https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=120&fnval=272`, `https://api.bilibili.com/x/player/playurl?cid=${cid}&bvid=${bvid}&qn=127&fourk=1&fnver=0&fnval=4048`];
         let rua_download = document.createElement("div");
         rua_download.setAttribute("id",`qn-${type}`);
@@ -650,7 +671,7 @@
                 rua_download.classList.add('rua-downloading');
                 rua_download.getElementsByClassName("rua-quality-des")[0].innerText = `取流中...`;
                 let dlURL = [];
-                await fetch(type==='hdr'?url[0]:(type==='8k'?url[2]:url[1]),{
+                await fetch(type==='hdr'?url[0]:(type==='8k'||type==='dash'?url[2]:url[1]),{
                     method:'GET',
                     credentials:'include',
                     body:null
@@ -660,7 +681,7 @@
                             switch (type) {
                                 case 'hdr':
                                     dlURL[0] = json['data']['dash']['video'][0]['base_url'];
-                                    dlURL[1] = json['data']['dash']['dolby']===null?json['data']['dash']['audio'][0]['base_url']:json['data']['dash']['audio'][0]['base_url'];
+                                    dlURL[1] = json['data']['dash']['dolby']['audio']===null?json['data']['dash']['audio'][0]['base_url']:json['data']['dash']['audio'][0]['base_url'];
                                     break;
                                 case 'audio':
                                     dlURL[0] = json["data"]["dash"]["audio"][0]["base_url"]
@@ -673,7 +694,19 @@
                                     break;
                                 case '8k':
                                     dlURL[0] = json['data']['dash']['video'][0]['base_url'];
-                                    dlURL[1] = json['data']['dash']['dolby']===null?json['data']['dash']['audio'][0]['base_url']:json['data']['dash']['audio'][0]['base_url'];
+                                    dlURL[1] = json['data']['dash']['dolby']['audio']===null?json['data']['dash']['audio'][0]['base_url']:json['data']['dash']['audio'][0]['base_url'];
+                                    break;
+                                case 'dash':
+                                    let maxBitwidth = 0, dlLink = "";
+                                    for (let i = 0; i < json['data']['dash']['video'].length; i++) {
+                                        if (json['data']['dash']['video'][i]['bandwidth']>maxBitwidth &&
+                                        json['data']['dash']['video'][i]['id'] === qn){
+                                            maxBitwidth = json['data']['dash']['video'][i]['bandwidth'];
+                                            dlLink = json['data']['dash']['video'][i]['base_url'];
+                                        }
+                                    }
+                                    dlURL[0] = dlLink;
+                                    dlURL[1] = json['data']['dash']['dolby']['audio']===null?json['data']['dash']['audio'][0]['base_url']:json['data']['dash']['audio'][0]['base_url'];
                                     break;
                                 default:
                                     break;
@@ -746,8 +779,8 @@
         });
         if(dashRequest){
             if(fileSize < 1.5 * 1024 * 1024 * 1024){
-                blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'?'视频':'', true, controller);
-                if((requestType==='hdrRecord' || requestType==='8kRecord')&&!controller.signal.aborted)
+                blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'||requestType==='dashRecord'?'视频':'', true, controller);
+                if((requestType==='hdrRecord' || requestType==='8kRecord'||requestType==='dashRecord')&&!controller.signal.aborted)
                     blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频', true, controller);
                 if(requestType==='audioRecord')
                     audioMeta = await getAudioMeta();
@@ -756,9 +789,9 @@
                         releaseDownload();
                     });
             }else{
-                blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'?'视频':'', false, controller);
+                blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'||requestType==='dashRecord'?'视频':'', false, controller);
                 aDownload(blobURL[0], fileName+".mp4");
-                if((requestType==='hdrRecord' || requestType==='8kRecord')&&!controller.signal.aborted){
+                if((requestType==='hdrRecord' || requestType==='8kRecord'||requestType==='dashRecord')&&!controller.signal.aborted){
                     blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频', false, controller);
                     aDownload(blobURL[1], fileName+".m4a");
                 }
@@ -832,7 +865,7 @@
             downloadName = filename + ".flac";
             dl = URL.createObjectURL(new Blob([out.buffer]));
         }
-        if(requestType === 'hdrRecord'  || requestType==='8kRecord'){
+        if(requestType === 'hdrRecord'  || requestType==='8kRecord' || requestType==='dashRecord'){
             ffmpeg.FS('writeFile', 'video.m4s', await fetchFile(blob[0]));
             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(blob[1]));
             await ffmpeg.run('-i', 'video.m4s', '-i', 'audio.m4s', '-map', '0:v', '-map', '1:a','-c', 'copy', 'final.mkv');
