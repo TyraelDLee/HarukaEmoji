@@ -27,7 +27,7 @@
     "default_popup": "popup.html"
   },
   "background": {
-    "service_worker": "js/sw.js"
+    "service_worker": "js/sw.min.js"
   },
   "icons": {
     "16": "images/haruka16.png",

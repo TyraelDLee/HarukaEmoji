@@ -509,7 +509,6 @@
         }
         initPrint = true;
         // refresh components.
-
         fetch("https://api.bilibili.com/x/player/playurl?bvid="+bvid+"&cid="+cid+"&qn=120&type=flv&fourk=1",{
             method:"GET",
             credentials: 'include',
@@ -526,43 +525,42 @@
                 await chrome.runtime.sendMessage({ msg: "get_LoginStatus" }, function (vip){
                     vipStatus = vip;
                 });
-                await getDASH(cid, 125, 'hdr', 'HDR');
-                await getDASH(cid, 127, '8k', '8K 超高清');
+                // await getDASH(cid, 125, 'hdr', 'HDR');
+                // await getDASH(cid, 127, '8k', '8K 超高清');
                 // await getDASH(cid, 120, '4kdash', '4K DASH');
                 // await getDASH(cid, 116, 'fhd60', '1080P 60');
                 await getAcceptQuality(cid);
                 for (let i = 0; i < json["data"]["durl"].length; i++) {
                     videoDuration += json["data"]["durl"][i]["length"]-1+1;
                 }
-                for (let i = 0; i < json["data"]["support_formats"].length; i++) {
-                    acceptQn[i] = {
-                        "accept_description": json["data"]["support_formats"][i]['new_description'],
-                        "accept_format": json["data"]["support_formats"][i]['quality']}
-                    let rua_download_block = document.createElement("div");
-                    rua_download_block.setAttribute("id","qn-"+acceptQn[i]["accept_format"]);
-                    rua_download_block.classList.add("rua-download-block");
-                    rua_download_block.innerHTML = `<div class='rua-quality-des' title='${acceptQn[i]["accept_description"]}'>${acceptQn[i]["accept_description"]}</div>`;
-                    if((!vipStatus.login && (acceptQn[i]["accept_format"]-0)>63)||(vipStatus.login && vipStatus.vip===0 && (acceptQn[i]["accept_format"]-0)>80))
-                        rua_download_block.classList.add("rua-download-block-disabled");
-                    downloadVideoTray.appendChild(rua_download_block);
-                    downloadBlocks.push(rua_download_block);
-                    let abortSignal = new AbortController();
-                    rua_download_block.onclick = () =>{
-                        if(!rua_download_block.classList.contains('rua-downloading')){
-                            abortSignal = new AbortController();
-                            rua_download_block.classList.add('rua-downloading');
-                            if (!rua_download_block.classList.contains("rua-download-block-disabled")) {
-                                download(bvid, cid, json["data"]["accept_quality"][i], vtitle[0] + (vtitle.length === 1 ? "" : vtitle[pid + 1]) + " " + acceptQn[i]["accept_description"], rua_download_block, abortSignal);
-                            }
-                        }else{
-                            abortSignal.abort('User');
-                            releaseDownloadButton(rua_download_block);
-                        }
-                    }
-                    abortHandler(rua_download_block);
-
-                }
-                downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40 + "px";
+                // for (let i = 0; i < json["data"]["support_formats"].length; i++) {
+                //     acceptQn[i] = {
+                //         "accept_description": json["data"]["support_formats"][i]['new_description'],
+                //         "accept_format": json["data"]["support_formats"][i]['quality']}
+                //     let rua_download_block = document.createElement("div");
+                //     rua_download_block.setAttribute("id","qn-"+acceptQn[i]["accept_format"]);
+                //     rua_download_block.classList.add("rua-download-block");
+                //     rua_download_block.innerHTML = `<div class='rua-quality-des' title='${acceptQn[i]["accept_description"]}'>${acceptQn[i]["accept_description"]}</div>`;
+                //     if((!vipStatus.login && (acceptQn[i]["accept_format"]-0)>63)||(vipStatus.login && vipStatus.vip===0 && (acceptQn[i]["accept_format"]-0)>80))
+                //         rua_download_block.classList.add("rua-download-block-disabled");
+                //     downloadVideoTray.appendChild(rua_download_block);
+                //     downloadBlocks.push(rua_download_block);
+                //     let abortSignal = new AbortController();
+                //     rua_download_block.onclick = () =>{
+                //         if(!rua_download_block.classList.contains('rua-downloading')){
+                //             abortSignal = new AbortController();
+                //             rua_download_block.classList.add('rua-downloading');
+                //             if (!rua_download_block.classList.contains("rua-download-block-disabled")) {
+                //                 download(bvid, cid, json["data"]["accept_quality"][i], vtitle[0] + (vtitle.length === 1 ? "" : vtitle[pid + 1]) + " " + acceptQn[i]["accept_description"], rua_download_block, abortSignal);
+                //             }
+                //         }else{
+                //             abortSignal.abort('User');
+                //             releaseDownloadButton(rua_download_block);
+                //         }
+                //     }
+                //     abortHandler(rua_download_block);
+                // }
+                // downloadVideoTray.style.height = Math.ceil(downloadBlocks.length / 3) * 40 + "px";
                 getAudioOnly(cid, true, true, true);
                 grabDanmaku(cid, aid, 1, getDMSegments(videoDuration));
             }
@@ -596,7 +594,7 @@
                     innerDownloadBlock(cid, 'dolby', '杜比全景声', 0);
                 }
                 if(json["data"]["dash"]["audio"][0]["base_url"]!==null && audio){
-                    innerDownloadBlock(cid, 'audio', 'Sound Only', 0);
+                    innerDownloadBlock(cid, 'audio', '音频', 0);
                 }
             }
         });
@@ -681,7 +679,7 @@
                             switch (type) {
                                 case 'hdr':
                                     dlURL[0] = json['data']['dash']['video'][0]['base_url'];
-                                    dlURL[1] = json['data']['dash']['dolby']['audio']===null?json['data']['dash']['audio'][0]['base_url']:json['data']['dash']['audio'][0]['base_url'];
+                                    dlURL[1] = json['data']['dash']['dolby']['audio']!==null?json["data"]["dash"]["dolby"]["audio"][0]["base_url"]:(json['data']['dash']['flac']['audio']!==null?json['data']['dash']['flac']['audio']['base_url']:json['data']['dash']['audio'][0]['base_url']);
                                     break;
                                 case 'audio':
                                     dlURL[0] = json["data"]["dash"]["audio"][0]["base_url"]
@@ -694,7 +692,7 @@
                                     break;
                                 case '8k':
                                     dlURL[0] = json['data']['dash']['video'][0]['base_url'];
-                                    dlURL[1] = json['data']['dash']['dolby']['audio']===null?json['data']['dash']['audio'][0]['base_url']:json['data']['dash']['audio'][0]['base_url'];
+                                    dlURL[1] = json['data']['dash']['dolby']['audio']!==null?json["data"]["dash"]["dolby"]["audio"][0]["base_url"]:(json['data']['dash']['flac']['audio']!==null?json['data']['dash']['flac']['audio']['base_url']:json['data']['dash']['audio'][0]['base_url']);
                                     break;
                                 case 'dash':
                                     let maxBitwidth = 0, dlLink = "";
@@ -706,7 +704,7 @@
                                         }
                                     }
                                     dlURL[0] = dlLink;
-                                    dlURL[1] = json['data']['dash']['dolby']['audio']===null?json['data']['dash']['audio'][0]['base_url']:json['data']['dash']['audio'][0]['base_url'];
+                                    dlURL[1] = json['data']['dash']['dolby']['audio']!==null?json["data"]["dash"]["dolby"]["audio"][0]["base_url"]:(json['data']['dash']['flac']['audio']!==null?json['data']['dash']['flac']['audio']['base_url']:json['data']['dash']['audio'][0]['base_url']);
                                     break;
                                 default:
                                     break;

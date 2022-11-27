@@ -27,6 +27,9 @@
     const darkModeSystem = document.getElementById('darkModeSystem');
     const commentEmoji = document.getElementById("commentEmoji");
     const reloadScript = document.getElementById("reload");
+    const videoPush = document.getElementById('videoPush');
+    const pgcPush = document.getElementById('pgcPush');
+    const articlePush = document.getElementById('articlePush');
 
     const qn_table = ["原画", "蓝光","超清","高清","流畅"];
     const qnItem = setting7.getElementsByClassName("qn-i");
@@ -150,8 +153,49 @@
 
     dynamicPush.addEventListener("change", function (){
         let checked = this.checked;
+        buttonDisabled(checked, videoPush);
+        buttonDisabled(checked, pgcPush);
+        buttonDisabled(checked, articlePush);
+        if (checked){
+            if (!articlePush.checked && !pgcPush.checked && !videoPush.checked){
+                videoPush.checked = true;
+                pgcPush.checked = true;
+                articlePush.checked = true;
+                chrome.storage.sync.set({"videoPush":true}, function (){});
+                chrome.storage.sync.set({"pgcPush":true}, function (){});
+                chrome.storage.sync.set({"articlePush":true}, function (){});
+            }
+        }
         chrome.storage.sync.set({"dynamicPush": checked}, function (){});
     });
+
+    videoPush.addEventListener('change', function (){
+        let value = this.checked;
+        turnOffDynamic();
+        chrome.storage.sync.set({"videoPush":value}, function (){});
+    });
+
+    pgcPush.addEventListener('change', function (){
+        let value = this.checked;
+        turnOffDynamic();
+        chrome.storage.sync.set({"pgcPush":value}, function (){});
+    });
+
+    articlePush.addEventListener('change', function (){
+        let value = this.checked;
+        turnOffDynamic();
+        chrome.storage.sync.set({"articlePush":value}, function (){});
+    });
+
+    function turnOffDynamic(){
+        if (!articlePush.checked && !pgcPush.checked && !videoPush.checked) {
+            dynamicPush.checked = false;
+            buttonDisabled(false, videoPush);
+            buttonDisabled(false, pgcPush);
+            buttonDisabled(false, articlePush);
+            chrome.storage.sync.set({"dynamicPush": false}, function (){});
+        }
+    }
 
     unread.addEventListener('change', function(){
         let checked = this.checked;
@@ -276,7 +320,7 @@
             }
         });
 
-        chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem", "commentEmoji"], function(result){
+        chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem", "commentEmoji", "videoPush", "pgcPush", "articlePush"], function(result){
             if (os === 'win')
                 buttonDisabled(result.notification, imageNotice);
             liveNotification.checked = result.notification;
@@ -285,6 +329,9 @@
 
             bCoin.checked = result.bcoin;
             dynamicPush.checked = result.dynamicPush;
+            videoPush.checked = result.videoPush;
+            pgcPush.checked = result.pgcPush;
+            articlePush.checked = result.articlePush;
             unread.checked = result.unreadSwitch;
             dynamic.checked = result.dynamicSwitch;
             hiddenEntry.checked = result.hiddenEntry;

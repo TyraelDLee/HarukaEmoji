@@ -1538,7 +1538,7 @@ html[theme*="dark"] #page-follows .follow-sidenav .follow-list-container .follow
 
 html[theme*="dark"] .search-component-input input[data-v-52497d84]{
     color: var(--text1);
-    background-color: var(--bg1);
+    background-color: var(--bg2);
 }
 
 html[theme*="dark"] .modal-wrapper{

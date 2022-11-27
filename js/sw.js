@@ -292,6 +292,9 @@ async function initialize(reload){
     setInitValue('qn', true);
     setInitValue('qnvalue', '原画');
     setInitValue('dynamicPush', true);
+    setInitValue('videoPush', true);
+    setInitValue('pgcPush', true);
+    setInitValue('articlePush', true);
     setInitValue('hiddenEntry', false);
     setInitValue('daka', true);
     setInitValue('record', false);
@@ -885,7 +888,7 @@ function getNewPost(requestType){
                 body:null
             }).then(r=>r.json())
                 .then(json=>{
-                    chrome.storage.sync.get(["dynamicPush", "blackListVideo"], (result)=>{
+                    chrome.storage.sync.get(["dynamicPush", "blackListVideo", "videoPush", "pgcPush", "articlePush"], (result)=>{
                         if (json['code']!==0) reject(json['code']);
                         else if(json["code"] === 0){
                             if(result.dynamicPush){
@@ -896,15 +899,15 @@ function getNewPost(requestType){
                                     let dynamicUser = o[i+""]["modules"]["module_author"];
                                     let uid = dynamicUser['mid']-0;
                                     if(!dynamic_id_list.includes(o[i+""]["id_str"]) && !result['blackListVideo'].includes(uid)){
-                                        if (!info.videoInit && requestType==='video'){
+                                        if (!info.videoInit && requestType==='video' && result.videoPush){
                                             console.log(`你关注的up ${dynamicUser['name']} 投稿了新视频！${dynamicContent['title']} see:${dynamicContent['bvid']}`);
                                             basicNotification(o[i+""]["id_str"], `你关注的up ${dynamicUser['name']} 投稿了新视频！`, dynamicContent["title"], dynamicContent['bvid'], dynamicUser["face"], "b23.tv/");
                                         }
-                                        if (!info.videoInit && requestType === 'pgc'){
+                                        if (!info.videoInit && requestType === 'pgc' && result.pgcPush){
                                             console.log("你关注的番剧 "+dynamicUser['name']+" 更新了！"+dynamicContent["title"]+" see:"+dynamicContent["jump_url"]);
                                             basicNotification(o[i+""]["id_str"], "你关注的番剧 "+dynamicUser['name']+" 更新了！",dynamicContent["title"],dynamicContent["jump_url"].replaceAll('https://','').replaceAll('http://',''), dynamicContent["cover"],"");
                                         }
-                                        if (!info.videoInit && requestType === 'article'){
+                                        if (!info.videoInit && requestType === 'article' && result.articlePush){
                                             console.log(`你关注的up ${dynamicUser['name']} 投稿了文章！${dynamicContent['title']} see:${dynamicContent['id']}`);
                                             basicNotification(o[i+'']['id_str'], `你关注的up ${dynamicUser['name']} 投稿了文章！`, dynamicContent['title'], dynamicContent['id'], dynamicUser["face"], "www.bilibili.com/read/cv");
                                         }
@@ -914,10 +917,6 @@ function getNewPost(requestType){
                                 if (dynamic_id_list.length >= 40){
                                     dynamic_id_list.splice(0,10);
                                 }
-                                // for (let i = 0; i < o.length; i++) {
-                                //     if(dynamic_id_list.length>30)
-                                //         dynamic_id_list.splice(0,1);
-                                // }
                                 switch (requestType){
                                     case 'video':
                                         chrome.storage.local.set({"video_id_list": dynamic_id_list}, ()=>{});
