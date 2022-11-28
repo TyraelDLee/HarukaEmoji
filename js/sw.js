@@ -880,7 +880,7 @@ function getNewPost(requestType){
     }, 2000);
     return new Promise((resolve, reject)=>{
         chrome.storage.local.get(['video_id_list', 'pgc_id_list', 'article_id_list', 'videoInit'], (info)=>{
-            let dynamic_id_list = requestType==='video'?info.video_id_list:(requestType==='pgc'?info.pgc_id_list:info.article_id_list), nowTS = Date.now() / 1000.0;
+            let dynamic_id_list = requestType==='video'?info.video_id_list:(requestType==='pgc'?info.pgc_id_list:info.article_id_list);
             fetch(`https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all?page=1&type=${requestType}`, {
                 method:'GET',
                 credentials: 'include',
@@ -899,7 +899,7 @@ function getNewPost(requestType){
                                     let dynamicUser = o[i+""]["modules"]["module_author"];
                                     let uid = dynamicUser['mid']-0;
                                     if(!dynamic_id_list.includes(o[i+""]["id_str"]) && !result['blackListVideo'].includes(uid)){
-                                        if (!info.videoInit && requestType==='video' && result.videoPush){
+                                        if (!info.videoInit && requestType==='video' && result.videoPush && isNew(dynamicUser['pub_ts'])){
                                             console.log(`你关注的up ${dynamicUser['name']} 投稿了新视频！${dynamicContent['title']} see:${dynamicContent['bvid']}`);
                                             basicNotification(o[i+""]["id_str"], `你关注的up ${dynamicUser['name']} 投稿了新视频！`, dynamicContent["title"], dynamicContent['bvid'], dynamicUser["face"], "b23.tv/");
                                         }
@@ -907,7 +907,7 @@ function getNewPost(requestType){
                                             console.log("你关注的番剧 "+dynamicUser['name']+" 更新了！"+dynamicContent["title"]+" see:"+dynamicContent["jump_url"]);
                                             basicNotification(o[i+""]["id_str"], "你关注的番剧 "+dynamicUser['name']+" 更新了！",dynamicContent["title"],dynamicContent["jump_url"].replaceAll('https://','').replaceAll('http://',''), dynamicContent["cover"],"");
                                         }
-                                        if (!info.videoInit && requestType === 'article' && result.articlePush){
+                                        if (!info.videoInit && requestType === 'article' && result.articlePush && isNew(dynamicUser['pub_ts'])){
                                             console.log(`你关注的up ${dynamicUser['name']} 投稿了文章！${dynamicContent['title']} see:${dynamicContent['id']}`);
                                             basicNotification(o[i+'']['id_str'], `你关注的up ${dynamicUser['name']} 投稿了文章！`, dynamicContent['title'], dynamicContent['id'], dynamicUser["face"], "www.bilibili.com/read/cv");
                                         }
@@ -936,6 +936,10 @@ function getNewPost(requestType){
         });
     });
 
+}
+
+function isNew(ts){
+    return ((Date.now() / 1000.0) - ts) < 600
 }
 
 async function videoNotify(UUID){
