@@ -41,6 +41,9 @@
                     let emojis = await getOwnerEmote(mid);
                     let emojisType = await getUserEmote(mid);
                     if(pageUrl==='t.bilibili.com' || exp.test(window.location.href) || pageID.toUpperCase().includes('CV')) {
+                        try{
+                            boundButtons('comment-emoji');
+                        }catch (e){console.error(e)}
                         new MutationObserver((m)=>{
                             m.forEach((mutation)=>{
                                 if (mutation.type === "childList" && mutation.target.classList.contains("bb-comment") && mutation.addedNodes.length > 0){

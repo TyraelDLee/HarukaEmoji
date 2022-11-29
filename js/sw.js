@@ -899,7 +899,7 @@ function getNewPost(requestType){
                                     let dynamicUser = o[i+""]["modules"]["module_author"];
                                     let uid = dynamicUser['mid']-0;
                                     if(!dynamic_id_list.includes(o[i+""]["id_str"]) && !result['blackListVideo'].includes(uid)){
-                                        if (!info.videoInit && requestType==='video' && result.videoPush && isNew(dynamicUser['pub_ts'])){
+                                        if (!info.videoInit && requestType==='video' && result.videoPush && isNew(dynamicUser['pub_ts']) /*&& !dynamicContent['title'].includes("【直播回放】")*/){
                                             console.log(`你关注的up ${dynamicUser['name']} 投稿了新视频！${dynamicContent['title']} see:${dynamicContent['bvid']}`);
                                             basicNotification(o[i+""]["id_str"], `你关注的up ${dynamicUser['name']} 投稿了新视频！`, dynamicContent["title"], dynamicContent['bvid'], dynamicUser["face"], "b23.tv/");
                                         }
