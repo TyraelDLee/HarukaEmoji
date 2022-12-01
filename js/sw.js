@@ -553,10 +553,10 @@ function queryLivingRoom(uids) {
                     let data = json["data"];
                     chrome.notifications.getAll((n)=>{
                         for (let k in n){
-                            if (uids.indexOf(k.split(':')[0]-1+1)===-1 && k.split(':')[2]==='live.bilibili.com/'){
+                            if (uids.indexOf(k.split(':')[0]-0)===-1 && k.split(':')[2]==='live.bilibili.com/'){
                                 chrome.notifications.clear(k);
-                                if (notificationList.indexOf(k.split(':')[1]-1+1)!==-1)
-                                    notificationList.splice(notificationList.indexOf(k.split(':')[1]-1+1),1);
+                                if (notificationList.indexOf(k.split(':')[1]-0)!==-1)
+                                    notificationList.splice(notificationList.indexOf(k.split(':')[1]-0),1);
                             }
                         }
                         for (let i = 0; i < uids.length; i++) {
@@ -583,7 +583,7 @@ function queryLivingRoom(uids) {
 
                 }
             })
-            .catch(msg =>{errorHandler('getNewVideos', msg, 'queryLivingRoom(); line 500');});
+            .catch(msg =>{errorHandler('getFollowing', msg, 'queryLivingRoom(); line 500');});
     });
 }
 
@@ -939,7 +939,7 @@ function getNewPost(requestType){
 }
 
 function isNew(ts){
-    return ((Date.now() / 1000.0) - ts) < 600
+    return ((Date.now() / 1000.0) - (ts-0)) < 600
 }
 
 async function videoNotify(UUID){
@@ -969,7 +969,7 @@ async function videoNotify(UUID){
     //     //             else if(json["code"] === 0){
     //     //                 if(typeof json["data"]!=="undefined" && json["data"].length !== 0) {
     //     //                     let data = json["data"]["attentions"]['uids'];
-    //     //                     data.splice(json["data"]["attentions"]['uids'].indexOf(UUID-1+1),1);
+    //     //                     data.splice(json["data"]["attentions"]['uids'].indexOf(UUID-0),1);
     //     //                     for (let i = 0; i < result['blackListLive'].length; i++) {
     //     //                         if (data.includes(result['blackListLive'][i]))
     //     //                         data.splice(data.indexOf(result['blackListLive'][i]),1);
