@@ -119,7 +119,6 @@ a{
 }
 
 .rua-setting-button-group{
-    width: 250px;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -129,6 +128,7 @@ a{
 .rua-head{
     /*position: fixed;*/
     z-index: 10;
+    height: 62px;
     user-select: none;
     border-top: none;
     border-bottom: solid 1px #aaa;
@@ -158,7 +158,7 @@ a{
 .rua-head-border::after{
     min-width: 750px;
     content: '';
-    top: 63px;
+    top: 62px;
     width: calc(100% - 150px);
     height: 1px;
     padding: 0 75px;
@@ -223,6 +223,85 @@ a{
 .setting-description{
     color: var(--text-light-gray);
     line-height: 57px;
+}
+
+.medal{
+    display: inline-block;
+}
+
+/*.medal-section{*/
+/*    position: relative;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    flex-shrink: 0;*/
+/*    min-width: 70px;*/
+/*    height: 16px;*/
+/*    box-sizing: border-box;*/
+/*}*/
+
+.medal-name{
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    min-width: 12px;
+    padding: 0 4px;
+    color: #fff!important;
+    border-top-left-radius: 1px;
+    border-bottom-left-radius: 1px;
+    margin-left: unset!important;
+}
+
+.medal-label{
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    min-width: 12px;
+    padding: 0 4px;
+    color: #fff;
+    border-top-left-radius: 1px;
+    border-bottom-left-radius: 1px;
+    box-sizing: content-box;
+    height: 100%;
+    text-align: center;
+    float: left;
+}
+
+.medal-border{
+    box-sizing: content-box;
+    height: 14px;
+    line-height: 14px;
+    color: #fff;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    border-radius: 2px;
+    font-family: "Microsoft YaHei", "Microsoft Sans Serif", "Microsoft SanSerf", "\5FAE\8F6F\96C5\9ED1";
+    font-size: 12px;
+    position: relative;
+    cursor: default;
+    display: inline-block;
+    margin: 8px 0;
+}
+
+.medal-level{
+    width: 16px;
+    background-color: #fff;
+    text-align: center;
+    color: transparent;
+    border-top-left-radius: 1px;
+    border-bottom-right-radius: 1px;
+    float: left;
+    height: 100%;
 }
 /*.button-host{*/
 /*    margin-left: 20px;*/

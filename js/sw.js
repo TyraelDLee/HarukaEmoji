@@ -305,6 +305,7 @@ async function initialize(reload){
     setInitValue('blackListLive', []);
     setInitValue('blackListDynamic',[]);
     setInitValue('blackListVideo', []);
+    setInitValue('blackListDK', []);
     setInitValue('darkMode', false);
     setInitValue('darkModeSystem', false);
     setInitValue('commentEmoji', true);
@@ -1130,7 +1131,7 @@ function getNewUnread(){
  * Live room check in section.
  * */
 function checkMedalDaka(){
-    chrome.storage.sync.get(["daka"], (result)=>{
+    chrome.storage.sync.get(["daka", "blackListDK"], (result)=>{
         console.log("Grabbing medal info");
         chrome.storage.local.get(['rua_lastDK', 'uuid', 'dakaUid'], (info=>{
             if(result.daka && (info.rua_lastDK===null || isNewerThan(info.rua_lastDK.split("-"), (getUTC8Time().getFullYear()+"-"+getUTC8Time().getMonth()+"-"+getUTC8Time().getDate()).split("-")))){
@@ -1144,9 +1145,10 @@ function checkMedalDaka(){
                     .then(res => res.json())
                     .then(json => {
                         console.log(json["data"]["list"].length+" medal founded.");
+                        console.log(`${json["data"]["list"].length} medal founded, ${result['blackListDK'].length} ignored.`)
                         console.log(info.dakaUid)
                         for (let i = 0; i < json["data"]["list"].length; i++){
-                            if(info.dakaUid.indexOf(json["data"]["list"][i]["medal_info"]["target_id"])===-1 && json["data"]["list"][i]["medal_info"]["today_feed"]<100)
+                            if(result['blackListDK'].indexOf(json["data"]["list"][i]["medal_info"]["target_id"])===-1 && info.dakaUid.indexOf(json["data"]["list"][i]["medal_info"]["target_id"])===-1 && json["data"]["list"][i]["medal_info"]["today_feed"]<100)
                                 medals.push(json["data"]["list"][i]["medal_info"]["target_id"]);
                         }
                         chrome.storage.local.set({'dakaUid': medals}, ()=>{
