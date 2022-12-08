@@ -1,7 +1,7 @@
 {
   "name": "rua豹器",
   "manifest_version": 3,
-  "version": "5.14",
+  "version": "5.15",
   "description": "rua!",
   "declarative_net_request": {
     "rule_resources": [{
