@@ -1900,10 +1900,6 @@ html[theme*="dark"] .bili-popup__header__title{
     color:var(--text1);
 }
 
-html[theme*="dark"] .vote-result-comment{
-    background-color: var(--bg1_float)
-}
-
 html[theme*="dark"] .user-card .card-content .card-user-info .card-user-name{
     color: var(--292aca4c,var(--text1));
 }
@@ -2188,4 +2184,104 @@ html[theme*="dark"] .msg-notify .link{
 
 html[theme*="dark"] .msg-notify hr {
     background: var(--Ga2);
+}
+
+html[theme*="dark"] .bili-header .vip-panel-popover .panel-v2{
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .bili-header .vip-panel-popover .panel-v2-bottom-left .privilege-list .privilege-item{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .bili-header .vip-panel-popover .panel-v2-bottom-right .qrcode{
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] #bp-app, html[theme*="dark"] .vote-result-comment .bb-comment {
+    background-color: #282828!important;
+}
+
+
+html[theme*="dark"] .vote-result-comment{
+    background-color: #282828
+}
+
+html[theme*="dark"] .link-navbar-ctnr .slot-ctnr .area-list-panel{
+    border: none;
+}
+
+html[theme*="dark"] .link-navbar .panel-shadow{
+    box-shadow: 0 8px 20px 0 #151515;
+}
+
+html[theme*="dark"] .link-navbar-ctnr .search-bar, html[theme*="dark"] .link-navbar-ctnr .search-pannel {
+    background-color: var(--line_light);
+}
+
+html[theme*="dark"] .link-navbar-ctnr #nav-searchform{
+    background-color: var(--line_light);
+    border: none;
+}
+
+html[theme*="dark"] .search-bar-ctnr .search-bar[data-v-efd5efe0]:hover{
+    background: var(--graph_bg_thick);
+}
+
+html[theme*="dark"] .link-navbar-ctnr .search-pannel .history-item{
+    background: var(--bg3)!important;
+}
+
+html[theme*="dark"] .link-navbar-ctnr .search-pannel .history-item:hover{
+    background-color: var(--Ga2);
+}
+
+html[theme*="dark"]  .link-navbar-ctnr #nav-searchform.is-actived input, html[theme*="dark"] .link-navbar-ctnr #nav-searchform.is-focus input{
+    color: #fff!important;
+}
+
+html[theme*="dark"] #nav-searchform.is-actived .nav-search-content,html[theme*="dark"]  #nav-searchform.is-focus .nav-search-content{
+    background: var(--bg1);
+    border: 2px solid var(--brand_blue);
+}
+
+html[theme*="dark"] .link-navbar-ctnr .link-navbar{
+    box-shadow: none !important;
+}
+
+html[theme*="dark"] .link-navbar-ctnr{
+    box-shadow: 0 0 5px 1px #151515!important;
+}
+
+html[theme*="dark"] .link-navbar-ctnr .search-bar{
+    background-color: var(--line_light) !important;
+}
+
+html[theme*="dark"] .link-navbar-ctnr #nav-searchform.is-focus .search-bar:hover{
+    background: 0 0!important;
+}
+
+html[theme*="dark"] .link-navbar-ctnr .search-bar:hover{
+    background: var(--graph_bg_thick)!important;
+}
+
+html[theme*="dark"] .link-navbar-ctnr .search-pannel .suggest-item:hover, html[theme*="dark"] .link-navbar-ctnr .search-pannel .trending-item:hover{
+    background-color: var(--Ga2)!important;
+}
+
+html[theme*="dark"] .link-navbar-ctnr .search-bar .search-btn .search-icon{
+    background: url(//s1.hdslb.com/bfs/static/blive/blfe-live-room/static/img/darkmode-search.9b7486b..svg) no-repeat!important;
+    height: 16px;
+    width: 17px;
+    margin-left: 1px;
+}
+
+html[theme*="dark"] .link-navbar-ctnr .showmore-link .down-arrow-icon-block .down-arrow{
+    width: 12px;
+    height: 7px;
+    background: url(//s1.hdslb.com/bfs/static/blive/blfe-live-room/static/img/flatten_layer_darkmode.e7244fa..svg) no-repeat!important;
+}
+
+html[theme*="dark"] .link-navbar-ctnr .nav-logo{
+    color: #e7e9eb!important;
 }
