@@ -2,9 +2,6 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/cypress.config.min.js" />
-        <item url="file://$PROJECT_DIR$/cypress/support/commands.min.js" />
-        <item url="file://$PROJECT_DIR$/cypress/support/e2e.min.js" />
         <item url="file://$PROJECT_DIR$/docs/js/readme.min.js" />
         <item url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.min.js" />
         <item url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.worker.min.js" />
@@ -22,7 +19,9 @@
         <item url="file://$PROJECT_DIR$/js/biliMain.min.js" />
         <item url="file://$PROJECT_DIR$/js/comment.min.js" />
         <item url="file://$PROJECT_DIR$/js/darkMode.min.js" />
+        <item url="file://$PROJECT_DIR$/js/flv.min.js" />
         <item url="file://$PROJECT_DIR$/js/haruka.min.js" />
+        <item url="file://$PROJECT_DIR$/js/liveroom.min.js" />
         <item url="file://$PROJECT_DIR$/js/nana.min.js" />
         <item url="file://$PROJECT_DIR$/js/popup.min.js" />
         <item url="file://$PROJECT_DIR$/js/protobuf.min.js" />
@@ -35,9 +34,6 @@
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/cypress.config.min.js" />
-      <root url="file://$PROJECT_DIR$/cypress/support/commands.min.js" />
-      <root url="file://$PROJECT_DIR$/cypress/support/e2e.min.js" />
       <root url="file://$PROJECT_DIR$/docs/js/readme.min.js" />
       <root url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.min.js" />
       <root url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.worker.min.js" />
@@ -55,7 +51,9 @@
       <root url="file://$PROJECT_DIR$/js/biliMain.min.js" />
       <root url="file://$PROJECT_DIR$/js/comment.min.js" />
       <root url="file://$PROJECT_DIR$/js/darkMode.min.js" />
+      <root url="file://$PROJECT_DIR$/js/flv.min.js" />
       <root url="file://$PROJECT_DIR$/js/haruka.min.js" />
+      <root url="file://$PROJECT_DIR$/js/liveroom.min.js" />
       <root url="file://$PROJECT_DIR$/js/nana.min.js" />
       <root url="file://$PROJECT_DIR$/js/popup.min.js" />
       <root url="file://$PROJECT_DIR$/js/protobuf.min.js" />

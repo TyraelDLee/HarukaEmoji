@@ -679,7 +679,7 @@
                             switch (type) {
                                 case 'hdr':
                                     dlURL[0] = json['data']['dash']['video'][0]['base_url'];
-                                    dlURL[1] = json['data']['dash']['dolby']['audio']!==null?json["data"]["dash"]["dolby"]["audio"][0]["base_url"]:(json['data']['dash']['flac']['audio']!==null?json['data']['dash']['flac']['audio']['base_url']:json['data']['dash']['audio'][0]['base_url']);
+                                    dlURL[1] = json['data']['dash']['dolby']['audio']!==null?json["data"]["dash"]["dolby"]["audio"][0]["base_url"]:(json['data']['dash']['flac']!==null&&json['data']['dash']['flac']['audio']!==null?json['data']['dash']['flac']['audio']['base_url']:json['data']['dash']['audio'][0]['base_url']);
                                     break;
                                 case 'audio':
                                     dlURL[0] = json["data"]["dash"]["audio"][0]["base_url"]
@@ -692,7 +692,7 @@
                                     break;
                                 case '8k':
                                     dlURL[0] = json['data']['dash']['video'][0]['base_url'];
-                                    dlURL[1] = json['data']['dash']['dolby']['audio']!==null?json["data"]["dash"]["dolby"]["audio"][0]["base_url"]:(json['data']['dash']['flac']['audio']!==null?json['data']['dash']['flac']['audio']['base_url']:json['data']['dash']['audio'][0]['base_url']);
+                                    dlURL[1] = json['data']['dash']['dolby']['audio']!==null?json["data"]["dash"]["dolby"]["audio"][0]["base_url"]:(json['data']['dash']['flac']!==null&&json['data']['dash']['flac']['audio']!==null?json['data']['dash']['flac']['audio']['base_url']:json['data']['dash']['audio'][0]['base_url']);
                                     break;
                                 case 'dash':
                                     let maxBitwidth = 0, dlLink = "";
@@ -704,7 +704,7 @@
                                         }
                                     }
                                     dlURL[0] = dlLink;
-                                    dlURL[1] = json['data']['dash']['dolby']['audio']!==null?json["data"]["dash"]["dolby"]["audio"][0]["base_url"]:(json['data']['dash']['flac']['audio']!==null?json['data']['dash']['flac']['audio']['base_url']:json['data']['dash']['audio'][0]['base_url']);
+                                    dlURL[1] = json['data']['dash']['dolby']['audio']!==null?json["data"]["dash"]["dolby"]["audio"][0]["base_url"]:(json['data']['dash']['flac']!==null&&json['data']['dash']['flac']['audio']!==null?json['data']['dash']['flac']['audio']['base_url']:json['data']['dash']['audio'][0]['base_url']);
                                     break;
                                 default:
                                     break;

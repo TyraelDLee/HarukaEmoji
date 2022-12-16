@@ -504,10 +504,8 @@ function getFollowingList(){
                 chrome.storage.sync.get(["blackListLive"], (result)=>{
                     let followList = [];
                     for (let i = 0; i < json['data']['groups'].length; i++) {
-                        if (json['data']['groups'][''+i]['group_name'] === '我的关注'){
-                            for (let j = 0; j < json['data']['groups'][''+i]['items'].length; j++) {
-                                followList.push(json['data']['groups'][''+i]['items'][j+'']['mid']);
-                            }
+                        for (let j = 0; j < json['data']['groups'][''+i]['items'].length; j++) {
+                            followList.push(json['data']['groups'][''+i]['items'][j+'']['mid']);
                         }
                     }
                     for (let i = 0; i < result['blackListLive'].length; i++) {
@@ -1371,6 +1369,3 @@ function watching(){
 //todo: mock Android app request. no needed anymore
 //todo: add support for mv2.😅 √
 //todo: change the dynamic api.
-
-//new followed list: https://api.bilibili.com/x/v2/reply/at
-
