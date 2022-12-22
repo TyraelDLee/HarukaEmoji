@@ -80,6 +80,8 @@ video {
 .room-input {
     margin-left: 30px;
     flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .room-input input {
@@ -89,10 +91,13 @@ video {
     border-top: none;
     width: 100%;
     transition: 0.2s;
+    background: #fff;
+    z-index: 2;
+    flex: 1;
 }
 
 .room-input input:focus-visible {
-    border-bottom: 2px solid var(--bili-blue);
+    border-bottom: 3px solid var(--bili-blue);
     border-left: none;
     border-right: none;
     border-top: none;
@@ -301,7 +306,7 @@ video {
     bottom: 5px;
     left: 50%;
     height: 32px;
-    width: 50%;
+    width: 60%;
     max-width: 605px;
     line-height: 32px;
     border-radius: 2px;
@@ -349,6 +354,7 @@ video {
     opacity: 0;
     z-index: -1;
     height: 160px;
+    width: 100%;
     position: absolute;
 }
 
@@ -367,7 +373,7 @@ video {
     overflow-y: scroll;
 }
 
-.emoji-sec:hover{
+.emoji-sec:hover, .danmaku:hover .emoji-sec{
     opacity: 0.9;
 }
 
@@ -386,11 +392,17 @@ video {
 }
 
 .emoji-sec .rua-emoji-icon{
+    width:60px;
+    height:60px;
     background-size: contain;
     position: relative;
     background-position: center;
     background-repeat: no-repeat;
     transition: all 0.2s ease-in-out 0s;
+}
+
+.emoji-sec .rua-emoji-icon-active{
+        cursor: pointer;
 }
 
 .emoji-sec .rua-emoji-icon-active:hover{
@@ -430,4 +442,31 @@ video {
 
 .room-input ::placeholder{
     color: #343434!important;
+}
+
+.error-msg{
+    font-size: 12px!important;
+    color: var(--stress_red);
+    position: absolute;
+    transform: translateY(-15px);
+    transition: all 0.2s ease-in-out 0s;
+}
+
+.error-input{
+    border-color: var(--stress_red)!important;
+}
+
+.emoji-header{
+    width: 100%;
+    /* text-align: left; */
+    user-select: none;
+    font-size: 13px;
+    text-align: left;
+    color: rgb(153,153,153);
+    font-weight: bold;
+}
+
+.rua-emoji-icon-container{
+    position: relative;
+    margin: 2px;
 }

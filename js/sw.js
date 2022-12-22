@@ -492,7 +492,7 @@ function getFollowingList(){
     let flag = new AbortController();
     setTimeout(()=>{
         flag.abort('timeout');
-    }, 2000);
+    }, 2500);
     fetch(`https://api.bilibili.com/x/v2/reply/at`, {
         method:'GET',
         credentials: 'include',
@@ -535,7 +535,7 @@ function queryLivingRoom(uids) {
     let flag = new AbortController();
     setTimeout(()=>{
         flag.abort('timeout');
-    }, 2000);
+    }, 2500);
     chrome.storage.local.get(['uuid', 'notificationList', 'watchingList'],(info)=>{
         let notificationList = info.notificationList;
         let watchingList = info.watchingList;
@@ -876,7 +876,7 @@ function getNewPost(requestType){
     let flag = new AbortController();
     setTimeout(()=>{
         flag.abort('timeout');
-    }, 2000);
+    }, 2500);
     return new Promise((resolve, reject)=>{
         chrome.storage.local.get(['video_id_list', 'pgc_id_list', 'article_id_list', 'videoInit'], (info)=>{
             let dynamic_id_list = requestType==='video'?info.video_id_list:(requestType==='pgc'?info.pgc_id_list:info.article_id_list);
@@ -1015,7 +1015,7 @@ function dynamicNotify(){
     let flag = new AbortController();
     setTimeout(()=>{
         flag.abort('timeout');
-    }, 2000);
+    }, 2500);
     chrome.storage.local.get(['dynamicList', 'dynamicInit'], (r)=>{
         let dynamic_id_list = r.dynamicList, nowTS = Date.now() / 1000.0;
         fetch(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=1,2,4`,{
