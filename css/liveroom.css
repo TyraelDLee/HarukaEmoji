@@ -1,3 +1,32 @@
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    transition: 0.3s;
+    border-left: 0 solid rgba(128,128,128,0.3);
+    border-right: 0 solid rgba(128,128,128,0.3);
+}
+
+::-webkit-scrollbar:hover{
+    width: 10px!important;
+    height: 10px;
+    border-left: 1px solid rgba(128,128,128,0.3);
+    border-right: 1px solid rgba(128,128,128,0.3);
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 6px;
+    transition: 0.3s;
+    background-color: rgba(50,50,50,0.5);
+}
+
+::-webkit-scrollbar-thumb:active {
+    background-color: rgba(50,50,50,0.8);
+}
+
+::-webkit-scrollbar:hover::-webkit-scrollbar-thumb{
+    border-radius: 8px;
+}
+
 :root {
     --number-of-row: 1;
     --number-of-column: 1;

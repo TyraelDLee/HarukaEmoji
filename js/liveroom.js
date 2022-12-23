@@ -389,9 +389,10 @@
             };
             //volume wheel event
             videoControlContainer.getElementsByClassName('volume')[0].onwheel = (e)=>{
-                currentVolume+=e.deltaY;
+                currentVolume-=(e.deltaY/10.0);
                 if (currentVolume > 100) currentVolume = 100;
                 if (currentVolume < 0) currentVolume = 0;
+                currentVolume = Math.round(currentVolume);
                 video.volume = currentVolume / 100.0;
                 videoControlContainer.getElementsByClassName('number')[0].innerText = currentVolume;
                 volumeControl.getElementsByClassName('slider-handle')[0].style.top = (53 - currentVolume / 100.0 * 53) + 'px';
