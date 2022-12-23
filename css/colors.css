@@ -2285,3 +2285,45 @@ html[theme*="dark"] .link-navbar-ctnr .showmore-link .down-arrow-icon-block .dow
 html[theme*="dark"] .link-navbar-ctnr .nav-logo{
     color: #e7e9eb!important;
 }
+
+html[theme*="dark"] .link-panel-ctnr{
+    color: var(--Ba0_s)!important;
+    border: 1px solid transparent!important;
+    background-color: var(--bg1)!important;
+}
+
+html[theme*="dark"] .link-navbar-ctnr .calendar-checkin{
+    background-color: var(--bg1)!important;
+    border: 1px solid transparent!important;
+}
+
+html[theme*="dark"] .link-navbar-ctnr .calendar-checkin .content-ctnr{
+    background-color: var(--bg1)!important;
+}
+
+html[theme*="dark"] .link-navbar-ctnr .calendar-checkin .content-ctnr .divider, html[theme*="dark"] .link-navbar-ctnr .calendar-checkin .content-ctnr .title{
+    background-color: var(--bg1)!important;
+}
+
+html[theme*="dark"] .link-navbar-ctnr .calendar-checkin .content-ctnr .calendar-wrapper{
+    color: var(--text2)!important;
+    background-color: var(--bg1)!important
+}
+
+html[theme*="dark"] .fanbox-panel-ctnr{
+    border: 1px solid transparent!important;
+    box-shadow: 0 8px 20px 0 #151515!important;
+}
+
+html[theme*="dark"] .fanbox-panel-ctnr .list-item:hover{
+    background-color: #2f3134!important;
+}
+
+html[theme*="dark"] .fanbox-panel-ctnr .list-item{
+    color: #e7e9eb!important;
+}
+
+html[theme*="dark"] .link-navbar-ctnr .showmore-link .more-tab-animation .slot-ctnr .more-tab-content{
+    border: 1px solid transparent!important;
+    background-color: #232527!important;
+}

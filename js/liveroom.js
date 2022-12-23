@@ -521,7 +521,9 @@
                         }
                     }
                 })
-                .catch(msg =>{});
+                .catch(msg =>{
+                    console.log(msg)
+                });
 
             sourceEvent.observe(video, {attributes:true});
         }
@@ -534,6 +536,7 @@
              * Bind the media to the video player.
              * */
             function setPlayer(url, video, index) {
+                let frameChasing = null;
                 if (flvjs.isSupported()) {
                     flv = flvjs.createPlayer({
                         type: "flv",
@@ -546,11 +549,15 @@
                     })
                     flv.load();
                     flv.play();
+                    frameChasing = setTimeout(()=>{
+                        video.currentTime = video.buffered.end(0) - 1;
+                    }, 2000);
                     flv.on(flvjs.Events.ERROR, (e) => {
                         console.log('error');
                         console.log(e);
                         index = index + 1;
                         flv.unload();
+                        clearTimeout(frameChasing);
                         if (index === url.length)
                             setStream(roomId, video);
                         else setPlayer(url, video, index);
@@ -681,6 +688,7 @@
                             return {'emojiRequiredMedalLevel':medalInfo['medal_info']['level'],'medal_id':medalInfo['medal_info']['medal_id'],'medal_name':medalInfo['medal_info']['medal_name']};
                         }
                     }
+                    return {'emojiRequiredMedalLevel':0,'medal_id':-1,'medal_name':''};
                 }else{
                     return {'emojiRequiredMedalLevel':0,'medal_id':-1,'medal_name':''};
                 }
