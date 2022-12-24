@@ -245,3 +245,8 @@ rua豹器的MV3转移计划可以追随到数个版本前。作为个人开发�
 - CRC.js [github.com/bilibili-helper/bilibili-helper-o/blob/master/src/js/libs/crc32.js](https://github.com/bilibili-helper/bilibili-helper-o/blob/master/src/js/libs/crc32.js)
 - Copyright (c) 2020 Zac Yu, ruo
 - License: [github.com/bilibili-helper/bilibili-helper-o/blob/master/LICENSE](https://github.com/bilibili-helper/bilibili-helper-o/blob/master/LICENSE)
+
+### crypto-js
+- [crypto-js](https://github.com/brix/crypto-js)
+- Copyright (c) 2009-2013 Jeff Mott Copyright (c) 2013-2016 Evan Vosberg
+- License: [github.com/brix/crypto-js/blob/develop/LICENSE](https://github.com/brix/crypto-js/blob/develop/LICENSE)

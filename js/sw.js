@@ -400,6 +400,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
                     });
                 });
         }
+        if (request.msg === "get_LIVE_BUVID"){
+            chrome.cookies.get({url:'https://live.bilibili.com/', name:'LIVE_BUVID'}, function (cookie){
+                sendResponse({res:cookie});
+            })
+        }
         if(request.msg === "get_UUID") {
             chrome.storage.local.get(['uuid'],(uid)=>{
                 sendResponse({res:uid.uuid});

@@ -2327,3 +2327,24 @@ html[theme*="dark"] .link-navbar-ctnr .showmore-link .more-tab-animation .slot-c
     border: 1px solid transparent!important;
     background-color: #232527!important;
 }
+
+html[theme*="dark"] .link-navbar-ctnr .showmore-link .more-tab-animation .slot-ctnr .more-label .waterfall-item:hover{
+    background-color: #2f3134;
+}
+
+html[theme*="dark"] .link-navbar-ctnr .link-panel-ctnr .load-more .load-more-btn{
+    color: var(--Ga4)!important;
+    background-color: var(--Ga1)!important;
+}
+
+html[theme*="dark"] .link-navbar-ctnr .link-panel-ctnr .load-more .load-more-btn:hover, html[theme*="dark"] .link-navbar-ctnr .link-panel-ctnr .user-item:hover .username{
+    color: var(--brand_blue)!important;
+}
+
+html[theme*="dark"] .link-navbar-ctnr .link-panel-ctnr .activity-item-ctnr .info-ctnr .first-line .username, html[theme*="dark"] .link-navbar-ctnr .link-panel-ctnr .user-item .username{
+    color: var(--Ga9)!important;
+}
+
+html[theme*="dark"] .user-item-loading .avatar, html[theme*="dark"] .user-item-loading .username, html[theme*="dark"] .activity-item-loading-ctnr .user-avatar, html[theme*="dark"] .activity-item-loading-ctnr .info-ctnr .first-line, html[theme*="dark"] .activity-item-loading-ctnr .info-ctnr .second-line{
+    background-color: var(--Ga1)!important;
+}

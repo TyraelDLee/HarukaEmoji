@@ -3,7 +3,7 @@
     let addRoom = null, exit = null, setting = null, controlPanel = document.getElementsByClassName('control-bar')[0],
         mouseEvent = null, isFullScreen = false;
     let videoStream = new Map();
-    let UID, JCT, volumeLock = false, currentMedal = -1, reconnectionTime = 5000;
+    let UID, JCT, BUVID, volumeLock = false, currentMedal = -1, reconnectionTime = 5000;
     updateJCT();
     setInterval(updateJCT, 3000);
 
@@ -89,7 +89,6 @@
                     isFullScreen = false;
                 });
         });
-
     }();
 
     function hidePanelContainer() {
@@ -202,7 +201,7 @@
             }
         }
 
-        let flv = null, abortFlag = new AbortController();
+        let flv = null, abortFlag = new AbortController(), hb;
         if (videoStream.size < 16 && !videoStream.has(liveRoomInfo['uid'])) {
             videoStream.set(liveRoomInfo['uid'], liveRoomInfo);
 
@@ -219,6 +218,8 @@
                             let roominfo = await getRealRoomID(liveRoomInfo['room_id']);
                             if (roominfo['liveStatus']===1){
                                 setStream(liveRoomInfo['room_id'], video);
+                                hb = new HeartBeat(liveRoomInfo['area_v2_parent_id'], liveRoomInfo['area_v2_id'], liveRoomInfo['room_id'], liveRoomInfo['uid']);
+                                hb.E();
                             }else{
                                 if (flv!==null)
                                     flv.unload();
@@ -228,6 +229,7 @@
                                 videoContainer.remove();
                                 videoStream.delete(liveRoomInfo['uid']);
                                 calculateLayout(videoColum, videoStream.size);
+                                hb.stop();
                             }
                         }
                     }
@@ -434,6 +436,8 @@
             videoContainer.append(videoControlContainer);
             videoColum.append(videoContainer);
             setStream(liveRoomInfo['room_id'], video);
+            hb = new HeartBeat(liveRoomInfo['area_v2_parent_id'], liveRoomInfo['area_v2_id'], liveRoomInfo['room_id'], liveRoomInfo['uid']);
+            hb.E();
 
             function revokeEventListener(){
                 videoContainer.onmousemove = null;
@@ -627,7 +631,11 @@
                 JCT = lf.res.split(",")[0];
                 UID = lf.res.split(",")[1];
             });
+            chrome.runtime.sendMessage({msg:'get_LIVE_BUVID'}, function (buvid){
+                BUVID = buvid['res']['value'];
+            });
         } catch (e) {
+            console.log(e)
         }
     }
 
@@ -714,7 +722,137 @@
                 });
         }
     }
+
+    function HeartBeat(parentId, areaId, roomID, upID){
+        const UserAgent = window.navigator.userAgent
+        this.packageNumber = 0;
+        this.packagePayload = {
+            id:[parentId, areaId, this.packageNumber, roomID],
+            device:[BUVID, getUUID()],
+            ruid: upID,
+            ts: Date.now(),
+            is_patch: 0,
+            heart_beat: [],
+            ua: UserAgent
+        };
+        this.replayPayload={};
+        this.timer = null;
+
+        HeartBeat.prototype.E = async function(){
+            await fetch('https://live-trace.bilibili.com/xlive/data-interface/v1/x25Kn/E', {
+                method:"POST",
+                credentials:"include",
+                headers: {
+                    "content-type": "application/x-www-form-urlencoded"
+                },
+                body:`${objToStr(this.packagePayload)}&csrf_token=${JCT}&csrf=${JCT}&visit_id:`
+            }).then(r=>r.json())
+                .then(json=>{
+                    if (json['code'] === 0){
+                        this.packageNumber++;
+                        this.timer = setInterval(()=>{this.X()}, (json['data']['heartbeat_interval']-0)*1000);
+                        this.replayPayload = {
+                            id: [parentId, areaId, this.packageNumber, roomID],
+                            device: this.packagePayload["device"],
+                            ruid: this.packagePayload['ruid'],
+                            ets: json['data']['timestamp'],
+                            benchmark: json['data']['secret_key'],
+                            time: json['data']['heartbeat_interval'],
+                            ts: Date.now(),
+                            us: UserAgent
+                        };
+                        this.replayPayload = Object.assign({s:encrypt(this.replayPayload, json['data']['secret_rule'])}, this.replayPayload);
+                    }
+                })
+                .catch(e=>{
+                    this.stop();
+                    this.E();
+                })
+        }
+
+        HeartBeat.prototype.X = async function(){
+            await fetch('https://live-trace.bilibili.com/xlive/data-interface/v1/x25Kn/X', {
+                method:"POST",
+                credentials:"include",
+                headers: {
+                    "content-type": "application/x-www-form-urlencoded"
+                },
+                body:`${objToStr(this.replayPayload)}&csrf_token=${JCT}&csrf=${JCT}&visit_id:`
+            }).then(r=>r.json())
+                .then(json=>{
+                    if (json['code'] === 0){
+                        this.packageNumber++;
+                        this.replayPayload['benchmark'] = json['data']['secret_key'];
+                        this.replayPayload['time'] = json['data']['heartbeat_interval'];
+                        this.replayPayload['ets'] = json['data']['timestamp'];
+                        this.replayPayload['s'] = encrypt(this.replayPayload, json['data']['secret_rule']);
+                    }
+                })
+        }
+
+        HeartBeat.prototype.stop = function(){
+            clearInterval(this.timer);
+        }
+
+        function getUUID(){
+            let UUID = '';
+            for (let i = 0; i < 36; i++) {
+                const bit =  Math.floor(16 * Math.random());
+                if (i===8 || i===13 || i===18 || i===23)
+                    UUID+='-';
+                else if (i===14)
+                    UUID+='4';
+                else if (i===19)
+                    UUID+=(3&bit|8).toString(16);
+                else UUID+=bit.toString(16);
+            }
+            return UUID;
+        }
+
+        function objToStr(object) {
+            let out = "";
+            for (const i in object) out += `${i}=${encodeURIComponent(i==='id'||i==='device'?JSON.stringify(object[i]):object[i])}&`;
+            return out.slice(0, -1);
+        }
+
+        function encrypt(object, rule){
+            let message = JSON.stringify({
+                platform: 'web',
+                parent_id: object['id'][0],
+                area_id: object['id'][1],
+                seq_id: object['id'][2],
+                room_id: object['id'][3],
+                buvid: object['device'][0],
+                uuid: object['device'][1],
+                ets: object['ets'],
+                time: object['time'],
+                ts: object['ts']
+            });
+            for(let i of rule){
+                switch (i){
+                    case 0:
+                        message = CryptoJS.HmacMD5(message, object['benchmark']).toString(CryptoJS.enc.Hex);
+                        break;
+                    case 1:
+                        message = CryptoJS.HmacSHA1(message, object['benchmark']).toString(CryptoJS.enc.Hex);
+                        break;
+                    case 2:
+                        message = CryptoJS.HmacSHA256(message, object['benchmark']).toString(CryptoJS.enc.Hex);
+                        break;
+                    case 3:
+                        message = CryptoJS.HmacSHA224(message,object['benchmark']).toString(CryptoJS.enc.Hex);
+                        break;
+                    case 4:
+                        message = CryptoJS.HmacSHA512(message, object['benchmark']).toString(CryptoJS.enc.Hex);
+                        break;
+                    case 5:
+                        message = CryptoJS.HmacSHA384(message, object['benchmark']).toString(CryptoJS.enc.Hex);
+                        break;
+                }
+            }
+            return message;
+        }
+    }
 }();
 
-
-//TODO: add setting, add heart beat, end video, reconnection
+// TODO: add setting, add heart beat, reconnection

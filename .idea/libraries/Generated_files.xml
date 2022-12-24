@@ -18,6 +18,7 @@
         <item url="file://$PROJECT_DIR$/js/background.min.js" />
         <item url="file://$PROJECT_DIR$/js/biliMain.min.js" />
         <item url="file://$PROJECT_DIR$/js/comment.min.js" />
+        <item url="file://$PROJECT_DIR$/js/crypto-js.min.js" />
         <item url="file://$PROJECT_DIR$/js/darkMode.min.js" />
         <item url="file://$PROJECT_DIR$/js/flv.min.js" />
         <item url="file://$PROJECT_DIR$/js/haruka.min.js" />
@@ -50,6 +51,7 @@
       <root url="file://$PROJECT_DIR$/js/background.min.js" />
       <root url="file://$PROJECT_DIR$/js/biliMain.min.js" />
       <root url="file://$PROJECT_DIR$/js/comment.min.js" />
+      <root url="file://$PROJECT_DIR$/js/crypto-js.min.js" />
       <root url="file://$PROJECT_DIR$/js/darkMode.min.js" />
       <root url="file://$PROJECT_DIR$/js/flv.min.js" />
       <root url="file://$PROJECT_DIR$/js/haruka.min.js" />
