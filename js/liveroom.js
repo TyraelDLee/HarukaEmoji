@@ -782,6 +782,7 @@
                 .then(json=>{
                     if (json['code'] === 0){
                         this.packageNumber++;
+                        this.replayPayload['id'] = [parentId, areaId, this.packageNumber, roomID]
                         this.replayPayload['benchmark'] = json['data']['secret_key'];
                         this.replayPayload['time'] = json['data']['heartbeat_interval'];
                         this.replayPayload['ets'] = json['data']['timestamp'];

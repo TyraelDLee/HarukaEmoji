@@ -67,6 +67,8 @@ video {
     margin: 5px;
     cursor: pointer;
     transition: 0.3s;
+    max-width: 40px;
+    max-height: 40px;
 }
 
 .control-bar {
