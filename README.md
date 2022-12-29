@@ -30,6 +30,10 @@ rua豹器5.14来啦 <br>
 ## Manifest V3
 自5.10版开始rua豹器已转为Manifest V3扩展应用。
 
+## 已知的问题
+Manifest V3 应用的后台service worker有一定的概率会被永久终止导致插件无法正常运行。<br>
+直接下载源代码本地加载，遇到这个问题可以通过手动重载来唤醒service worker。
+
 ### 关于MV3
 MV3带来了一系列的性能以及安全性提升，具体可以参阅[Google官方文档](https://developer.chrome.com/docs/extensions/mv3/intro/)(如果你感兴趣的话)。<br>
 其中最重要的一点：MV2将于2023年1月停止支持，届时现有的MV2也将无法运行。当然也可以不更新浏览器来继续使用MV2扩展应用。<br>

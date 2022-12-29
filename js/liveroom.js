@@ -218,11 +218,11 @@
                             let roominfo = await getRealRoomID(liveRoomInfo['room_id']);
                             if (roominfo['liveStatus']===1){
                                 setStream(liveRoomInfo['room_id'], video);
-                                hb = new HeartBeat(liveRoomInfo['area_v2_parent_id'], liveRoomInfo['area_v2_id'], liveRoomInfo['room_id'], liveRoomInfo['uid']);
-                                hb.E();
+                                // hb = new HeartBeat(liveRoomInfo['area_v2_parent_id'], liveRoomInfo['area_v2_id'], liveRoomInfo['room_id'], liveRoomInfo['uid']);
+                                // hb.E();
                             }else{
                                 if (flv!==null)
-                                    flv.unload();
+                                    flv.destroy();
                                 abortFlag.abort('user cancel');
                                 console.log('close '+ liveRoomInfo['uid']);
                                 revokeEventListener();
@@ -422,7 +422,8 @@
             //close video player
             videoControlContainer.getElementsByClassName('close')[0].onclick = ()=>{
                 if (flv!==null){
-                    flv.unload();
+                    //disconnect from stream, destroy player
+                    flv.destroy();
                 }
                 abortFlag.abort('user cancel');
                 console.log('close '+ liveRoomInfo['uid']);
@@ -430,6 +431,7 @@
                 videoContainer.remove();
                 videoStream.delete(liveRoomInfo['uid']);
                 calculateLayout(videoColum, videoStream.size);
+                hb.stop();
             };
             videoControlContainer.classList.add('video-player-control');
 
@@ -759,7 +761,7 @@
                             benchmark: json['data']['secret_key'],
                             time: json['data']['heartbeat_interval'],
                             ts: Date.now(),
-                            us: UserAgent
+                            ua: UserAgent
                         };
                         this.replayPayload = Object.assign({s:encrypt(this.replayPayload, json['data']['secret_rule'])}, this.replayPayload);
                     }
@@ -782,7 +784,7 @@
                 .then(json=>{
                     if (json['code'] === 0){
                         this.packageNumber++;
-                        this.replayPayload['id'] = [parentId, areaId, this.packageNumber, roomID]
+                        this.replayPayload['id'] = [this.replayPayload['id'][0], this.replayPayload['id'][1], this.packageNumber, this.replayPayload['id'][3]];
                         this.replayPayload['benchmark'] = json['data']['secret_key'];
                         this.replayPayload['time'] = json['data']['heartbeat_interval'];
                         this.replayPayload['ets'] = json['data']['timestamp'];
@@ -792,7 +794,11 @@
         }
 
         HeartBeat.prototype.stop = function(){
-            clearInterval(this.timer);
+            console.log(this.timer);
+            if (this.timer!==null){
+                clearInterval(this.timer);
+                this.timer = null;
+            }
         }
 
         function getUUID(){
