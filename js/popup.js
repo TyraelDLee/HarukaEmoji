@@ -31,6 +31,7 @@
     const pgcPush = document.getElementById('pgcPush');
     const articlePush = document.getElementById('articlePush');
     const heartBeat = document.getElementById('hb');
+    const cover = document.getElementById('album-cover');
 
     const qn_table = ["原画", "蓝光","超清","高清","流畅"];
     const qnItem = setting7.getElementsByClassName("qn-i");
@@ -227,6 +228,11 @@
         chrome.storage.sync.set({"heartBeatSwitch": checked}, function (){});
     });
 
+    cover.addEventListener("change", function (){
+        let checked = this.checked;
+        chrome.storage.sync.set({"squareCover": checked}, function (){});
+    });
+
     enhancedHidden.addEventListener("change", function (){
         let checked = this.checked;
         if(checked){
@@ -325,7 +331,7 @@
             }
         });
 
-        chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem", "commentEmoji", "videoPush", "pgcPush", "articlePush", "heartBeatSwitch"], function(result){
+        chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem", "commentEmoji", "videoPush", "pgcPush", "articlePush", "heartBeatSwitch", "squareCover"], function(result){
             if (os === 'win')
                 buttonDisabled(result.notification, imageNotice);
             liveNotification.checked = result.notification;
@@ -343,6 +349,7 @@
             daka.checked = result.daka;
             heartBeat.checked = result.heartBeatSwitch;
             commentEmoji.checked = result.commentEmoji;
+            cover.checked = result.squareCover;
 
             qualitySetting.checked = result.qn;
             qn = result.qn;

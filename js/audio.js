@@ -131,8 +131,12 @@
         });
         await ffmpeg.load();
         ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(blob));
-        await ffmpeg.run('-i', 'audio.m4s','-c', 'copy', '-metadata', `title=${utf8Encode(metadata.title)}`,'-metadata', `artist=${utf8Encode(metadata.artist)}`,'-metadata', `description=${utf8Encode(metadata.description)}`, '-metadata', `lyrics=${utf8Encode(metadata.lyrics)}`, '-metadata', `year=${metadata.year}`, 'final.m4a');
-        //await ffmpeg.run('-i', 'audio.m4s','-c', 'copy', '-metadata', `title=${eval('\''+encodeURI(metadata.title).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `artist=${eval('\''+encodeURI(metadata.artist).replace(/%/gm, '\\x')+'\'')}`,'-metadata', `description=${eval('\''+encodeURI(metadata.description).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `lyrics=${eval('\''+encodeURI(metadata.lyrics).replace(/%/gm, '\\x')+'\'')}`, '-metadata', `year=${metadata.year}`, 'final.m4a');
+        if (metadata['cover'].length){
+            ffmpeg.FS('writeFile', `cover.${blob[1].substring(metadata['cover'].length-3)}`, await fetchFile(metadata['cover'].replace('http://', 'https://')));
+            await ffmpeg.run('-i', 'audio.m4s', '-i', 'cover.jpg', '-map' , '0', '-map', '1', '-c', 'copy', '-disposition:v:0', 'attached_pic', '-metadata', `title=${utf8Encode(metadata.title)}`,'-metadata', `artist=${utf8Encode(metadata.artist)}`,'-metadata', `description=${utf8Encode(metadata.description)}`, '-metadata', `lyrics=${utf8Encode(metadata.lyrics)}`, '-metadata', `year=${metadata.year}`, 'final.m4a');
+        }else{
+            await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', '-metadata', `title=${utf8Encode(metadata.title)}`,'-metadata', `artist=${utf8Encode(metadata.artist)}`,'-metadata', `description=${utf8Encode(metadata.description)}`, '-metadata', `lyrics=${utf8Encode(metadata.lyrics)}`, '-metadata', `year=${metadata.year}`, 'final.m4a');
+        }
         out = ffmpeg.FS('readFile', 'final.m4a');
         downloadName = filename + ".m4a";
         dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));

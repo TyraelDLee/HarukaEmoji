@@ -72,6 +72,10 @@ section {
   -webkit-filter: opacity(50%);filter: opacity(50%);
 }
 
+.checkbox input:hover + .btn-disabled:after {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2)!important;
+}
+
 .button .checkbox input:checked + label {
   background: #fd749b;
 }

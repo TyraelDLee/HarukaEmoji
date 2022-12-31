@@ -312,6 +312,7 @@ async function initialize(reload){
     setInitValue('darkModeSystem', false);
     setInitValue('commentEmoji', true);
     setInitValue('heartBeatSwitch', true);
+    setInitValue('squareCover', false);
     /**
      * Context menu section.
      *

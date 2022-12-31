@@ -42,7 +42,6 @@
                 document.getElementById('rua-head-space').setAttribute('style', `display:none; padding: 0; border: none;`);
             }
             if(Math.ceil(document.body.clientHeight-document.documentElement.scrollTop-window.innerHeight)<=-70){
-                console.log(Math.ceil(document.body.clientHeight-document.documentElement.scrollTop-window.innerHeight))
                 if (scrollLock){
                     scrollLock = false;
                     pn++;

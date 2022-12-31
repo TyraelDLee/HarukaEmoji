@@ -26,6 +26,10 @@
     var initWidth = window.innerWidth;
     var labFeatures=[];
     var zoomFactor = 1.0;
+    let squareCover;
+    chrome.storage.sync.get(['squareCover'], (info)=>{
+        squareCover = info.squareCover;
+    });
 
     let vipStatus = null;
 
@@ -643,6 +647,25 @@
             });
     }
 
+    function getCover(){
+        return fetch(`https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`, {
+            method:'GET',
+            credentials:"include",
+            body:null
+        }).then(r=>r.json())
+            .then(json=>{
+                if (json['code'] === 0){
+                    if (squareCover || typeof json['data']['pic'] === 'undefined' || json['data']['pic'] === null || json['data']['pic'] === ''){
+                        return json['data']['owner']['face'].replace("http://", "https://");
+                    }
+                    else return json['data']['pic'].replace("http://", "https://");
+                }else
+                    throw 'error';
+            }).catch(e=>{
+                return '';
+            });
+    }
+
     /**
      * Grab the stream information and render download buttons
      * for all request based on DASH protocol.
@@ -674,7 +697,7 @@
                     credentials:'include',
                     body:null
                 }).then(res => res.json())
-                    .then(json =>{
+                    .then(json => {
                         if(json["code"]===0 && json["data"]!==null){
                             switch (type) {
                                 case 'hdr':
@@ -682,7 +705,7 @@
                                     dlURL[1] = json['data']['dash']['dolby']['audio']!==null?json["data"]["dash"]["dolby"]["audio"][0]["base_url"]:(json['data']['dash']['flac']!==null&&json['data']['dash']['flac']['audio']!==null?json['data']['dash']['flac']['audio']['base_url']:json['data']['dash']['audio'][0]['base_url']);
                                     break;
                                 case 'audio':
-                                    dlURL[0] = json["data"]["dash"]["audio"][0]["base_url"]
+                                    dlURL[0] = json["data"]["dash"]["audio"][0]["base_url"];
                                     break;
                                 case 'dolby':
                                     dlURL[0] = json["data"]["dash"]["dolby"]["audio"][0]["base_url"];
@@ -780,8 +803,10 @@
                 blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'||requestType==='dashRecord'?'视频':'', true, controller);
                 if((requestType==='hdrRecord' || requestType==='8kRecord'||requestType==='dashRecord')&&!controller.signal.aborted)
                     blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频', true, controller);
-                if(requestType==='audioRecord')
+                if(requestType==='audioRecord') {
                     audioMeta = await getAudioMeta();
+                    blobURL[1] = await getCover();
+                }
                 if (!controller.signal.aborted)
                     encode(blobURL, fileName, requestType, audioMeta).then(r=>{
                         releaseDownload();
@@ -844,7 +869,12 @@
         await ffmpeg.load();
         if(requestType === 'audioRecord'){
             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(blob[0]));
-            await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', '-metadata', `title=${utf8Encode(metadata.title)}`,'-metadata', `artist=${utf8Encode(metadata.artist)}`, '-metadata', `year=${metadata.year}`, 'final.m4a');
+            if (blob[1].length>0) {
+                ffmpeg.FS('writeFile', `cover.${blob[1].substring(blob[1].length-3)}`, await fetchFile(blob[1]));
+                await ffmpeg.run('-i', 'audio.m4s', '-i', `cover.${blob[1].substring(blob[1].length-3)}`, '-map' , '0', '-map', '1', '-c', 'copy', '-disposition:v:0', 'attached_pic', '-metadata', `title=${utf8Encode(metadata.title)}`, '-metadata', `artist=${utf8Encode(metadata.artist)}`, '-metadata', `year=${metadata.year}`, 'final.m4a');
+            }else{
+                await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', '-metadata', `title=${utf8Encode(metadata.title)}`,'-metadata', `artist=${utf8Encode(metadata.artist)}`, '-metadata', `year=${metadata.year}`, 'final.m4a');
+            }
             out = ffmpeg.FS('readFile', 'final.m4a');
             downloadName = filename + ".m4a";
             dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
