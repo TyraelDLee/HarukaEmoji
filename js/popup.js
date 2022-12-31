@@ -30,6 +30,7 @@
     const videoPush = document.getElementById('videoPush');
     const pgcPush = document.getElementById('pgcPush');
     const articlePush = document.getElementById('articlePush');
+    const heartBeat = document.getElementById('hb');
 
     const qn_table = ["原画", "蓝光","超清","高清","流畅"];
     const qnItem = setting7.getElementsByClassName("qn-i");
@@ -40,7 +41,6 @@
     var availableLink = "https://gitee.com/tyrael-lee/HarukaEmoji/releases";
     var os = "";
     function en(e){e.preventDefault()}
-    chrome.runtime.connect({ name: "popup" });
     (function ver(){
         versionSection.innerHTML = "ver. <i>"+currentVersion+"</i>";
     })();
@@ -222,6 +222,11 @@
         chrome.storage.sync.set({"daka": checked}, function (){});
     });
 
+    heartBeat.addEventListener("change", function (){
+        let checked = this.checked;
+        chrome.storage.sync.set({"heartBeatSwitch": checked}, function (){});
+    });
+
     enhancedHidden.addEventListener("change", function (){
         let checked = this.checked;
         if(checked){
@@ -320,7 +325,7 @@
             }
         });
 
-        chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem", "commentEmoji", "videoPush", "pgcPush", "articlePush"], function(result){
+        chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem", "commentEmoji", "videoPush", "pgcPush", "articlePush", "heartBeatSwitch"], function(result){
             if (os === 'win')
                 buttonDisabled(result.notification, imageNotice);
             liveNotification.checked = result.notification;
@@ -336,6 +341,7 @@
             dynamic.checked = result.dynamicSwitch;
             hiddenEntry.checked = result.hiddenEntry;
             daka.checked = result.daka;
+            heartBeat.checked = result.heartBeatSwitch;
             commentEmoji.checked = result.commentEmoji;
 
             qualitySetting.checked = result.qn;

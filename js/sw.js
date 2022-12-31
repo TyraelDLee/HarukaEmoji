@@ -307,9 +307,11 @@ async function initialize(reload){
     setInitValue('blackListDynamic',[]);
     setInitValue('blackListVideo', []);
     setInitValue('blackListDK', []);
+    setInitValue('blackListHB', []);
     setInitValue('darkMode', false);
     setInitValue('darkModeSystem', false);
     setInitValue('commentEmoji', true);
+    setInitValue('heartBeatSwitch', true);
     /**
      * Context menu section.
      *
@@ -320,9 +322,17 @@ async function initialize(reload){
 
     // local states
     chrome.alarms.create('checkUpd', {'when':Date.now(), periodInMinutes:60*12});
-    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "video_id_list": [],"pgc_id_list": [],"article_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0/*'{"biz_msg_follow_unread":0,"biz_msg_unfollow_unread":0,"dustbin_push_msg":0,"dustbin_unread":0,"follow_unread":0,"unfollow_push_msg":0,"unfollow_unread":0}'*/, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[], 'watchingList': {}, 'heartRhythm':[]}, ()=>{});
+    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "video_id_list": [],"pgc_id_list": [],"article_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0/*'{"biz_msg_follow_unread":0,"biz_msg_unfollow_unread":0,"dustbin_push_msg":0,"dustbin_unread":0,"follow_unread":0,"unfollow_push_msg":0,"unfollow_unread":0}'*/, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[], 'watchingList': {}, 'heartRhythm':[], 'medalList':[]}, ()=>{});
     chrome.alarms.create('getUID_CSRF', {'when': Date.now(), periodInMinutes:0.3});
     chrome.alarms.create('heartRate', {'when': Date.now()+60*1e3, periodInMinutes: 1});
+    chrome.alarms.create('refreshHB', {'when': Date.now()+3600*1e3, periodInMinutes:60});
+}
+
+function getNextDay(){
+    let nextDay = new Date();
+    nextDay.setDate(nextDay.getDate()+1);
+    nextDay.setUTCHours(0, 0, 0, 0);
+    return nextDay.getTime() - 28800000;
 }
 
 function setInitValue(key, defaultVal){
@@ -508,7 +518,7 @@ function getFollowingList(){
     }).then(r=>r.json())
         .then(json=>{
             if (json['code']===0){
-                chrome.storage.sync.get(["blackListLive"], (result)=>{
+                chrome.storage.sync.get(["blackListLive", "blackListHB"], (result)=>{
                     let followList = [];
                     for (let i = 0; i < json['data']['groups'].length; i++) {
                         for (let j = 0; j < json['data']['groups'][''+i]['items'].length; j++) {
@@ -516,7 +526,7 @@ function getFollowingList(){
                         }
                     }
                     console.log(`Load following list complete. ${followList.length} followings found, ${result['blackListLive'].length} live notifications are ignored.`);
-                    queryLivingRoom(followList, result['blackListLive']);
+                    queryLivingRoom(followList, result['blackListLive'], result['blackListHB']);
                 });
             }
         })
@@ -532,14 +542,15 @@ function getFollowingList(){
  * attention: not accept cookie.
  *
  * @param {array} uids the group of followed uid.
- * @param {array} blackList the group of followed but no notification
+ * @param {array} blackListNT the group of followed but no notification.
+ * @param {array} blackListHB the group of followed but stop send heart beat.
  * */
-function queryLivingRoom(uids, blackList) {
+function queryLivingRoom(uids, blackListNT, blackListHB) {
     let flag = new AbortController();
     setTimeout(()=>{
         flag.abort('timeout');
     }, 3000);
-    chrome.storage.local.get(['uuid', 'notificationList', 'watchingList', 'heartRhythm', 'buvid'],(info)=>{
+    chrome.storage.local.get(['uuid', 'notificationList', 'watchingList', 'heartRhythm', 'buvid', 'medalList'],(info)=>{
         let notificationList = info.notificationList;
         let watchingList = info.watchingList;
         let liveInfo = info['heartRhythm'];
@@ -570,15 +581,24 @@ function queryLivingRoom(uids, blackList) {
                                     watchingList[data[uids[i]]["room_id"]+""] = -2;
                                     liveInfo.splice(liveInfo.findIndex(e => e.ruid === data[uids[i]]['uid']), 1);
                                 }
-                                if (data[uids[i]]["live_status"] === 1 && notificationList.indexOf(data[uids[i]]["room_id"]) === -1) {
-                                    if (liveInfo.findIndex(e=>e.ruid === data[uids[i]]['uid'])===-1){
-                                        liveInfo.push({
-                                            id: [data[uids[i]]['area_v2_parent_id'], data[uids[i]]['area_v2_id'], 0, data[uids[i]]['room_id']],
-                                            device: [info['buvid'], getUUID()],
-                                            ruid: data[uids[i]]['uid']
-                                        });
+                                if (data[uids[i]]["live_status"] === 1 && liveInfo.findIndex(e=>e.ruid === data[uids[i]]['uid'])===-1 && !blackListHB.includes(data[uids[i]]['uid'])){
+                                    liveInfo.push({
+                                        id: [data[uids[i]]['area_v2_parent_id'], data[uids[i]]['area_v2_id'], 0, data[uids[i]]['room_id']],
+                                        device: [info['buvid'], getUUID()],
+                                        ruid: data[uids[i]]['uid']
+                                    });
+                                }
+                                let rhythmTemp = [];
+                                for (const medalItem of info.medalList){
+                                    for (let i = 0; i < liveInfo.length; i++) {
+                                        if (medalItem['medal_info']['level']<20 && medalItem['medal_info']['target_id'] === liveInfo[i]['ruid'] && medalItem['medal_info']['today_feed'] < medalItem['medal_info']['day_limit'])
+                                            rhythmTemp.push(liveInfo[i]);
                                     }
-                                    if(!blackList.includes(data[uids[i]]['uid'])){
+                                }
+                                liveInfo = [];
+                                liveInfo = rhythmTemp;
+                                if (data[uids[i]]["live_status"] === 1 && notificationList.indexOf(data[uids[i]]["room_id"]) === -1) {
+                                    if(!blackListNT.includes(data[uids[i]]['uid'])){
                                         notificationList.push(data[uids[i]]["room_id"]);
                                         watchingList[data[uids[i]]["room_id"]+""] = 0;
                                         chrome.storage.sync.get(["notification"], (result)=>{
@@ -728,6 +748,7 @@ function reloadCookies() {
                 if (uids.uuid !== -1 && uids.uuid !== uids.p_uuid) {
                     // log in info changed then load following list and start update liver stream info every 3 min.
                     console.log("Session info got.");
+                    refreshHeartBeatList();
                     chrome.alarms.create('getNewVideos',{'when': Date.now(), periodInMinutes: 0.33});
                     chrome.alarms.create('getFollowing', {'when': Date.now(), periodInMinutes: 0.2});
                     chrome.alarms.create('getNewUnreads', {'when': Date.now()+5000, periodInMinutes: 0.2});
@@ -779,7 +800,16 @@ chrome.alarms.onAlarm.addListener((alarm)=>{
                 daka(info.dakaUid, info.jct, "打卡");
                 break;
             case 'heartRate':
-                heartBeat();
+                chrome.storage.sync.get(['heartBeatSwitch'], (synced)=>{
+                    if (synced['heartBeatSwitch'])heartBeat();
+                });
+                //heartBeat();
+                break;
+            case 'refreshHB':
+                refreshHeartBeatList();
+                break;
+            case 'refreshHBRetry':
+                refreshHeartBeatList();
                 break;
         }
     });
@@ -1276,21 +1306,6 @@ function heartBeat(){
         }
         let rhythm = info['heartRhythm'];
         if (rhythm.length>0){
-            await fetch(`https://api.live.bilibili.com/xlive/web-ucenter/user/MedalWall?target_id=${info.uuid}`,{
-                method:'GET',
-                credentials:'include',
-                body:null
-            }).then(r=>r.json())
-                .then(json=>{
-                    let rhythmTemp = [];
-                    for (const listElement of json["data"]["list"]){
-                        for (let i = 0; i < rhythm.length; i++) {
-                            if (listElement['medal_info']['level']<20 && listElement['medal_info']['target_id'] === rhythm[i]['ruid'])
-                                rhythmTemp.push(rhythm[i]);
-                        }
-                    }
-                    rhythm = rhythmTemp;
-                });
             for (let i = 0; i < rhythm.length; i++) {
                 rhythm[i] = await QRSComplex(rhythm[i], info.jct);
             }
@@ -1317,11 +1332,12 @@ function QRSComplex(rhythm, jct){
             ruid: rhythm['ruid'],
             ets: rhythm['ets'],
             benchmark: rhythm['benchmark'],
-            time: rhythm['time'],
-            ts: Date.now()
+            ts: Date.now(),
+            time: rhythm['time']
         }
         payload = Object.assign({s: encrypt(payload, rhythm['secret_rule'])}, payload);
     }
+    // server only check the s key by given data from client. So the ts, id are not required accurate
     return fetch(`https://live-trace.bilibili.com/xlive/data-interface/v1/x25Kn/${rhythm['id'][2]===0?'E':'X'}`, {
         method: "POST",
         credentials:"include",
@@ -1332,15 +1348,24 @@ function QRSComplex(rhythm, jct){
     }).then(r=>r.json())
         .then(json=>{
             if (json['code'] === 0){
-                rhythm['id'][2]++;
-                rhythm['benchmark'] = json['data']['secret_key'];
-                rhythm['time'] = json['data']['heartbeat_interval'];
-                rhythm['ets'] = json['data']['timestamp'];
-                rhythm['secret_rule'] = json['data']['secret_rule']
-                rhythm = Object.assign({s:encrypt(rhythm, json['data']['secret_rule'])}, rhythm);
-                return rhythm;
-            }else
-                return rhythm;
+                let seq = rhythm['id'][2]+1;
+                return {
+                    id: [rhythm['id'][0], rhythm['id'][1],seq, rhythm['id'][3]],
+                    device: rhythm['device'],
+                    ruid: rhythm['ruid'],
+                    ets: json['data']['timestamp'],
+                    benchmark: json['data']['secret_key'],
+                    time: json['data']['heartbeat_interval'],
+                    secret_rule: json['data']['secret_rule']
+                };
+            }else{
+                console.log(`${json['code']} at ${payload}`)
+                return {
+                    id: [rhythm['id'][0], rhythm['id'][1], 0, rhythm['id'][3]],
+                    device: rhythm['device'],
+                    ruid: rhythm['ruid']
+                }
+            }
         });
 
     function objToStr(object) {
@@ -1386,6 +1411,24 @@ function QRSComplex(rhythm, jct){
         }
         return message;
     }
+}
+
+function refreshHeartBeatList(){
+    chrome.storage.local.get(['uuid'], (info)=>{
+        fetch(`https://api.live.bilibili.com/xlive/web-ucenter/user/MedalWall?target_id=${info.uuid}`,{
+            method:'GET',
+            credentials:'include',
+            body:null
+        }).then(r=>r.json())
+            .then(json=>{
+                if (json['code'] === 0){
+                    chrome.storage.local.set({'medalList': json['data']['list']}, ()=>{});
+                }else
+                    chrome.alarms.create('refreshHBRetry', {delayInMinutes:1});
+            }).catch(e=>{
+            chrome.alarms.create('refreshHBRetry', {delayInMinutes:1});
+        });
+    });
 }
 
 // This is the service worker for mv3 which some functions may not support yet.

@@ -894,7 +894,7 @@ html[theme*="dark"] .user-info .info-content .info-value {
     color: var(--text2);
 }
 
-html[theme*="dark"] .elec .elec-status, html[theme*="dark"] .elec .old-elec-trigger:hover+.elec-map .elec-status {
+html[theme*="dark"] .elec .elec-status, html[theme*="dark"] .elec .old-elec-trigger:hover+.elec-map .elec-status， html[theme*="dark"] .elec .new-elec-trigger:hover+.elec-map .elec-status {
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJwAAABKCAYAAABO3z1/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAG1WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNy4yLWMwMDAgNzkuNTY2ZWJjNWI0LCAyMDIyLzA1LzA5LTA4OjI1OjU1ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE3IChXaW5kb3dzKSIgeG1wOkNyZWF0ZURhdGU9IjIwMjItMDgtMTFUMjI6MTg6MzArMTA6MDAiIHhtcDpNb2RpZnlEYXRlPSIyMDIyLTEyLTAyVDIzOjU0OjE4KzExOjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIyLTEyLTAyVDIzOjU0OjE4KzExOjAwIiBkYzpmb3JtYXQ9ImltYWdlL3BuZyIgcGhvdG9zaG9wOkNvbG9yTW9kZT0iMyIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpiOWJhNGNkZi04ODZkLTQ1YTMtOGEwMi03YWQ1NTUzZjFhYjciIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NzI2NGNlZjgtYjhhNC1hMTQ5LThlZmMtMzU5YjJjYWZjYjA0IiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6NzI2NGNlZjgtYjhhNC1hMTQ5LThlZmMtMzU5YjJjYWZjYjA0IiB0aWZmOk9yaWVudGF0aW9uPSIxIiB0aWZmOlhSZXNvbHV0aW9uPSI3MjAwMDAvMTAwMDAiIHRpZmY6WVJlc29sdXRpb249IjcyMDAwMC8xMDAwMCIgdGlmZjpSZXNvbHV0aW9uVW5pdD0iMiIgZXhpZjpDb2xvclNwYWNlPSI2NTUzNSIgZXhpZjpQaXhlbFhEaW1lbnNpb249IjE1NiIgZXhpZjpQaXhlbFlEaW1lbnNpb249Ijc0Ij4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo3MjY0Y2VmOC1iOGE0LWExNDktOGVmYy0zNTliMmNhZmNiMDQiIHN0RXZ0OndoZW49IjIwMjItMDgtMTFUMjI6MTg6MzArMTA6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE3IChXaW5kb3dzKSIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6YjliYTRjZGYtODg2ZC00NWEzLThhMDItN2FkNTU1M2YxYWI3IiBzdEV2dDp3aGVuPSIyMDIyLTEyLTAyVDIzOjU0OjE4KzExOjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjMuNCAoTWFjaW50b3NoKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8L3JkZjpTZXE+IDwveG1wTU06SGlzdG9yeT4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz64pCf1AAAB9UlEQVR4nO3dwU4CQRBF0RrjFvz/z5QfwBXJhIBKdF69fnXPUjekvdT0NHHYTqfztQCRt+4XgFkIDlIEBymCg9R79wuA3uXyuT36+fn8cfgNJBNumGex/fS7/7LUhFMsyBT300y1tstMOGLLsERwxJbDPjhiy2K9h9vHpriDmuC2pl1vZNsJR2zH+G4tFeu8OX54T2y57CYcsWWz2sO9Ghs3FOuxmXDENoNFcMQ2R3twxDZL6x7uL7FxQ7Gm7Xrt/7sR2xztl1Rim6U1OGKbpy04YpvJ8qOtKmJL1b6He4TYctkFR2zZrIIjtnwW53D3iC2X1YSrIrZ0VsERWz6b4IhtBttzOGSymXCYgeAgRXCQsjmH46ZhBiYcpAgOUgQHKc7hIMWEgxTBQYrgIMU5HKRsJhyPcJjBJrgqopvAKrgqoktndQ7HP9Hks5pw+8iYdJmsgqsiunR2wVURXbK2czgeZjNT24T7zeRi0uVp/6SBSac3+gt6mXRa3V/Q23oOx0Ol9W5r+OwLeo9e1/aDXx6b36MruPZL6quXSybb2tqDqyK6SdovqXtcXvvF7+HucWNwvM5jEbvgqogumcUe7h7nbrksg6siulSWl9Q9YstiO+Fu2MNlsQ+uiuiSLBFcFdGlsN/DIcsyEw4ZCA5SBAcpgoPUF8haJFrdXvzjAAAAAElFTkSuQmCC');
 }
 
@@ -2004,7 +2004,7 @@ html[theme*="dark"] .user-card{
 
 }
 
-html[theme*="dark"] #page-series-detail .channel-detail .content .breadcrumb .item, html[theme*="dark"] #page-series-index .channel-item .channel-name[data-v-75cb0f6e]{
+html[theme*="dark"] #page-series-detail .channel-detail .content .breadcrumb .item, html[theme*="dark"] #page-series-index .channel-item .channel-name{
     color: var(--text1);
 }
 
@@ -2347,4 +2347,26 @@ html[theme*="dark"] .link-navbar-ctnr .link-panel-ctnr .activity-item-ctnr .info
 
 html[theme*="dark"] .user-item-loading .avatar, html[theme*="dark"] .user-item-loading .username, html[theme*="dark"] .activity-item-loading-ctnr .user-avatar, html[theme*="dark"] .activity-item-loading-ctnr .info-ctnr .first-line, html[theme*="dark"] .activity-item-loading-ctnr .info-ctnr .second-line{
     background-color: var(--Ga1)!important;
+}
+
+html[theme*="dark"] .user-panel-ctnr .user-panel{
+    background-color: var(--bg1)!important;
+    border: none!important;
+}
+
+html[theme*="dark"] .user-panel-ctnr .user-panel .content-ctnr .logout-btn{
+    background-color: var(--Ga1)!important;
+}
+
+html[theme*="dark"] .user-panel-ctnr .user-panel .user-level-detail{
+    background-color: #232527!important;
+    border: 1px solid var(--Ga2)!important;
+}
+
+html[theme*="dark"] .dyn-ugc .dyn-ugc__wrap{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .dyn-ugc .dyn-ugc__wrap .dyn-ugc__detail__title{
+    color: var(--text1);
 }

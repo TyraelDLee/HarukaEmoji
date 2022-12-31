@@ -862,4 +862,4 @@
     }
 }();
 
-// TODO: add setting, add heart beat, reconnection
+// TODO: add setting (quality, medal, exp, reconnection times), manual frame chasing, manual refresh stream.
