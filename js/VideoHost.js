@@ -215,7 +215,6 @@
         });
 
         document.getElementById('rua-danmaku-intense').addEventListener('change', function (){
-            console.log(this.value);
             let intense = this.value-1+1;
             assConvert.setWeight(10-intense);
         });
@@ -327,7 +326,6 @@
      * Support video type: aid, bvid, epid, ssid.
      * */
     function grabVideoInfo(){
-        console.log('new v');
         pid = pid<0?0:pid;
         cids = [];
         vtitle = [];
@@ -615,7 +613,6 @@
                     let acceptDescription = json['data']['accept_description'];
                     let acceptQuality = json['data']['accept_quality'];
                     for (let i = 0; i < acceptQuality.length; i++) {
-                        console.log(acceptDescription[i]+" "+acceptQuality[i]);
                         innerDownloadBlock(cid, 'dash', acceptDescription[i], acceptQuality[i]-0)
                     }
                 }
@@ -655,10 +652,12 @@
         }).then(r=>r.json())
             .then(json=>{
                 if (json['code'] === 0){
-                    if (squareCover || typeof json['data']['pic'] === 'undefined' || json['data']['pic'] === null || json['data']['pic'] === ''){
+                    if (typeof json['data']['pic'] === 'undefined' || json['data']['pic'] === null || json['data']['pic'] === ''){
                         return json['data']['owner']['face'].replace("http://", "https://");
                     }
-                    else return json['data']['pic'].replace("http://", "https://");
+                    else {
+                        return json['data']['pic'].replace("http://", "https://");
+                    }
                 }else
                     throw 'error';
             }).catch(e=>{
@@ -806,6 +805,8 @@
                 if(requestType==='audioRecord') {
                     audioMeta = await getAudioMeta();
                     blobURL[1] = await getCover();
+                    if (squareCover)
+                        blobURL[1] = await cropCover(blobURL[1]);
                 }
                 if (!controller.signal.aborted)
                     encode(blobURL, fileName, requestType, audioMeta).then(r=>{
@@ -847,6 +848,25 @@
         }
     }
 
+    function cropCover(coverURL){
+        return new Promise((resolve, reject)=>{
+            const COVER = new Image();
+            COVER.src = coverURL;
+            COVER.crossOrigin = "anonymous";
+            const CANVAS = document.createElement('canvas');
+            const C2D = CANVAS.getContext('2d');
+            COVER.onload = ()=>{
+                const shortestEdge = COVER.width>COVER.height?COVER.height:COVER.width, x = (COVER.width - shortestEdge) / 2, y = (COVER.height - shortestEdge) / 2;
+                CANVAS.width = shortestEdge;
+                CANVAS.height = shortestEdge;
+                C2D.drawImage(COVER, x, y, shortestEdge, shortestEdge, 0, 0, shortestEdge, shortestEdge);
+                CANVAS.toBlob((blob)=>{
+                    resolve(URL.createObjectURL(blob));
+                });
+
+            }
+        });
+    }
     /**
      * Combined the video and soundtrack or write the metadata
      * for sound only download.
@@ -870,10 +890,12 @@
         if(requestType === 'audioRecord'){
             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(blob[0]));
             if (blob[1].length>0) {
-                ffmpeg.FS('writeFile', `cover.${blob[1].substring(blob[1].length-3)}`, await fetchFile(blob[1]));
-                await ffmpeg.run('-i', 'audio.m4s', '-i', `cover.${blob[1].substring(blob[1].length-3)}`, '-map' , '0', '-map', '1', '-c', 'copy', '-disposition:v:0', 'attached_pic', '-metadata', `title=${utf8Encode(metadata.title)}`, '-metadata', `artist=${utf8Encode(metadata.artist)}`, '-metadata', `year=${metadata.year}`, 'final.m4a');
+                console.log(blob[1]);
+                console.log(`cover.${blob[1].substring(blob[1].length-3)}`);
+                ffmpeg.FS('writeFile', `cover`, await fetchFile(blob[1]));
+                await ffmpeg.run('-i', 'audio.m4s', '-i', `cover`, '-map' , '0', '-map', '1', '-c', 'copy', '-disposition:v:0', 'attached_pic', '-metadata', `title=${utf8Encode(metadata.title)}`, '-metadata', `artist=${utf8Encode(metadata.artist)}`, '-metadata', `year="${metadata.year}"`, '-metadata', `comment=${bvid}`, 'final.m4a');
             }else{
-                await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', '-metadata', `title=${utf8Encode(metadata.title)}`,'-metadata', `artist=${utf8Encode(metadata.artist)}`, '-metadata', `year=${metadata.year}`, 'final.m4a');
+                await ffmpeg.run('-i', 'audio.m4s', '-c', 'copy', '-metadata', `title=${utf8Encode(metadata.title)}`,'-metadata', `artist=${utf8Encode(metadata.artist)}`, '-metadata', `year="${metadata.year}"`, '-metadata', `comment=${bvid}`, 'final.m4a');
             }
             out = ffmpeg.FS('readFile', 'final.m4a');
             downloadName = filename + ".m4a";
@@ -936,7 +958,7 @@
                         for (let up of json['data']['staff']) staff += up['name']+', ';
                         staff = staff.slice(0, staff.length-2);
                     }
-                    return {"title":json["data"]["title"], "artist":staff, "year":new Date((json["data"]["pubdate"]-1+1)*1000).getFullYear(), "cover":json["data"]["pic"]};
+                    return {"title":json["data"]["title"], "artist":staff, "year":new Date((json["data"]["pubdate"]-1+1)*1000).getFullYear(), "cover":json["data"]["pic"], "desc": json['data']['desc']};
                 }
                 return null;
             })
