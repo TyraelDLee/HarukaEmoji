@@ -2020,7 +2020,7 @@ html[theme*="dark"] .favInfo-box .collection-cover .shadow-second{
     background: #565656;
 }
 
-html[theme*="dark"] .song-title[data-v-60025db2], html[theme*="dark"] .song-intro[data-v-60025db2], html[theme*="dark"] .song-play-num span[data-v-60025db2], html[theme*="dark"] .b-head-t[data-v-60025db2], html[theme*="dark"] .b-head[data-v-60025db2]{
+html[theme*="dark"] .song-title, html[theme*="dark"] .song-intro, html[theme*="dark"] .song-play-num span, html[theme*="dark"] .b-head-t, html[theme*="dark"] .b-head, html[theme*="dark"] .album-title, html[theme*="dark"] .similar-song-menu .similar-right .title{
     color: var(--text1);
 }
 

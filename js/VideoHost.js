@@ -8,6 +8,9 @@
     const assConvert = new AssConvert(1280, 720);
 
     var vid = window.location["pathname"].replaceAll("/", "").replace("video","").replace('bangumi','').replace('play','');// id for current page, av or bv or ss or ep.
+    if (window.location['pathname'].includes('festival') && window.location['search'].includes('bvid')){
+        vid = new URLSearchParams(window.location['search']).get('bvid');
+    }
     var aid = "";
     var bvid = "0";//bv id for current page. convert all id to bv id.
     var pid = new URLSearchParams(window.location["search"]).get("p")===null?0:new URLSearchParams(window.location["search"]).get("p")-1;// current part id.
@@ -30,15 +33,24 @@
     chrome.storage.sync.get(['squareCover'], (info)=>{
         squareCover = info.squareCover;
     });
+    chrome.storage.onChanged.addListener( (changes, namespace) =>{
+        for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+            if(key === "squareCover") squareCover = newValue;
+        }
+    });
 
     let vipStatus = null;
 
     new MutationObserver(()=>{
+
         const p = new URLSearchParams(window.location["search"]).get("p")-1;
-        const nvid = window.location["pathname"].replaceAll("/", "").replace("video","").replace('bangumi','').replace('play','');
+        let nvid = window.location["pathname"].replaceAll("/", "").replace("video","").replace('bangumi','').replace('play','');
         if(new URLSearchParams(window.location["search"]).get("p") !== null && pid!==p){
             pid = p;
             getQn(cids[p]);
+        }
+        if (window.location['pathname'].includes('festival') && window.location['search'].includes('bvid')){
+            nvid = new URLSearchParams(window.location['search']).get('bvid');
         }
         if(nvid!==null && nvid!==vid){
             vid = nvid;

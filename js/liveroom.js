@@ -1,11 +1,19 @@
 !function () {
 
     let addRoom = null, exit = null, setting = null, controlPanel = document.getElementsByClassName('control-bar')[0],
-        mouseEvent = null, isFullScreen = false;
+        mouseEvent = null, isFullScreen = false, globalMedalList = null;
     let videoStream = new Map();
     let UID, JCT, BUVID, volumeLock = false, currentMedal = -1, reconnectionTime = 5000;
     updateJCT();
     setInterval(updateJCT, 3000);
+    setTimeout(()=>{getMedal(UID).then(r=>{globalMedalList = r;});}, 100);
+
+
+    window.addEventListener("focus", function (){
+        if (currentMedal>-1 && globalMedalList!==null && typeof globalMedalList !== 'undefined'){
+            updateMedal(currentMedal);
+        }
+    });
 
     !function bindElements() {
         addRoom = document.getElementsByClassName('add-room')[0].getElementsByTagName('svg')[0];
@@ -394,6 +402,17 @@
                 currentVolume-=(e.deltaY/10.0);
                 if (currentVolume > 100) currentVolume = 100;
                 if (currentVolume < 0) currentVolume = 0;
+                if (currentVolume === 0) {
+                    silence = true;
+                    videoControlContainer.getElementsByClassName('icon')[0].getElementsByTagName('svg')[1].style.display = 'none';
+                    videoControlContainer.getElementsByClassName('icon')[0].getElementsByTagName('svg')[0].style.display = 'block';
+                }else{
+                    if (silence){
+                        videoControlContainer.getElementsByClassName('icon')[0].getElementsByTagName('svg')[0].style.display = 'none';
+                        videoControlContainer.getElementsByClassName('icon')[0].getElementsByTagName('svg')[1].style.display = 'block';
+                        silence = false;
+                    }
+                }
                 currentVolume = Math.round(currentVolume);
                 video.volume = currentVolume / 100.0;
                 videoControlContainer.getElementsByClassName('number')[0].innerText = currentVolume;
@@ -437,6 +456,7 @@
 
             videoContainer.append(videoControlContainer);
             videoColum.append(videoContainer);
+            updateMedal(liveRoomInfo['uid'], true);
             setStream(liveRoomInfo['room_id'], video);
             hb = new HeartBeat(liveRoomInfo['area_v2_parent_id'], liveRoomInfo['area_v2_id'], liveRoomInfo['room_id'], liveRoomInfo['uid']);
             hb.E();
@@ -463,7 +483,7 @@
 
             //danmaku
             let userInfo = await getUserPrivilege(liveRoomInfo['room_id']);
-            let medalInfo = await getMedal(liveRoomInfo['uid'], userInfo['uid']);
+            let medalInfo = await getMedal(userInfo['uid'], liveRoomInfo['uid']);
             let danmaku = videoControlContainer.getElementsByClassName('danmaku')[0];
             let cursorSelection = [0,0], enterLock = true, unlock = true;
             //danmaku input event
@@ -592,6 +612,18 @@
         }
     }
 
+    async function updateMedal(uid, updateList = false){
+        if (updateList)
+            await getMedal(UID).then(r=>{globalMedalList = r;});
+        currentMedal = uid;
+        for (const medal of globalMedalList){
+            if (medal['medal_info']['target_id'] === currentMedal){
+                wareMedal(medal['medal_info']['medal_id']);
+                break;
+            }
+        }
+    }
+
     function getRealRoomID(roomId){
         return fetch("https://api.live.bilibili.com/room/v1/Room/room_init?id="+roomId,{
             method:'GET',
@@ -648,8 +680,12 @@
     async function packaging(msg, type, room_id, up_id) {
         if (currentMedal!==up_id /* add switch here*/){
             currentMedal = up_id;
-            let medalInfo = await  getMedal(up_id, UID);
-            await wareMedal(medalInfo['medal_id']);
+            for (const medal of globalMedalList){
+                if (medal['medal_info']['target_id'] === currentMedal){
+                    await wareMedal(medal['medal_info']['medal_id']);
+                    break;
+                }
+            }
         }
         let DanMuForm = new FormData();
         DanMuForm.append("bubble", "0");
@@ -685,7 +721,7 @@
             });
     }
 
-    function getMedal(upID, uid){
+    function getMedal(uid, upID){
         return fetch("https://api.live.bilibili.com/xlive/web-ucenter/user/MedalWall?target_id="+uid,{
             method:"GET",
             credentials: 'include',
@@ -694,12 +730,19 @@
             .then(res => res.json())
             .then(json=>{
                 if(json['code']===0){
-                    for(let medalInfo of json['data']['list']){
-                        if(medalInfo['medal_info']['target_id'] === upID){
-                            return {'emojiRequiredMedalLevel':medalInfo['medal_info']['level'],'medal_id':medalInfo['medal_info']['medal_id'],'medal_name':medalInfo['medal_info']['medal_name']};
+                    if (typeof upID!=='undefined') {
+                        for (let medalInfo of json['data']['list']) {
+                            if (medalInfo['medal_info']['target_id'] === upID) {
+                                return {
+                                    'emojiRequiredMedalLevel': medalInfo['medal_info']['level'],
+                                    'medal_id': medalInfo['medal_info']['medal_id'],
+                                    'medal_name': medalInfo['medal_info']['medal_name']
+                                };
+                            }
                         }
-                    }
-                    return {'emojiRequiredMedalLevel':0,'medal_id':-1,'medal_name':''};
+                        return {'emojiRequiredMedalLevel': 0, 'medal_id': -1, 'medal_name': ''};
+                    }else
+                        return json['data']['list'];
                 }else{
                     return {'emojiRequiredMedalLevel':0,'medal_id':-1,'medal_name':''};
                 }
