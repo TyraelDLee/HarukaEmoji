@@ -10,8 +10,8 @@
 
 
     window.addEventListener("focus", function (){
-        if (currentMedal>-1 && globalMedalList!==null && typeof globalMedalList !== 'undefined'){
-            updateMedal(currentMedal);
+        if ((currentMedal>-1 || wearMedalSwitch === -1 )&& globalMedalList!==null && typeof globalMedalList !== 'undefined'){
+            updateMedal(currentMedal, wearMedalSwitch === -1);
         }
     });
 
@@ -35,27 +35,25 @@
             }
         });
 
-        chrome.storage.sync.get(['liveroom-medal-switch', 'liveroom-reconnection-time', 'liveroom-quality', 'liveroom-heart-beat'], (data)=>{
+        chrome.storage.sync.get(['liveroom-medal-switch', 'liveroom-reconnection-time', 'liveroom-quality', 'liveroom-heart-beat'], function (data){
             wearMedalSwitch = data['liveroom-medal-switch'];
             switch (wearMedalSwitch) {
                 case -1:
-                    settingMedalNone.setAttribute('value', 'on');
-                    settingMedalOn.setAttribute('value', 'off');
-                    settingMedalOff.setAttribute('value', 'off');
+                    settingMedalNone.setAttribute('checked', 'true');
                     break;
                 case 0:
-                    settingMedalOff.setAttribute('value', 'on');
-                    settingMedalNone.setAttribute('value', 'off');
-                    settingMedalOn.setAttribute('value', 'off');
+                    settingMedalOff.setAttribute('checked', 'true');
                     break;
                 case 1:
-                    settingMedalOn.setAttribute('value', 'on');
-                    settingMedalOff.setAttribute('value', 'off');
-                    settingMedalNone.setAttribute('value', 'off');
+                    settingMedalOn.setAttribute('checked', 'true');
                     break;
             }
             heartBeatSwitch = data['liveroom-heart-beat'];
             settingHeartBeat.checked = heartBeatSwitch;
+            reconnectionTime = data['liveroom-reconnection-time']
+            settingReconnection.value = reconnectionTime;
+            quality = data['liveroom-quality'];
+            settingQuality.value = quality;
         });
 
         settingMedalOn.addEventListener('change', (e)=>{
@@ -68,12 +66,24 @@
         });
         settingMedalNone.addEventListener('change', (e)=>{
             wearMedalSwitch = -1;
+            updateMedal(0, wearMedalSwitch === -1);
             chrome.storage.sync.set({'liveroom-medal-switch': wearMedalSwitch}, ()=>{});
         });
 
         settingHeartBeat.addEventListener('change', ()=>{
-            heartBeatSwitch = this.value;
+            heartBeatSwitch = settingHeartBeat.checked;
             chrome.storage.sync.set({"liveroom-heart-beat":heartBeatSwitch}, function (){});
+        });
+
+        settingReconnection.addEventListener('change', ()=>{
+            reconnectionTime = settingReconnection.value;
+            chrome.storage.sync.set({"liveroom-reconnection-time":reconnectionTime}, function (){});
+        });
+
+        settingQuality.addEventListener('change', ()=>{
+            console.log(settingQuality.value)
+            quality = settingQuality.value;
+            chrome.storage.sync.set({"liveroom-quality":quality}, function (){});
         });
 
         addRoom.addEventListener('click', () => {
@@ -254,7 +264,7 @@
             }
         }
 
-        let flv = null, abortFlag = new AbortController(), hb;
+        let flv = null, abortFlag = new AbortController(), hb = null;
         if (videoStream.size < 16 && !videoStream.has(liveRoomInfo['uid'])) {
             videoStream.set(liveRoomInfo['uid'], liveRoomInfo);
 
@@ -264,15 +274,14 @@
             let videoContainer = document.createElement('div');
 
             // reconnection and auto-revoke player after live end.
-            let sourceEvent = new MutationObserver( function (e){
-                e.forEach(async function(mutation) {
+            let sourceEvent = new MutationObserver( async function (e){
+                if (e.length>0){
+                    let mutation = e[0];
                     if (mutation.type === "attributes") {
                         if (video.getAttribute('src')===null){
                             let roominfo = await getRealRoomID(liveRoomInfo['room_id']);
                             if (roominfo['liveStatus']===1){
                                 setStream(liveRoomInfo['room_id'], video);
-                                // hb = new HeartBeat(liveRoomInfo['area_v2_parent_id'], liveRoomInfo['area_v2_id'], liveRoomInfo['room_id'], liveRoomInfo['uid']);
-                                // hb.E();
                             }else{
                                 if (flv!==null)
                                     flv.destroy();
@@ -282,11 +291,12 @@
                                 videoContainer.remove();
                                 videoStream.delete(liveRoomInfo['uid']);
                                 calculateLayout(videoColum, videoStream.size);
-                                hb.stop();
+                                if (hb!==null)
+                                    hb.stop();
                             }
                         }
                     }
-                });
+                }
             });
 
             videoContainer.classList.add('video-stream');
@@ -323,6 +333,33 @@
                                     <path class="st0" d="M17.9,11.7c0.1,0.1,0.1,0.1,0.1,0.2l0.1,12c0,0.3-0.2,0.5-0.5,0.5c-0.1,0-0.2,0-0.3-0.1l-4.2-3.4h-1\tc-1.1,0-2-0.9-2-2v-2c0-1.1,0.9-2,2-2h1l4.1-3.3C17.4,11.5,17.7,11.5,17.9,11.7L17.9,11.7z"></path>
                                 </svg>
                             </span>
+                        </div>
+                        <div class="refresh-stream">
+                            <span class="icon">
+                                <svg viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                    <g id="终稿" stroke="none" stroke-width="1" fill-rule="evenodd" opacity="0.9">
+                                        <g id="图标切图" transform="translate(-475.000000, -74.000000)" fill-rule="nonzero">
+                                            <g id="编组-3" transform="translate(421.000000, 56.000000)">
+                                                <g id="编组-12" transform="translate(54.000000, 18.000000)">
+                                                    <g id="icon_刷新" transform="translate(11.000000, 9.000000)">
+                                                        <path d="M1.1040804,5.51795009 L2.56593636,6.98003284 C2.20442812,7.67167421 2,8.45841034 2,9.29289322 C2,12.054317 4.23857625,14.2928932 7,14.2928932 L7,12.5 C7,12.3673918 7.05267842,12.2402148 7.14644661,12.1464466 C7.34170876,11.9511845 7.65829124,11.9511845 7.85355339,12.1464466 L7.85355339,12.1464466 L10.6464466,14.9393398 C10.8417088,15.134602 10.8417088,15.4511845 10.6464466,15.6464466 L10.6464466,15.6464466 L7.85355339,18.4393398 C7.7597852,18.533108 7.63260824,18.5857864 7.5,18.5857864 C7.22385763,18.5857864 7,18.3619288 7,18.0857864 L7,18.0857864 L7,16.2928932 C3.13400675,16.2928932 0,13.1588865 0,9.29289322 C0,7.90269507 0.405257589,6.6071499 1.1040804,5.51795009 Z M6.85355339,0.146446609 C6.94732158,0.240214799 7,0.367391755 7,0.5 L7,2.29289322 C10.8659932,2.29289322 14,5.42689997 14,9.29289322 C14,10.682663 13.5949921,11.977838 12.8965656,13.0668293 L11.4343158,11.6052711 C11.7956669,10.9137463 12,10.127182 12,9.29289322 C12,6.53146947 9.76142375,4.29289322 7,4.29289322 L7,6.08578644 C7,6.36192881 6.77614237,6.58578644 6.5,6.58578644 C6.36739176,6.58578644 6.2402148,6.53310802 6.14644661,6.43933983 L3.35355339,3.64644661 C3.15829124,3.45118446 3.15829124,3.13460197 3.35355339,2.93933983 L6.14644661,0.146446609 C6.34170876,-0.0488155365 6.65829124,-0.0488155365 6.85355339,0.146446609 Z" id="Combined-Shape"></path>                    
+                                                    </g>                
+                                                </g>            
+                                            </g>        
+                                        </g>    
+                                    </g>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="frame-chasing">
+                            <div>
+                                <span class="icon">
+                                    <svg class="squirtle-svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
+                                        <path d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z" style="transform: scale(0.75);transform-origin: center;">
+                                        </path>
+                                    </svg>
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <div class="danmaku">
@@ -495,16 +532,31 @@
                 videoContainer.remove();
                 videoStream.delete(liveRoomInfo['uid']);
                 calculateLayout(videoColum, videoStream.size);
-                hb.stop();
+                if (hb!==null)
+                    hb.stop();
             };
             videoControlContainer.classList.add('video-player-control');
+
+            videoControlContainer.getElementsByClassName('refresh-stream')[0].onclick = ()=>{
+                if (flv!==null){
+                    flv.destroy();
+                }
+            };
+
+            videoControlContainer.getElementsByClassName('frame-chasing')[0].onclick = ()=>{
+                try{
+                    video.currentTime = video.buffered.end(0) - 1;
+                }catch (e){}//silence handling here which you should not, but doesn't matter here.
+            }
 
             videoContainer.append(videoControlContainer);
             videoColum.append(videoContainer);
             updateMedal(liveRoomInfo['uid'], true);
             setStream(liveRoomInfo['room_id'], video);
-            hb = new HeartBeat(liveRoomInfo['area_v2_parent_id'], liveRoomInfo['area_v2_id'], liveRoomInfo['room_id'], liveRoomInfo['uid']);
-            hb.E();
+            if (heartBeatSwitch) {
+                hb = new HeartBeat(liveRoomInfo['area_v2_parent_id'], liveRoomInfo['area_v2_id'], liveRoomInfo['room_id'], liveRoomInfo['uid']);
+                hb.E();
+            }
 
             function revokeEventListener(){
                 videoContainer.onmousemove = null;
@@ -572,7 +624,7 @@
                 .then(json =>{
                     if(json['code']===0){
                         let html = `<div style="display: flex; flex-wrap: wrap; margin: 0 7.5%;">`;
-                        for (let j = 3; j >= 0; j--) {
+                        for (let j = json['data']['data'].length; j >= 0; j--) {
                             if(json['data']['data'][j]!==undefined && json['data']['data'][j]!==null){
                                 html += `<span class="emoji-header">${json['data']['data'][j]['pkg_name']}</span>`;
                                 for (let i = 0; i < json['data']['data'][j]['emoticons'].length; i++) {
@@ -600,6 +652,63 @@
             sourceEvent.observe(video, {attributes:true});
         }
 
+
+        // /**
+        //  * Fetch the live source URL.
+        //  * */
+        // function setStream(roomId, video) {
+        //     /**
+        //      * Bind the media to the video player.
+        //      * */
+        //     function setPlayer(url, video, index) {
+        //         let frameChasing = null;
+        //         if (flvjs.isSupported()) {
+        //             flv = flvjs.createPlayer({
+        //                 type: "flv",
+        //                 isLive: true,
+        //                 url: url[index]['url']
+        //             });
+        //             flv.attachMediaElement(video);
+        //             video.addEventListener('sourceended', () => {
+        //                 console.log('source ended');
+        //             })
+        //             flv.load();
+        //             flv.play();
+        //             frameChasing = setTimeout(()=>{
+        //                 video.currentTime = video.buffered.end(0) - 1;
+        //             }, 2000);
+        //             flv.on(flvjs.Events.ERROR, (e) => {
+        //                 console.log('error');
+        //                 console.log(e);
+        //                 index = index + 1;
+        //                 flv.unload();
+        //                 clearTimeout(frameChasing);
+        //                 if (index === url.length)
+        //                     setStream(roomId, video);
+        //                 else setPlayer(url, video, index);
+        //             });
+        //         }
+        //     }
+        //
+        //     fetch(`https://api.live.bilibili.com/room/v1/Room/playUrl?cid=${roomId}&qn=10000`, {
+        //         method: "GET",
+        //         credentials: "include",
+        //         signal:abortFlag.signal,
+        //         body: null
+        //     }).then(r => r.json())
+        //         .then(json => {
+        //             if (json['code'] === 0) {
+        //                 setPlayer(json['data']['durl'], video, 0);
+        //             }else throw json['code'];
+        //         })
+        //         .catch(e => {
+        //             console.log(e);
+        //             setTimeout(()=>{
+        //                 setStream(roomId, video);
+        //             }, 1000);
+        //         });
+        // }
+
         /**
          * Fetch the live source URL.
          * */
@@ -613,12 +722,12 @@
                     flv = flvjs.createPlayer({
                         type: "flv",
                         isLive: true,
-                        url: url[index]['url']
+                        url: url['url_info'][index]['host']+url['base_url']+url['url_info'][index]['extra']
                     });
                     flv.attachMediaElement(video);
                     video.addEventListener('sourceended', () => {
                         console.log('source ended');
-                    })
+                    });
                     flv.load();
                     flv.play();
                     frameChasing = setTimeout(()=>{
@@ -630,14 +739,16 @@
                         index = index + 1;
                         flv.unload();
                         clearTimeout(frameChasing);
-                        if (index === url.length)
-                            setStream(roomId, video);
+                        if (index === url['url_info'].length) {
+                            setTimeout(()=>{
+                                setStream(roomId, video);
+                            }, 1000);
+                        }
                         else setPlayer(url, video, index);
                     });
                 }
             }
-
-            fetch(`https://api.live.bilibili.com/room/v1/Room/playUrl?cid=${roomId}&qn=10000`, {
+            fetch(`https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=${roomId}&protocol=0&format=0,1,2&codec=0,1&platform=web&ptype=8&dolby=5&panorama=1${quality===0?'':'&qn='+quality}`, {
                 method: "GET",
                 credentials: "include",
                 signal:abortFlag.signal,
@@ -645,7 +756,13 @@
             }).then(r => r.json())
                 .then(json => {
                     if (json['code'] === 0) {
-                        setPlayer(json['data']['durl'], video, 0);
+                        let flvFormat = json['data']['playurl_info']['playurl']['stream'][0]['format'][0]['codec'][0],
+                            hevc = json['data']['playurl_info']['playurl']['stream'][0]['format'][0]['codec'][1];
+                        //cross swap
+                        if (hevc === null || typeof  hevc ==='undefined') hevc = flvFormat;
+                        if (flvFormat === null || typeof  flvFormat ==='undefined') flvFormat = hevc;
+                        if ((hevc === null || typeof  hevc ==='undefined') && (flvFormat === null || typeof  flvFormat ==='undefined')) setStream(roomId, video);
+                        else setPlayer(flvFormat, video, 0);
                     }else throw json['code'];
                 })
                 .catch(e => {
@@ -658,14 +775,19 @@
     }
 
     async function updateMedal(uid, updateList = false){
+        console.log(updateList)
         if (updateList)
             await getMedal(UID).then(r=>{globalMedalList = r;});
         if (wearMedalSwitch === 1 || (wearMedalSwitch === -1 && globalMedalList[0]['medal_info']['wearing_status'] === 1)){
-            currentMedal = uid;
-            for (const medal of globalMedalList){
-                if (medal['medal_info']['target_id'] === currentMedal){
-                    wearMedal(medal['medal_info']['medal_id']);
-                    break;
+            if (wearMedalSwitch === -1){
+                wearMedal(globalMedalList[0]['medal_info']['medal_id']);
+            }else{
+                currentMedal = uid;
+                for (const medal of globalMedalList){
+                    if (medal['medal_info']['target_id'] === currentMedal){
+                        wearMedal(medal['medal_info']['medal_id']);
+                        break;
+                    }
                 }
             }
         }

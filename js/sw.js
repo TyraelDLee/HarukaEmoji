@@ -313,6 +313,10 @@ async function initialize(reload){
     setInitValue('commentEmoji', true);
     setInitValue('heartBeatSwitch', true);
     setInitValue('squareCover', false);
+    setInitValue('liveroom-medal-switch', 0);
+    setInitValue('liveroom-reconnection-time', 10);
+    setInitValue('liveroom-heart-beat', true);
+    setInitValue('liveroom-quality', 10000);
     /**
      * Context menu section.
      *

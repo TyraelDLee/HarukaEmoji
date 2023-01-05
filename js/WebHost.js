@@ -660,7 +660,7 @@
                 .then(json =>{
                     if(json['code']===0){
                         let html = '';
-                        for (let j = 3; j >= 0; j--) {
+                        for (let j = json['data']['data'].length; j >= 0; j--) {
                             if(json['data']['data'][j]!==undefined && json['data']['data'][j]!==null){
                                 html += `</tr></tbody><thead><tr><th colspan='4' class='rua-table-header'>${json['data']['data'][j]['pkg_name']}</th></tr></thead><tbody><tr>`;
                                 for (let i = 0; i < json['data']['data'][j]['emoticons'].length; i++) {
