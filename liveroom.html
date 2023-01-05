@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <title>rua豹器 放映室</title>
     <link href="./css/colors.min.css" type="text/css" rel="stylesheet">
+
     <link href="./css/liveroom.min.css" type="text/css" rel="stylesheet">
+    <link href="./css/popupbtn.min.css" type="text/css" rel="stylesheet">
     <script src="./js/flv.min.js"></script>
     <script src="./js/crypto-js.min.js"></script>
 </head>
@@ -81,12 +83,45 @@
                         <span>换牌子</span>
                         <span>开启后会在弹幕发送前检查当前携带的牌子并更换<br>为当前直播间的牌子，可能会造成弹幕延迟发送。</span>
                     </div>
-                    <input type="radio" id="medal-switch-off" name="medal-switch" value="off" checked>
-                    <label for="medal-switch-off">关</label>
-                    <input type="radio" id="medal-switch-on" name="medal-switch" value="on">
-                    <label for="medal-switch-on">开</label>
-                    <input type="radio" id="medal-switch-none" name="medal-switch" value="none">
-                    <label for="medal-switch-none">不带牌子</label>
+                    <input type="radio" id="setting-medal-switch-off" name="medal-switch" value="off" checked>
+                    <label for="setting-medal-switch-off">关</label>
+                    <input type="radio" id="setting-medal-switch-on" name="medal-switch" value="on">
+                    <label for="setting-medal-switch-on">开</label>
+                    <input type="radio" id="setting-medal-switch-none" name="medal-switch" value="none">
+                    <label for="setting-medal-switch-none">不带牌子</label>
+                </div>
+                <div class="setting-container">
+                    <div class="setting-name">
+                        <span>画质</span>
+                        <span>原画会有抢不到源的情况，如果频繁发生添加直播间后黑屏的情况可以尝试开自动画质。</span>
+                    </div>
+                    <select class="quality-chosen" id="setting-quality">
+                        <option value="10000" selected>原画</option>
+                        <option value="400">蓝光</option>
+                        <option value="250">超清</option>
+                        <option value="150">高清</option>
+                        <option value="80">流畅</option>
+                        <option value="0">自动</option>
+                    </select>
+                </div>
+                <div class="setting-container">
+                    <div class="setting-name">
+                        <span>重连次数</span>
+                        <span>遇到无法加载时的重试次数， 超过次数时将放弃加载。设置值小于0时将会一直尝试加载直到成功加载。<br>但是有些主播下播会直接断开推流不通过b站api下播，这种情况会导致一直重复无意义的加载，不过可以手动关闭直播间。</span>
+                    </div>
+                    <input type="text" class="quality-chosen" value="10" id="setting-re-try">
+                </div>
+                <div class="setting-container">
+                    <div class="setting-name">
+                        <span>发送心跳包</span>
+                        <span>开启后每看5分钟视频也会增加牌子对应的好感度。</span>
+                    </div>
+                    <section class="button">
+                        <div class="checkbox">
+                            <input type="checkbox" id="setting-heart-beat">
+                            <label class="button-label"></label>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>

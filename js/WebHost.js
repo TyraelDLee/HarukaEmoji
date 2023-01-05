@@ -189,7 +189,7 @@
         })();
 
         window.addEventListener("focus", function (){
-            wareMedal(medal_id, medal_name, false);
+            wearMedal(medal_id, medal_name, false);
         });
 
         function hideEntry(){
@@ -233,7 +233,7 @@
                                 medal_id = medalInfo['medal_info']['medal_id'];
                                 medal_name = medalInfo['medal_info']['medal_name'];
                                 if(renderRequest)
-                                    wareMedal(medal_id, medal_name, true);
+                                    wearMedal(medal_id, medal_name, true);
                             }
                         }
                     }
@@ -243,7 +243,7 @@
                 delay();
         }
 
-        function wareMedal(medal, name, upd){
+        function wearMedal(medal, name, upd){
             if(JCT !== "-1" && medalSwitch && medal !==-1){
                 var madelForm = new FormData();
                 madelForm.append("medal_id", medal);
@@ -660,14 +660,14 @@
                 .then(json =>{
                     if(json['code']===0){
                         let html = '';
-                        for (let j = 2; j >= 0; j--) {
+                        for (let j = 3; j >= 0; j--) {
                             if(json['data']['data'][j]!==undefined && json['data']['data'][j]!==null){
                                 html += `</tr></tbody><thead><tr><th colspan='4' class='rua-table-header'>${json['data']['data'][j]['pkg_name']}</th></tr></thead><tbody><tr>`;
                                 for (let i = 0; i < json['data']['data'][j]['emoticons'].length; i++) {
                                     let able = emojiRequiredPrivilege <= json['data']['data'][j]['emoticons'][i]['identity'] && json['data']['data'][j]['emoticons'][i]['unlock_need_level'] <= emojiRequiredMedalLevel;
                                     if(i % num_per_line === 0 && i !== 0)
                                         html += '</tr><tr>';
-                                    html += `<td colspan="1" title="${json['data']['data'][j]['emoticons'][i]['emoji']}" id="${json['data']['data'][j]['emoticons'][i]['emoticon_unique']}"><div  class="rua-emoji-icon ${able?'rua-emoji-icon-active':'rua-emoji-icon-inactive'}" style="width:60px; height:60px; background-image:url('${json['data']['data'][j]['emoticons'][i]['url'].replace("http://", "https://")}');"></div><div class="rua-emoji-requirement" style="background-color: ${json['data']['data'][j]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][j]['emoticons'][i]['unlock_show_text']}</div></div></td>`;
+                                    html += `<td colspan="1" title="${json['data']['data'][j]['emoticons'][i]['emoji']}" id="${json['data']['data'][j]['emoticons'][i]['emoticon_unique']}"><div  class="rua-emoji-icon ${json['data']['data'][j]['emoticons'][i]['perm']===1?'rua-emoji-icon-active':'rua-emoji-icon-inactive'}" style="width:60px; height:60px; background-image:url('${json['data']['data'][j]['emoticons'][i]['url'].replace("http://", "https://")}');"></div><div class="rua-emoji-requirement" style="background-color: ${json['data']['data'][j]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][j]['emoticons'][i]['unlock_show_text']}</div></div></td>`;
                                 }
                             }
                         }

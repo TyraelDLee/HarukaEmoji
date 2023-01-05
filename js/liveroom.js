@@ -3,7 +3,7 @@
     let addRoom = null, exit = null, setting = null, controlPanel = document.getElementsByClassName('control-bar')[0],
         mouseEvent = null, isFullScreen = false, globalMedalList = null;
     let videoStream = new Map();
-    let UID, JCT, BUVID, volumeLock = false, currentMedal = -1, reconnectionTime = 5000;
+    let UID, JCT, BUVID, volumeLock = false, currentMedal = -1, wearMedalSwitch = 1, reconnectionTime = 10, quality = 10000, heartBeatSwitch = true;
     updateJCT();
     setInterval(updateJCT, 3000);
     setTimeout(()=>{getMedal(UID).then(r=>{globalMedalList = r;});}, 100);
@@ -20,6 +20,10 @@
         setting = document.getElementsByClassName('setting')[0].getElementsByTagName('svg')[0];
         exit = document.getElementsByClassName('fullscreen')[0].getElementsByTagName('svg')[0];
 
+        let settingHeartBeat = document.getElementById('setting-heart-beat'), settingReconnection = document.getElementById('setting-re-try'),
+        settingQuality = document.getElementById('setting-quality'), settingMedalOn = document.getElementById('setting-medal-switch-on'),
+            settingMedalOff = document.getElementById('setting-medal-switch-off'), settingMedalNone = document.getElementById('setting-medal-switch-none');
+
         document.body.addEventListener('mousemove', (event) => {
             clearTimeout(mouseEvent);
             controlPanel.style.opacity = '1';
@@ -29,7 +33,48 @@
             for (let i = 0; i < document.body.getElementsByClassName('volume-control').length; i++) {
                 document.body.getElementsByClassName('volume-control')[i].style.display = 'none';
             }
-        })
+        });
+
+        chrome.storage.sync.get(['liveroom-medal-switch', 'liveroom-reconnection-time', 'liveroom-quality', 'liveroom-heart-beat'], (data)=>{
+            wearMedalSwitch = data['liveroom-medal-switch'];
+            switch (wearMedalSwitch) {
+                case -1:
+                    settingMedalNone.setAttribute('value', 'on');
+                    settingMedalOn.setAttribute('value', 'off');
+                    settingMedalOff.setAttribute('value', 'off');
+                    break;
+                case 0:
+                    settingMedalOff.setAttribute('value', 'on');
+                    settingMedalNone.setAttribute('value', 'off');
+                    settingMedalOn.setAttribute('value', 'off');
+                    break;
+                case 1:
+                    settingMedalOn.setAttribute('value', 'on');
+                    settingMedalOff.setAttribute('value', 'off');
+                    settingMedalNone.setAttribute('value', 'off');
+                    break;
+            }
+            heartBeatSwitch = data['liveroom-heart-beat'];
+            settingHeartBeat.checked = heartBeatSwitch;
+        });
+
+        settingMedalOn.addEventListener('change', (e)=>{
+            wearMedalSwitch = 1;
+            chrome.storage.sync.set({'liveroom-medal-switch': wearMedalSwitch}, ()=>{});
+        });
+        settingMedalOff.addEventListener('change', (e)=>{
+            wearMedalSwitch = 0;
+            chrome.storage.sync.set({'liveroom-medal-switch': wearMedalSwitch}, ()=>{});
+        });
+        settingMedalNone.addEventListener('change', (e)=>{
+            wearMedalSwitch = -1;
+            chrome.storage.sync.set({'liveroom-medal-switch': wearMedalSwitch}, ()=>{});
+        });
+
+        settingHeartBeat.addEventListener('change', ()=>{
+            heartBeatSwitch = this.value;
+            chrome.storage.sync.set({"liveroom-heart-beat":heartBeatSwitch}, function (){});
+        });
 
         addRoom.addEventListener('click', () => {
             document.getElementsByClassName('panel-container')[0].removeEventListener('click', hidePanelContainer);
@@ -527,12 +572,12 @@
                 .then(json =>{
                     if(json['code']===0){
                         let html = `<div style="display: flex; flex-wrap: wrap; margin: 0 7.5%;">`;
-                        for (let j = 2; j >= 0; j--) {
+                        for (let j = 3; j >= 0; j--) {
                             if(json['data']['data'][j]!==undefined && json['data']['data'][j]!==null){
                                 html += `<span class="emoji-header">${json['data']['data'][j]['pkg_name']}</span>`;
                                 for (let i = 0; i < json['data']['data'][j]['emoticons'].length; i++) {
-                                    let able = userInfo['emojiRequiredPrivilege'] <= json['data']['data'][j]['emoticons'][i]['identity'] && json['data']['data'][j]['emoticons'][i]['unlock_need_level'] <= medalInfo['emojiRequiredMedalLevel'];
-                                    html += `<div class="rua-emoji-icon-container"><div class="rua-emoji-icon ${able?'rua-emoji-icon-active':'rua-emoji-icon-inactive'}" title="${json['data']['data'][j]['emoticons'][i]['emoji']}" content="${json['data']['data'][j]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][j]['emoticons'][i]['url'].replace("http://", "https://")}');"></div><div class="rua-emoji-requirement" style="background-color: ${json['data']['data'][j]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][j]['emoticons'][i]['unlock_show_text']}</div></div></div>`;
+                                    //let able = json['data']['data'][j]['emoticons'][i]['perm']===1;//userInfo['emojiRequiredPrivilege'] <= json['data']['data'][j]['emoticons'][i]['identity'] && json['data']['data'][j]['emoticons'][i]['unlock_need_level'] <= medalInfo['emojiRequiredMedalLevel'];
+                                    html += `<div class="rua-emoji-icon-container"><div class="rua-emoji-icon ${json['data']['data'][j]['emoticons'][i]['perm']===1?'rua-emoji-icon-active':'rua-emoji-icon-inactive'}" title="${json['data']['data'][j]['emoticons'][i]['emoji']}" content="${json['data']['data'][j]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][j]['emoticons'][i]['url'].replace("http://", "https://")}');"></div><div class="rua-emoji-requirement" style="background-color: ${json['data']['data'][j]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][j]['emoticons'][i]['unlock_show_text']}</div></div></div>`;
                                 }
                             }
                         }
@@ -615,11 +660,13 @@
     async function updateMedal(uid, updateList = false){
         if (updateList)
             await getMedal(UID).then(r=>{globalMedalList = r;});
-        currentMedal = uid;
-        for (const medal of globalMedalList){
-            if (medal['medal_info']['target_id'] === currentMedal){
-                wareMedal(medal['medal_info']['medal_id']);
-                break;
+        if (wearMedalSwitch === 1 || (wearMedalSwitch === -1 && globalMedalList[0]['medal_info']['wearing_status'] === 1)){
+            currentMedal = uid;
+            for (const medal of globalMedalList){
+                if (medal['medal_info']['target_id'] === currentMedal){
+                    wearMedal(medal['medal_info']['medal_id']);
+                    break;
+                }
             }
         }
     }
@@ -678,11 +725,11 @@
     }
 
     async function packaging(msg, type, room_id, up_id) {
-        if (currentMedal!==up_id /* add switch here*/){
+        if (currentMedal!==up_id && wearMedalSwitch === 1){
             currentMedal = up_id;
             for (const medal of globalMedalList){
                 if (medal['medal_info']['target_id'] === currentMedal){
-                    await wareMedal(medal['medal_info']['medal_id']);
+                    await wearMedal(medal['medal_info']['medal_id']);
                     break;
                 }
             }
@@ -751,13 +798,13 @@
                 return {'emojiRequiredMedalLevel':0,'medal_id':-1,'medal_name':''};
             });
     }
-    function wareMedal(medal){
-        if(JCT !== "-1" && medal !==-1){
+    function wearMedal(medal){
+        if(JCT !== "-1" && medal !==-1 && wearMedalSwitch !== 0){
             var madelForm = new FormData();
             madelForm.append("medal_id", medal);
             madelForm.append("csrf", JCT);
             madelForm.append("csrf_token", JCT);
-            fetch("https://api.live.bilibili.com/xlive/web-room/v1/fansMedal/wear",{
+            fetch(wearMedalSwitch===-1?'https://api.live.bilibili.com/xlive/app-ucenter/v1/fansMedal/take_off':`https://api.live.bilibili.com/xlive/web-room/v1/fansMedal/wear`,{
                 method:"POST",
                 credentials: 'include',
                 body:madelForm,

@@ -262,6 +262,12 @@ option {
     text-decoration: underline;
 }
 
+.liveroom-entry{
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
 @media (prefers-color-scheme: dark) {
     body {
         background: #292a2d;

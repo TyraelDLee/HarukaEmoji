@@ -96,6 +96,10 @@ video {
     flex-direction: column;
 }
 
+.setting-panel .following-room{
+    margin: 10px 30px;
+}
+
 .panel-title {
     color: var(--bili-blue);
     margin: 10px 20px;
@@ -579,6 +583,7 @@ video {
 .setting-container{
     display: flex;
     justify-content: space-between;
+    margin: 5px 10px 5px;
 }
 
 .setting-name{
@@ -596,4 +601,48 @@ video {
     height: 100%;
     line-height: 55.5px;
     text-align: center;
+}
+
+.quality-chosen{
+    padding: 0 2%;
+    border: 0;
+    border-bottom: 2px solid #fb7299;
+    scrollbar-width: thin;
+    outline: 0!important;
+    transition: .4s;
+    -webkit-transition: .4s;
+    margin-top: 15px;
+    margin-left: 25px;
+    height: 25px;
+}
+
+#setting-re-try{
+    border: 0;
+    border-bottom: 2px solid #fb7299;
+    outline: 0!important;
+    transition: .4s;
+    -webkit-transition: .4s;
+    margin-top: 15px;
+    margin-left: 25px;
+    height: 25px;
+    width: 40px;
+}
+
+.button{
+    width: unset!important;
+    padding: 0!important;
+}
+
+input[type=radio] {
+    appearance: none;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #fb7299;
+    transition: 0.2s all linear;
+    margin-top: 19.5px;
+}
+
+input[type=radio]:checked {
+    border: 5px solid #fb7299;
 }
