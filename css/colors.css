@@ -464,7 +464,7 @@ html[theme*="dark"] .bili-rich-text__content, html[theme*="dark"] .bili-dyn-card
 }
 
 html[theme*="dark"] .emoji-box .emoji-tabs .tab-link.on, html[theme*="dark"] .emoji-box .emoji-tabs .tab-link:hover, html[theme*="dark"] .bili-dyn-card-video__body, html[theme*="dark"] .bili-dyn-card-live__body, html[theme*="dark"] .bili-dyn-list-tabs, html[theme*="dark"] .bili-dyn-card-pgc__body, html[theme*="dark"] .bili-dyn-card-article, html[theme*="dark"] .bili-dyn-list-loading, html[theme*="dark"] .bili-dyn-up-list, html[theme*="dark"] .bili-dyn-publishing, html[theme*="dark"] .bili-rich-textarea__inner, html[theme*="dark"] .bili-dyn-banner, html[theme*="dark"] .topic-panel, html[theme*="dark"] .bili-dyn-my-info, html[theme*="dark"] .bili-dyn-live-users, html[theme*="dark"] .bili-dyn-my-info--skeleton, html[theme*="dark"] .bili-comment-option__item:hover, html[theme*="dark"] .bili-emoji__footer, html[theme*="dark"] .bb-comment .comment-list .list-item .info .btn-hover:hover, html[theme*="dark"] .comment-bilibili-fold .comment-list .list-item .info .btn-hover:hover, html[theme*="dark"] .bb-comment .comment-send-lite.comment-send-lite, html[theme*="dark"] .article-container, html[theme*="dark"] .fixed-top-header, html[theme*="dark"] .article-up-info, html[theme*="dark"] .recommend-list, html[theme*="dark"] .comment-wrapper .comment-m, html[theme*="dark"] .right-side-bar .side-toolbar, html[theme*="dark"] .right-side-bar.on .to-top, html[theme*="dark"] .suggest-wrap, html[theme*="dark"] .van-popper-avatar .links .sub-links, html[theme*="dark"] .channel-menu-mini {
-    background-color: var(--bg1);
+    background-color: var(--bg2);
 }
 
 html[theme*="dark"] .van-popover{

@@ -73,11 +73,13 @@
 // show the text length
         const textLength = document.createElement("span");
 
+        const LiveRoomBtn = document.createElement('button');
+
 // full screen function.
-        const fullScreenText = document.createElement("span");
-        const fullScreenSection = document.createElement("section");
-        const fullScreenButton = document.createElement("div");
-        const fullScreenInput = document.createElement("input");
+//         const fullScreenText = document.createElement("span");
+//         const fullScreenSection = document.createElement("section");
+//         const fullScreenButton = document.createElement("div");
+//         const fullScreenInput = document.createElement("input");
         const danmakuSendEErr = document.createElement('div');
 
 
@@ -336,22 +338,24 @@
             danmakuSendEErr.style.display = 'none';
             danmakuSendEErr.style.opacity = '0';
 
-            fullScreenSection.classList.add("button");
-            fullScreenButton.classList.add("checkbox");
-            fullScreenInput.type = "checkbox";
-            fullScreenInput.checked = true;
-            fullScreenButton.appendChild(fullScreenInput);
-            fullScreenButton.appendChild(document.createElement("label"));
-            fullScreenSection.appendChild(fullScreenButton);
-            fullScreenSection.style.display = "none";
-            fullScreenText.setAttribute("id", "fullscreen-label");
-            fullScreenText.innerHTML = "全屏显示";
-            fullScreenText.style.display = "none";
+            LiveRoomBtn.setAttribute('id', 'rua-go-to-live-room');
+            LiveRoomBtn.innerHTML = `<span>去放映室看</span>`;
+            LiveRoomBtn.style.display = 'none';
+            // fullScreenSection.classList.add("button");
+            // fullScreenButton.classList.add("checkbox");
+            // fullScreenInput.type = "checkbox";
+            // fullScreenInput.checked = true;
+            // fullScreenButton.appendChild(fullScreenInput);
+            // fullScreenButton.appendChild(document.createElement("label"));
+            // fullScreenSection.appendChild(fullScreenButton);
+            // fullScreenSection.style.display = "none";
+            // fullScreenText.setAttribute("id", "fullscreen-label");
+            // fullScreenText.innerHTML = "全屏显示";
+            // fullScreenText.style.display = "none";
 
             selec.appendChild(DanMuInput);
             selec.appendChild(DanMuSub);
-            selec.appendChild(fullScreenSection);
-            selec.appendChild(fullScreenText);
+            //selec.appendChild(LiveRoomBtn);
             selec.appendChild(textLength);
             selec.appendChild(emojiPad);
 
@@ -455,8 +459,21 @@
                 DanMuInput.style.display = "block";
                 DanMuSub.style.display = "block";
                 textLength.style.display = "block";
-                fullScreenSection.style.display = "block";
-                fullScreenText.style.display = "block";
+                LiveRoomBtn.style.display = 'block';
+
+                LiveRoomBtn.addEventListener('click', (e)=>{
+                    chrome.storage.local.get(['liveroomOn'], (data)=>{
+                        if (data['liveroomOn']){
+
+                        }else{
+                            chrome.runtime.sendMessage({msg: 'launchLiveRoom'}, (callback)=>{
+
+                            })
+                        }
+                    });
+                });
+                // fullScreenSection.style.display = "block";
+                // fullScreenText.style.display = "block";
 
                 constructHTMLTable(4, DanMuInput, emojiTable, textLength);
                 constructHTMLTableSystemEmoji(4,  emojiTableSystem);
@@ -468,9 +485,9 @@
                 }
 
                 // full screen functions.
-                fullScreenInput.addEventListener('change', function() {
-                    this.checked?displayFullScreenDanmaku():hideFullScreenDanmaku();
-                });
+                // fullScreenInput.addEventListener('change', function() {
+                //     this.checked?displayFullScreenDanmaku():hideFullScreenDanmaku();
+                // });
                 let timer = null;
                 const fullscreenBackground = document.createElement("div");
                 const fullscreenEmojiPad = document.createElement("div");

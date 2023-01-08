@@ -648,3 +648,10 @@ input[type=radio] {
 input[type=radio]:checked {
     border: 5px solid #fb7299;
 }
+
+.rail-background{
+    width: 20px;
+    height: 100%;
+    position: absolute;
+    left: -9px;
+}

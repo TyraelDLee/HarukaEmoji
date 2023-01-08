@@ -327,7 +327,7 @@ async function initialize(reload){
 
     // local states
     chrome.alarms.create('checkUpd', {'when':Date.now(), periodInMinutes:60*12});
-    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "video_id_list": [],"pgc_id_list": [],"article_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0/*'{"biz_msg_follow_unread":0,"biz_msg_unfollow_unread":0,"dustbin_push_msg":0,"dustbin_unread":0,"follow_unread":0,"unfollow_push_msg":0,"unfollow_unread":0}'*/, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[], 'watchingList': {}, 'heartRhythm':[], 'medalList':[]}, ()=>{});
+    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "video_id_list": [],"pgc_id_list": [],"article_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0/*'{"biz_msg_follow_unread":0,"biz_msg_unfollow_unread":0,"dustbin_push_msg":0,"dustbin_unread":0,"follow_unread":0,"unfollow_push_msg":0,"unfollow_unread":0}'*/, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[], 'watchingList': {}, 'heartRhythm':[], 'medalList':[], 'liveroomOn': false}, ()=>{});
     chrome.alarms.create('getUID_CSRF', {'when': Date.now(), periodInMinutes:0.3});
     chrome.alarms.create('heartRate', {'when': Date.now()+60*1e3, periodInMinutes: 1});
     chrome.alarms.create('refreshHB', {'when': Date.now()+3600*1e3, periodInMinutes:60});
@@ -494,6 +494,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
         if(request.msg.includes("QNV")){
             chrome.storage.sync.set({"qnvalue": request.msg.split("?")[1]}, function (){});
             sendResponse({res:"ok"});
+        }
+        if (request.msg === 'launchLiveRoom'){
+            chrome.tabs.create({url: "./liveroom.html"});
         }
         return true;
     }
@@ -754,7 +757,7 @@ function reloadCookies() {
                     // log in info changed then load following list and start update liver stream info every 3 min.
                     console.log("Session info got.");
                     refreshHeartBeatList();
-                    chrome.alarms.create('getNewVideos',{'when': Date.now(), periodInMinutes: 0.33});
+                    chrome.alarms.create('getNewVideos',{'when': Date.now(), periodInMinutes: 0.5});
                     chrome.alarms.create('getFollowing', {'when': Date.now(), periodInMinutes: 0.2});
                     chrome.alarms.create('getNewUnreads', {'when': Date.now()+5000, periodInMinutes: 0.2});
                     chrome.alarms.create('getNewDynamics', {'when': Date.now()+11000, periodInMinutes: 0.33});

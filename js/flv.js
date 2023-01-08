@@ -2330,7 +2330,8 @@ var MSEController = /** @class */ (function () {
             this.detachMediaElement();
         }
         this.e = null;
-        this._emitter.removeAllListeners();
+        if(this._emitter != null)
+            this._emitter.removeAllListeners();
         this._emitter = null;
     };
     MSEController.prototype.on = function (event, listener) {
@@ -7641,7 +7642,8 @@ var FlvPlayer = /** @class */ (function () {
         }
         this.e = null;
         this._mediaDataSource = null;
-        this._emitter.removeAllListeners();
+        if(this._emitter != null)
+            this._emitter.removeAllListeners();
         this._emitter = null;
     };
     FlvPlayer.prototype.on = function (event, listener) {

@@ -378,3 +378,21 @@
 html[theme*="dark"] #emoji-tray, #input-button{
     opacity: 0.8;
 }
+
+
+#rua-go-to-live-room {
+    right: 5px;
+    bottom: 40px;
+    width: 75px;
+    height: 20px;
+    border: 0;
+    background: var(--bili-pink);
+    border-radius: 5px;
+    color: #FFF;
+    position: absolute;
+    transform: scale(0.9);
+}
+
+#rua-go-to-live-room:hover {
+    opacity: 0.8;
+}

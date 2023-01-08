@@ -1,5 +1,5 @@
 !function () {
-
+    chrome.storage.local.set({'liveroomOn':true}, ()=>{});
     let addRoom = null, exit = null, setting = null, controlPanel = document.getElementsByClassName('control-bar')[0],
         mouseEvent = null, isFullScreen = false, globalMedalList = null;
     let videoStream = new Map();
@@ -13,6 +13,10 @@
         if ((currentMedal>-1 || wearMedalSwitch === -1 )&& globalMedalList!==null && typeof globalMedalList !== 'undefined'){
             updateMedal(currentMedal, wearMedalSwitch === -1);
         }
+    });
+
+    window.addEventListener('beforeunload', ()=>{
+        chrome.storage.local.set({'liveroomOn':false}, ()=>{});
     });
 
     !function bindElements() {
@@ -286,7 +290,7 @@
                                 if (flv!==null)
                                     flv.destroy();
                                 abortFlag.abort('user cancel');
-                                console.log('close '+ liveRoomInfo['uid']);
+                                console.log(`Stream ${liveRoomInfo['uid']} closed.`);
                                 revokeEventListener();
                                 videoContainer.remove();
                                 videoStream.delete(liveRoomInfo['uid']);
@@ -316,6 +320,7 @@
                                 <div class="vertical-slider">
                                     <div class="number">100</div>
                                         <div class="slider-rail">
+                                            <div class="rail-background"></div>
                                             <div class="slider-handle" style="top: 0px;"></div>
                                             <div class="slider-track" style="height: 100%;"></div>
                                         </div>
@@ -385,10 +390,10 @@
                     </div>
                 </div>
             </div>`;
-            let currentVolume = 100, lastVolume = currentVolume, silence = false, hideControl = null, hideFlag = false;
+            let currentVolume = 100, lastVolume = currentVolume, silence = false, hideControl = null, hideFlag = false, inputLock = false;
 
             function hiddenControl(){
-                if (!hideFlag){
+                if (!hideFlag && !inputLock){
                     videoControlBackground.style.visibility = 'hidden';
                     videoControlContainer.firstElementChild.style.display = 'none';
                 }
@@ -400,6 +405,10 @@
                 videoControlContainer.firstElementChild.style.display = 'block';
                 hideControl = setTimeout(hiddenControl, 1000);
             };
+
+            videoContainer.onclick = ()=>{
+                hiddenControl();
+            }
 
             videoControlContainer.onmouseenter = ()=>{
                 hideFlag = true;
@@ -584,6 +593,12 @@
             let danmaku = videoControlContainer.getElementsByClassName('danmaku')[0];
             let cursorSelection = [0,0], enterLock = true, unlock = true;
             //danmaku input event
+            danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].onfocus = ()=>{
+                inputLock = true;
+            }
+            danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].onblur = ()=>{
+                inputLock = false;
+            }
             danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].addEventListener('compositionstart', (e)=>{
                 enterLock = false;
                 unlock = false;
@@ -596,6 +611,7 @@
                     e.preventDefault();
                     packaging(danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].value, 0, liveRoomInfo['room_id'], liveRoomInfo['uid']);
                     danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].value = "";
+                    //danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].blur();
                 }
                 if(enterLock) unlock = true; // unlock enter key when the first key after composition end has been pressed.
                 cursorSelection = [danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].selectionStart, danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].selectionEnd];
@@ -719,6 +735,7 @@
             function setPlayer(url, video, index) {
                 let frameChasing = null;
                 if (flvjs.isSupported()) {
+                    flvjs.LoggingControl.applyConfig({enableError: false});
                     flv = flvjs.createPlayer({
                         type: "flv",
                         isLive: true,
@@ -775,7 +792,6 @@
     }
 
     async function updateMedal(uid, updateList = false){
-        console.log(updateList)
         if (updateList)
             await getMedal(UID).then(r=>{globalMedalList = r;});
         if (wearMedalSwitch === 1 || (wearMedalSwitch === -1 && globalMedalList[0]['medal_info']['wearing_status'] === 1)){
@@ -1006,7 +1022,6 @@
         }
 
         HeartBeat.prototype.stop = function(){
-            console.log(this.timer);
             if (this.timer!==null){
                 clearInterval(this.timer);
                 this.timer = null;
@@ -1074,4 +1089,4 @@
     }
 }();
 
-// TODO: add setting (quality, medal, exp, reconnection times), manual frame chasing, manual refresh stream.
+// TODO: add setting (medal, reconnection times).
