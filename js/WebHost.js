@@ -355,7 +355,7 @@
 
             selec.appendChild(DanMuInput);
             selec.appendChild(DanMuSub);
-            //selec.appendChild(LiveRoomBtn);
+            selec.appendChild(LiveRoomBtn);
             selec.appendChild(textLength);
             selec.appendChild(emojiPad);
 
@@ -462,15 +462,9 @@
                 LiveRoomBtn.style.display = 'block';
 
                 LiveRoomBtn.addEventListener('click', (e)=>{
-                    chrome.storage.local.get(['liveroomOn'], (data)=>{
-                        if (data['liveroomOn']){
-
-                        }else{
-                            chrome.runtime.sendMessage({msg: 'launchLiveRoom'}, (callback)=>{
-
-                            })
-                        }
-                    });
+                    chrome.storage.local.set({'tempRoomNumber':room_id}, ()=>{});
+                    chrome.runtime.sendMessage({msg: 'launchLiveRoom'}, (callback)=>{
+                    })
                 });
                 // fullScreenSection.style.display = "block";
                 // fullScreenText.style.display = "block";

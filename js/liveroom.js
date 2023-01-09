@@ -1,5 +1,18 @@
 !function () {
-    chrome.storage.local.set({'liveroomOn':true}, ()=>{});
+    chrome.tabs.getCurrent().then(tab=>{
+        chrome.windows.getCurrent().then(win=>{
+            chrome.storage.local.set({'liveroomOn':[win.id, tab.id]}, ()=>{});
+        });
+    });
+
+    chrome.windows.onFocusChanged.addListener(()=>{
+        chrome.tabs.getCurrent().then(tab=>{
+            chrome.windows.getCurrent().then(win=>{
+                chrome.storage.local.set({'liveroomOn':[win.id, tab.id]}, ()=>{});
+            });
+        });
+    });
+
     let addRoom = null, exit = null, setting = null, controlPanel = document.getElementsByClassName('control-bar')[0],
         mouseEvent = null, isFullScreen = false, globalMedalList = null;
     let videoStream = new Map();
@@ -13,11 +26,32 @@
         if ((currentMedal>-1 || wearMedalSwitch === -1 )&& globalMedalList!==null && typeof globalMedalList !== 'undefined'){
             updateMedal(currentMedal, wearMedalSwitch === -1);
         }
+        loadRoomFromOutside();
     });
 
+    loadRoomFromOutside();
+
+    function loadRoomFromOutside(){
+        chrome.storage.local.get(['tempRoomNumber'], (roomID)=>{
+            if (roomID['tempRoomNumber']!==-1) {
+                let roomid = roomID['tempRoomNumber'];
+                chrome.storage.local.set({'tempRoomNumber': -1}, () => {});
+                getRealRoomID(roomid).then(r=>{
+                    if (r['liveStatus']!==1)
+                        throw r;
+                    else
+                        getRooms([r['up']]);
+                }).catch(e=>{
+                    console.log(e);
+                });
+            }
+        });
+    }
+
     window.addEventListener('beforeunload', ()=>{
-        chrome.storage.local.set({'liveroomOn':false}, ()=>{});
+        chrome.storage.local.set({'liveroomOn':[-1,-1]}, ()=>{});
     });
+
 
     !function bindElements() {
         addRoom = document.getElementsByClassName('add-room')[0].getElementsByTagName('svg')[0];
