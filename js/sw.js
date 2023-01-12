@@ -312,7 +312,7 @@ async function initialize(reload){
     setInitValue('darkModeSystem', false);
     setInitValue('commentEmoji', true);
     setInitValue('heartBeatSwitch', true);
-    setInitValue('squareCover', false);
+    setInitValue('squareCover', true);
     setInitValue('liveroom-medal-switch', 0);
     setInitValue('liveroom-reconnection-time', 10);
     setInitValue('liveroom-heart-beat', true);
@@ -496,6 +496,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
             sendResponse({res:"ok"});
         }
         if (request.msg === 'launchLiveRoom'){
+            chrome.tabs.remove(sender.tab.id).then(r=>{});
             chrome.storage.local.get(['liveroomOn'], (data)=>{
                 if (data['liveroomOn'][0]!==-1 && data['liveroomOn'][1]!==-1){
                     chrome.windows.update(data['liveroomOn'][0], {focused: true});

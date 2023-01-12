@@ -264,22 +264,6 @@
     background-color: #aaa;
 }
 
-#input-button {
-    right: 10px;
-    bottom: 5px;
-    width: 65px;
-    height: 20px;
-    border: 0;
-    background: #FFD432;
-    border-radius: 5px;
-    color: #FFF;
-    position: absolute;
-}
-
-#input-button:hover {
-    background: #DDB210;
-}
-
 #length-indicator {
     right: 90px;
     bottom: 10px;
@@ -379,6 +363,22 @@ html[theme*="dark"] #emoji-tray, #input-button{
     opacity: 0.8;
 }
 
+#input-button {
+    right: 10px;
+    bottom: 5px;
+    width: 65px;
+    height: 20px;
+    border: 0;
+    background: #FFD432;
+    border-radius: 5px;
+    color: #FFF;
+    position: absolute;
+    cursor: pointer;
+}
+
+#input-button:hover {
+    background: #DDB210;
+}
 
 #rua-go-to-live-room {
     right: 5px;
@@ -391,6 +391,7 @@ html[theme*="dark"] #emoji-tray, #input-button{
     color: #FFF;
     position: absolute;
     transform: scale(0.9);
+    cursor: pointer;
 }
 
 #rua-go-to-live-room:hover {

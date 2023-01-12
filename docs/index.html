@@ -2,376 +2,406 @@
 <!--Copyright (c) 2021 Tyrael, Y. LI-->
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="current-version" content="5.14">
-  <meta name="current-version-mv2" content="5.10.3">
-  <meta name="google-site-verification" content="8j_NfbE3zch71fhl-fLzQ68wrVnUZob5xtNxiQpjt44" />
-  <title>5.14</title>
-  <link href="./css/readme.min.css" type="text/css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="current-version" content="5.14">
+    <meta name="current-version-mv2" content="5.10.3">
+    <meta name="google-site-verification" content="8j_NfbE3zch71fhl-fLzQ68wrVnUZob5xtNxiQpjt44" />
+    <title>5.15</title>
+    <link href="./css/readme.min.css" type="text/css" rel="stylesheet">
 </head>
 <body style="font-size: 100%;">
 <div id="rua-icon-host" style="height: 350px; width: 100%;">
-  <div id="rua-icon" style="width: 350px; height: 350px;">
-    <img src="./images/svga/13.svg" frame="13" height="100%" width="100%">
-  </div>
-  <div id="rua-nav">
-    <a href="notifySetting.html">通知设置</a>
-    <a goto="MV3">Manifest V3</a>
-    <a goto="new-features">新特性</a>
-    <a goto="functions">已有的功能</a>
-    <a goto="how-to-use">怎么用</a>
-    <a goto="version">版本记录</a>
-  </div>
+    <div id="rua-icon" style="width: 350px; height: 350px;">
+        <img src="./images/svga/13.svg" frame="13" height="100%" width="100%">
+    </div>
+    <div id="rua-nav">
+        <a href="notifySetting.html">通知设置</a>
+        <a goto="MV3">Manifest V3</a>
+        <a goto="new-features">新特性</a>
+        <a goto="functions">已有的功能</a>
+        <a goto="how-to-use">怎么用</a>
+        <a goto="version">版本记录</a>
+    </div>
 </div>
 <div id="main">
-  <h1>b站助手rua豹器 使用说明</h1>
-  <p>
-    rua豹使人快乐，rua了又rua！<br><br>
-    rua豹器5.14来啦 <br>
-    兼容绝大多数chromium内核浏览器，例如：Opera浏览器，360浏览器，新MS Edge，yandex....。<br>
-    现已支持火狐浏览器，见：<a href="https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/">火狐扩展商店</a>
-  </p>
-  <h3 style="font-size: 28px" id="new-features">ver 5.14 特性：</h3>
-  <ul>
-    <li>下载添加了非HDR、8K视频的DASH协议支持，添加了杜比视界的支持。</li>
-    <li>修复了评论区表情包显示问题。</li>
-    <li>修复了没有杜比全景声的视频下显示杜比全景声下载的问题。</li>
-    <li>为视频、番剧、专栏的更新通知单独添加了开关。</li>
-    <li>改进了通知策略，修复了动态页可能会显示"加载失败"的问题。</li>
-    <li>一些其他改进。</li>
-  </ul>
-  <h2 id="functions">已有的功能</h2>
-  <ul>
-    <li>视频投稿推送通知。</li>
-    <li>直播间开播推送通知。</li>
-    <li>直播牌子自动切换。</li>
-    <li>自动签到。</li>
-    <li>弹幕姬表情选取发送框（目前仅支持八儿力老师的直播间）。</li>
-    <li>默认直播画质。</li>
-    <li>大会员B币兑换。</li>
-    <li>隐身进入直播间的功能。</li>
-    <li>右键关联菜单搜索。识别到AV/BV号时会自动跳转到视频页面，其余的会跳转到b站搜索结果。</li>
-    <li>自动打卡有牌子的直播间。</li>
-    <li>主站视频下载，支持HDR、8K，单音轨及杜比全景声下载<br>
-      注：音轨音质保存默认会选择视频提供的最佳音频。<br>
-    </li>
-    <li>快速录制直播片段 (beta)<br>支持录制重放，默认保留开始录制前5分钟片段，可在设置中设置重放时长</li>
-    <li>新版UI主页分区隐藏。</li>
-    <li>音乐播放器页面下载。</li>
-    <li>深色模式。</li>
-    <li>评论区up表情包。</li>
-  </ul>
-  <h2 id="MV3">Manifest V3</h2>
-  自5.10版开始rua豹器已开始转为Manifest V3扩展应用。
-  <h3>关于MV3</h3>
-  MV3带来了一系列的性能以及安全性提升，具体可以参阅<a href="https://developer.chrome.com/docs/extensions/mv3/intro/" target="_blank">Google官方文档</a>(如果你感兴趣的话)。<br>
-  其中最重要的一点：MV2将于2023年1月停止支持，届时现有的MV2也将无法运行。当然也可以不更新浏览器来继续使用MV2扩展应用。<br>
-  <h3>为什么要现在转移为MV3应用</h3>
-  MV3作为自有扩展应用以来最大一次更新，对服务端的更改是巨大的。service worker直接取代了现有的background脚本，也就导致需要完全重写扩展应用服务端。<br>
-  rua豹器的MV3转移计划可以追随到数个版本前。作为个人开发者我没有足够的精力同时维护两个不同版本 TvT... 而且MV2将于明年初被完全废止。<br>
-  5.10将会提供mv2 mv3两个版本，也会是最后一个mv2版本。今后的新版本将全面转为mv3。
-  <h3>对用户有什么影响</h3>
-  由于service worker取代了现有的background脚本，而且不像background脚本可常驻后台运行service worker有自己的生存周期。原先的定时器需要改为alarms API，由于alarms API的限制两次运行之间的间隔最小为1分钟。所以原先10s左右就可以收到开播、动态的通知现在需要1分钟左右。相较于原来的10秒，这是一个不小的间隔。<br>
-  但是最小间隔只适用于发行版，也就是在商店或者crx直接安装的。<br>
-  <div class="img-block">
-    <div class="info-block" style="margin-right: 50px">
-
-      所以只需以下步骤即可将通知间隔改为原先的10秒钟（具体位置见右图）：
-      <ol>
-        <li>将在Gitee、GitHub发行页下载的crx文件后缀改为zip后解压</li>
-        <li>打开位于扩展程序页面右边的<b>开发者模式</b></li>
-        <li>选择位于扩展程序页面左边的<b>加载已解压的扩展程序</b>，加载刚刚从zip文件解压的源码</li>
-      </ol>
-
-    </div>
-    <img class="img-dark" src="./images/readme/unlockMV3_dark.webp" width="50%" height="50%">
-    <img class="img-light" src="./images/readme/unlockMV3_light.webp" width="50%" height="50%">
-  </div>
-  <b>由于MV3引入了新的API，请确保你的浏览器Chromium内核版本为 95+ / 火狐版本 101+</b><br>
-  <h2 id="how-to-use">怎么用</h2>
-  <p>在b站登录自己的账号后，插件推送类功能就会自动运行。</p>
-  <div>
-    <h3>主页分区隐藏</h3>
+    <h1>b站助手rua豹器 使用说明</h1>
+    <p>
+        rua豹使人快乐，rua了又rua！<br><br>
+        rua豹器5.15来啦 <br>
+        兼容绝大多数chromium内核浏览器，例如：Opera浏览器，360浏览器，新MS Edge，yandex....。<br>
+        现已支持火狐浏览器，见：<a href="https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/">火狐扩展商店</a>
+    </p>
+    <h3 style="font-size: 28px" id="new-features">ver 5.15 特性：</h3>
+    <ul>
+        <li>添加了放映室功能。可以同屏观看16场直播啦！</li>
+        <li>添加了挂机功能，关注且有牌子的主播开播时会在后台挂机来换取亲密度，而且不需要打开直播间。</li>
+        <li>现在缓存音频有封面了。默认会将封面裁切为正方形，可以在设置中关闭。</li>
+        <li>一些其他改进。</li>
+    </ul>
+    <h2 id="functions">已有的功能</h2>
+    <ul>
+        <li>视频投稿推送通知。</li>
+        <li>直播间开播推送通知。</li>
+        <li>直播牌子自动切换。</li>
+        <li>自动签到。</li>
+        <li>弹幕姬表情选取发送框（目前仅支持八儿力老师的直播间）。</li>
+        <li>默认直播画质。</li>
+        <li>大会员B币兑换。</li>
+        <li>隐身进入直播间的功能。</li>
+        <li>右键关联菜单搜索。识别到AV/BV号时会自动跳转到视频页面，其余的会跳转到b站搜索结果。</li>
+        <li>自动打卡有牌子的直播间。</li>
+        <li>主站视频下载，支持HDR、8K，单音轨及杜比全景声下载<br>
+            注：音轨音质保存默认会选择视频提供的最佳音频。<br>
+        </li>
+        <li>快速录制直播片段 (beta)<br>支持录制重放，默认保留开始录制前5分钟片段，可在设置中设置重放时长</li>
+        <li>新版UI主页分区隐藏。</li>
+        <li>音乐播放器页面下载。</li>
+        <li>深色模式。</li>
+        <li>评论区up表情包。</li>
+        <li>放映室</li>
+        <li>挂机经验</li>
+    </ul>
+    <h2 id="MV3">Manifest V3</h2>
+    自5.10版开始rua豹器已开始转为Manifest V3扩展应用。
+    <h3>关于MV3</h3>
+    MV3带来了一系列的性能以及安全性提升，具体可以参阅<a href="https://developer.chrome.com/docs/extensions/mv3/intro/" target="_blank">Google官方文档</a>(如果你感兴趣的话)。<br>
+    其中最重要的一点：MV2将于2023年1月停止支持，届时现有的MV2也将无法运行。当然也可以不更新浏览器来继续使用MV2扩展应用。<br>
+    <h3>为什么要现在转移为MV3应用</h3>
+    MV3作为自有扩展应用以来最大一次更新，对服务端的更改是巨大的。service worker直接取代了现有的background脚本，也就导致需要完全重写扩展应用服务端。<br>
+    rua豹器的MV3转移计划可以追随到数个版本前。作为个人开发者我没有足够的精力同时维护两个不同版本 TvT... 而且MV2将于明年初被完全废止。<br>
+    5.10将会提供mv2 mv3两个版本，也会是最后一个mv2版本。今后的新版本将全面转为mv3。
+    <h3>对用户有什么影响</h3>
+    由于service worker取代了现有的background脚本，而且不像background脚本可常驻后台运行service worker有自己的生存周期。原先的定时器需要改为alarms API，由于alarms API的限制两次运行之间的间隔最小为1分钟。所以原先10s左右就可以收到开播、动态的通知现在需要1分钟左右。相较于原来的10秒，这是一个不小的间隔。<br>
+    但是最小间隔只适用于发行版，也就是在商店或者crx直接安装的。<br>
     <div class="img-block">
-      <img class="img-dark" src="./images/readme/home_dark.webp" width="70%" height="70%">
-      <img class="img-light" src="./images/readme/home_light.webp" width="70%" height="70%">
-      <div class="info-block">
-        <div>在新版UI下的分区中只要点击分区旁边的 <svg width="18px" height="18px" viewBox="0 0 100 100" style="position: relative; top: 3px"><circle cx="50" cy="50" r="50" style="fill:#ff5e57;"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="fill:#fff;opacity:0.9;"/></svg> / <svg width="18px" height="18px" viewBox="0 0 100 100" style="position: relative; top: 3px"><circle cx="50" cy="50" r="50" style="fill:#2bc840;"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="fill:#fff;opacity:0.9;"/><rect x="45" y="25" rx="5" ry="5" width="10" height="50" style="fill:#fff;opacity:0.9;"/></svg> 就可以 <b>隐藏 / 显示</b> 分区啦。</div>
-      </div>
+        <div class="info-block" style="margin-right: 50px">
+
+            所以只需以下步骤即可将通知间隔改为原先的10秒钟（具体位置见右图）：
+            <ol>
+                <li>将在Gitee、GitHub发行页下载的crx文件后缀改为zip后解压</li>
+                <li>打开位于扩展程序页面右边的<b>开发者模式</b></li>
+                <li>选择位于扩展程序页面左边的<b>加载已解压的扩展程序</b>，加载刚刚从zip文件解压的源码</li>
+            </ol>
+
+        </div>
+        <img class="img-dark" src="./images/readme/unlockMV3_dark.webp" width="50%" height="50%">
+        <img class="img-light" src="./images/readme/unlockMV3_light.webp" width="50%" height="50%">
     </div>
-    <h3>自定义设置</h3>
-    <div class="img-block">
-      <img class="img-dark" src="./images/readme/setting_dark.webp" width="70%" height="70%">
-      <img class="img-light" src="./images/readme/setting_light.webp" width="70%" height="70%">
-      <div class="info-block">
-        <p>单击地址栏右侧插件图标即可打开设置。 目前可以设置的有：</p>
-        <ul>
-          <li>开播通知</li>
-          <li>视频更新通知</li>
-          <li>通知模式（是否显示直播间封面，macOS不支持）</li>
-          <li>开关自动签到</li>
-          <li>开关自动切换粉丝勋章</li>
-          <li>自动打卡直播间（有勋章的直播间）</li>
-          <li>默认直播画质</li>
-          <li>大会员B币兑换</li>
-          <li>隐身进入直播间/增强隐身</li>
-          <li>直播录制</li>
-          <li>深色模式</li>
-          <li>评论区up表情包，显示不正常时关闭此选项即可修复。</li>
-          <li>重启服务，遇到不推送、推送慢等问题可以重启服务来修复。</li>
-        </ul>
-      </div>
+    <b>由于MV3引入了新的API，请确保你的浏览器Chromium内核版本为 95+ / 火狐版本 101+</b><br>
+    <h2 id="how-to-use">怎么用</h2>
+    <p>在b站登录自己的账号后，插件推送类功能就会自动运行。</p>
+    <div>
+        <h3>主页分区隐藏</h3>
+        <div class="img-block">
+            <img class="img-dark" src="./images/readme/home_dark.webp" width="70%" height="70%">
+            <img class="img-light" src="./images/readme/home_light.webp" width="70%" height="70%">
+            <div class="info-block">
+                <div>在新版UI下的分区中只要点击分区旁边的 <svg width="18px" height="18px" viewBox="0 0 100 100" style="position: relative; top: 3px"><circle cx="50" cy="50" r="50" style="fill:#ff5e57;"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="fill:#fff;opacity:0.9;"/></svg> / <svg width="18px" height="18px" viewBox="0 0 100 100" style="position: relative; top: 3px"><circle cx="50" cy="50" r="50" style="fill:#2bc840;"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="fill:#fff;opacity:0.9;"/><rect x="45" y="25" rx="5" ry="5" width="10" height="50" style="fill:#fff;opacity:0.9;"/></svg> 就可以 <b>隐藏 / 显示</b> 分区啦。</div>
+            </div>
+        </div>
+        <h3>自定义设置</h3>
+        <div class="img-block">
+            <img class="img-dark" src="./images/readme/setting_dark.webp" width="70%" height="70%">
+            <img class="img-light" src="./images/readme/setting_light.webp" width="70%" height="70%">
+            <div class="info-block">
+                <p>单击地址栏右侧插件图标即可打开设置。 目前可以设置的有：</p>
+                <ul>
+                    <li>开播通知</li>
+                    <li>视频更新通知</li>
+                    <li>通知模式（是否显示直播间封面，macOS不支持）</li>
+                    <li>开关自动签到</li>
+                    <li>开关自动切换粉丝勋章</li>
+                    <li>自动打卡直播间（有勋章的直播间）</li>
+                    <li>默认直播画质</li>
+                    <li>大会员B币兑换</li>
+                    <li>隐身进入直播间/增强隐身</li>
+                    <li>直播录制</li>
+                    <li>深色模式</li>
+                    <li>评论区up表情包，显示不正常时关闭此选项即可修复。</li>
+                    <li>重启服务，遇到不推送、推送慢等问题可以重启服务来修复。</li>
+                </ul>
+            </div>
+        </div>
+        <h3>直播间内悬浮球</h3>
+        <div class="img-block">
+            <img class="img-dark" src="./images/readme/liveroom_dark.webp" width="70%" height="70%">
+            <img class="img-light" src="./images/readme/liveroom_light.webp" width="70%" height="70%">
+            <div class="info-block"><p>默认会出现在这个位置，你也可以把它拖拽到你喜欢的位置。</p></div>
+        </div>
+        <h3>视频/番剧页悬浮球</h3>
+        <div class="img-block">
+            <img class="img-dark" src="./images/readme/video_dark.webp" width="70%" height="70%">
+            <img class="img-light" src="./images/readme/video_light.webp" width="70%" height="70%">
+            <div class="info-block">
+                <p>单击地址栏右侧插件图标即可打开设置。 目前支持的功能的有：</p>
+                <ul>
+                    <li>视频信息</li>
+                    <li>弹幕查询 / 点击左侧时间可空降到对应时间</li>
+                    <li>弹幕下载（ass格式）</li>
+                    <li>弹幕下载强度，与页面内弹幕云屏蔽设置一致，强度越低下载到的弹幕越少</li>
+                    <li>视频/音频下载：</li>
+                    <ul>
+                        <li>支持HDR、杜比视界、8k、4k，高于1080p的清晰度需要大会员</li>
+                        <li>DASH协议的视频会保存为mkv</li>
+                        <li>支持单音频下载，音频会保存为m4a格式，杜比全景声会保存为mp4格式、Hi-Res会保存为flac。</li>
+                        <li>当文件大于2GB时将分开视频、音频保存为两个mp4文件。</li>
+                        <li>由于现在b站媒体源需要来源认证（视频页发起请求），所以现在视频的取流和缓存过程要在视频页完成。也就是说下载完成前不能关闭视频页（挂着就行），但是不用担心文件是以流的方式直接写入硬盘的不会占用内存。</li>
+                        <li>由于b站的视频除1080p和360p外全部采用了DASH协议，所以现在所有的视频下载都会使用DASH协议的文件流，大于2G时会将视频音频分开保存为两个文件。；；</li>
+                    </ul>
+                </ul>
+            </div>
+        </div>
+        <h3>放映室</h3>
+        <div class="img-block">
+            <img class="img-dark" src="./images/readme/cinema_dark.webp" width="70%" height="70%">
+            <img class="img-light" src="./images/readme/cinema_light.webp" width="70%" height="70%">
+            <div class="info-block">
+                <p>说明：</p>
+                <ul>
+                    <li>最多同屏可以开16个直播。</li>
+                    <li>暂时不支持弹幕渲染，以后看情况加。</li>
+                    <li>主播下播后会自动关闭并回收对应的视频和控件。<br>但是有时主播会直接停止推流而不关闭直播，这种情况需要用过关闭直播键关闭推流。当然不管它也行，过几分钟b站会自动下播，但是在b站自动下播前会一直尝试重连。</li>
+                </ul>
+                <p>操作说明：</p>
+                <ol>
+                    <li>音量</li>
+                    <li>刷新直播流</li>
+                    <li>追帧，如果要缩小延迟可以试试这个（并不能100%解决延迟，只能减少本地延迟，不能解决从主播到服务器的延迟也不可能解决</li>
+                    <li>关闭直播间</li>
+                    <li>设置</li>
+                    <li>添加新的直播到放映室</li>
+                    <li>进入/退出全屏</li>
+                </ol>
+            </div>
+        </div>
     </div>
-    <h3>直播间内悬浮球</h3>
-    <div class="img-block">
-      <img class="img-dark" src="./images/readme/liveroom_dark.webp" width="70%" height="70%">
-      <img class="img-light" src="./images/readme/liveroom_light.webp" width="70%" height="70%">
-      <div class="info-block"><p>默认会出现在这个位置，你也可以把它拖拽到你喜欢的位置。</p></div>
-    </div>
-    <h3>视频/番剧页悬浮球</h3>
-    <div class="img-block">
-      <img class="img-dark" src="./images/readme/video_dark.webp" width="70%" height="70%">
-      <img class="img-light" src="./images/readme/video_light.webp" width="70%" height="70%">
-      <div class="info-block">
-        <p>单击地址栏右侧插件图标即可打开设置。 目前支持的功能的有：</p>
-        <ul>
-          <li>视频信息</li>
-          <li>弹幕查询 / 点击左侧时间可空降到对应时间</li>
-          <li>弹幕下载（ass格式）</li>
-          <li>弹幕下载强度，与页面内弹幕云屏蔽设置一致，强度越低下载到的弹幕越少</li>
-          <li>视频/音频下载：</li>
-          <ul>
-            <li>支持HDR、杜比视界、8k、4k，高于1080p的清晰度需要大会员</li>
-            <li>DASH协议的视频会保存为mkv</li>
-            <li>支持单音频下载，音频会保存为m4a格式，杜比全景声会保存为mp4格式、Hi-Res会保存为flac。</li>
-            <li>当文件大于2GB时将分开视频、音频保存为两个mp4文件。</li>
-            <li>由于现在b站媒体源需要来源认证（视频页发起请求），所以现在视频的取流和缓存过程要在视频页完成。也就是说下载完成前不能关闭视频页（挂着就行），但是不用担心文件是以流的方式直接写入硬盘的不会占用内存。</li>
-            <li>由于b站的视频除1080p和360p外全部采用了DASH协议，所以现在所有的视频下载都会使用DASH协议的文件流，大于2G时会将视频音频分开保存为两个文件。；；</li>
-          </ul>
-        </ul>
-      </div>
-    </div>
-  </div>
 
 
-  <h3>移动端</h3>
-  <p>下载支持插件的浏览器（如kiwi）并在浏览器安装即可。（暂不支持iOS）</p>
+    <h3>移动端</h3>
+    <p>下载支持插件的浏览器（如kiwi）并在浏览器安装即可。（暂不支持iOS）</p>
 
-  <h3 id="record">录制直播切片(beta)</h3>
-  rua豹器自5.2.0加入了录制直播切片的功能！<br>
-  支持录制重放，这样就不会错过要录制的片段啦！<br>
-  目前录制经过验证的最大分辨率为1080p。1440p及以上可以录制但可能会造成性能问题（如丢帧、卡顿）。<br>
-  <del>
-    由于MediaRecorder API自身限制，似乎最高只能录制30帧视频(也可能是测试机硬件问题)。<br>
-    由于MediaRecorder视频录制机制，某些视频剪辑软件可能无法直接打开视频(测试软件：Adobe Premiere Pro CC 2017，比较老)。所以在录制完成后会先经过转码，转码完成后将自动下载。<br>
-    转码采用FFmpeg wasm。在默认设置(见下图)下一段5分钟的视频大致需要6~7分钟完成转码。<br><br></del>
-  现在视频不再需要转码了，所以导出的所需时间大幅缩短。但是音轨还要转码(因为Pr不支持opus编码)，所以还需要一点时间转码，所需时长大概是录制时长的1/20。<br><br>
-  <img src="./images/readme/recordui.png" width="25%" height="25%">
-  <ul>
-    <li>开始/结束录制：打开切片录制功能后在播放器ui，画质旁边就可以找到开始/结束录制按钮，点击即可进行录制/下载切片。</li>
-  </ul>
-  <b style="font-size: 18px">请注意:</b><br>
-  目前不支持HEVC<br>
-  目前更改画质，刷新，重连都会使已录制但没有尚未转码的内容丢失。<br>
-  直播结束时或直播间切断时正在录制的内容也不会被保存。<br>
-  静音的话也是无法录制的。<br>
-  所有测试均是在Google Chrome 版本 97.0.4692.99（正式版本） （64 位）上完成的。<del>火狐浏览器可能支持，但是未经测试。</del>火狐测试过了，不支持。泪目了，明明MeidaRecorder API文档还是Mozilla的写的 (╯°□°）╯︵ ┻━┻
+    <h3 id="record">录制直播切片(beta)</h3>
+    rua豹器自5.2.0加入了录制直播切片的功能！<br>
+    支持录制重放，这样就不会错过要录制的片段啦！<br>
+    目前录制经过验证的最大分辨率为1080p。1440p及以上可以录制但可能会造成性能问题（如丢帧、卡顿）。<br>
+    <del>
+        由于MediaRecorder API自身限制，似乎最高只能录制30帧视频(也可能是测试机硬件问题)。<br>
+        由于MediaRecorder视频录制机制，某些视频剪辑软件可能无法直接打开视频(测试软件：Adobe Premiere Pro CC 2017，比较老)。所以在录制完成后会先经过转码，转码完成后将自动下载。<br>
+        转码采用FFmpeg wasm。在默认设置(见下图)下一段5分钟的视频大致需要6~7分钟完成转码。<br><br></del>
+    现在视频不再需要转码了，所以导出的所需时间大幅缩短。但是音轨还要转码(因为Pr不支持opus编码)，所以还需要一点时间转码，所需时长大概是录制时长的1/20。<br><br>
+    <img src="./images/readme/recordui.png" width="25%" height="25%">
+    <ul>
+        <li>开始/结束录制：打开切片录制功能后在播放器ui，画质旁边就可以找到开始/结束录制按钮，点击即可进行录制/下载切片。</li>
+    </ul>
+    <b style="font-size: 18px">请注意:</b><br>
+    目前不支持HEVC<br>
+    目前更改画质，刷新，重连都会使已录制但没有尚未转码的内容丢失。<br>
+    直播结束时或直播间切断时正在录制的内容也不会被保存。<br>
+    静音的话也是无法录制的。<br>
+    所有测试均是在Google Chrome 版本 97.0.4692.99（正式版本） （64 位）上完成的。<del>火狐浏览器可能支持，但是未经测试。</del>火狐测试过了，不支持。泪目了，明明MeidaRecorder API文档还是Mozilla的写的 (╯°□°）╯︵ ┻━┻
 
-  <br/>
-  <h2 id="version">版本记录</h2>
-  <h3>ver 5.14</h3>
-  <ul>
-    <li>下载添加了非HDR、8K视频的DASH协议支持，添加了杜比视界的支持。</li>
-    <li>修复了评论区表情包显示问题。</li>
-    <li>为视频、番剧、专栏的更新通知单独添加了开关。</li>
-    <li>改进了通知策略，修复了动态页可能会显示"加载失败"的问题。</li>
-    <li>一些其他改进。</li>
-  </ul>
-  <h3>ver 5.13</h3>
-  <ul>
-    <li>已为MV3加入"重启服务"功能，当通知推送不正常或延迟很大时可以尝试重启服务。MV2只需在扩展管理页面关闭扩展后再开启即可，此方法MV3无效。</li>
-    <li>现在评论区和移动端一样可以发送up大表情了。可在设置中开启/关闭，默认开启。如果遇到评论区表情区显示不正确或是不显示或者表情按钮无响应等问题在设置中关闭"up表情"后刷新页面即可。</li>
-    <li>现在支持b站深色模式了，可在插件设置中开启，可选深色模式和跟随系统自动切换模式。目前已适配主站主页、视频、专栏、个人主页、动态首页、动态页、消息中心、直播等常用页面。</li>
-    <li>一些其他改进。</li>
-  </ul>
-  <h3>ver 5.11</h3>
-  <ul>
-    <li>现在可以为up单独设置通知偏好了（包括开播、投稿、动态）。</li>
-    <li>视频页加入了Hi-Res音频缓存的功能。</li>
-    <li>一些其他改进。</li>
-  </ul>
-  <h3>ver 5.10</h3>
-  <ul>
-    <li>悬浮球现在支持番剧页面了，可以下载番剧了。</li>
-    <li>现在可以缓存8k的视频了。</li>
-    <li>加入了消息推送的功能 (包括@、赞、回复、私信、系统通知)。</li>
-    <li>加入了新动态推送的功能。</li>
-    <li>更改了开播查询API，现在推送延迟更小了。</li>
-    <li>添加了对超大文件的下载支持，但是由于FFmpeg wasm的限制将无法合并视频音频，遇到大容量dash协议媒体流（HDR、8k、4k）时将保留为两个mp4文件（一个视频，一个音轨），flv文件不受影响，参见<a href="https://github.com/ffmpegwasm/ffmpeg.wasm#what-is-the-maximum-size-of-input-file" target="_blank">FFmpeg.wasm文档</a></li>
-    <li>更改了下载方式（但是现在在文件完成下载前请不要关掉页面，不用担心文件是以流的方式直接写入硬盘的不会占用内存），修复了文件名突然变成一串数字的问题。</li>
-    <li>现已转为MV3应用。</li>
-    <li>现在更新已经不会再将设置初始化。</li>
-    <li>一些其他改进。</li>
-  </ul>
-  <h3>ver 5.9</h3>
-  <ul>
-    <li>现在音频缓存会自动根据视频、音频信息填入元数据（作者，标题，年份，歌词等）。</li>
-    <li>添加了直播间当弹幕发送被吞时的提示。</li>
-    <li>现在养牌子打卡每日刷新由0点改为了8点。</li>
-    <li>修复了音频页面下载按钮显示不正确的问题。</li>
-    <li>修复了强力隐身模式下主站显示未登陆的问题。</li>
-    <li>一些其他改进。</li>
-  </ul>
-  <h3>ver 5.8</h3>
-  <ul>
-    <li>添加了增强隐身的功能。</li>
-    <li>添加了音乐播放器页面的音乐下载，下载质量为当前音乐提供的最佳音质，格式为flac或m4a。(虽然不知道有什么用)</li>
-    <li>添加了表情权限显示。</li>
-    <li>减少了ass文件弹幕字体的描边宽度，现在看上去更自然了。</li>
-    <li>修复了弹幕框字数上限显示不正确的问题。</li>
-    <li>修复了某些情况下主页分区隐藏不生效的问题。</li>
-    <li>修复了插件导致的主页"动态"图标显示不正常的问题。</li>
-    <li>一些其他改进。</li>
-  </ul>
-  <h3>ver 5.7</h3>
-  <ul>
-    <li>增加了对"房间专属表情"的支持。</li>
-    <li>增加了新版UI主页分区隐藏的功能。</li>
-    <li>一些其他改进。</li>
-  </ul>
-  <h3>ver 5.6</h3>
-  <ul>
-    <li>现在可以缓存HDR视频了。</li>
-    <li>一些其他改进。</li>
-  </ul>
-  <h3>ver 5.5</h3>
-  <ul>
-    <li>现在缓存音频会自动保存为m4a文件，不需要再手动修改文件名了。</li>
-    <li>添加了杜比全景声音频下载的功能。（由于封装问题杜比全景声音频会保存为mp4格式）</li>
-  </ul>
-  <h3>ver 5.4</h3>
-  <ul>
-    <li>添加了视频弹幕下载的功能。</li>
-    <li>禁用了macOS下的推送"显示封面"开关，因为macOS不支持此类推送。</li>
-    <li>修复了macOS中文输入法回车键在直播间悬浮输入框中意外触发弹幕发送的问题。</li>
-    <li>一些其他改进。</li>
-  </ul>
-  <h3>ver 5.3</h3>
-  <ul>
-    <li>提高了录制直播片段的导出效率。</li>
-    <li>添加了通用表情及UP大表情的悬浮窗以及全屏下的支持。(支持所有直播间)</li>
-    <li>修复了一些问题。</li>
-  </ul>
-  <h3>ver 5.2</h3>
-  <ul>
-    <li>添加了快速录制直播片段。并提高了导出效率。</li>
-    <li>现在主播下播后还在通知栏中的开播通知会自动清除。</li>
-    <li>修复了一些问题。</li>
-  </ul>
-  <h3>ver 5.1</h3>
-  <ul>
-    <li>添加了音频的wav转码功能。</li>
-    <li>添加了弹幕内容查询功能。</li>
-    <li>修复了一些问题。</li>
-  </ul>
-  <h3>ver 5.0</h3>
-  <ul>
-    <li>添加了视频页面的视频/音轨下载功能。</li>
-    <li>添加了视频页面的弹幕查询功能。</li>
-    <li>优化了直播间深色模式的支持。</li>
-    <li>更新了勋章查询的API，修复了勋章佩戴失效的问题。</li>
-    <li>修复了一些问题。</li>
-  </ul>
-  <h3>ver 4.14.3</h3>
-  <ul>
-    <li>将Haruna对高分辨率屏幕做了支持。</li>
-    <li>添加了检测更新版本功能。</li>
-    <li>优化了推送的图像及稳定性。</li>
-    <li>修复了一些问题。</li>
-  </ul>
-  <h3>ver 4.14.2</h3>
-  <ul>
-    <li>修复了一些问题。</li>
-  </ul>
-  <h3>ver 4.14</h3>
-  <ul>
-    <li>添加了隐身进入直播间的功能。</li>
-    <li>添加了右键关联菜单搜索。</li>
-    <li>添加了自动打卡有牌子的直播间。</li>
-  </ul>
-  <h3>ver 4.13</h3>
-  <ul>
-    <li>修复了一系列问题。</li>
-    <li>移除了直播间无侧边栏网页全屏的选项。(因为我是猪陛...)</li>
-  </ul>
-  <h3>ver 4.12</h3>
-  <ul>
-    <li>添加了视频更新的推送通知。</li>
-    <li>添加了直播间无侧边栏网页全屏的选项。</li>
-    <li>修复了关闭浏览器再启动后无法立即签到的问题。</li>
-    <li>更改了天选之人抽奖的逻辑。现在点击参与后天选窗口会自动关闭，开奖时若没有中奖则不再会弹窗。注：此功能不会影响正常参与天选。</li>
-    <li>修复了一些微小的问题。</li>
-  </ul>
-  <h3>ver 4.11</h3>
-  <ul>
-    <li>添加了默认画质的设置。</li>
-    <li>添加了大会员B币兑换。</li>
-    <li>修复了一些微小的问题。</li>
-  </ul>
-  <h3>ver 4.10</h3>
-  <ul>
-    <li>添加了直播间悬窗的初始位置和位置记忆功能。</li>
-    <li>修复了在某些直播间换牌子失效的问题。</li>
-    <li>修复了某些情况下自动签到失效的问题。</li>
-    <li>添加了对深色模式的支持</li>
-  </ul>
-  <h3>ver 4.9</h3>
-  <ul>
-    <li>添加了使用说明页面。</li>
-    <li>修复了点击通知时可能会打开多个窗口的问题。</li>
-    <li>改进了通过通知打开直播间时的窗口逻辑。</li>
-    <li>修复了初次进入直播间时牌子显示不正确的问题。</li>
-  </ul>
-  <h3>ver 4.8</h3>
-  <ul>
-    <li>添加了图片模式通知。</li>
-    <li>修复了一些问题。</li>
-    <li>添加了对移动端的支持。（需要移动端浏览器支持插件）</li>
-  </ul>
-  <h3>ver 4.7</h3>
-  <ul>
-    <li>改进了翻牌子的功能，现在支持多个直播间无缝切换，不再需要刷新了。</li>
-    <li>添加了设置页面。</li>
-    <li>修复了移动悬窗时文本会被选中的问题。</li>
-  </ul>
+    <br/>
+    <h2 id="version">版本记录</h2>
+    <h3>ver 5.15</h3>
+    <ul>
+        <li>添加了放映室功能。可以同屏观看16场直播啦！</li>
+        <li>添加了挂机功能，关注且有牌子的主播开播时会在后台挂机来换取亲密度，而且不需要打开直播间。</li>
+        <li>现在缓存音频有封面了。默认会将封面裁切为正方形，可以在设置中关闭。</li>
+        <li>一些其他改进。</li>
+    </ul>
+    <h3>ver 5.14</h3>
+    <ul>
+        <li>下载添加了非HDR、8K视频的DASH协议支持，添加了杜比视界的支持。</li>
+        <li>修复了评论区表情包显示问题。</li>
+        <li>为视频、番剧、专栏的更新通知单独添加了开关。</li>
+        <li>改进了通知策略，修复了动态页可能会显示"加载失败"的问题。</li>
+        <li>一些其他改进。</li>
+    </ul>
+    <h3>ver 5.13</h3>
+    <ul>
+        <li>已为MV3加入"重启服务"功能，当通知推送不正常或延迟很大时可以尝试重启服务。MV2只需在扩展管理页面关闭扩展后再开启即可，此方法MV3无效。</li>
+        <li>现在评论区和移动端一样可以发送up大表情了。可在设置中开启/关闭，默认开启。如果遇到评论区表情区显示不正确或是不显示或者表情按钮无响应等问题在设置中关闭"up表情"后刷新页面即可。</li>
+        <li>现在支持b站深色模式了，可在插件设置中开启，可选深色模式和跟随系统自动切换模式。目前已适配主站主页、视频、专栏、个人主页、动态首页、动态页、消息中心、直播等常用页面。</li>
+        <li>一些其他改进。</li>
+    </ul>
+    <h3>ver 5.11</h3>
+    <ul>
+        <li>现在可以为up单独设置通知偏好了（包括开播、投稿、动态）。</li>
+        <li>视频页加入了Hi-Res音频缓存的功能。</li>
+        <li>一些其他改进。</li>
+    </ul>
+    <h3>ver 5.10</h3>
+    <ul>
+        <li>悬浮球现在支持番剧页面了，可以下载番剧了。</li>
+        <li>现在可以缓存8k的视频了。</li>
+        <li>加入了消息推送的功能 (包括@、赞、回复、私信、系统通知)。</li>
+        <li>加入了新动态推送的功能。</li>
+        <li>更改了开播查询API，现在推送延迟更小了。</li>
+        <li>添加了对超大文件的下载支持，但是由于FFmpeg wasm的限制将无法合并视频音频，遇到大容量dash协议媒体流（HDR、8k、4k）时将保留为两个mp4文件（一个视频，一个音轨），flv文件不受影响，参见<a href="https://github.com/ffmpegwasm/ffmpeg.wasm#what-is-the-maximum-size-of-input-file" target="_blank">FFmpeg.wasm文档</a></li>
+        <li>更改了下载方式（但是现在在文件完成下载前请不要关掉页面，不用担心文件是以流的方式直接写入硬盘的不会占用内存），修复了文件名突然变成一串数字的问题。</li>
+        <li>现已转为MV3应用。</li>
+        <li>现在更新已经不会再将设置初始化。</li>
+        <li>一些其他改进。</li>
+    </ul>
+    <h3>ver 5.9</h3>
+    <ul>
+        <li>现在音频缓存会自动根据视频、音频信息填入元数据（作者，标题，年份，歌词等）。</li>
+        <li>添加了直播间当弹幕发送被吞时的提示。</li>
+        <li>现在养牌子打卡每日刷新由0点改为了8点。</li>
+        <li>修复了音频页面下载按钮显示不正确的问题。</li>
+        <li>修复了强力隐身模式下主站显示未登陆的问题。</li>
+        <li>一些其他改进。</li>
+    </ul>
+    <h3>ver 5.8</h3>
+    <ul>
+        <li>添加了增强隐身的功能。</li>
+        <li>添加了音乐播放器页面的音乐下载，下载质量为当前音乐提供的最佳音质，格式为flac或m4a。(虽然不知道有什么用)</li>
+        <li>添加了表情权限显示。</li>
+        <li>减少了ass文件弹幕字体的描边宽度，现在看上去更自然了。</li>
+        <li>修复了弹幕框字数上限显示不正确的问题。</li>
+        <li>修复了某些情况下主页分区隐藏不生效的问题。</li>
+        <li>修复了插件导致的主页"动态"图标显示不正常的问题。</li>
+        <li>一些其他改进。</li>
+    </ul>
+    <h3>ver 5.7</h3>
+    <ul>
+        <li>增加了对"房间专属表情"的支持。</li>
+        <li>增加了新版UI主页分区隐藏的功能。</li>
+        <li>一些其他改进。</li>
+    </ul>
+    <h3>ver 5.6</h3>
+    <ul>
+        <li>现在可以缓存HDR视频了。</li>
+        <li>一些其他改进。</li>
+    </ul>
+    <h3>ver 5.5</h3>
+    <ul>
+        <li>现在缓存音频会自动保存为m4a文件，不需要再手动修改文件名了。</li>
+        <li>添加了杜比全景声音频下载的功能。（由于封装问题杜比全景声音频会保存为mp4格式）</li>
+    </ul>
+    <h3>ver 5.4</h3>
+    <ul>
+        <li>添加了视频弹幕下载的功能。</li>
+        <li>禁用了macOS下的推送"显示封面"开关，因为macOS不支持此类推送。</li>
+        <li>修复了macOS中文输入法回车键在直播间悬浮输入框中意外触发弹幕发送的问题。</li>
+        <li>一些其他改进。</li>
+    </ul>
+    <h3>ver 5.3</h3>
+    <ul>
+        <li>提高了录制直播片段的导出效率。</li>
+        <li>添加了通用表情及UP大表情的悬浮窗以及全屏下的支持。(支持所有直播间)</li>
+        <li>修复了一些问题。</li>
+    </ul>
+    <h3>ver 5.2</h3>
+    <ul>
+        <li>添加了快速录制直播片段。并提高了导出效率。</li>
+        <li>现在主播下播后还在通知栏中的开播通知会自动清除。</li>
+        <li>修复了一些问题。</li>
+    </ul>
+    <h3>ver 5.1</h3>
+    <ul>
+        <li>添加了音频的wav转码功能。</li>
+        <li>添加了弹幕内容查询功能。</li>
+        <li>修复了一些问题。</li>
+    </ul>
+    <h3>ver 5.0</h3>
+    <ul>
+        <li>添加了视频页面的视频/音轨下载功能。</li>
+        <li>添加了视频页面的弹幕查询功能。</li>
+        <li>优化了直播间深色模式的支持。</li>
+        <li>更新了勋章查询的API，修复了勋章佩戴失效的问题。</li>
+        <li>修复了一些问题。</li>
+    </ul>
+    <h3>ver 4.14.3</h3>
+    <ul>
+        <li>将Haruna对高分辨率屏幕做了支持。</li>
+        <li>添加了检测更新版本功能。</li>
+        <li>优化了推送的图像及稳定性。</li>
+        <li>修复了一些问题。</li>
+    </ul>
+    <h3>ver 4.14.2</h3>
+    <ul>
+        <li>修复了一些问题。</li>
+    </ul>
+    <h3>ver 4.14</h3>
+    <ul>
+        <li>添加了隐身进入直播间的功能。</li>
+        <li>添加了右键关联菜单搜索。</li>
+        <li>添加了自动打卡有牌子的直播间。</li>
+    </ul>
+    <h3>ver 4.13</h3>
+    <ul>
+        <li>修复了一系列问题。</li>
+        <li>移除了直播间无侧边栏网页全屏的选项。(因为我是猪陛...)</li>
+    </ul>
+    <h3>ver 4.12</h3>
+    <ul>
+        <li>添加了视频更新的推送通知。</li>
+        <li>添加了直播间无侧边栏网页全屏的选项。</li>
+        <li>修复了关闭浏览器再启动后无法立即签到的问题。</li>
+        <li>更改了天选之人抽奖的逻辑。现在点击参与后天选窗口会自动关闭，开奖时若没有中奖则不再会弹窗。注：此功能不会影响正常参与天选。</li>
+        <li>修复了一些微小的问题。</li>
+    </ul>
+    <h3>ver 4.11</h3>
+    <ul>
+        <li>添加了默认画质的设置。</li>
+        <li>添加了大会员B币兑换。</li>
+        <li>修复了一些微小的问题。</li>
+    </ul>
+    <h3>ver 4.10</h3>
+    <ul>
+        <li>添加了直播间悬窗的初始位置和位置记忆功能。</li>
+        <li>修复了在某些直播间换牌子失效的问题。</li>
+        <li>修复了某些情况下自动签到失效的问题。</li>
+        <li>添加了对深色模式的支持</li>
+    </ul>
+    <h3>ver 4.9</h3>
+    <ul>
+        <li>添加了使用说明页面。</li>
+        <li>修复了点击通知时可能会打开多个窗口的问题。</li>
+        <li>改进了通过通知打开直播间时的窗口逻辑。</li>
+        <li>修复了初次进入直播间时牌子显示不正确的问题。</li>
+    </ul>
+    <h3>ver 4.8</h3>
+    <ul>
+        <li>添加了图片模式通知。</li>
+        <li>修复了一些问题。</li>
+        <li>添加了对移动端的支持。（需要移动端浏览器支持插件）</li>
+    </ul>
+    <h3>ver 4.7</h3>
+    <ul>
+        <li>改进了翻牌子的功能，现在支持多个直播间无缝切换，不再需要刷新了。</li>
+        <li>添加了设置页面。</li>
+        <li>修复了移动悬窗时文本会被选中的问题。</li>
+    </ul>
 
-  <h2>开源组件许可</h2>
-  <h3>FFmpeg.wasm</h3>
-  <ul>
-    <li>Offical site: <a href="https://ffmpegwasm.netlify.app/" target="_blank">ffmpegwasm.netlify.app</a></li>
-    <li>Copyright (c) FFmpeg.wasm developers and contributors</li>
-    <li>License: <a href="https://github.com/ffmpegwasm/ffmpeg.wasm-core/blob/n4.3.1-wasm/LICENSE.md" target="_blank">github.com/ffmpegwasm/ffmpeg.wasm-core/blob/n4.3.1-wasm/LICENSE.md</a></li>
-  </ul>
-  <h3>Protocol Buffers</h3>
-  <ul>
-    <li>Offical site: <a href="https://developers.google.com/protocol-buffers/" target="_blank">developers.google.com/protocol-buffers</a></li>
-    <li>Copyright (c) 2008 Google Inc.</li>
-    <li>License: <a href="https://github.com/protocolbuffers/protobuf/blob/master/LICENSE" target="_blank">github.com/protocolbuffers/protobuf/blob/master/LICENSE</a></li>
-  </ul>
-  <h3>CRC crack</h3>
-  <ul>
-    <li>CRC.js <a href="https://github.com/bilibili-helper/bilibili-helper-o/blob/master/src/js/libs/crc32.js" target="_blank">github.com/bilibili-helper/bilibili-helper-o/blob/master/src/js/libs/crc32.js</a></li>
-    <li>Copyright (c) 2020 Zac Yu, ruo</li>
-    <li>License: <a href="https://github.com/bilibili-helper/bilibili-helper-o/blob/master/LICENSE" target="_blank">github.com/bilibili-helper/bilibili-helper-o/blob/master/LICENSE</a></li>
-  </ul>
+    <h2>开源组件许可</h2>
+    <h3>FFmpeg.wasm</h3>
+    <ul>
+        <li>Offical site: <a href="https://ffmpegwasm.netlify.app/" target="_blank">ffmpegwasm.netlify.app</a></li>
+        <li>Copyright (c) FFmpeg.wasm developers and contributors</li>
+        <li>License: <a href="https://github.com/ffmpegwasm/ffmpeg.wasm-core/blob/n4.3.1-wasm/LICENSE.md" target="_blank">github.com/ffmpegwasm/ffmpeg.wasm-core/blob/n4.3.1-wasm/LICENSE.md</a></li>
+    </ul>
+    <h3>Protocol Buffers</h3>
+    <ul>
+        <li>Offical site: <a href="https://developers.google.com/protocol-buffers/" target="_blank">developers.google.com/protocol-buffers</a></li>
+        <li>Copyright (c) 2008 Google Inc.</li>
+        <li>License: <a href="https://github.com/protocolbuffers/protobuf/blob/master/LICENSE" target="_blank">github.com/protocolbuffers/protobuf/blob/master/LICENSE</a></li>
+    </ul>
+    <h3>CRC crack</h3>
+    <ul>
+        <li>CRC.js <a href="https://github.com/bilibili-helper/bilibili-helper-o/blob/master/src/js/libs/crc32.js" target="_blank">github.com/bilibili-helper/bilibili-helper-o/blob/master/src/js/libs/crc32.js</a></li>
+        <li>Copyright (c) 2020 Zac Yu, ruo</li>
+        <li>License: <a href="https://github.com/bilibili-helper/bilibili-helper-o/blob/master/LICENSE" target="_blank">github.com/bilibili-helper/bilibili-helper-o/blob/master/LICENSE</a></li>
+    </ul>
 </div>
 <div id="bottom">
-  <h2></h2>
-  <div style="cursor: auto"><svg height="16" width="16" viewBox="0 0 16 16" version="1.1">
-    <path id="github-icon" fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
-  </svg></div>
-  <div id="source"><a href="https://github.com/TyraelDLee/HarukaEmoji">Source code</a></div>
-  <div id="bug-reporter"><a href="https://github.com/TyraelDLee/HarukaEmoji/issues">问题反馈</a></div>
+    <h2></h2>
+    <div style="cursor: auto"><svg height="16" width="16" viewBox="0 0 16 16" version="1.1">
+        <path id="github-icon" fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+    </svg></div>
+    <div id="source"><a href="https://github.com/TyraelDLee/HarukaEmoji">Source code</a></div>
+    <div id="bug-reporter"><a href="https://github.com/TyraelDLee/HarukaEmoji/issues">问题反馈</a></div>
 </div>
 <script src="./js/SVGA.min.js"></script>
 <script src="./js/readme.min.js"></script>

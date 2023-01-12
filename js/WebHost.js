@@ -463,8 +463,7 @@
 
                 LiveRoomBtn.addEventListener('click', (e)=>{
                     chrome.storage.local.set({'tempRoomNumber':room_id}, ()=>{});
-                    chrome.runtime.sendMessage({msg: 'launchLiveRoom'}, (callback)=>{
-                    })
+                    chrome.runtime.sendMessage({msg: `launchLiveRoom`}, (callback)=>{});
                 });
                 // fullScreenSection.style.display = "block";
                 // fullScreenText.style.display = "block";
