@@ -327,7 +327,7 @@ async function initialize(reload){
 
     // local states
     chrome.alarms.create('checkUpd', {'when':Date.now(), periodInMinutes:60*12});
-    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "video_id_list": [],"pgc_id_list": [],"article_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0/*'{"biz_msg_follow_unread":0,"biz_msg_unfollow_unread":0,"dustbin_push_msg":0,"dustbin_unread":0,"follow_unread":0,"unfollow_push_msg":0,"unfollow_unread":0}'*/, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[], 'watchingList': {}, 'heartRhythm':[], 'medalList':[], 'liveroomOn': [-1, -1], 'tempRoomNumber':-1}, ()=>{});
+    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "video_id_list": [],"pgc_id_list": [],"article_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0/*'{"biz_msg_follow_unread":0,"biz_msg_unfollow_unread":0,"dustbin_push_msg":0,"dustbin_unread":0,"follow_unread":0,"unfollow_push_msg":0,"unfollow_unread":0}'*/, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[], 'watchingList': {}, 'heartRhythm':[], 'medalList':[], 'liveroomOn': [-1, -1], 'tempRoomNumber':-1, 'windowSize':[0,0]}, ()=>{});
     chrome.alarms.create('getUID_CSRF', {'when': Date.now(), periodInMinutes:0.3});
     chrome.alarms.create('heartRate', {'when': Date.now()+60*1e3, periodInMinutes: 1});
     chrome.alarms.create('refreshHB', {'when': Date.now()+3600*1e3, periodInMinutes:60});
@@ -550,6 +550,7 @@ function getFollowingList(){
             errorHandler('getFollowing', e, 'getFollowingList(); line 500');
         });
 }
+
 /**
  * Check live room status once for all.
  *
@@ -718,6 +719,9 @@ function imageNotification(uid, roomTitle, msg, roomUrl, cover, face, URLPrefix)
 chrome.notifications.onClicked.addListener(function (nid) {
     chrome.storage.local.get(['winIDList'],(info)=>{
         let winIDList = WindowIDList.convertFromJSON(info.winIDList);
+        // chrome.windows.getCurrent().then(win=>{
+        //     console.log(win.height);
+        // });
         chrome.windows.getAll(function (wins){
             if(wins.length>0){
                 // why google did not fix this bug over 6 years? WTF
@@ -727,8 +731,15 @@ chrome.notifications.onClicked.addListener(function (nid) {
                 // });
                 chrome.windows.update(winIDList.getCurrent(), {focused: true});/*ensure the browser will always open tabs in the most top window.*/
                 chrome.tabs.create({url: `https://${nid.split(":")[2]}${nid.split(":")[1]}`});
-            }else
-                chrome.windows.create({url: `https://${nid.split(":")[2]}${nid.split(":")[1]}`});
+            }else {
+
+                chrome.storage.local.get(['windowSize'], (win)=>{
+                    if (win[0] === 0 || win[1] === 0)
+                        chrome.windows.create({url: `https://${nid.split(":")[2]}${nid.split(":")[1]}`});
+                    else
+                        chrome.windows.create({url: `https://${nid.split(":")[2]}${nid.split(":")[1]}`, width:win[0], height:win[1]});
+                });
+            }
         });
     });
     chrome.notifications.clear(nid);

@@ -296,7 +296,7 @@
             }else if(numberOfVideo < 10){
                 element.setAttribute('style', `--number-of-row:0.33; --number-of-column:0.33;`);
             }else if(numberOfVideo < 13){
-                element.setAttribute('style', `--number-of-row:0.5; --number-of-column:0.25;`);
+                element.setAttribute('style', `--number-of-row:0.33; --number-of-column:0.25;`);
             }else{
                 element.setAttribute('style', `--number-of-row:0.25; --number-of-column:0.25;`);
             }
@@ -708,10 +708,12 @@
                         console.log('source ended');
                     });
                     flv.load();
-                    flv.play();
-                    frameChasing = setTimeout(()=>{
-                        video.currentTime = video.buffered.end(0) - 1;
-                    }, 2000);
+                    try{
+                        flv.play();
+                        frameChasing = setTimeout(()=>{
+                            video.currentTime = video.buffered.end(0) - 1;
+                        }, 2000);
+                    }catch (e){}
                     flv.on(flvjs.Events.ERROR, (e) => {
                         console.log('error');
                         console.log(e);
