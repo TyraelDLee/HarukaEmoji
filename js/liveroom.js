@@ -345,6 +345,12 @@
             videoContainer.classList.add('video-stream');
             videoContainer.append(video);
             videoContainer.append(previewVideo);
+            video.onpause = ()=>{
+                video.play().catch(e=>{});
+            };
+            previewVideo.onpause = ()=>{
+                previewVideo.play().catch(e=>{});
+            };// pause auto play.
 
             let videoControlBackground = document.createElement('div');
             videoControlBackground.setAttribute('style', `display: block; position: absolute; bottom: 0px; width: 100%; height: 56px; background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.7)); visibility: hidden;z-index:2`);
@@ -541,6 +547,8 @@
             }
 
             function revokeEventListener(){
+                video.onpause = null;
+                previewVideo.onpause = null;
                 videoContainer.onmousemove = null;
                 videoContainer.onclick = null;
                 videoControlContainer.onmouseenter = null;
