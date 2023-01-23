@@ -1386,7 +1386,7 @@ function QRSComplex(rhythm, jct){
                     secret_rule: json['data']['secret_rule']
                 };
             }else{
-                console.log(`${json['code']} at ${payload}`)
+                console.log(`${json['code']} at ${objToStr(payload)}`);
                 return {
                     id: [rhythm['id'][0], rhythm['id'][1], 0, rhythm['id'][3]],
                     device: rhythm['device'],

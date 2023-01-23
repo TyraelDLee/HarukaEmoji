@@ -655,3 +655,20 @@ input[type=radio]:checked {
     position: absolute;
     left: -9px;
 }
+
+.video-player{
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.video-player-preview{
+    z-index: 2;
+}
+
+.video-player-control{
+    bottom: 0;
+    position: absolute;
+    width: 100%;
+}

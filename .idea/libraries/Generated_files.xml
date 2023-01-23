@@ -23,6 +23,7 @@
         <item url="file://$PROJECT_DIR$/js/flv.min.js" />
         <item url="file://$PROJECT_DIR$/js/haruka.min.js" />
         <item url="file://$PROJECT_DIR$/js/liveroom.min.js" />
+        <item url="file://$PROJECT_DIR$/js/mpegts.min.js" />
         <item url="file://$PROJECT_DIR$/js/nana.min.js" />
         <item url="file://$PROJECT_DIR$/js/popup.min.js" />
         <item url="file://$PROJECT_DIR$/js/protobuf.min.js" />
@@ -56,6 +57,7 @@
       <root url="file://$PROJECT_DIR$/js/flv.min.js" />
       <root url="file://$PROJECT_DIR$/js/haruka.min.js" />
       <root url="file://$PROJECT_DIR$/js/liveroom.min.js" />
+      <root url="file://$PROJECT_DIR$/js/mpegts.min.js" />
       <root url="file://$PROJECT_DIR$/js/nana.min.js" />
       <root url="file://$PROJECT_DIR$/js/popup.min.js" />
       <root url="file://$PROJECT_DIR$/js/protobuf.min.js" />

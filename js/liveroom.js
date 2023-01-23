@@ -1,4 +1,5 @@
 !function () {
+    mpegts.LoggingControl.applyConfig({enableError: false});
     chrome.tabs.getCurrent().then(tab=>{
         chrome.windows.getCurrent().then(win=>{
             chrome.storage.local.set({'liveroomOn':[win.id, tab.id]}, ()=>{});
@@ -283,7 +284,6 @@
     }
 
     async function bindVideoPlayer(liveRoomInfo) {
-
         function calculateLayout(element, numberOfVideo){
             if (numberOfVideo === 1){
                 element.setAttribute('style', `--number-of-row:1; --number-of-column:1;`);
@@ -302,11 +302,16 @@
             }
         }
 
-        let flv = null, abortFlag = new AbortController(), hb = null;
+        let flv = null, preview = null, abortFlag = new AbortController(), abortFetchPreview = new AbortController(), previewRetry = null, hb = null, requestPreview = true;
+        let video = document.createElement('video');
+        video.classList.add('video-player');
+        video.setAttribute('style', 'display: none;');
+        let previewVideo = document.createElement('video');
+        previewVideo.classList.add('video-player');
+        previewVideo.classList.add('video-player-preview');
         if (videoStream.size < 16 && !videoStream.has(liveRoomInfo['uid'])) {
             videoStream.set(liveRoomInfo['uid'], liveRoomInfo);
 
-            let video = document.createElement('video');
             let videoColum = document.getElementsByClassName('video-container')[0];
             calculateLayout(videoColum, videoStream.size);
             let videoContainer = document.createElement('div');
@@ -339,9 +344,10 @@
 
             videoContainer.classList.add('video-stream');
             videoContainer.append(video);
+            videoContainer.append(previewVideo);
 
             let videoControlBackground = document.createElement('div');
-            videoControlBackground.setAttribute('style', `display: block; position: absolute; bottom: 0px; width: 100%; height: 56px; background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.7)); visibility: hidden;`);
+            videoControlBackground.setAttribute('style', `display: block; position: absolute; bottom: 0px; width: 100%; height: 56px; background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.7)); visibility: hidden;z-index:2`);
             videoContainer.append(videoControlBackground);
 
             let videoControlContainer = document.createElement('div');
@@ -394,6 +400,7 @@
                     videoControlContainer.getElementsByClassName('number')[0].innerText = currentVolume;
                     volumeControl.getElementsByClassName('slider-track')[0].style.height = currentVolume + '%';
                     video.volume = currentVolume /100.0;
+                    previewVideo.volume = currentVolume / 100.0;
                     if (currentVolume === 0){
                         silence = !silence;
                         lastVolume = currentVolume;
@@ -416,6 +423,7 @@
                         videoControlContainer.getElementsByClassName('number')[0].innerText = currentVolume;
                         volumeControl.getElementsByClassName('slider-track')[0].style.height = currentVolume + '%';
                         video.volume = currentVolume /100.0;
+                        previewVideo.volume = currentVolume / 100.0;
                         if (currentVolume === 0){
                             silence = !silence;
                             lastVolume = currentVolume;
@@ -462,6 +470,7 @@
                 }
                 currentVolume = Math.round(currentVolume);
                 video.volume = currentVolume / 100.0;
+                previewVideo.volume = currentVolume / 100.0;
                 videoControlContainer.getElementsByClassName('number')[0].innerText = currentVolume;
                 volumeControl.getElementsByClassName('slider-handle')[0].style.top = (53 - currentVolume / 100.0 * 53) + 'px';
                 volumeControl.getElementsByClassName('slider-track')[0].style.height = currentVolume + '%';
@@ -481,6 +490,7 @@
                 }
                 silence = !silence;
                 video.volume = currentVolume / 100.0;
+                previewVideo.volume = currentVolume / 100.0;
                 videoControlContainer.getElementsByClassName('number')[0].innerText = currentVolume;
                 volumeControl.getElementsByClassName('slider-handle')[0].style.top = (53 - currentVolume / 100.0 * 53) + 'px';
                 volumeControl.getElementsByClassName('slider-track')[0].style.height = currentVolume + '%';
@@ -492,6 +502,7 @@
                     flv.destroy();
                 }
                 abortFlag.abort('user cancel');
+                abortFetchPreview.abort('user cancel');
                 console.log('close '+ liveRoomInfo['uid']);
                 revokeEventListener();
                 videoContainer.remove();
@@ -520,7 +531,10 @@
             videoContainer.append(videoControlContainer);
             videoColum.append(videoContainer);
             updateMedal(liveRoomInfo['uid'], true);
-            setStream(liveRoomInfo['room_id'], video);
+            setTimeout(()=>{
+                setStream(liveRoomInfo['room_id'], video)
+            }, 2000);
+            setPreview(liveRoomInfo['short_id']===0?liveRoomInfo['room_id']:liveRoomInfo['short_id'], previewVideo);
             if (heartBeatSwitch) {
                 hb = new HeartBeat(liveRoomInfo['area_v2_parent_id'], liveRoomInfo['area_v2_id'], liveRoomInfo['room_id'], liveRoomInfo['uid']);
                 hb.E();
@@ -688,6 +702,44 @@
         // }
 
         /**
+         * Set the preview
+         * */
+        function setPreview(roomId, video){
+            fetch(`https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=${roomId}&no_playurl=0&mask=1&qn=0&platform=web&protocol=0,1&format=0,1,2&codec=0,1&dolby=5&panorama=1`, {
+                method:"GET",
+                credentials: "include",
+                signal: abortFetchPreview.signal,
+                body: null
+            }).then(r=>r.json())
+                .then(json=>{
+                    if (json['code'] === 0){
+                        let previewURL = null;
+                        if (typeof json['data']['playurl_info']['playurl']['stream']['0']['format']['0']['codec']['1'] === 'undefined')
+                            previewURL = json['data']['playurl_info']['playurl']['stream']['0']['format']['0']['codec']['0'];
+                        else previewURL = json['data']['playurl_info']['playurl']['stream']['0']['format']['0']['codec']['1'];
+                        preview = mpegts.createPlayer({
+                            type: "flv",
+                            isLive: true,
+                            url: previewURL['url_info'][0]['host']+previewURL['base_url']+previewURL['url_info'][0]['extra']
+                        });
+                        preview.attachMediaElement(video);
+                        preview.load();
+                        try {
+                            preview.play();
+                        }catch (e){}
+                        preview.on(mpegts.Events.ERROR, (e) => {
+                            if (requestPreview){
+                                preview.unload();
+                                previewRetry = setTimeout(()=>{
+                                    setPreview(roomId, video)
+                                }, 1000);
+                            }
+                        });
+                    }
+                })
+        }
+
+        /**
          * Fetch the live source URL.
          * */
         function setStream(roomId, video) {
@@ -696,40 +748,44 @@
              * */
             function setPlayer(url, video, index) {
                 let frameChasing = null;
-                if (flvjs.isSupported()) {
-                    flvjs.LoggingControl.applyConfig({enableError: false});
-                    flv = flvjs.createPlayer({
-                        type: "flv",
-                        isLive: true,
-                        url: url['url_info'][index]['host']+url['base_url']+url['url_info'][index]['extra']
-                    });
-                    flv.attachMediaElement(video);
-                    video.addEventListener('sourceended', () => {
-                        console.log('source ended');
-                    });
-                    flv.load();
-                    try{
-                        flv.play();
-                        frameChasing = setTimeout(()=>{
-                            video.currentTime = video.buffered.end(0) - 1;
-                        }, 2000);
-                    }catch (e){}
-                    flv.on(flvjs.Events.ERROR, (e) => {
-                        console.log('error');
-                        console.log(e);
-                        index = index + 1;
-                        flv.unload();
-                        clearTimeout(frameChasing);
-                        if (index === url['url_info'].length) {
-                            setTimeout(()=>{
-                                setStream(roomId, video);
-                            }, 1000);
-                        }
-                        else setPlayer(url, video, index);
-                    });
-                }
+                flv = mpegts.createPlayer({
+                    type: "flv",
+                    isLive: true,
+                    url: url['url_info'][index]['host']+url['base_url']+url['url_info'][index]['extra']
+                });
+                flv.attachMediaElement(video);
+                flv.load();
+                try{
+                    flv.play();
+                    frameChasing = setTimeout(()=>{
+                        video.currentTime = video.buffered.end(0) - 1;
+                    }, 2000);
+                }catch (e){}
+                flv.on(mpegts.Events.ERROR, (e) => {
+                    console.log(e);
+                    index = index + 1;
+                    flv.unload();
+                    clearTimeout(frameChasing);
+                    if (index === url['url_info'].length) {
+                        setTimeout(()=>{
+                            setStream(roomId, video);
+                        }, 1000);
+                    }
+                    else setPlayer(url, video, index);
+                });
+                flv.on(mpegts.Events.METADATA_ARRIVED, (metadata)=>{
+                    abortFetchPreview.abort('no needed');
+                    requestPreview = false;
+                    if (previewRetry !== null) {
+                        clearTimeout(previewRetry);
+                        previewRetry = null;
+                    }
+                    preview.destroy();
+                    previewVideo.remove();
+                    video.removeAttribute('style');
+                });
             }
-            fetch(`https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=${roomId}&protocol=0&format=0,1,2&codec=0,1&platform=web&ptype=8&dolby=5&panorama=1${quality===0?'':'&qn='+quality}`, {
+            fetch(`https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=${roomId}&protocol=0&format=0,1,2&codec=0,1&platform=web&ptype=8&dolby=5&panorama=1&qn=${quality}`, {
                 method: "GET",
                 credentials: "include",
                 signal:abortFlag.signal,
@@ -1053,4 +1109,4 @@
     }
 }();
 
-// TODO: add setting (medal, reconnection times).
+// TODO: add setting (medal, reconnection times). add preview

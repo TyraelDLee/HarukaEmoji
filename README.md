@@ -264,3 +264,8 @@ rua豹器的MV3转移计划可以追随到数个版本前。作为个人开发�
 - [crypto-js](https://github.com/brix/crypto-js)
 - Copyright (c) 2009-2013 Jeff Mott Copyright (c) 2013-2016 Evan Vosberg
 - License: [github.com/brix/crypto-js/blob/develop/LICENSE](https://github.com/brix/crypto-js/blob/develop/LICENSE)
+
+### mpegts.js
+- [mpegts.js](https://github.com/xqq/mpegts.js)
+- Copyright (c) mpegts.js developers and contributors
+- License: [github.com/xqq/mpegts.js/blob/master/LICENSE](https://github.com/xqq/mpegts.js/blob/master/LICENSE)
