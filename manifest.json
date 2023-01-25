@@ -20,6 +20,10 @@
       "id": "danmakuSource",
       "enabled": true,
       "path": "ruleSet/danmakuSource.json"
+    },{
+      "id": "liveroom",
+      "enabled": true,
+      "path": "ruleSet/liveroom.json"
     }]
   },
   "permissions": ["alarms", "cookies", "contextMenus", "storage", "notifications", "declarativeNetRequest"],
@@ -120,6 +124,7 @@
     "https://tyraeldlee.github.io/",
     "*://*.bilivideo.com/",
     "*://*.bilivideo.cn/",
-    "*://*.akamaized.net/"
+    "*://*.akamaized.net/",
+    "*://*.ourdvsss.com/"
   ]
 }

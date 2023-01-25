@@ -2915,7 +2915,8 @@
                     headers: a,
                     mode: "cors",
                     cache: "default",
-                    referrerPolicy: "no-referrer-when-downgrade"
+                    referrerPolicy: "no-referrer-when-downgrade",
+                    referrer: "https://live.bilibili.com"
                 };
                 if ("object" == typeof this._config.headers) for (var h in this._config.headers) a.append(h, this._config.headers[h]);
                 !1 === e.cors && (_.mode = "same-origin"), e.withCredentials && (_.credentials = "include"), e.referrerPolicy && (_.referrerPolicy = e.referrerPolicy), self.AbortController && (this._abortController = new self.AbortController, _.signal = this._abortController.signal), this._status = s.c.kConnecting, self.fetch(r.url, _).then((function (e) {

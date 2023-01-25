@@ -537,10 +537,13 @@
             videoContainer.append(videoControlContainer);
             videoColum.append(videoContainer);
             updateMedal(liveRoomInfo['uid'], true);
-            setTimeout(()=>{
-                setStream(liveRoomInfo['room_id'], video)
-            }, 2000);
-            setPreview(liveRoomInfo['short_id']===0?liveRoomInfo['room_id']:liveRoomInfo['short_id'], previewVideo);
+            console.log(quality)
+            if (quality!=0){
+                setTimeout(()=>{
+                    setStream(liveRoomInfo['room_id'], video);
+                }, 2000);
+            }
+            setPreview(liveRoomInfo['short_id']===0?liveRoomInfo['room_id']:liveRoomInfo['short_id'], previewVideo, 0);
             if (heartBeatSwitch) {
                 hb = new HeartBeat(liveRoomInfo['area_v2_parent_id'], liveRoomInfo['area_v2_id'], liveRoomInfo['room_id'], liveRoomInfo['uid']);
                 hb.E();
@@ -712,7 +715,7 @@
         /**
          * Set the preview
          * */
-        function setPreview(roomId, video){
+        function setPreview(roomId, video, hostIndex){
             fetch(`https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=${roomId}&no_playurl=0&mask=1&qn=0&platform=web&protocol=0,1&format=0,1,2&codec=0,1&dolby=5&panorama=1`, {
                 method:"GET",
                 credentials: "include",
@@ -721,14 +724,16 @@
             }).then(r=>r.json())
                 .then(json=>{
                     if (json['code'] === 0){
+                        console.log(requestPreview)
                         let previewURL = null;
                         if (typeof json['data']['playurl_info']['playurl']['stream']['0']['format']['0']['codec']['1'] === 'undefined')
                             previewURL = json['data']['playurl_info']['playurl']['stream']['0']['format']['0']['codec']['0'];
                         else previewURL = json['data']['playurl_info']['playurl']['stream']['0']['format']['0']['codec']['1'];
+
                         preview = mpegts.createPlayer({
                             type: "flv",
                             isLive: true,
-                            url: previewURL['url_info'][0]['host']+previewURL['base_url']+previewURL['url_info'][0]['extra']
+                            url: previewURL['url_info'][hostIndex]['host']+previewURL['base_url']+previewURL['url_info'][hostIndex]['extra'],
                         });
                         preview.attachMediaElement(video);
                         preview.load();
@@ -739,7 +744,8 @@
                             if (requestPreview){
                                 preview.unload();
                                 previewRetry = setTimeout(()=>{
-                                    setPreview(roomId, video)
+                                    let host = hostIndex===0?1:0;
+                                    setPreview(roomId, video, host);
                                 }, 1000);
                             }
                         });
@@ -781,7 +787,8 @@
                     }
                     else setPlayer(url, video, index);
                 });
-                flv.on(mpegts.Events.METADATA_ARRIVED, (metadata)=>{
+                flv.on(mpegts.Events.MEDIA_INFO, (metadata)=>{
+                    console.log(metadata)
                     abortFetchPreview.abort('no needed');
                     requestPreview = false;
                     if (previewRetry !== null) {
@@ -792,6 +799,7 @@
                     previewVideo.remove();
                     video.removeAttribute('style');
                 });
+
             }
             fetch(`https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=${roomId}&protocol=0&format=0,1,2&codec=0,1&platform=web&ptype=8&dolby=5&panorama=1&qn=${quality}`, {
                 method: "GET",
