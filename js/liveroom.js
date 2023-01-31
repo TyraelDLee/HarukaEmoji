@@ -324,7 +324,7 @@
                         if (video.getAttribute('src')===null){
                             let roominfo = await getRealRoomID(liveRoomInfo['room_id']);
                             if (roominfo['liveStatus']===1){
-                                setStream(liveRoomInfo['room_id'], video);
+                                setStream(liveRoomInfo['room_id'], video, 1);
                             }else{
                                 if (flv!==null)
                                     flv.destroy();
@@ -756,7 +756,7 @@
         /**
          * Fetch the live source URL.
          * */
-        function setStream(roomId, video) {
+        function setStream(roomId, video, preferIndex = 0) {
             /**
              * Bind the media to the video player.
              * */
@@ -815,7 +815,7 @@
                         if (hevc === null || typeof  hevc ==='undefined') hevc = flvFormat;
                         if (flvFormat === null || typeof  flvFormat ==='undefined') flvFormat = hevc;
                         if ((hevc === null || typeof  hevc ==='undefined') && (flvFormat === null || typeof  flvFormat ==='undefined')) setStream(roomId, video);
-                        else setPlayer(flvFormat, video, 0);
+                        else setPlayer(flvFormat, video, preferIndex);
                     }else throw json['code'];
                 })
                 .catch(e => {
@@ -933,12 +933,12 @@
             .then(result => {
                 console.log("sent");
                 if (result['message'].length !== 0)
-                    console.error('Error:', '你的弹幕被系统吞了，重试一下吧。');
+                    console.log('Error:', '你的弹幕被系统吞了，重试一下吧。');
                 else if (result['message'] === '你所在的地区暂无法发言')
-                    console.error('Error:', '你所在的地区暂无法发言');
+                    console.log('Error:', '你所在的地区暂无法发言');
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.log('Error:', error);
             });
     }
 
