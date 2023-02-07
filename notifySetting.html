@@ -23,45 +23,117 @@
 <!--    </div>-->
 </div>
 <div id="main">
-    <div class="rua-setting-user-block rua-head" id="rua-head">
-        <div class="rua-setting-user-info">
-            <div class="user-name"><b style="margin-left: 25px">你关注的UP</b></div>
-        </div>
-        <div class="rua-setting-button-group" style="margin-right: 20px; justify-content: space-evenly;">
-            <div style="width: 95px; text-align: center;">
-                <span>挂机</span>
+    <div id="setting" class="setting-group">
+        <div class="setting-sub-group">
+            <div class="setting-sub-group-title">直播相关功能</div>
+            <div class="setting-sub-group-item">
+                <div class="setting-item-text">
+                    <div class="setting-item-name">开播通知</div>
+                    <div class="setting-item-description">开启后会在关注的主播开播后发送通知。</div>
+                </div>
+                <div class="setting-item-switch">
+                    <div class="button-host">
+                        <section class="button">
+                            <div class="checkbox">
+                                <input id="setting-item-switch-notification" type="checkbox">
+                                <label></label>
+                            </div>
+                        </section>
+                    </div>
+                </div>
             </div>
-            <div style="width: 95px; text-align: center;">
-                <span>打卡</span>
+            <div class="setting-sub-group-item">
+                <div class="setting-item-text">
+                    <div class="setting-item-name">显示封面</div>
+                    <div class="setting-item-description">开启后会在通知以大图显示封面，仅在Windows系统中可用，默认关闭。</div>
+                </div>
+                <div class="setting-item-switch">
+                    <div class="button-host">
+                        <section class="button">
+                            <div class="checkbox">
+                                <input id="setting-item-switch-img-notice" type="checkbox">
+                                <label></label>
+                            </div>
+                        </section>
+                    </div>
+                </div>
             </div>
-            <div style="width: 95px; text-align: center;">
-                <span>开播</span>
+            <div class="setting-sub-group-item">
+                <div class="setting-item-text">
+                    <div class="setting-item-name">隐身进入</div>
+                    <div class="setting-item-description">隐身进入直播间，此模式只是不在弹幕中显示进入直播间，但是高能榜依然会照常显示。</div>
+                </div>
+                <div class="setting-item-switch">
+                    <div class="button-host">
+                        <section class="button">
+                            <div class="checkbox">
+                                <input id="setting-item-switch-img-hidden-entry" type="checkbox">
+                                <label></label>
+                            </div>
+                        </section>
+                    </div>
+                </div>
             </div>
-            <div style="width: 95px; text-align: center;">
-                <span>视频投稿</span>
-            </div>
-            <div style="width: 95px; text-align: center;">
-                <span>动态</span>
+            <div class="setting-sub-group-item">
+                <div class="setting-item-text">
+                    <div class="setting-item-name">强力隐身</div>
+                    <div class="setting-item-description">增强型隐身，此模式下没有人能看到你进入直播间，但是页面弹幕框不能发弹幕，本插件弹幕框不受影响。</div>
+                </div>
+                <div class="setting-item-switch">
+                    <div class="button-host">
+                        <section class="button">
+                            <div class="checkbox">
+                                <input id="setting-item-switch-img-enhanced-hidden-entry" type="checkbox">
+                                <label></label>
+                            </div>
+                        </section>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="rua-setting-user-block" id="rua-head-space" style="display: none; padding: 0; border: none;">
-        <div class="rua-setting-user-info">
-            <div class="user-name"><span></span></div>
+    <div id="up-setting" class="setting-group">
+        <div class="rua-setting-user-block rua-head" id="rua-head">
+            <div class="rua-setting-user-info">
+                <div class="user-name"><b style="margin-left: 25px">你关注的UP</b></div>
+            </div>
+            <div class="rua-setting-button-group" style="margin-right: 20px; justify-content: space-evenly;">
+                <div style="width: 95px; text-align: center;">
+                    <span>挂机</span>
+                </div>
+                <div style="width: 95px; text-align: center;">
+                    <span>打卡</span>
+                </div>
+                <div style="width: 95px; text-align: center;">
+                    <span>开播</span>
+                </div>
+                <div style="width: 95px; text-align: center;">
+                    <span>视频投稿</span>
+                </div>
+                <div style="width: 95px; text-align: center;">
+                    <span>动态</span>
+                </div>
+            </div>
         </div>
-        <div class="rua-setting-button-group">
-            <div class="button-host" style="padding: 0 20px">
-                <span></span>
+        <div class="rua-setting-user-block" id="rua-head-space" style="display: none; padding: 0; border: none;">
+            <div class="rua-setting-user-info">
+                <div class="user-name"><span></span></div>
             </div>
-            <div class="button-host" style="padding: 0 20px">
-                <span></span>
-            </div>
-            <div class="button-host" style="padding: 0 20px">
-                <span></span>
+            <div class="rua-setting-button-group">
+                <div class="button-host" style="padding: 0 20px">
+                    <span></span>
+                </div>
+                <div class="button-host" style="padding: 0 20px">
+                    <span></span>
+                </div>
+                <div class="button-host" style="padding: 0 20px">
+                    <span></span>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
 <div id="loading" style="display: flex; width: 100%;justify-content: center;height: 60px"><span style="line-height: 60px;text-align: center;">加载中...</span></div>
 <div id="bottom">
     <h2></h2>

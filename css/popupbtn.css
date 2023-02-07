@@ -1,3 +1,9 @@
+:root {
+  --bili-brand: #FB7299;
+  --bili-brand-a70: rgba(251, 114, 153, 0.7);
+}
+
+
 *, *:after, *:before {
   box-sizing: border-box;
 }
@@ -77,10 +83,10 @@ section {
 }
 
 .button .checkbox input:checked + label {
-  background: #fd749b;
+  background: var(--bili-brand);
 }
 .button .checkbox input:checked + label:after {
-  background: #fb7299;
+  background: var(--bili-brand);
 }
 
 

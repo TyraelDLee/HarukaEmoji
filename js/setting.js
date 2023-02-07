@@ -1,5 +1,5 @@
 !function () {
-    const main = document.getElementById('main');
+    const main = document.getElementById('up-setting');
     let elementsOnPage = 50, liveList=[], videoList=[], dynamicList=[], dkList=[], hbList = [], uid, whisperRequest = false, medals, scrollLock = true;
     !async function (){
         uid = await getUID();
@@ -32,7 +32,7 @@
         });
 
         document.body.onscroll= (e)=>{
-            if (document.documentElement.scrollTop > 20) {
+            if (document.documentElement.scrollTop > 180) {
                 document.getElementById('rua-head').setAttribute('style', `top: 90px; position: fixed; padding: 20px 75px;border-bottom:none;`);
                 document.getElementById('rua-head').classList.add('rua-head-border');
                 document.getElementById('rua-head-space').setAttribute('style', `display:block; padding: 0; border: none;`);

@@ -75,6 +75,7 @@ html[theme*="dark"] #emoji-selection{
     border-radius: 9px;
     resize: none;
     outline: none !important;
+    background-color: var(--bg1);
 }
 
 #rua-danmaku-download{
@@ -293,4 +294,8 @@ html[theme*="dark"] .rua-danmaku-user-host{
 
 .rua-video-info-copy{
     cursor: pointer;
+}
+
+html[theme*="dark"] a:active, a:hover{
+    color: var(--bili-blue);
 }
