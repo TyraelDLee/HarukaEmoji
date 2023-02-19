@@ -343,6 +343,11 @@
             videoPush.checked = result.videoPush;
             pgcPush.checked = result.pgcPush;
             articlePush.checked = result.articlePush;
+
+            buttonDisabled(dynamicPush.checked, videoPush);
+            buttonDisabled(dynamicPush.checked, pgcPush);
+            buttonDisabled(dynamicPush.checked, articlePush);
+
             unread.checked = result.unreadSwitch;
             dynamic.checked = result.dynamicSwitch;
             hiddenEntry.checked = result.hiddenEntry;
@@ -362,7 +367,7 @@
             darkModeSystem.checked = result.darkModeSystem;
 
             if (result.enhancedHiddenEntry){
-                hiddenEntry.setAttribute("disabled","");
+                hiddenEntry.setAttribute("disable","");
                 hiddenEntry.checked = result.enhancedHiddenEntry;
                 hiddenEntry.parentElement.getElementsByTagName("label")[0].classList.add("btn-disabled");
             }else{

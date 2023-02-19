@@ -19,7 +19,7 @@
     border-radius: 8px;
     font-size: 12px;
     color: var(--text2);
-    z-index: 9;
+    z-index: 99;
 /*    test use, default value: 9*/
 }
 
@@ -146,9 +146,9 @@
     fill: currentColor;
 }
 
-html[emoji*="up"] .emoji-panel{
-    display: none!important;
-}
+/*html[emoji*="up"] .emoji-panel{*/
+/*    display: none!important;*/
+/*}*/
 
 /*.emoji-box{*/
 /*    display: none!important;*/

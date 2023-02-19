@@ -397,7 +397,7 @@
                         popup.className = "popup-click-out";
                         if(isMoved(oLoc[0], oLoc[1], cLoc[0], cLoc[1])){
                             if (selec.style.display === "none") {
-                                constructHTMLTableSystemEmoji(4, emojiTableSystem);
+                                constructHTMLTableSystemEmoji(4, emojiTableSystem, DanMuInput);
                                 selec.classList.remove("selection-fade-out");
                                 selec.style.display = "block";
                                 selec.classList.add("selection-fade-in");
@@ -469,7 +469,7 @@
                 // fullScreenText.style.display = "block";
 
                 constructHTMLTable(4, DanMuInput, emojiTable, textLength);
-                constructHTMLTableSystemEmoji(4,  emojiTableSystem);
+                constructHTMLTableSystemEmoji(4,  emojiTableSystem, DanMuInput);
 
                 DanMuSub.onclick = function (){
                     packaging(DanMuInput.value);
@@ -513,7 +513,7 @@
                                 if(document.body.getAttribute("class")!==null){
                                     let fullScreen = document.body.getAttribute("class").split(" ");
                                     if(fullScreen.indexOf("fullscreen-fix")!==-1){
-                                        constructHTMLTableSystemEmoji(8, fullscreenEmojiTableSystem);
+                                        constructHTMLTableSystemEmoji(8, fullscreenEmojiTableSystem, fullscreenInput);
                                     }else{
                                         fullscreenEmojiTableSystem.innerHTML = '';
                                         //revokeListener(fullscreenEmojiTableSystem);
@@ -535,7 +535,7 @@
                     fullscreenEmojiPad.setAttribute("id", "fullscreen-table");
                     fullscreenEmojiTable.classList.add("emoji-table");
                     constructHTMLTable(8, fullscreenInput, fullscreenEmojiTable, fullscreenTextLength);
-                    constructHTMLTableSystemEmoji(8, fullscreenEmojiTableSystem);
+                    constructHTMLTableSystemEmoji(8, fullscreenEmojiTableSystem, fullscreenInput);
 
                     fullscreenEmojiPad.appendChild(fullscreenEmojiTable);
                     fullscreenEmojiPad.appendChild(fullscreenEmojiTableSystem);
@@ -660,7 +660,7 @@
         }
 
 
-        async function constructHTMLTableSystemEmoji(num_per_line, HTMLObj){
+        async function constructHTMLTableSystemEmoji(num_per_line, HTMLObj, inputArea){
             await getUserPrivilege(false);
             fetch("https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id="+room_id, {
                 method:"GET",
@@ -689,9 +689,18 @@
                             for (let j = 0; j < cell.length; j++) {
                                 const cellButton = cell[j].getElementsByTagName('div')[0];
                                 cell[j].onclick = function (e){
-                                    if(e.button === 0 && cellButton.classList.contains('rua-emoji-icon-active')){
-                                        DanMuInput.focus();
+                                    if(e.button === 0 && cellButton.classList.contains('rua-emoji-icon-active') && !this.id.includes('emoji')){
+                                        inputArea.focus();
                                         packaging(this.id, "systemEmoji");
+                                    }
+                                    if(e.button === 0 && cellButton.classList.contains('rua-emoji-icon-active') && this.id.includes('emoji')){
+                                        if (inputArea.selectionStart === inputArea.selectionEnd){
+                                            inputArea.value = inputArea.value.substring(0,inputArea.selectionStart)+this.title+inputArea.value.substring(inputArea.selectionEnd, inputArea.value.length);
+                                        }else{
+                                            let p1 = inputArea.value.substring(0,inputArea.selectionStart), p2 = inputArea.value.substring(inputArea.selectionEnd, inputArea.value.length);
+                                            inputArea.value=p1+this.title+p2;
+                                        }
+                                        inputArea.focus();
                                     }
                                 }
                             }

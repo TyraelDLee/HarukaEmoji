@@ -2392,3 +2392,15 @@ html[theme*="dark"] .home-cell-desc-subtitle, html[theme*="dark"] .with-up-space
 html[theme*="dark"] .privilege-wrapper .inner-content-wrapper .aside .title-container .desc{
     color: var(--text2);
 }
+
+html[theme*="dark"] .bili-opus-view, html[theme*="dark"] .side-toolbar__box, html[theme*="dark"] .side-toolbar__btn, html[theme*="dark"] .bili-tabs__header, html[theme*="dark"] .opus-detail .bili-comment.browser-pc, html[theme*="dark"] .opus-tabs, html[theme*="dark"] .opus-detail .reply-box.fixed-box{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] .reply-box .box-normal .reply-box-warp .reply-box-textarea{
+    background-color: var(--bg3);
+}
+
+html[theme*="dark"] .bili-dyn-card-reserve .bili-dyn-card-reserve__card, html[theme*="dark"] .reference .bili-dyn-card-reserve__card{
+    background-color: var(--bg2_float);
+}

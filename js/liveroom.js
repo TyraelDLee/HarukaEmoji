@@ -294,9 +294,9 @@
             }else if(numberOfVideo < 7){
                 element.setAttribute('style', `--number-of-row:0.5; --number-of-column:0.33;`);
             }else if(numberOfVideo < 10){
-                element.setAttribute('style', `--number-of-row:0.33; --number-of-column:0.33;`);
+                element.setAttribute('style', `--number-of-row:0.3333; --number-of-column:0.3333;`);
             }else if(numberOfVideo < 13){
-                element.setAttribute('style', `--number-of-row:0.33; --number-of-column:0.25;`);
+                element.setAttribute('style', `--number-of-row:0.3333; --number-of-column:0.25;`);
             }else{
                 element.setAttribute('style', `--number-of-row:0.25; --number-of-column:0.25;`);
             }
@@ -640,10 +640,20 @@
                         danmaku.getElementsByClassName('emoji-sec')[0].innerHTML = html;
                         for (let i = 0; i < danmaku.getElementsByClassName('emoji-sec')[0].getElementsByClassName('rua-emoji-icon-container').length; i++) {
                             danmaku.getElementsByClassName('emoji-sec')[0].getElementsByClassName('rua-emoji-icon')[i].onclick = (e)=>{
-                                if (e.target.classList.contains('rua-emoji-icon-active')){
-                                    danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].focus();
+                                let inputArea = danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0];
+                                if (e.target.classList.contains('rua-emoji-icon-active') && !e.target.getAttribute('content').includes('emoji')){
                                     packaging(e.target.getAttribute('content'), "systemEmoji", liveRoomInfo['room_id'], liveRoomInfo['uid']);
                                 }
+                                if (e.target.classList.contains('rua-emoji-icon-active') && e.target.getAttribute('content').includes('emoji')){
+                                    if (inputArea.selectionStart === inputArea.selectionEnd){
+                                        inputArea.value = inputArea.value.substring(0,inputArea.selectionStart)+e.target.title+inputArea.value.substring(inputArea.selectionEnd, inputArea.value.length);
+                                    }else{
+                                        let p1 = inputArea.value.substring(0,inputArea.selectionStart), p2 = inputArea.value.substring(inputArea.selectionEnd, inputArea.value.length);
+                                        inputArea.value=p1+e.target.title+p2;
+                                    }
+                                    danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('span')[0].innerText = `${danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].value.length<10?' ':''}${danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].value.length}/${userInfo['totalLength']}`;
+                                }
+                                inputArea.focus();
                             }
                         }
                     }
@@ -654,63 +664,6 @@
 
             sourceEvent.observe(video, {attributes:true});
         }
-
-
-        // /**
-        //  * Fetch the live source URL.
-        //  * */
-        // function setStream(roomId, video) {
-        //     /**
-        //      * Bind the media to the video player.
-        //      * */
-        //     function setPlayer(url, video, index) {
-        //         let frameChasing = null;
-        //         if (flvjs.isSupported()) {
-        //             flv = flvjs.createPlayer({
-        //                 type: "flv",
-        //                 isLive: true,
-        //                 url: url[index]['url']
-        //             });
-        //             flv.attachMediaElement(video);
-        //             video.addEventListener('sourceended', () => {
-        //                 console.log('source ended');
-        //             })
-        //             flv.load();
-        //             flv.play();
-        //             frameChasing = setTimeout(()=>{
-        //                 video.currentTime = video.buffered.end(0) - 1;
-        //             }, 2000);
-        //             flv.on(flvjs.Events.ERROR, (e) => {
-        //                 console.log('error');
-        //                 console.log(e);
-        //                 index = index + 1;
-        //                 flv.unload();
-        //                 clearTimeout(frameChasing);
-        //                 if (index === url.length)
-        //                     setStream(roomId, video);
-        //                 else setPlayer(url, video, index);
-        //             });
-        //         }
-        //     }
-        //
-        //     fetch(`https://api.live.bilibili.com/room/v1/Room/playUrl?cid=${roomId}&qn=10000`, {
-        //         method: "GET",
-        //         credentials: "include",
-        //         signal:abortFlag.signal,
-        //         body: null
-        //     }).then(r => r.json())
-        //         .then(json => {
-        //             if (json['code'] === 0) {
-        //                 setPlayer(json['data']['durl'], video, 0);
-        //             }else throw json['code'];
-        //         })
-        //         .catch(e => {
-        //             console.log(e);
-        //             setTimeout(()=>{
-        //                 setStream(roomId, video);
-        //             }, 1000);
-        //         });
-        // }
 
         /**
          * Set the preview
@@ -1053,6 +1006,9 @@
                         this.replayPayload['time'] = json['data']['heartbeat_interval'];
                         this.replayPayload['ets'] = json['data']['timestamp'];
                         this.replayPayload['s'] = encrypt(this.replayPayload, json['data']['secret_rule']);
+                    }else{
+                        this.stop();
+                        this.E();
                     }
                 })
         }

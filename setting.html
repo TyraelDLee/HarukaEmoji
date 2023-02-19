@@ -18,44 +18,474 @@
         <b>偏好设置</b>
     </div>
 
-    <div class="rua-nav-right" id="rua-nav" style="display: flex; opacity: 1;">
-        <a href="./notifySetting.html">通知偏好</a>
-    </div>
+<!--    <div class="rua-nav-right" id="rua-nav" style="display: flex; opacity: 1;">-->
+<!--        <a href="./settingO.html">偏好设置</a>-->
+<!--    </div>-->
 </div>
-<div id="main" style="display: block;">
-    <div class="setting-heading"><b>缓存设置</b></div>
-    <div class="rua-setting-col">
-        <div class="rua-setting-row">
-            <div class="setting-block">
-                <div class="setting-text">缓存8k、HDR视频时优先选择</div>
-                <div class="dropbox" style="width: 150px">
-                    <label for="dashAudioQuality"></label>
-                    <select id="dashAudioQuality">
-                        <option value="320k">默认</option>
-                        <option value="Hi-Res">Hi-Res</option>
-                        <option value="Dolby">杜比全景声</option>
-                    </select>
-                    <span style="padding-left: 5px;"> 音轨</span>
+<div id="main">
+    <div id="setting" class="setting-group">
+        <div class="setting-sub-group">
+            <div class="setting-sub-group-title">直播相关功能</div>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">开播通知</div>
+                        <div class="setting-item-description">开启后会在关注的主播开播后发送通知。</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-notification" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="setting-description">*当所选音轨不可用时，将使用默认音轨。</div>
-        </div>
-        <div class="rua-setting-row">
-            <div class="setting-block">
-                <div class="setting-text">缓存音频时优先选择</div>
-                <div class="dropbox">
-                    <label for="audioQuality"></label>
-                    <select id="audioQuality">
-                        <option value="320k">320Kbps</option>
-                        <option value="flac">flac</option>
-                    </select>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">显示封面</div>
+                        <div class="setting-item-description">开启后会在通知以大图显示封面，仅在Windows系统中可用，默认关闭。</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-img-notice" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">隐身进入</div>
+                        <div class="setting-item-description">隐身进入直播间，此模式只是不在弹幕中显示进入直播间，但是高能榜依然会照常显示。</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-hidden-entry" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="setting-description">*当所选音质不可用时，将依次向下选择。</div>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">强力隐身</div>
+                        <div class="setting-item-description">增强型隐身，此模式下没有人能看到你进入直播间，但是页面弹幕框不能发弹幕，本插件弹幕框不受影响。</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-enhanced-hidden-entry" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">默认画质</div>
+                        <div class="setting-item-description">若当前直播间没有此清晰度，则会向上选择。</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-default-quality" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="setting-item-selection">
+                        <select class="selection" id="setting-item-selection-quality">
+                            <option value="原画" selected>原画</option>
+                            <option value="蓝光">蓝光</option>
+                            <option value="超清">超清</option>
+                            <option value="高清">高清</option>
+                            <option value="流畅">流畅</option>
+<!--                            <option value="自动">自动</option>-->
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">自动签到</div>
+                        <div class="setting-item-description">开启后每日自动签到。</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-check-in" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">自动打卡</div>
+                        <div class="setting-item-description">开启后每日自动在直播间打卡。可在下方指定打卡的直播间。</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-dk" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="setting-item-input">
+                        <input id="setting-item-input-dk-word" type="text" placeholder="自定义打卡词，默认：打卡" maxlength="20">
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">翻牌子</div>
+                        <div class="setting-item-description">开启后在不同直播间切换时会确保佩戴当前主播粉丝牌子。只要牌子戴得对，我就是单推人！</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-madel" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">挂机</div>
+                        <div class="setting-item-description">开启后会在有牌子的主播开播是开始挂机，每天1500亲密度到手！可在"更多设置"中指定挂机的直播间。</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-heartbeat" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-title">主站相关功能</div>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">B币兑换</div>
+                        <div class="setting-item-description">自动兑换大会员的每月5B币。</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-b-coin" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">up表情</div>
+                        <div class="setting-item-description">开启后会在视频、动态等页面表情框中显示该up设置的up表情包（详见手机APP）。</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-up-emoji" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">音频封面裁切</div>
+                        <div class="setting-item-description">缓存音频时将封面裁切为1:1比例，针对某些软件无法正常显示长方形封面。</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-cover-clip" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-title">主题</div>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">深色模式</div>
+                        <div class="setting-item-description">将b站设为深色模式。</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-dark-mode" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">跟随系统</div>
+                        <div class="setting-item-description">主题跟随系统自动切换。</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-dark-mode-follow-system" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-title">推送通知</div>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">消息推送</div>
+                        <div class="setting-item-description">开启后在收到回复、赞、@、系统消息、私信时会推送通知。</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-message-notification" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">动态推送</div>
+                        <div class="setting-item-description">开启后在关注的人发动态时会推送通知。（如果关注人数太多的当心系统通知栏爆炸）</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-dynamic-notification" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-item">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">投稿通知</div>
+                        <div class="setting-item-description">开启后在关注的up主发布新投稿时推送通知。</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-update-notification" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-item setting-second-level-group">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">视频投稿</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-video-notification" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-item setting-second-level-group">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">番剧投稿</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-pcg-notification" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-item setting-second-level-group">
+                <div class="item-left-side">
+                    <div class="setting-item-text">
+                        <div class="setting-item-name">专栏投稿</div>
+                    </div>
+                </div>
+                <div class="item-right-side">
+                    <div class="setting-item-switch">
+                        <div class="button-host">
+                            <section class="button">
+                                <div class="checkbox">
+                                    <input id="setting-item-switch-article-notification" type="checkbox">
+                                    <label></label>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-sub-group-title" style="margin-top: 30px">up设置</div>
         </div>
     </div>
-    <div class="setting-heading"><b>缓存设置</b></div>
+    <div id="up-setting" class="setting-group">
+        <div class="rua-setting-user-block rua-head" id="rua-head">
+            <div class="rua-setting-user-info">
+                <div class="user-name"><b style="margin-left: 25px">你关注的UP</b></div>
+            </div>
+            <div class="rua-setting-button-group" style="margin-right: 20px; justify-content: space-evenly;">
+                <div style="width: 95px; text-align: center;">
+                    <span>挂机</span>
+                </div>
+                <div style="width: 95px; text-align: center;">
+                    <span>打卡</span>
+                </div>
+                <div style="width: 95px; text-align: center;">
+                    <span>开播</span>
+                </div>
+                <div style="width: 95px; text-align: center;">
+                    <span>视频投稿</span>
+                </div>
+                <div style="width: 95px; text-align: center;">
+                    <span>动态</span>
+                </div>
+            </div>
+        </div>
+        <div class="rua-setting-user-block" id="rua-head-space" style="display: none; padding: 0; border: none;">
+            <div class="rua-setting-user-info">
+                <div class="user-name"><span></span></div>
+            </div>
+            <div class="rua-setting-button-group">
+                <div class="button-host" style="padding: 0 20px">
+                    <span></span>
+                </div>
+                <div class="button-host" style="padding: 0 20px">
+                    <span></span>
+                </div>
+                <div class="button-host" style="padding: 0 20px">
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<div id="loading" style="display: flex; width: 100%;justify-content: center;height: 60px"><span style="line-height: 60px;text-align: center;">加载中...</span></div>
 <div id="bottom">
     <h2></h2>
     <div style="cursor: auto"><svg height="16" width="16" viewBox="0 0 16 16" version="1.1">
@@ -65,7 +495,7 @@
     <div id="bug-reporter"><a href="https://github.com/TyraelDLee/HarukaEmoji/issues">问题反馈</a></div>
 </div>
 <script src="./js/SVGA.min.js"></script>
-
+<script src="./js/setting.min.js"></script>
 </body>
 </html>
 <!--todo: download setting-->

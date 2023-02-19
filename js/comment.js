@@ -3,6 +3,7 @@
     const pageUrl = window.location['host'];
     let pageID = window.location["pathname"].replaceAll("/", "").replace("video", "").replace('bangumi', '').replace('play', '').replace('read', '');
     let exp =new RegExp("https://space.bilibili.com/\\d*/dynamic");
+    let opus = new RegExp("https://www.bilibili.com/opus/*");
     let textArea = null;
 
     function appEvent(){
@@ -18,6 +19,19 @@
         }catch (e){
             document.getElementById('app').removeEventListener('click', appEvent);
         }
+    }
+
+    function getAbsLocation(){
+        let e = document.getElementsByClassName('reply-box-emoji')[0].getElementsByClassName('emoji-btn')[0];
+        let abs = [e.offsetLeft, e.offsetTop];
+        let cur = e.offsetParent;
+        while (cur!==null){
+            abs[0] += cur.offsetLeft;abs[1] += (cur.offsetTop+cur.clientTop);
+            cur = cur.offsetParent;
+        }
+        abs[0] += (e.clientWidth - 60);
+        abs[1] += (e.clientHeight - 60);
+        return abs;
     }
 
     function boundButtons(className){
@@ -36,7 +50,7 @@
         chrome.storage.sync.get(['commentEmoji'], async (result)=>{
             if (result.commentEmoji){
                 document.documentElement.setAttribute("emoji", "up");
-                if ((pageUrl === 't.bilibili.com' || pageID.toUpperCase().includes('AV') || pageID.toUpperCase().includes('BV') || pageID.toUpperCase().includes('CV') || exp.test(window.location.href)) && pageID.length>0) {
+                if ((pageUrl === 't.bilibili.com' || pageID.toUpperCase().includes('AV') || pageID.toUpperCase().includes('BV') || pageID.toUpperCase().includes('CV') || exp.test(window.location.href) || opus.test(window.location.href)) && pageID.length>0) {
                     let mid = await getOwnerID();
                     let emojis = await getOwnerEmote(mid);
                     let emojisType = await getUserEmote(mid);
@@ -69,7 +83,7 @@
                     }
                     else{
                         new MutationObserver(async ()=>{
-                            const nvid = window.location["pathname"].replaceAll("/", "").replace("video","").replace('bangumi','').replace('play','').replace('read', '');
+                            const nvid = window.location["pathname"].replaceAll("/", "").replace("video","").replace('bangumi','').replace('play','').replace('read', '').replace('opus', '');
                             if(nvid!==null && nvid!==pageID){
                                 pageID = nvid;
                                 mid = await getOwnerID();
@@ -84,9 +98,14 @@
                                     let block = mutation.addedNodes[0].childNodes[0].childNodes[0];
                                     block.addEventListener('click', () => {
                                         if (mutation.target.classList.contains("fixed-box"))
-                                            mutation.addedNodes[0].childNodes[0].appendChild(drawUI(emojisType, emojis, [-393, 0]));
-                                        else
-                                            mutation.addedNodes[0].childNodes[0].appendChild(drawUI(emojisType, emojis, [30, 0]));
+                                            mutation.addedNodes[0].childNodes[0].appendChild(drawUI(emojisType, emojis, [-371.5, 0]));
+                                        else {
+                                            console.log(window.innerHeight+document.documentElement.scrollTop-getAbsLocation()[1])
+                                            if (window.innerHeight+document.documentElement.scrollTop-getAbsLocation()[1] > 325)
+                                                mutation.addedNodes[0].childNodes[0].appendChild(drawUI(emojisType, emojis, [30, 0]));
+                                            else
+                                                mutation.addedNodes[0].childNodes[0].appendChild(drawUI(emojisType, emojis, [-350, 0]));
+                                        }
                                     });
 
                                 }
@@ -113,7 +132,8 @@
     }
 
     function getOwnerID() {
-        if (pageUrl === 't.bilibili.com') {
+        if (pageUrl === 't.bilibili.com' || opus.test(window.location.href)) {
+            if (opus.test(window.location.href)) pageID = pageID.replace('opus','');
             return fetch(`https://api.bilibili.com/x/polymer/web-dynamic/v1/detail?id=${pageID}`, {
                 method: "GET",
                 credentials: "include",

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--Copyright (c) 2021 Tyrael, Y. LI-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="current-version" content="5.10">
+    <title>rua豹器 偏好设置</title>
+    <link href="css/readme.min.css" type="text/css" rel="stylesheet">
+    <link href="css/setting.min.css" type="text/css" rel="stylesheet">
+    <link href="css/popupbtn.min.css" type="text/css" rel="stylesheet">
+</head>
+<body style="font-size: 100%;">
+<div id="rua-icon-host" class="rua-icon-top">
+    <div class="rua-nav-left">
+        <div id="rua-icon" style="height: 100px; width:100px;">
+            <img src="./images/svga/13.svg" frame="13" height="100%" width="100%">
+        </div>
+        <b>偏好设置</b>
+    </div>
+
+    <div class="rua-nav-right" id="rua-nav" style="display: flex; opacity: 1;">
+        <a href="setting.html">通知偏好</a>
+    </div>
+</div>
+<div id="main" style="display: block;">
+    <div class="setting-heading"><b>缓存设置</b></div>
+    <div class="rua-setting-col">
+        <div class="rua-setting-row">
+            <div class="setting-block">
+                <div class="setting-text">缓存8k、HDR视频时优先选择</div>
+                <div class="dropbox" style="width: 150px">
+                    <label for="dashAudioQuality"></label>
+                    <select id="dashAudioQuality">
+                        <option value="320k">默认</option>
+                        <option value="Hi-Res">Hi-Res</option>
+                        <option value="Dolby">杜比全景声</option>
+                    </select>
+                    <span style="padding-left: 5px;"> 音轨</span>
+                </div>
+            </div>
+            <div class="setting-description">*当所选音轨不可用时，将使用默认音轨。</div>
+        </div>
+        <div class="rua-setting-row">
+            <div class="setting-block">
+                <div class="setting-text">缓存音频时优先选择</div>
+                <div class="dropbox">
+                    <label for="audioQuality"></label>
+                    <select id="audioQuality">
+                        <option value="320k">320Kbps</option>
+                        <option value="flac">flac</option>
+                    </select>
+                </div>
+            </div>
+            <div class="setting-description">*当所选音质不可用时，将依次向下选择。</div>
+        </div>
+    </div>
+    <div class="setting-heading"><b>缓存设置</b></div>
+</div>
+<div id="bottom">
+    <h2></h2>
+    <div style="cursor: auto"><svg height="16" width="16" viewBox="0 0 16 16" version="1.1">
+        <path id="github-icon" fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+    </svg></div>
+    <div id="source"><a href="https://github.com/TyraelDLee/HarukaEmoji">Source code</a></div>
+    <div id="bug-reporter"><a href="https://github.com/TyraelDLee/HarukaEmoji/issues">问题反馈</a></div>
+</div>
+<script src="./js/SVGA.min.js"></script>
+
+</body>
+</html>
+<!--todo: download setting-->

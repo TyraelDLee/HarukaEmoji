@@ -317,6 +317,7 @@ async function initialize(reload){
     setInitValue('liveroom-reconnection-time', 10);
     setInitValue('liveroom-heart-beat', true);
     setInitValue('liveroom-quality', 10000);
+    setInitValue('dkWord', '');
     /**
      * Context menu section.
      *
@@ -824,7 +825,10 @@ chrome.alarms.onAlarm.addListener((alarm)=>{
                 queryBcoin();
                 break;
             case 'dakaRoom':
-                daka(info.dakaUid, info.jct, "打卡");
+                chrome.storage.sync.get(['dkWord'], (synced)=>{
+                    daka(info.dakaUid, info.jct, synced['dkWord']===''?"打卡":synced['dkWord']);
+                });
+
                 break;
             case 'heartRate':
                 chrome.storage.sync.get(['heartBeatSwitch'], (synced)=>{
@@ -1458,18 +1462,4 @@ function refreshHeartBeatList(){
     });
 }
 
-// This is the service worker for mv3 which some functions may not support yet.
-
-//todo: check in mv3 √
-//todo: stream notification mv3 √
-//todo: video update mv3 √
-//todo: b coin mv3 √
-//todo: daka √
-//todo: error handler √
-//todo: update check √
-//todo: context menu √
-//todo: web traffic control. no needed anymore
-//todo: hidden √
-//todo: mock Android app request. no needed anymore
-//todo: add support for mv2.😅 √
-//todo: change the dynamic api. √
+//todo: add unfollowed user but got madel to hb and setting list.
