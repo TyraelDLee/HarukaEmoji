@@ -628,7 +628,16 @@
                     if(json['code']===0){
                         let html = `<div style="display: flex; flex-wrap: wrap; margin: 0 7.5%;">`;
                         for (let j = json['data']['data'].length; j >= 0; j--) {
-                            if(json['data']['data'][j]!==undefined && json['data']['data'][j]!==null){
+                            if(json['data']['data'][j]!==undefined && json['data']['data'][j]!==null && (json['data']['data'][j]['pkg_name'] === '房间专属表情' || json['data']['data'][j]['pkg_name'] === 'UP主大表情')){
+                                html += `<span class="emoji-header">${json['data']['data'][j]['pkg_name']}</span>`;
+                                for (let i = 0; i < json['data']['data'][j]['emoticons'].length; i++) {
+                                    //let able = json['data']['data'][j]['emoticons'][i]['perm']===1;//userInfo['emojiRequiredPrivilege'] <= json['data']['data'][j]['emoticons'][i]['identity'] && json['data']['data'][j]['emoticons'][i]['unlock_need_level'] <= medalInfo['emojiRequiredMedalLevel'];
+                                    html += `<div class="rua-emoji-icon-container"><div class="rua-emoji-icon ${json['data']['data'][j]['emoticons'][i]['perm']===1?'rua-emoji-icon-active':'rua-emoji-icon-inactive'}" title="${json['data']['data'][j]['emoticons'][i]['emoji']}" content="${json['data']['data'][j]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][j]['emoticons'][i]['url'].replace("http://", "https://")}');"></div><div class="rua-emoji-requirement" style="background-color: ${json['data']['data'][j]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][j]['emoticons'][i]['unlock_show_text']}</div></div></div>`;
+                                }
+                            }
+                        }
+                        for (let j = json['data']['data'].length; j >= 0; j--) {
+                            if(json['data']['data'][j]!==undefined && json['data']['data'][j]!==null && !(json['data']['data'][j]['pkg_name'] === '房间专属表情' || json['data']['data'][j]['pkg_name'] === 'UP主大表情')){
                                 html += `<span class="emoji-header">${json['data']['data'][j]['pkg_name']}</span>`;
                                 for (let i = 0; i < json['data']['data'][j]['emoticons'].length; i++) {
                                     //let able = json['data']['data'][j]['emoticons'][i]['perm']===1;//userInfo['emojiRequiredPrivilege'] <= json['data']['data'][j]['emoticons'][i]['identity'] && json['data']['data'][j]['emoticons'][i]['unlock_need_level'] <= medalInfo['emojiRequiredMedalLevel'];

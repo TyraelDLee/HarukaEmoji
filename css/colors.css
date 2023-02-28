@@ -1273,7 +1273,7 @@ html[theme*="dark"] .bili-im .left .title[data-v-f135e21e]{
     border-bottom: 1px solid var(--Ga2);
 }
 
-html[theme*="dark"] .list-item .name[data-v-5eb7422a]{
+html[theme*="dark"] .list-item .name{
     color: var(--text1);
 }
 
@@ -1329,7 +1329,7 @@ html[theme*="dark"] .list[data-v-4664fbbe]{
     border: 1px solid var(--Ga2);
 }
 
-html[theme*="dark"] .active[data-v-130e22a0]{
+html[theme*="dark"] #link-message-container .active{
     background-color: var(--bg1_float);
 }
 
@@ -2403,4 +2403,69 @@ html[theme*="dark"] .reply-box .box-normal .reply-box-warp .reply-box-textarea{
 
 html[theme*="dark"] .bili-dyn-card-reserve .bili-dyn-card-reserve__card, html[theme*="dark"] .reference .bili-dyn-card-reserve__card{
     background-color: var(--bg2_float);
+}
+
+html[theme*="dark"] .header-v3 #app{
+    background: var(--bg1);
+}
+
+html[theme*="dark"] .header-v3 .bili-wrapper{
+    border-top: none;
+}
+
+html[theme*="dark"] .header-v3 .bili-wrapper .sub-nav-m{
+    background: var(--bg1);
+}
+
+html[theme*="dark"] .video-floor-virtual-m .zone-title .headline .name{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .video-floor-virtual-m .zone-title .headline .name:hover, html[theme*="dark"] .mod-2 li .r .title:hover, html[theme*="dark"] .video-list .vl-hd .order-tab li.on{
+    color: #00a1d6;
+}
+
+html[theme*="dark"] .spread-module .t, html[theme*="dark"] .mod-2 li .r .title, html[theme*="dark"] .video-list .vl-hd .tab-list li{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .spread-module .num{
+    background: var(--bg1);
+    color: var(--text2);
+}
+
+html[theme*="dark"] .video-floor-virtual-m .zone-title .headline .link-more{
+    background-color: var(--bg2);
+    border: 1px solid var(--Ga2);
+    color: var(--text2);
+}
+
+html[theme*="dark"] .international-footer{
+    background-color: var(--graph_bg_thin);
+}
+
+html[theme*="dark"] .mod-2 li .l-item, html[theme*="dark"] .mod-2 li, html[theme*="dark"] .video-list .vl-hd, html[theme*="dark"] .go-top-m .go-top{
+    border-color: var(--Ga2);
+}
+
+html[theme*="dark"] .pager .pages .page-item button{
+    color: var(--text1);
+    background-color: var(--bg2);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .pager .pages .page-item.active button, html[theme*="dark"] .pager .pages .page-item button:hover, html[theme*="dark"] .go-top-m .go-top:hover{
+    background: #00a1d6;
+    color: #fff;
+    border: 1px solid #00a1d6;
+}
+
+html[theme*="dark"] .pager .jump-pager input[type=text]{
+    color: var(--text2);
+    border: 1px solid var(--Ga2);
+    background: var(--bg2);
+}
+
+html[theme*="dark"] .go-top-m .go-top{
+    background: var(--bg2);
 }
