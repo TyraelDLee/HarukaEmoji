@@ -2469,3 +2469,7 @@ html[theme*="dark"] .pager .jump-pager input[type=text]{
 html[theme*="dark"] .go-top-m .go-top{
     background: var(--bg2);
 }
+
+html[theme*="dark"] .bili-dyn-up-list__shadow-right, html[theme*="dark"] .bili-dyn-up-list__shadow-right .shadow{
+    background: linear-gradient(90deg,hsla(0,0%,100%,0),#000);
+}
