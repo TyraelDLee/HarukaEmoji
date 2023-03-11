@@ -5,7 +5,7 @@
 # HarukaEmoji
 rua豹使人快乐，rua了又rua！<br>
 
-rua豹器5.16来啦 <br>
+rua豹器5.17来啦 <br>
 兼容绝大多数chromium内核浏览器，例如：Opera浏览器，360浏览器，新MS Edge，yandex....。<br>
 现已支持火狐浏览器，见：<a href="https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/">火狐扩展商店</a>
 
@@ -96,6 +96,12 @@ rua豹器的MV3转移计划可以追随到数个版本前。作为个人开发�
 - 如果你的浏览器是**火狐**请下载火狐的xpi安装文件或者从火狐商店安装。
 
 ## 版本记录
+### ver 5.17
+- 加入了自定义打卡词。
+- 添加了新版动态页面的深色模式支持。
+- 修复了弹幕emoji的发送问题。
+- 一些其他改进。
+
 ### ver 5.16
 - 修复了放映室取流权限不足的问题。
 
