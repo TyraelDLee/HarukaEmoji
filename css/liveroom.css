@@ -732,3 +732,7 @@ input[type=radio]:checked {
     font-weight: bold;
     margin-bottom: 5px;
 }
+
+.video-container .video-stream:first-child .video-owner-info-container{
+    top: 60px;
+}

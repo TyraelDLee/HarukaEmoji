@@ -357,8 +357,6 @@
 
             let videoOwnerInfoContainer = document.createElement('div');
             videoOwnerInfoContainer.style.display = 'none';
-            if (videoStream.size === 1)
-                videoOwnerInfoContainer.style.top = '60px';
             videoOwnerInfoContainer.classList.add('video-owner-info-container');
             videoOwnerInfoContainer.innerHTML = `
             <div class="owner-avatar" style="background-image: url(${liveRoomInfo['face']})"></div>
