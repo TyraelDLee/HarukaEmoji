@@ -1428,7 +1428,7 @@ html[theme*="dark"] .history-wrap .b-head .b-head-t{
 
 
 html[theme*="dark"] .b-head-search_input{
-    background-color: var(--bg1_float);
+    background-color: var(--bg1);
     color: var(--text2);
 }
 
@@ -1437,7 +1437,7 @@ html[theme*="dark"] .bili-header-m .nav-search #nav_searchform, html[theme*="dar
 }
 
 html[theme*="dark"] .history-list .r-info{
-    background: var(--bg1_float);
+    background: var(--bg1);
 }
 
 html[theme*="dark"] .history-list .r-info .title{
@@ -1624,8 +1624,8 @@ html[theme*="dark"] .feed-dynamic-header-title[data-v-793366f2]{
     color: var(--text1);
 }
 
-html[theme*="dark"] .card[data-v-2dbadba2]{
-    background-color: var(--bg1);
+html[theme*="dark"] .feed-card .card{
+    background-color: var(--bg2);
 }
 
 html[theme*="dark"] .feed-dynamic[data-v-793366f2]{
@@ -1802,6 +1802,7 @@ html[theme*="dark"] .bili-dyn-list-empty{
 html[theme*="dark"] .go-top-m .go-top[_v-8b9a26a2]{
     background-color: var(--bg2);
     border: 1px solid var(--Ga2);
+    background-image: url(//static.hdslb.com/images/base/icons.png);
 }
 
 html[theme*="dark"] .go-top-m .go-top[_v-8b9a26a2]:hover{
@@ -2472,4 +2473,12 @@ html[theme*="dark"] .go-top-m .go-top{
 
 html[theme*="dark"] .bili-dyn-up-list__shadow-right, html[theme*="dark"] .bili-dyn-up-list__shadow-right .shadow{
     background: linear-gradient(90deg,hsla(0,0%,100%,0),#000);
+}
+
+html[theme*="dark"] .bili-dyn-live-users__item-container:hover, html[theme*="dark"] .relevant-topic-container__item:hover{
+    background: var(--bg1_float);
+}
+
+html[theme*="dark"] .game-card__info-title {
+    color: var(--text1);
 }

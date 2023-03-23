@@ -1463,3 +1463,4 @@ function refreshHeartBeatList(){
 }
 
 //todo: add unfollowed user but got madel to hb and setting list.
+//https://api.bilibili.com/x/relation/same/followings?vmid=254726274&pn=1 //same following
