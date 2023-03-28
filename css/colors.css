@@ -2030,7 +2030,7 @@ html[theme*="dark"] .follow-container .follow-right .follow-intro[data-v-5d8dc52
 }
 
 html[theme*="dark"] #song-marks .bb-comment{
-    background-color: var(--bg1_float) !important;
+    background-color: var(--bg1) !important;
 }
 
 html[theme*="dark"] .bilibili-player{
@@ -2480,5 +2480,9 @@ html[theme*="dark"] .bili-dyn-live-users__item-container:hover, html[theme*="dar
 }
 
 html[theme*="dark"] .game-card__info-title {
+    color: var(--text1);
+}
+
+html[theme*="dark"] .song-info .song-info-content .song-info-detail{
     color: var(--text1);
 }
