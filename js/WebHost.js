@@ -677,7 +677,7 @@
                         emojiHeader.appendChild(emojiHeaderContent);
                         HTMLObj.appendChild(emojiHeader);
                         emojiHeaderContent.addEventListener('wheel', (e)=>{
-                            emojiHeaderContent.scrollLeft +=e.deltaX;
+                            emojiHeaderContent.scrollLeft += e.deltaY;
                             e.preventDefault();
                         })
                         const data = json['data']['data'];
