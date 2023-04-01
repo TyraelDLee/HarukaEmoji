@@ -399,7 +399,7 @@
                         popup.className = "popup-click-out";
                         if(isMoved(oLoc[0], oLoc[1], cLoc[0], cLoc[1])){
                             if (selec.style.display === "none") {
-                                //constructSystemEmoji(4, emojiTableSystem, DanMuInput);
+                                constructSystemEmoji(4, document.getElementById('emoji-tray'), DanMuInput);
                                 selec.classList.remove("selection-fade-out");
                                 selec.style.display = "block";
                                 selec.classList.add("selection-fade-in");
@@ -407,6 +407,7 @@
                             } else {
                                 selec.classList.remove("selection-fade-in");
                                 selec.classList.add("selection-fade-out");
+                                document.getElementById('emoji-tray').innerHTML = '';
                                 setTimeout(()=>{
                                     selec.style.display = "none";
                                     //revokeListener(emojiTableSystem);
@@ -471,7 +472,7 @@
                 // fullScreenText.style.display = "block";
 
                 constructHTMLTable(4, DanMuInput, emojiTable, textLength);
-                constructSystemEmoji(4,  document.getElementById('emoji-tray'), DanMuInput);
+                //constructSystemEmoji(4,  document.getElementById('emoji-tray'), DanMuInput);
 
                 DanMuSub.onclick = function (){
                     packaging(DanMuInput.value);
@@ -675,6 +676,10 @@
                         emojiHeaderContent.classList.add('rua-emoji-header');
                         emojiHeader.appendChild(emojiHeaderContent);
                         HTMLObj.appendChild(emojiHeader);
+                        emojiHeaderContent.addEventListener('wheel', (e)=>{
+                            emojiHeaderContent.scrollLeft +=e.deltaX;
+                            e.preventDefault();
+                        })
                         const data = json['data']['data'];
                         for (let i = 0; i < data.length; i++) {
                             const headerItem = document.createElement('div');
@@ -708,8 +713,17 @@
                                 if (i === 0) emoji.classList.add('rua-emoji-item-xs');
                                 emoji.innerHTML += `<div class="rua-emoji-requirement" style="background-color: ${data[i]['emoticons'][j]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${data[i]['emoticons'][j]['unlock_show_text']}</div></div><img src="${data[i]['emoticons'][j]['url']}">`;
                                 emoji.onclick = ()=>{
-                                    if (!emoji.classList.contains('rua-emoji-icon-inactive-new'))
+                                    if (!emoji.classList.contains('rua-emoji-icon-inactive-new') && i!==0)
                                         packaging(data[i]['emoticons'][j]['emoticon_unique'], "systemEmoji");
+                                    if (i===0){
+                                        if (inputArea.selectionStart === inputArea.selectionEnd){
+                                            inputArea.value = inputArea.value.substring(0,inputArea.selectionStart)+emoji.title+inputArea.value.substring(inputArea.selectionEnd, inputArea.value.length);
+                                        }else{
+                                            let p1 = inputArea.value.substring(0,inputArea.selectionStart), p2 = inputArea.value.substring(inputArea.selectionEnd, inputArea.value.length);
+                                            inputArea.value=p1+emoji.title+p2;
+                                        }
+                                        inputArea.focus();
+                                    }
                                 }
                                 emojiContainer.append(emoji);
                             }

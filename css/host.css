@@ -469,7 +469,9 @@ html[theme*="dark"] #emoji-tray, #input-button{
 .rua-emoji-container{
     display: none;
     flex-wrap: wrap;
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-left: 5px;
 }
 
 .rua-emoji-icon-inactive-new img{
