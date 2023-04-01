@@ -127,10 +127,12 @@
                 v.dispatchEvent(e);
                 setTimeout(function (){
                     e.initEvent("mouseenter", false, true);
+
                     let vp = v.getElementsByClassName("quality-wrap")[0];
                     if(vp !== undefined){
                         vp.dispatchEvent(e);
                         e.initEvent("click", false, true);
+
                         setTimeout(function (){
                             let vps = vp.getElementsByClassName("panel")[0].getElementsByClassName("quality-it");
                             if(vps.length>1){
@@ -397,7 +399,7 @@
                         popup.className = "popup-click-out";
                         if(isMoved(oLoc[0], oLoc[1], cLoc[0], cLoc[1])){
                             if (selec.style.display === "none") {
-                                constructHTMLTableSystemEmoji(4, emojiTableSystem, DanMuInput);
+                                //constructSystemEmoji(4, emojiTableSystem, DanMuInput);
                                 selec.classList.remove("selection-fade-out");
                                 selec.style.display = "block";
                                 selec.classList.add("selection-fade-in");
@@ -469,7 +471,7 @@
                 // fullScreenText.style.display = "block";
 
                 constructHTMLTable(4, DanMuInput, emojiTable, textLength);
-                constructHTMLTableSystemEmoji(4,  emojiTableSystem, DanMuInput);
+                constructSystemEmoji(4,  document.getElementById('emoji-tray'), DanMuInput);
 
                 DanMuSub.onclick = function (){
                     packaging(DanMuInput.value);
@@ -659,6 +661,65 @@
             setTimeout(()=>{danmakuSendEErr.style.display = 'none'},1800);
         }
 
+        async function constructSystemEmoji(num_per_line, HTMLObj, inputArea){
+            await getUserPrivilege(false);
+            fetch("https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id="+room_id, {
+                method:'GET',
+                credentials:'include',
+                body: null
+            }).then(result => result.json())
+                .then(json=>{
+                    if (json['code'] === 0){
+                        const emojiHeader = document.createElement('div');
+                        const emojiHeaderContent = document.createElement('div');
+                        emojiHeaderContent.classList.add('rua-emoji-header');
+                        emojiHeader.appendChild(emojiHeaderContent);
+                        HTMLObj.appendChild(emojiHeader);
+                        const data = json['data']['data'];
+                        for (let i = 0; i < data.length; i++) {
+                            const headerItem = document.createElement('div');
+                            headerItem.classList.add('rua-header-item');
+
+                            const emojiContainer = document.createElement('div');
+                            emojiContainer.classList.add('rua-emoji-container');
+
+                            if (i === 0) {
+                                headerItem.classList.add('active');
+                                emojiContainer.style.display = 'flex';
+                            }
+                            headerItem.innerHTML += `<img src="${data[i]['current_cover']}"></div>`
+                            headerItem.onclick = ()=>{
+                                for (let j = 0; j < emojiHeaderContent.childNodes.length; j++) {
+                                    emojiHeaderContent.childNodes.item(j).classList.remove('active');
+                                    HTMLObj.getElementsByClassName('rua-emoji-container')[j].style.display = 'none';
+                                    if (emojiHeaderContent.childNodes.item(j) === headerItem)
+                                        HTMLObj.getElementsByClassName('rua-emoji-container')[j].style.display = 'flex';
+                                }
+                                headerItem.classList.add('active');
+                            }
+                            emojiHeaderContent.appendChild(headerItem);
+
+                            for (let j = 0; j < data[i]['emoticons'].length; j++) {
+                                const emoji = document.createElement('div');
+                                emoji.classList.add('rua-emoji-icon');
+                                emoji.classList.add('rua-emoji-item');
+                                data[i]['emoticons'][j]['perm']===1?emoji.classList.add('rua-emoji-icon-active'):emoji.classList.add('rua-emoji-icon-inactive-new');
+                                emoji.title = data[i]['emoticons'][j]['emoji'];
+                                if (i === 0) emoji.classList.add('rua-emoji-item-xs');
+                                emoji.innerHTML += `<div class="rua-emoji-requirement" style="background-color: ${data[i]['emoticons'][j]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${data[i]['emoticons'][j]['unlock_show_text']}</div></div><img src="${data[i]['emoticons'][j]['url']}">`;
+                                emoji.onclick = ()=>{
+                                    if (!emoji.classList.contains('rua-emoji-icon-inactive-new'))
+                                        packaging(data[i]['emoticons'][j]['emoticon_unique'], "systemEmoji");
+                                }
+                                emojiContainer.append(emoji);
+                            }
+                            HTMLObj.appendChild(emojiContainer);
+                        }
+
+
+                    }
+                })
+        }
 
         async function constructHTMLTableSystemEmoji(num_per_line, HTMLObj, inputArea){
             await getUserPrivilege(false);
@@ -717,7 +778,7 @@
                             }
                         }
                     }
-                    if(emojiTable.innerHTML.length===0 && emojiTableSystem.innerHTML.length<=25){
+                    if(emojiTable.innerHTML.length===0 && emojiTableSystem.innerHTML.length<=25 && num_per_line === 4){
                         emojiTableSystem.innerHTML = `<div id="load">当前直播间没有表情包，<br>如显示不正确，请<a href="${window.location}">点击这里</a>重试<br><br></div>`;
                     }
                 })
@@ -906,10 +967,15 @@
                 if (mutation.type === "childList") {
                     if(mutation.addedNodes.length===0){
                         recordBtn.removeEventListener("click", recordingListener);
+                        chaseButtonDiv.removeEventListener("click", frameChasing);
                     }
-                    if(mutation.addedNodes[0]!==undefined&&mutation.addedNodes[0].nodeName==="DIV" && recordEnable){
-                        drawRecording();
-                        recordBtn.addEventListener("click", recordingListener);
+                    if(mutation.addedNodes[0]!==undefined&&mutation.addedNodes[0].nodeName==="DIV"){
+                        if (recordEnable){
+                            drawRecording();
+                            recordBtn.addEventListener("click", recordingListener);
+                        }
+                        traceButton();
+                        chaseButtonDiv.addEventListener("click", frameChasing);
                     }
                 }
             });
@@ -1074,5 +1140,30 @@
         //         console.log(e)
         //     }
         // }()
+
+        const chaseButtonDiv = document.createElement('div');
+        const button = `<div class="frame-chasing"><div><span class="icon"><svg class="squirtle-svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22"><path d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z" style="transform: scale(0.75);transform-origin: center;"></path></svg></span></div></div></div>`;
+        chaseButtonDiv.innerHTML += button;
+        function findPlayer(){
+            try {
+                const playContainer = document.getElementById('live-player');
+
+            }catch (e){
+                setTimeout(findPlayer, 200);
+            }
+        }
+
+        function frameChasing(){
+            try{
+                try{
+                    document.getElementById('live-player').getElementsByTagName('video')[0].currentTime = document.getElementById('live-player').getElementsByTagName('video')[0].buffered.end(0) - 1;
+                }catch (e){}//silence handling here which you should not, but doesn't matter here.
+            }catch (e){}
+        }
+
+        function traceButton(){
+            const controlHost = document.getElementById('web-player-controller-wrap-el').getElementsByClassName('control-area')[0].getElementsByClassName('left-area')[0];
+            controlHost.appendChild(chaseButtonDiv);
+        }
     }
 }();

@@ -2486,3 +2486,20 @@ html[theme*="dark"] .game-card__info-title {
 html[theme*="dark"] .song-info .song-info-content .song-info-detail{
     color: var(--text1);
 }
+
+html[theme*="dark"] .user-panel-ctnr .user-panel .username-info{
+    color: var(--text1) !important;
+}
+
+html[theme*="dark"] .user-panel-ctnr .user-panel .battery-block, html[theme*="dark"] .user-panel-ctnr .user-panel .content-ctnr .control-block:hover{
+    background: var(--Ga2) !important;
+}
+
+html[theme*="dark"] .user-panel-ctnr .user-panel .user-level-detail{
+    background-color: #232527!important;
+    border: 1px solid var(--Ga2) !important;
+}
+
+html[theme*="dark"] .user-panel-ctnr .user-panel .user-level-detail .darkgray{
+    color: var(--Ga9) !important;
+}

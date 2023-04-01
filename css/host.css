@@ -226,6 +226,13 @@
 #emoji-tray {
     width: 300px;
     height: 280px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 #load {
@@ -396,4 +403,75 @@ html[theme*="dark"] #emoji-tray, #input-button{
 
 #rua-go-to-live-room:hover {
     opacity: 0.8;
+}
+
+.rua-emoji-header{
+    line-height: 46px;
+    height: 40px;
+    font-size: 12px;
+    background-color: var(--Ga1);
+    display: flex;
+    justify-content: flex-start;
+    white-space: nowrap;
+    position: relative;
+    overflow: scroll!important;
+    scrollbar-width: none;
+}
+
+.rua-emoji-header::-webkit-scrollbar {
+    display: none;
+}
+
+.rua-header-item{
+    color: var(--text3);
+    cursor: pointer;
+    width: 50px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.rua-header-item img{
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+}
+
+.rua-emoji-header .active{
+    background-color: var(--bg1);
+}
+
+.rua-emoji-item{
+    position: relative;
+    width: 65px;
+    height: 65px;
+    display: flex;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.rua-emoji-item-xs{
+    width: 30px;
+    height: 30px;
+}
+
+.rua-emoji-item img{
+    max-width: 100%;
+    max-height: 100%;
+    margin: auto;
+    display: block;
+}
+
+.rua-emoji-container{
+    display: none;
+    flex-wrap: wrap;
+    overflow: scroll;
+}
+
+.rua-emoji-icon-inactive-new img{
+    opacity: 0.3;
 }
