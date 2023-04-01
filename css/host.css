@@ -125,18 +125,18 @@
     animation-fill-mode: forwards;
 }
 
-.emoji_sec {
+.emoji_sec, .rua-emoji-container {
     text-align: center;
     overflow-y: scroll;
     scrollbar-width: thin;
 }
 
-.emoji_sec::-webkit-scrollbar {
+.emoji_sec::-webkit-scrollbar, .rua-emoji-container::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 
-.emoji_sec::-webkit-scrollbar-thumb {
+.emoji_sec::-webkit-scrollbar-thumb, .rua-emoji-container::-webkit-scrollbar-thumb {
     border-radius: 6px;
     background-color: #aaa;
 }

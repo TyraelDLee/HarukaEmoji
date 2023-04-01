@@ -662,6 +662,7 @@
             setTimeout(()=>{danmakuSendEErr.style.display = 'none'},1800);
         }
 
+        let lastUsed = 0
         async function constructSystemEmoji(num_per_line, HTMLObj, inputArea){
             await getUserPrivilege(false);
             fetch("https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id="+room_id, {
@@ -671,6 +672,7 @@
             }).then(result => result.json())
                 .then(json=>{
                     if (json['code'] === 0){
+                        HTMLObj.innerHTML = '';
                         const emojiHeader = document.createElement('div');
                         const emojiHeaderContent = document.createElement('div');
                         emojiHeaderContent.classList.add('rua-emoji-header');
@@ -680,15 +682,16 @@
                             emojiHeaderContent.scrollLeft += e.deltaY;
                             e.preventDefault();
                         })
+
                         const data = json['data']['data'];
+                        if (lastUsed > data.length) lastUsed = 0;
                         for (let i = 0; i < data.length; i++) {
                             const headerItem = document.createElement('div');
                             headerItem.classList.add('rua-header-item');
 
                             const emojiContainer = document.createElement('div');
                             emojiContainer.classList.add('rua-emoji-container');
-
-                            if (i === 0) {
+                            if (i === lastUsed) {
                                 headerItem.classList.add('active');
                                 emojiContainer.style.display = 'flex';
                             }
@@ -697,8 +700,10 @@
                                 for (let j = 0; j < emojiHeaderContent.childNodes.length; j++) {
                                     emojiHeaderContent.childNodes.item(j).classList.remove('active');
                                     HTMLObj.getElementsByClassName('rua-emoji-container')[j].style.display = 'none';
-                                    if (emojiHeaderContent.childNodes.item(j) === headerItem)
+                                    if (emojiHeaderContent.childNodes.item(j) === headerItem) {
                                         HTMLObj.getElementsByClassName('rua-emoji-container')[j].style.display = 'flex';
+                                        lastUsed = j;
+                                    }
                                 }
                                 headerItem.classList.add('active');
                             }
@@ -729,8 +734,6 @@
                             }
                             HTMLObj.appendChild(emojiContainer);
                         }
-
-
                     }
                 })
         }
