@@ -2503,3 +2503,82 @@ html[theme*="dark"] .user-panel-ctnr .user-panel .user-level-detail{
 html[theme*="dark"] .user-panel-ctnr .user-panel .user-level-detail .darkgray{
     color: var(--Ga9) !important;
 }
+
+html[theme*="dark"] .bili-dyn-upower-lottery__title{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .bili-dyn-upower-lottery__card{
+    background-color: var(--bg1_float);
+}
+
+html[theme*="dark"] .room-info-ctnr .content-wrapper, html[theme*="dark"] .room-feed .room-feed-content .feed-title{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] .review_review_module__ASXSK .review_module_content__IYi7e .review_review_item__XdB5x .review_review_item_fill__Mn7Oi{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] .review_review_module__ASXSK .review_module_content__IYi7e .review_review_item__XdB5x .review_review_item_fill__Mn7Oi .review_review_header__0XsAS .review_review_author__xA_3Z, html[theme*="dark"] .review_review_module__ASXSK .review_module_title__iZ7DI, html[theme*="dark"] .review_review_module__ASXSK .review_module_title__iZ7DI .review_more_link__kxLvx, html[theme*="dark"] .main-container .plp-l .comment-wrapper .b-head, html[theme*="dark"] .mediainfo_media_info__zMH8V .mediainfo_media_right__UOOx_ .mediainfo_media_desc_section__bOFBw, html[theme*="dark"] .mediainfo_media_info__zMH8V .mediainfo_media_right__UOOx_ .mediainfo_media_title__gcy_r, html[theme*="dark"] .eplist_ep_list_wrapper__PzLHa .eplist_list_title__JwP3d .eplist_left_wrap__tJfQL h4, html[theme*="dark"] .numberListItem_title__ukPv0, html[theme*="dark"] .section_ep_section_module__GnauA .section_section_title__fAFnW, html[theme*="dark"] .epitem_ep_item__CPdZy, html[theme*="dark"] .RecommendItem_wrap__pJmXL .RecommendItem_right_wrap__rgzw_ .RecommendItem_title__zyQj0, html[theme*="dark"] .seasonlist_season_list__fMpQt .seasonlist_series_title__nPI47, html[theme*="dark"] .recommend_wrap__pgu8c .recommend_title__miCR4, html[theme*="dark"] .seasonlist_season_list__fMpQt .seasonlist_ss_list_wrapper__dc_Wu .seasonlist_ss_item__czhHy .seasonlist_ss_info__Yc7YV .seasonlist_ss_title__Tkrsi{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .review_review_module__ASXSK .review_module_content__IYi7e .review_review_item__XdB5x .review_review_item_fill__Mn7Oi .review_review_body__1FEOK .review_review_title__fQTYW, html[theme*="dark"] .review_review_module__ASXSK .review_module_content__IYi7e .review_review_item__XdB5x .review_review_item_fill__Mn7Oi .review_review_body__1FEOK .review_review_content__o5OXb, html[theme*="dark"] .toolbar_toolbar__NJCNy .toolbar_item_info__xpKhw .toolbar_counts_num__b5wMe{
+    color: var(--text2);
+}
+
+html[theme*="dark"] .mediainfo_media_info__zMH8V .mediainfo_media_right__UOOx_ .mediainfo_media_desc_section__bOFBw .mediainfo_display_area__CEKfP .mediainfo_ellipsis__xCKNd{
+    background: linear-gradient(90deg,hsla(0,0%,100%,0),#000 20%,#000);
+}
+
+html[theme*="dark"] .mediainfo_media_info__zMH8V .mediainfo_media_right__UOOx_ .mediainfo_media_toolbar__Plbze .mediainfo_btn_rating__5HFow, html[theme*="dark"] .navTools_wrap__6zVtd .navTools_item__x8ZYs{
+    color: var(--text2);
+    background-color: var(--bg2);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .paybar_pay_bar__1qsn_ .paybar_vip__qVlz_ .paybar_btn_pay__I_6fM.paybar_active__8SnMh{
+    background-color: var(--bg1);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .review_review_module__ASXSK .review_module_title__iZ7DI .review_more_link__kxLvx:hover, html[theme*="dark"] .RecommendItem_wrap__pJmXL .RecommendItem_right_wrap__rgzw_ .RecommendItem_title__zyQj0:hover{
+    color: #00a1d6;
+}
+
+html[theme*="dark"] .eplist_ep_list_wrapper__PzLHa, html[theme*="dark"] .section_ep_section_module__GnauA{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] .numberListItem_number_list_item__wszA4{
+    background-color: var(--bg1);
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .numberListItem_number_list_item__wszA4:hover{
+    border-color: #00a1d6;
+    color: #00a1d6;
+}
+
+html[theme*="dark"] .epitem_ep_item__CPdZy:hover, html[theme*="dark"] .epitem_ep_item__CPdZy.epitem_cursor__gOquw{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .mediainfo_media_info__zMH8V, html[theme*="dark"] .operation_split_line__lrq_H, html[theme*="dark"] .main-container .plp-l .comment-wrapper{
+    border-top: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .DanmukuBox_wrap__USrvT{
+    background-color: var(--Ga2);
+}
+
+html[theme*="dark"] .navTools_wrap__6zVtd .navTools_item__x8ZYs:hover{
+    background-color: #00a1d6;
+    border-color: #00a1d6;
+    color: #fff;
+}
+
+html[theme*="dark"] #comment-module #comment-body .bb-comment{
+    background-color: var(--bg1) !important;
+}
