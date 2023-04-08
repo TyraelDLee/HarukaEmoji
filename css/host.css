@@ -160,6 +160,10 @@
     transition: 0.2s;
 }
 
+.rua-emoji-icon-active{
+    transition: 0.2s;
+}
+
 .rua-emoji-icon-active:hover{
     transform: scale(1.1);
 }
@@ -186,6 +190,7 @@
     white-space: nowrap;
     max-width: 80%;
     user-select: none;
+    z-index: 99;
 }
 
 .rua-emoji-requirement-text {
@@ -474,6 +479,6 @@ html[theme*="dark"] #emoji-tray, #input-button{
     margin-left: 5px;
 }
 
-.rua-emoji-icon-inactive-new img{
+.rua-emoji-icon-inactive-new{
     opacity: 0.3;
 }

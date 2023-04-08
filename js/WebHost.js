@@ -471,7 +471,7 @@
                 // fullScreenSection.style.display = "block";
                 // fullScreenText.style.display = "block";
 
-                constructHTMLTable(4, DanMuInput, emojiTable, textLength);
+                //constructHTMLTable(4, DanMuInput, emojiTable, textLength);
                 //constructSystemEmoji(4,  document.getElementById('emoji-tray'), DanMuInput);
 
                 DanMuSub.onclick = function (){
@@ -537,7 +537,7 @@
                     fullscreenEmojiPad.classList.add("emoji_sec");
                     fullscreenEmojiPad.setAttribute("id", "fullscreen-table");
                     fullscreenEmojiTable.classList.add("emoji-table");
-                    constructHTMLTable(8, fullscreenInput, fullscreenEmojiTable, fullscreenTextLength);
+                    //constructHTMLTable(8, fullscreenInput, fullscreenEmojiTable, fullscreenTextLength);
                     constructHTMLTableSystemEmoji(8, fullscreenEmojiTableSystem, fullscreenInput);
 
                     fullscreenEmojiPad.appendChild(fullscreenEmojiTable);
@@ -713,10 +713,10 @@
                                 const emoji = document.createElement('div');
                                 emoji.classList.add('rua-emoji-icon');
                                 emoji.classList.add('rua-emoji-item');
-                                data[i]['emoticons'][j]['perm']===1?emoji.classList.add('rua-emoji-icon-active'):emoji.classList.add('rua-emoji-icon-inactive-new');
+                                // data[i]['emoticons'][j]['perm']===1?emoji.classList.add('rua-emoji-icon-active'):emoji.classList.add('rua-emoji-icon-inactive-new');
                                 emoji.title = data[i]['emoticons'][j]['emoji'];
                                 if (i === 0) emoji.classList.add('rua-emoji-item-xs');
-                                emoji.innerHTML += `<div class="rua-emoji-requirement" style="background-color: ${data[i]['emoticons'][j]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${data[i]['emoticons'][j]['unlock_show_text']}</div></div><img src="${data[i]['emoticons'][j]['url']}">`;
+                                emoji.innerHTML += `<div class="rua-emoji-requirement" style="background-color: ${data[i]['emoticons'][j]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${data[i]['emoticons'][j]['unlock_show_text']}</div></div><img class="${data[i]['emoticons'][j]['perm']===1?'rua-emoji-icon-active':'rua-emoji-icon-inactive-new'}" src="${data[i]['emoticons'][j]['url']}">`;
                                 emoji.onclick = ()=>{
                                     if (!emoji.classList.contains('rua-emoji-icon-inactive-new') && i!==0)
                                         packaging(data[i]['emoticons'][j]['emoticon_unique'], "systemEmoji");

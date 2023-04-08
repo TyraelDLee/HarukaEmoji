@@ -921,9 +921,13 @@
             dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
         }
         if(requestType === 'flacRecord'){
-            ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(blob[0]));
-            ffmpeg.FS('writeFile', `cover`, await fetchFile(blob[1]));
-            await ffmpeg.run('-i', 'audio.m4s', '-i', `cover`, '-map' , '0', '-map', '1', '-c:v', 'copy', '-disposition:v:0', 'attached_pic',  '-c:a', 'alac', '-metadata', `title=${utf8Encode(metadata.title)}`, '-metadata', `artist=${utf8Encode(metadata.artist)}`, '-metadata', `year="${metadata.year}"`, '-metadata', `comment=${bvid}`, 'final.m4a');
+            if(blob[1].length>0){
+                ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(blob[0]));
+                ffmpeg.FS('writeFile', `cover`, await fetchFile(blob[1]));
+                await ffmpeg.run('-i', 'audio.m4s', '-i', `cover`, '-map' , '0', '-map', '1', '-c:v', 'copy', '-disposition:v:0', 'attached_pic',  '-c:a', 'alac', '-metadata', `title=${utf8Encode(metadata.title)}`, '-metadata', `artist=${utf8Encode(metadata.artist)}`, '-metadata', `year="${metadata.year}"`, '-metadata', `comment=${bvid}`, 'final.m4a');
+            }else{
+                await ffmpeg.run('-i', 'audio.m4s', '-c:a', 'alac', '-metadata', `title=${utf8Encode(metadata.title)}`, '-metadata', `artist=${utf8Encode(metadata.artist)}`, '-metadata', `year="${metadata.year}"`, '-metadata', `comment=${bvid}`, 'final.m4a');
+            }
             out = ffmpeg.FS('readFile', 'final.m4a');
             downloadName = filename + ".m4a";
             dl = URL.createObjectURL(new Blob([out.buffer]));

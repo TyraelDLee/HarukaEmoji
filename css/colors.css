@@ -1612,15 +1612,11 @@ html[theme*="dark"] #page-index .channel .channel-item{
     border-bottom: 1px solid var(--Ga2);
 }
 
-html[theme*="dark"] .search-page[data-v-e666e3f4]{
-    background-color: var(--bg1);
-}
-
-html[theme*="dark"] .search-nav-item[data-v-5e0f1f52]:hover {
+html[theme*="dark"] .search-nav-item:hover {
     background-color: var(--bg1_float);
 }
 
-html[theme*="dark"] .feed-dynamic-header-title[data-v-793366f2]{
+html[theme*="dark"] .feed-dynamic-header-title{
     color: var(--text1);
 }
 
@@ -2581,4 +2577,12 @@ html[theme*="dark"] .navTools_wrap__6zVtd .navTools_item__x8ZYs:hover{
 
 html[theme*="dark"] #comment-module #comment-body .bb-comment{
     background-color: var(--bg1) !important;
+}
+
+html[theme*="dark"] .s-space .search-page{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] .normal-article-holder .img-box:before, html[theme*="dark"] .read-article-holder .article-card-holder{
+    border: 1px solid var(--Ga2);
 }

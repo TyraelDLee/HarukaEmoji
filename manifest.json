@@ -122,6 +122,7 @@
     "https://api.vc.bilibili.com/",
     "https://tyrael-lee.gitee.io/",
     "https://tyraeldlee.github.io/",
+    "*://*.bilibili.com/*",
     "*://*.bilivideo.com/",
     "*://*.bilivideo.cn/",
     "*://*.akamaized.net/",
