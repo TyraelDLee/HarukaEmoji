@@ -93,6 +93,7 @@ html[theme*="dark"] #emoji-selection{
     padding: 0 2%;
     border: 0;
     border-bottom: 2px solid var(--bili-blue);
+    color: var(--text1);
     scrollbar-width:thin;
     outline: none !important;
     transition: 0.4s;

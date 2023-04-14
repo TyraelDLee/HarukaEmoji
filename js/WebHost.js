@@ -480,6 +480,27 @@
                     DanMuInput.value = "";
                 }
 
+                let enterLock = true, unlock = true;
+                DanMuInput.addEventListener('compositionstart', (e)=>{
+                    enterLock = false;
+                    unlock = false;
+                });
+                DanMuInput.addEventListener('compositionend', (e)=>{
+                    enterLock = true;
+                });
+                DanMuInput.addEventListener("keyup", (e)=>{
+                    if(e.keyCode === 13 && unlock){
+                        e.preventDefault();
+                        packaging(DanMuInput.value);
+                        DanMuInput.value = "";
+                    }
+                    if(enterLock) unlock = true; // unlock enter key when the first key after composition end has been pressed.
+                    inputListener(textLength, DanMuInput);
+                });
+                DanMuInput.addEventListener("keydown", (e)=>{
+                    if(e.code === "Enter") e.preventDefault();
+                });
+
                 // full screen functions.
                 // fullScreenInput.addEventListener('change', function() {
                 //     this.checked?displayFullScreenDanmaku():hideFullScreenDanmaku();
@@ -517,6 +538,26 @@
                                     let fullScreen = document.body.getAttribute("class").split(" ");
                                     if(fullScreen.indexOf("fullscreen-fix")!==-1){
                                         constructHTMLTableSystemEmoji(8, fullscreenEmojiTableSystem, fullscreenInput);
+                                        let enterLockFS = true, unlockFS = true;
+                                        fullscreenInput.addEventListener('compositionstart', (e)=>{
+                                            enterLockFS = false;
+                                            unlockFS = false;
+                                        });
+                                        fullscreenInput.addEventListener('compositionend', (e)=>{
+                                            enterLockFS = true;
+                                        });
+                                        fullscreenInput.addEventListener("keyup", (e)=>{
+                                            if(e.keyCode === 13 && unlockFS){
+                                                e.preventDefault();
+                                                packaging(fullscreenInput.value);
+                                                fullscreenInput.value = "";
+                                            }
+                                            if(enterLockFS) unlockFS = true; // unlock enter key when the first key after composition end has been pressed.
+                                            inputListener(fullscreenTextLength, fullscreenInput);
+                                        });
+                                        fullscreenInput.addEventListener("keydown", (e)=>{
+                                            if(e.code === "Enter") e.preventDefault();
+                                        });
                                     }else{
                                         fullscreenEmojiTableSystem.innerHTML = '';
                                         //revokeListener(fullscreenEmojiTableSystem);
@@ -615,13 +656,13 @@
 
         function getTimeSnap(){return Math.round(Date.now()/1000);}
 
-        function packaging(msg, type){
+        function packaging(msg, type=0){
             let DanMuForm = new FormData();
             DanMuForm.append("bubble", "0");
             DanMuForm.append("msg", msg);
             DanMuForm.append("color", "16777215");
             DanMuForm.append("mode", "1");
-            if(type!==undefined&&type==="systemEmoji") DanMuForm.append("dm_type","1");
+            if(type!==0) DanMuForm.append("dm_type","1");
             DanMuForm.append("fontsize", "25");
             DanMuForm.append("rnd", getTimeSnap()+"");
             DanMuForm.append("roomid", room_id); // short id is not allowed.
@@ -719,7 +760,7 @@
                                 emoji.innerHTML += `<div class="rua-emoji-requirement" style="background-color: ${data[i]['emoticons'][j]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${data[i]['emoticons'][j]['unlock_show_text']}</div></div><img class="${data[i]['emoticons'][j]['perm']===1?'rua-emoji-icon-active':'rua-emoji-icon-inactive-new'}" src="${data[i]['emoticons'][j]['url']}">`;
                                 emoji.onclick = ()=>{
                                     if (!emoji.classList.contains('rua-emoji-icon-inactive-new') && i!==0)
-                                        packaging(data[i]['emoticons'][j]['emoticon_unique'], "systemEmoji");
+                                        packaging(data[i]['emoticons'][j]['emoticon_unique'], 1);
                                     if (i===0){
                                         if (inputArea.selectionStart === inputArea.selectionEnd){
                                             inputArea.value = inputArea.value.substring(0,inputArea.selectionStart)+emoji.title+inputArea.value.substring(inputArea.selectionEnd, inputArea.value.length);
@@ -780,7 +821,7 @@
                                 cell[j].onclick = function (e){
                                     if(e.button === 0 && cellButton.classList.contains('rua-emoji-icon-active') && !this.id.includes('emoji')){
                                         inputArea.focus();
-                                        packaging(this.id, "systemEmoji");
+                                        packaging(this.id, 1);
                                     }
                                     if(e.button === 0 && cellButton.classList.contains('rua-emoji-icon-active') && this.id.includes('emoji')){
                                         if (inputArea.selectionStart === inputArea.selectionEnd){
@@ -802,7 +843,7 @@
                 .catch(msg =>{});
         }
 
-        let enterLock = true, unlock = true;
+
         function constructHTMLTable(num_per_line, O, O1, span){
             // enter key shortcut listener
             try{

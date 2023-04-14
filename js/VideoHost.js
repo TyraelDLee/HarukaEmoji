@@ -365,45 +365,44 @@
                 });
         }else {
             document.getElementById('emoji-selection').style.fontSize = '12px';
-            let found = false;
-            for (const e of document.getElementById('media_module').getElementsByClassName('media-right')[0].getElementsByClassName('pub-wrapper')[0].getElementsByTagName('a')){
-                if (e.classList.contains('av-link')){
-                    found = true;
-                    fetch("https://api.bilibili.com/pgc/view/web/season?"+sep(vid), {
-                        method:"GET",
-                        credentials: 'include',
-                        body:null
-                    })
-                        .then(res => res.json())
-                        .then(json => {
-                            downloadCover(json['result']['cover']);
-                            grabBangumi(json, e.innerText);
-                        });
-                }
-            }
-            if(!found){
-                const bvObs = new MutationObserver(m=>{
-                    m.forEach(function(mutation) {
-                        if (mutation.type === "childList" && mutation.addedNodes[0]!==undefined && mutation.addedNodes[0].classList.contains('av-link')) {
-                            const bv = mutation.addedNodes[0].innerText;
-                            fetch("https://api.bilibili.com/pgc/view/web/season?"+sep(vid), {
-                                method:"GET",
-                                credentials: 'include',
-                                body:null
-                            })
-                                .then(res => res.json())
-                                .then(json => {
-                                    downloadCover(json['result']['cover']);
-                                    grabBangumi(json, bv);
-                                });
-                        }
-                    });
-                });
-                bvObs.observe(document.getElementById('media_module').getElementsByClassName('media-right')[0].getElementsByClassName('pub-wrapper')[0],{
-                    childList:true
-                });
-            }
+            console.log(document.querySelector('link[rel="canonical"]').href.replace('https://www.bilibili.com/bangumi/play/', ''))
+            getSeasonInfo(document.querySelector('link[rel="canonical"]').href.replace('https://www.bilibili.com/bangumi/play/', ''));
+
+            // let found = false;
+            // for (const e of document.getElementById('eplist_module').getElementsByClassName('media-right')[0].getElementsByClassName('pub-wrapper')[0].getElementsByTagName('a')){
+            //         if (e.classList.contains('av-link')){
+            //             found = true;
+            //             getSeasonInfo(e.innerText);
+            //         }
+            //     }
+            //
+            // if(!found){
+            //     const bvObs = new MutationObserver(m=>{
+            //         m.forEach(function(mutation) {
+            //             if (mutation.type === "childList" && mutation.addedNodes[0]!==undefined && mutation.addedNodes[0].classList.contains('av-link')) {
+            //                 const bv = mutation.addedNodes[0].innerText;
+            //                 getSeasonInfo(bv);
+            //             }
+            //         });
+            //     });
+            //     bvObs.observe(document.getElementById('media_module').getElementsByClassName('media-right')[0].getElementsByClassName('pub-wrapper')[0],{
+            //             childList:true
+            //         });
+            // }
         }
+    }
+
+    function getSeasonInfo(epID){
+        fetch("https://api.bilibili.com/pgc/view/web/season?"+sep(epID), {
+            method:"GET",
+            credentials: 'include',
+            body:null
+        })
+            .then(res => res.json())
+            .then(json => {
+                downloadCover(json['result']['cover']);
+                grabBangumi(json, epID);
+            });
     }
 
     function downloadCover(dlURL){
@@ -423,7 +422,7 @@
                 let found = false;
                 try{
                     for (let i = 0; i < json['result']['episodes'].length; i++) {
-                        if (json['result']['episodes'][i]['bvid']+'' === id){
+                        if (id.includes(json['result']['episodes'][i]['id']+'')){
                             aid = json['result']['episodes'][i]['aid'];
                             bvid = json['result']['episodes'][i]['bvid'];
                             rightBadge = json['result']['episodes'][i]['badge_info']['text'];
@@ -435,10 +434,10 @@
                     }
                     if(!found){
                         for (let i = 0; i < json['result']['section'][0]['episodes'].length; i++) {
-                            if (json['result']['section'][0]['episodes'][i]['bvid']+'' === id){
+                            if (id.includes(json['result']['section'][0]['episodes'][i]['id']+'')){
                                 aid = json['result']['section'][0]['episodes'][i]['aid'];
                                 bvid = json['result']['section'][0]['episodes'][i]['bvid'];
-                                rightBadge = json['result']['episodes'][i]['badge_info']['text'];
+                                rightBadge = json['result']['section'][0]['episodes'][i]['badge_info']['text'];
                                 vtitle.push(json['result']['season_title']+'-花絮-'+json['result']['section'][0]['episodes'][i]['long_title']);
                                 cids.push(json['result']['section'][0]['episodes'][i]['cid']);
                                 found = true;
@@ -448,10 +447,10 @@
                     }
                     if (!found){
                         for (let i = 0; i < json['result']['section'][1]['episodes'].length; i++) {
-                            if (json['result']['section'][1]['episodes'][i]['bvid']+'' === id){
+                            if (id.includes(json['result']['section'][1]['episodes'][i]['id']+'')){
                                 aid = json['result']['section'][1]['episodes'][i]['aid'];
                                 bvid = json['result']['section'][1]['episodes'][i]['bvid'];
-                                rightBadge = json['result']['episodes'][i]['badge_info']['text'];
+                                rightBadge = json['result']['section'][1]['episodes'][i]['badge_info']['text'];
                                 vtitle.push(json['result']['season_title']+'-二创-'+json['result']['section'][1]['episodes'][i]['long_title']);
                                 cids.push(json['result']['section'][1]['episodes'][i]['cid']);
                                 found = true;

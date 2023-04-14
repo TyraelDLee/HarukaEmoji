@@ -498,3 +498,4 @@
 
 //todo: search following. API:  https://api.bilibili.com/x/relation/followings/search?vmid=${UID}&pn=1&ps=50&order=desc&order_type=attention&name=${key word}
 //todo: notification master button.
+//todo: revoke previous elements for lazy loading

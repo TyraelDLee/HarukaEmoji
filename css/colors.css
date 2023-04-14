@@ -2586,3 +2586,16 @@ html[theme*="dark"] .s-space .search-page{
 html[theme*="dark"] .normal-article-holder .img-box:before, html[theme*="dark"] .read-article-holder .article-card-holder{
     border: 1px solid var(--Ga2);
 }
+
+html[theme*="dark"] .numberListItem_number_list_item__wszA4.numberListItem_select__ar1X5{
+    border-color: #00a1d6;
+    background-color: #00a1d6;
+}
+
+html[theme*="dark"] .fans-action-btn.follow{
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .fans-action-btn{
+    color: var(--text2);
+}
