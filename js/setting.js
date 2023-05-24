@@ -26,6 +26,11 @@
         const settingItemSwitchVideoNotification = document.getElementById('setting-item-switch-video-notification');
         const settingItemSwitchPCGNotification = document.getElementById('setting-item-switch-pcg-notification');
         const settingItemSwitchArticleNotification = document.getElementById('setting-item-switch-article-notification');
+        const settingItemSwitchHiddenVideoBtn = document.getElementById('setting-item-switch-hidden-video-btn');
+
+        settingItemSwitchHiddenVideoBtn.addEventListener('change', ()=>{
+           chrome.storage.sync.set({'hiddenOnVideoBtn': settingItemSwitchHiddenVideoBtn.checked}, ()=>{})
+        });
 
         settingItemSwitchNotification.addEventListener('change', () => {
             chrome.storage.sync.set({'notification': settingItemSwitchNotification.checked}, () => {});
@@ -163,7 +168,7 @@
                     buttonDisabled(false, settingItemSwitchImgNotice);
             });
 
-            chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem", "commentEmoji", "videoPush", "pgcPush", "articlePush", "heartBeatSwitch", "squareCover", "dkWord"], (info) => {
+            chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem", "commentEmoji", "videoPush", "pgcPush", "articlePush", "heartBeatSwitch", "squareCover", "dkWord", 'hiddenOnVideoBtn'], (info) => {
                 settingItemSwitchNotification.checked = info['notification'];
                 settingItemSwitchHiddenEntry.checked = info['hiddenEntry'];
                 settingItemSwitchEnhancedHiddenEntry.checked = info['enhancedHiddenEntry'];
@@ -200,6 +205,9 @@
                 buttonDisabled(info['dynamicPush'], settingItemSwitchVideoNotification);
                 buttonDisabled(info['dynamicPush'], settingItemSwitchPCGNotification);
                 buttonDisabled(info['dynamicPush'], settingItemSwitchArticleNotification);
+
+
+                settingItemSwitchHiddenVideoBtn.checked = info['hiddenOnVideoBtn'];
             });
 
             chrome.storage.local.get(["imageNotice"], (result) => {

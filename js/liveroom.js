@@ -359,11 +359,11 @@
             videoOwnerInfoContainer.style.display = 'none';
             videoOwnerInfoContainer.classList.add('video-owner-info-container');
             videoOwnerInfoContainer.innerHTML = `
-            <div class="owner-avatar" style="background-image: url(${liveRoomInfo['face']})"></div>
+            <a class="owner-avatar" style="background-image: url(${liveRoomInfo['face']})" href="https://space.bilibili.com/${liveRoomInfo['uid']}" target="_blank"></a>
             <div class="owner-text-info">
-                <div class="owner-room-title">${liveRoomInfo['title']}</div>
+                <div class="owner-room-title"><a href="https://live.bilibili.com/${liveRoomInfo['room_id']}" target="_blank">${liveRoomInfo['title']}</a></div>
                 <div class="owner-misc">
-                    <div class="owner-name">${liveRoomInfo['uname']}</div>
+                    <div class="owner-name"><a href="https://space.bilibili.com/${liveRoomInfo['uid']}" target="_blank">${liveRoomInfo['uname']}</a></div>
                     <div style="margin: 0 5px">|</div>
                     <div class="live-zone">${liveRoomInfo['area_v2_name']}</div>
                 </div>

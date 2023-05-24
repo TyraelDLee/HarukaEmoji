@@ -7,7 +7,9 @@ rua豹使人快乐，rua了又rua！<br>
 
 rua豹器5.17来啦 <br>
 兼容绝大多数chromium内核浏览器，例如：Opera浏览器，360浏览器，新MS Edge，yandex....。<br>
-现已支持火狐浏览器，见：<a href="https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/">火狐扩展商店</a>
+现已支持火狐浏览器，见：<a href="https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/">火狐扩展商店</a><br>
+<b>忙炸了，暂时停更；；</b>
+会时不时push代码，有需要的直接下载源码更新吧；；
 
 ## 已有的功能
 - 视频投稿推送通知。

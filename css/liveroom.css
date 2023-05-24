@@ -44,6 +44,16 @@ video {
     background: #000;
 }
 
+a{
+    text-decoration: none;
+    color: inherit;
+    transition: 0.2s;
+}
+
+a:hover{
+    color: var(--bili-blue);
+}
+
 .video-container {
     background-color: #000;
     top: 0;

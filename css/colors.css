@@ -1226,7 +1226,7 @@ html[theme*="dark"] .tip[data-v-c33503c6] {
     color: var(--text3);
 }
 
-html[theme*="dark"] .bili-im[data-v-f135e21e]{
+html[theme*="dark"] .bili-im{
     background-color: var(--bg1);
     color: var(--text2);
     box-shadow: 0 2px 4px 0 rgb(50 50 50 / 54%);
@@ -1241,7 +1241,7 @@ html[theme*="dark"] .dialog .title{
     color: var(--text1);
 }
 
-html[theme*="dark"] .bili-im .left[data-v-f135e21e]{
+html[theme*="dark"] .bili-im .left{
     border-right: 1px solid var(--Ga2);
 }
 
@@ -1269,7 +1269,7 @@ html[theme*="dark"] .active[data-v-5eb7422a] {
     background-color: var(--bg1_float);
 }
 
-html[theme*="dark"] .bili-im .left .title[data-v-f135e21e]{
+html[theme*="dark"] .bili-im .left .title{
     border-bottom: 1px solid var(--Ga2);
 }
 
@@ -1277,7 +1277,7 @@ html[theme*="dark"] .list-item .name{
     color: var(--text1);
 }
 
-html[theme*="dark"] .send-box[data-v-7762b962]{
+html[theme*="dark"] .send-box{
     background-color: var(--bg2_float);
     border-top: 1px solid var(--Ga2);
 }
@@ -2598,4 +2598,134 @@ html[theme*="dark"] .fans-action-btn.follow{
 
 html[theme*="dark"] .fans-action-btn{
     color: var(--text2);
+}
+
+html[theme*="dark"] .article-container .text-area .title, html[theme*="dark"] .gift-item .gift-label{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .article-container{
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .article-container:hover .text-area{
+    box-shadow: 0 3px 10px 0 rgba(50,50,50,0.44);
+}
+
+html[theme*="dark"] .imagesbox .boost-control, html[theme*="dark"] .imagesbox .boost-img {
+    background: var(--bg2_float);
+}
+
+html[theme*="dark"] .gift-item.buy.hover, html[theme*="dark"] .gift-item.buy:hover{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] .m-recharge-ent .balance-info .recharge-ent-info, html[theme*="dark"] .m-guard-ent .guard-info .guard-ent-info{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .m-recharge-ent .balance-info .recharge-ent-info .right-arrow, html[theme*="dark"] .m-guard-ent .guard-info .guard-ent-info .right-arrow{
+    border-color: var(--text1);
+}
+
+html[theme*="dark"] .gift-package-btn{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .gift-package-btn .bag-icon{
+    border-color: var(--text1);
+}
+
+html[theme*="dark"] .gift-package-btn:hover{
+    background: var(--bg2);
+}
+
+html[theme*="dark"] .SectionSelector_SectionSelector__WS4H3 .SectionSelector_expand__Oh9Lt{
+    background: linear-gradient(270deg, var(--bg2) 46.21%, hsla(210,8%,95%,0));
+}
+
+html[theme*="dark"] .recommend_wrap__pgu8c{
+    border-top: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .media-tab-wrp{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .media-tab-nav{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] .media-tab-nav ul li{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .season-slider-wrapper .slider-wrapper .season-slider-list li:after{
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAkCAYAAABfVsDFAAAAAXNSR0IArs4c6QAAAfVJREFUOBGF1b1uE0EQAOCZ/fFZcWIJGScRDR0SouAV6HgBJKSUVEGKhHgEeigIUsQTUEDJO9AhGpBoEcKxk5jYju3z3f5l5hQj29zdbuG73f12vLO7dwd/BiNzej7+3j8bPYVYmc7SMJrMw+nZaN47H7+s88iYgfMBZqmZaVT3ut1Wr2yQWDZKgaCVlMbbw2Xb5vUf5o6GFk0QcBRCUJuQ62uYo0tEObiYPIliBg0t25REaaJrkRlrVTQ9GFxOH3J9tfyHuTPRMnHGHq1Cvi/FSglO8GA4DO3VAaVYIC2jFCHzk2dRzIASbdFlLdHSyIylFIAAt3rD8WOuc6nE3Nls6G1w8ILvudRipWjygI96l+ndKCYJWguBxjyPYgaJEglAOKTzgrXTKKLReaFMsf93ej+KiwGIHoPfiWL6e34wmnud9rcoNtY7iv4REfMoznK7AFTHxXT4p6oY5yEg/rzTbX1lUxs5y+wVgTfLYJWYn3YPYPZutz9FcW78glb4HSVmazGtFhhrgwzy/RLytXQalJinTfu8u7vdj2JarrmQ+HYVlka2ltIC+EU79iWKc+uuaHFfb0Kur83Z03JRXmG/u/MhinPrM0A84XNQi3kTMuNcItVJGeS24m1pXYB0kaciiFedztbvKgw3n4kf9NY/qEQ3Hdf5GsAxnUDMHAAAAABJRU5ErkJggg==) no-repeat var(--bg2);
+}
+
+html[theme*="dark"] .media-tab-detail-wrp .media-tab-detail, html[theme*="dark"] .media-tab-detail-wrp .media-tab-detail-l{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] .media-tab-module-wrp .media-tab-module-content .sl-ep-nav-title, html[theme*="dark"] .bangumi-media .bangumi-media-header h4, html[theme*="dark"] .bangumi-media .bangumi-media-header .rate-wrapper .btn-go-write, html[theme*="dark"] .media-tab-detail-wrp .media-tab-detail-l .media-tab-module-wrp .media-tab-module-title, html[theme*="dark"] .media-tab-detail-wrp .media-tab-detail .media-tab-module-wrp .media-tab-module-title{
+    color: var(--text2);
+}
+
+html[theme*="dark"] .misl-ep-item{
+    background-color: var(--bg1);
+    border: 1px solid var(--bg1);
+}
+
+html[theme*="dark"] .misl-ep-item .misl-ep-text .misl-ep-index, html[theme*="dark"] .section-item .section-text .section-index{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .section-item{
+    background-color: var(--bg1);
+    border: 1px solid var(--bg1);
+}
+
+html[theme*="dark"] .media-tab-detail-wrp .media-tab-detail-l .media-tab-module-wrp, html[theme*="dark"] .media-tab-detail-wrp .media-tab-detail .media-tab-module-wrp, html[theme*="dark"] .bangumi-media{
+    border-top: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .bangumi-review-item{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .bangumi-review-item .long-title, html[theme*="dark"] .slide-item-wrp .slide-item-info .slide-item-title{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .media-info-card{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] .media-info-card .mic-evaluate{
+    color: var(--text3);
+}
+
+html[theme*="dark"] .main-container{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .playerPop_wrap__s_BmY .playerPop_bar__4rXYS{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] .playerPop_wrap__s_BmY .playerPop_bar__4rXYS .playerPop_left__JxIyi, html[theme*="dark"] .playerPop_wrap__s_BmY .playerPop_bar__4rXYS .playerPop_right__GkGYy{
+    background-color: var(--bg1);
+}
+
+html[theme*="dark"] .mediainfo_mediaInfo__Cpow4, html[theme*="dark"] .feed-bar-section{
+    border-top: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .dyn-card-opus__title{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .common-popup-wrap{
+    background-color: var(--bg1);
 }

@@ -30,12 +30,14 @@
     var labFeatures=[];
     var zoomFactor = 1.0;
     let squareCover;
-    chrome.storage.sync.get(['squareCover'], (info)=>{
+    chrome.storage.sync.get(['squareCover', 'hiddenOnVideoBtn'], (info)=>{
         squareCover = info.squareCover;
+        hiddenVideoVote(info.hiddenOnVideoBtn);
     });
     chrome.storage.onChanged.addListener( (changes, namespace) =>{
         for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
             if(key === "squareCover") squareCover = newValue;
+            if(key === 'hiddenOnVideoBtn') hiddenVideoVote(newValue);
         }
     });
 
@@ -432,37 +434,41 @@
                             break;
                         }
                     }
-                    if(!found){
-                        for (let i = 0; i < json['result']['section'][0]['episodes'].length; i++) {
-                            if (id.includes(json['result']['section'][0]['episodes'][i]['id']+'')){
-                                aid = json['result']['section'][0]['episodes'][i]['aid'];
-                                bvid = json['result']['section'][0]['episodes'][i]['bvid'];
-                                rightBadge = json['result']['section'][0]['episodes'][i]['badge_info']['text'];
-                                vtitle.push(json['result']['season_title']+'-花絮-'+json['result']['section'][0]['episodes'][i]['long_title']);
-                                cids.push(json['result']['section'][0]['episodes'][i]['cid']);
-                                found = true;
-                                break;
+                    console.log(json['result']['section'].length)
+                    for (let sectionSize = 0; sectionSize < json['result']['section'].length; sectionSize++) {
+                        if(!found){
+                            for (let i = 0; i < json['result']['section'][sectionSize]['episodes'].length; i++) {
+                                if (id.includes(json['result']['section'][sectionSize]['episodes'][i]['id']+'')){
+                                    aid = json['result']['section'][sectionSize]['episodes'][i]['aid'];
+                                    bvid = json['result']['section'][sectionSize]['episodes'][i]['bvid'];
+                                    rightBadge = json['result']['section'][sectionSize]['episodes'][i]['badge_info']['text'];
+                                    vtitle.push(json['result']['season_title']+json['result']['section'][sectionSize]['episodes'][i]['long_title']);
+                                    cids.push(json['result']['section'][sectionSize]['episodes'][i]['cid']);
+                                    found = true;
+                                    break;
+                                }
                             }
                         }
                     }
-                    if (!found){
-                        for (let i = 0; i < json['result']['section'][1]['episodes'].length; i++) {
-                            if (id.includes(json['result']['section'][1]['episodes'][i]['id']+'')){
-                                aid = json['result']['section'][1]['episodes'][i]['aid'];
-                                bvid = json['result']['section'][1]['episodes'][i]['bvid'];
-                                rightBadge = json['result']['section'][1]['episodes'][i]['badge_info']['text'];
-                                vtitle.push(json['result']['season_title']+'-二创-'+json['result']['section'][1]['episodes'][i]['long_title']);
-                                cids.push(json['result']['section'][1]['episodes'][i]['cid']);
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
+
+                    // if (!found){
+                    //     for (let i = 0; i < json['result']['section'][1]['episodes'].length; i++) {
+                    //         if (id.includes(json['result']['section'][1]['episodes'][i]['id']+'')){
+                    //             aid = json['result']['section'][1]['episodes'][i]['aid'];
+                    //             bvid = json['result']['section'][1]['episodes'][i]['bvid'];
+                    //             rightBadge = json['result']['section'][1]['episodes'][i]['badge_info']['text'];
+                    //             vtitle.push(json['result']['season_title']+'-二创-'+json['result']['section'][1]['episodes'][i]['long_title']);
+                    //             cids.push(json['result']['section'][1]['episodes'][i]['cid']);
+                    //             found = true;
+                    //             break;
+                    //         }
+                    //     }
+                    // }
                 }catch (e) {
                     console.log(e);
                 }
                 if (found){
-                    getQn(cids[0], rightBadge===''||(rightBadge==='会员' && vip.vip > 0)?'':`<span class="rua-video-right-info">${rightBadge==='会员'?'此视频需要大会员':'您所在的地区无法观看本片'}。</span>`);
+                    getQn(cids[0], rightBadge===''||rightBadge==='限免'||(rightBadge==='会员' && vip.vip > 0)?'':`<span class="rua-video-right-info">${rightBadge==='会员'?'此视频需要大会员':'您所在的地区无法观看本片'}。</span>`);
                 }
             }
         });
@@ -1341,6 +1347,17 @@
         }
         return false;
     }
+    /**
+     * Hidden the vote, follow etc. buttons over the
+     * video canvas.
+     *
+     * @param hidden {boolean}, enable hide.
+     * */
+    function hiddenVideoVote(hidden){
+        const buttonArea = document.getElementById('bilibili-player').querySelector('.bpx-player-cmd-dm-wrap');
+        buttonArea.style.display = hidden?'none':'unset';
+    }
+
 }();
 
 //todo: code review

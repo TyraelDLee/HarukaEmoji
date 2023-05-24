@@ -1223,5 +1223,10 @@
             const controlHost = document.getElementById('web-player-controller-wrap-el').getElementsByClassName('control-area')[0].getElementsByClassName('left-area')[0];
             controlHost.appendChild(chaseButtonDiv);
         }
+
+        // hidden the shopping cart popup.
+        const shoppingCart = document.getElementById('shop-popover-vm');
+        shoppingCart.style.display = 'none'
+        // 你自己网页不支持你那破b带货，你不显示不就完了？挡住直播画面显得你可会UI设计？？那么大那个页面你放哪不行非得挡住画面？？？逆天
     }
 }();
