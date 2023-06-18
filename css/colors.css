@@ -35,6 +35,8 @@
     --graph_icon: var(--Ga7);
     --shadow: var(--Ba0);
     --bpx-dmsend-info-font: var(--text2);
+    --gift-panel-background-color: var(--Ga11)!important;
+    --gift-panel-container-border-color: var(--Ga2) !important;
 
     --Ga0: #F6F7F8;
     --Ga0_s: #F6F7F8;
@@ -2728,4 +2730,9 @@ html[theme*="dark"] .dyn-card-opus__title{
 
 html[theme*="dark"] .common-popup-wrap{
     background-color: var(--bg1);
+}
+
+html[theme*="dark"] .gift-panel-container-root .gift-panel-background{
+    background-color: var(--gift-panel-background-color)!important;
+    border-color: var(--gift-panel-container-border-color) !important;
 }

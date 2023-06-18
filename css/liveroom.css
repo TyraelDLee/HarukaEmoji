@@ -406,7 +406,7 @@ a:hover{
 }
 
 .emoji-sec {
-    display: block;
+    /*display: block;*/
     height: 120px;
     width: 100%;
     bottom: 40px;
@@ -417,7 +417,9 @@ a:hover{
     border-radius: 5px;
     transition: all 0.5s ease 0s;
     text-align: center;
-    overflow-y: scroll;
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .emoji-sec:hover, .danmaku:hover .emoji-sec {
@@ -439,8 +441,6 @@ a:hover{
 }
 
 .emoji-sec .rua-emoji-icon {
-    width: 60px;
-    height: 60px;
     background-size: contain;
     position: relative;
     background-position: center;
@@ -449,7 +449,7 @@ a:hover{
 }
 
 .emoji-sec .rua-emoji-icon-active {
-    cursor: pointer;
+    transition: 0.2s;
 }
 
 .emoji-sec .rua-emoji-icon-active:hover {
@@ -745,4 +745,77 @@ input[type=radio]:checked {
 
 .video-container .video-stream:first-child .video-owner-info-container{
     top: 60px;
+}
+
+.rua-emoji-header{
+    line-height: 46px;
+    height: 40px;
+    font-size: 12px;
+    background-color: #000000;
+    display: flex;
+    justify-content: flex-start;
+    white-space: nowrap;
+    position: relative;
+    overflow: scroll!important;
+    scrollbar-width: none;
+}
+
+.rua-emoji-header::-webkit-scrollbar {
+    display: none;
+}
+
+.rua-header-item{
+    color: var(--text3);
+    cursor: pointer;
+    width: 50px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.rua-header-item img{
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+}
+
+.rua-emoji-header .active{
+    background-color: #17181A;
+}
+
+.rua-emoji-item{
+    position: relative;
+    width: 65px;
+    height: 65px;
+    display: flex;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.rua-emoji-item-xs{
+    width: 30px;
+    height: 30px;
+}
+
+.rua-emoji-item img{
+    max-width: 100%;
+    max-height: 100%;
+    margin: auto;
+    display: block;
+}
+
+.rua-emoji-container{
+    display: none;
+    flex-wrap: wrap;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-left: 5px;
+}
+
+.rua-emoji-icon-inactive-new{
+    opacity: 0.3;
 }

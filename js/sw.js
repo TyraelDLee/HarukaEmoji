@@ -319,6 +319,7 @@ async function initialize(reload){
     setInitValue('liveroom-quality', 10000);
     setInitValue('dkWord', '');
     setInitValue('hiddenOnVideoBtn', false);
+    setInitValue('notificationMaster', false);
     /**
      * Context menu section.
      *
@@ -657,8 +658,12 @@ function getUUID(){
 function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face, uid){
     try{
         let msg = liverName + " 开播啦!\r\n是"+(type===0?"电脑":"手机")+"直播！";
-        chrome.storage.local.get(["imageNotice"], (result)=>{
-            result.imageNotice?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, face, "live.bilibili.com/");
+        chrome.storage.sync.get(['notificationMaster'], (masterSwitch)=>{
+            if (masterSwitch.notificationMaster){
+                chrome.storage.local.get(["imageNotice"], (result)=>{
+                    result.imageNotice?imageNotification(uid, roomTitle, msg, roomUrl, cover, face, "live.bilibili.com/"):basicNotification(uid, roomTitle, msg, roomUrl, face, "live.bilibili.com/");
+                });
+            }
         });
     }catch (e){}
 }
@@ -675,15 +680,19 @@ function pushNotificationChrome(roomTitle, liverName, roomUrl, cover, type, face
  * @param {string} URLPrefix, "live.bilibili.com/", will be combined with roomUrl to build a full link.
  * */
 function basicNotification(uid, roomTitle, msg, roomUrl, cover, URLPrefix){
-    cover = cover.length==null||cover.length===0?"../images/haruka128.png":cover;
-    chrome.notifications.create(uid+":"+roomUrl+":"+URLPrefix, {
-            type: "basic",
-            iconUrl: cover,
-            title: roomTitle,
-            message: msg,
-            contextMessage:"rua豹器"
-        }, function (id) {}
-    );
+    chrome.storage.sync.get(['notificationMaster'], (masterSwitch)=>{
+        if (masterSwitch.notificationMaster){
+            cover = cover.length==null||cover.length===0?"../images/haruka128.png":cover;
+            chrome.notifications.create(uid+":"+roomUrl+":"+URLPrefix, {
+                    type: "basic",
+                    iconUrl: cover,
+                    title: roomTitle,
+                    message: msg,
+                    contextMessage:"rua豹器"
+                }, function (id) {}
+            );
+        }
+    });
 }
 
 /**

@@ -27,6 +27,7 @@
         const settingItemSwitchPCGNotification = document.getElementById('setting-item-switch-pcg-notification');
         const settingItemSwitchArticleNotification = document.getElementById('setting-item-switch-article-notification');
         const settingItemSwitchHiddenVideoBtn = document.getElementById('setting-item-switch-hidden-video-btn');
+        const settingItemSwitchNotificationMaster = document.getElementById('setting-item-switch-notification-master');
 
         settingItemSwitchHiddenVideoBtn.addEventListener('change', ()=>{
            chrome.storage.sync.set({'hiddenOnVideoBtn': settingItemSwitchHiddenVideoBtn.checked}, ()=>{})
@@ -135,6 +136,10 @@
             chrome.storage.sync.set({"dynamicPush": checked}, function (){});
         });
 
+        settingItemSwitchNotificationMaster.addEventListener('change', ()=>{
+            chrome.storage.sync.set({"notificationMaster":settingItemSwitchNotificationMaster.checked}, function (){});
+        });
+
         function turnOffDynamic(){
             if (!settingItemSwitchArticleNotification.checked && !settingItemSwitchPCGNotification.checked && !settingItemSwitchVideoNotification.checked) {
                 settingItemSwitchUpdateNotification.checked = false;
@@ -168,7 +173,7 @@
                     buttonDisabled(false, settingItemSwitchImgNotice);
             });
 
-            chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem", "commentEmoji", "videoPush", "pgcPush", "articlePush", "heartBeatSwitch", "squareCover", "dkWord", 'hiddenOnVideoBtn'], (info) => {
+            chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem", "commentEmoji", "videoPush", "pgcPush", "articlePush", "heartBeatSwitch", "squareCover", "dkWord", 'hiddenOnVideoBtn', 'notificationMaster'], (info) => {
                 settingItemSwitchNotification.checked = info['notification'];
                 settingItemSwitchHiddenEntry.checked = info['hiddenEntry'];
                 settingItemSwitchEnhancedHiddenEntry.checked = info['enhancedHiddenEntry'];
@@ -196,6 +201,7 @@
                 settingItemSwitchDarkMode.checked = info['darkMode'];
                 settingItemSwitchDarkModeFollowSystem.checked = info['darkModeSystem'];
 
+                settingItemSwitchNotificationMaster.checked = info['notificationMaster'];
                 settingItemSwitchMessageNotification.checked = info['unreadSwitch'];
                 settingItemSwitchDynamicNotification.checked = info['dynamicSwitch'];
                 settingItemSwitchUpdateNotification.checked = info['dynamicPush'];
@@ -233,6 +239,33 @@
         const icon = document.getElementById('rua-icon');
         let pn = 1, followPM = Math.ceil((followingStat['following'] - 0) / elementsOnPage),
             whisperPM = Math.ceil((followingStat['whisper'] - 0) / elementsOnPage);
+
+        const settingSearchUser = document.getElementById('setting-search-user');
+        let userInputDelay = null, search = false, searchName = '', searchPM = 1;
+        let maxPage = search?searchPM:followPM;
+        const mainTitle1 = main.firstElementChild, mainTitle2 = mainTitle1.nextElementSibling;
+        settingSearchUser.addEventListener('input', ()=>{
+            clearTimeout(userInputDelay);
+            userInputDelay = setTimeout(async ()=>{
+                search = settingSearchUser.value !== '';
+                searchName = settingSearchUser.value;
+                main.innerHTML = '';
+                main.appendChild(mainTitle1);
+                main.appendChild(mainTitle2);
+                pn=1;
+
+                if (settingSearchUser.value === '') {
+                    await grabFollowing(1, uid, followPM, false); // empty search input return the first page of following
+                    maxPage = followPM;
+                }
+                else{
+                    searchPM = await grabFollowing(1, uid, 1, whisperRequest, search, searchName);
+                    searchPM = Math.ceil(searchPM / elementsOnPage);
+                    maxPage = searchPM;
+                }
+            }, 300);
+        });
+
         icon.addEventListener('click', () => {
             document.documentElement.scrollTop = 0;
         });
@@ -254,8 +287,10 @@
             videoList = r['blackListVideo'];
             dkList = r['blackListDK'];
             hbList = r['blackListHB'];
-            grabFollowing(1, uid, followPM, whisperRequest);
+            grabFollowing(1, uid, followPM, whisperRequest); // get the first page of following
         });
+
+        let delta = document.documentElement.scrollTop;
 
         document.body.onscroll = (e) => {
             if (document.documentElement.scrollTop > 2110) {
@@ -268,20 +303,22 @@
                 document.getElementById('rua-head-space').setAttribute('style', `display:none; padding: 0; border: none;`);
             }
             if (Math.ceil(document.body.clientHeight - document.documentElement.scrollTop - window.innerHeight) <= -70) {
-                if (scrollLock) {
+                delta = document.documentElement.scrollTop - delta;
+                if (scrollLock && delta > 0) {
                     scrollLock = false;
                     pn++;
-                    if (pn <= followPM) {
-                        grabFollowing(pn, uid, followPM, whisperRequest);
+                    if (pn <= maxPage) {
+                        grabFollowing(pn, uid, maxPage, whisperRequest, search, searchName);
                     }
-                    if (pn === followPM + 1 && !whisperRequest) {
+                    if (pn === followPM + 1 && !whisperRequest && !search) {
                         pn = 1;
-                        followPM = whisperPM;
+                        maxPage = whisperPM;
                         whisperRequest = true;
                     }
                 }
+                delta = document.documentElement.scrollTop;
             }
-        }
+        } // reconstruct here!
     }();
 
     /**
@@ -291,9 +328,14 @@
      * @param{number} uid the user's id.
      * @param{number} pageNumberMax the max page number.
      * @param{boolean} whisper request whisper following.
+     * @param{boolean} search search mode
+     * @param{string} searchName request serach username
      * */
-    function grabFollowing(pn, uid, pageNumberMax, whisper = false) {
-        return fetch(`https://api.bilibili.com/x/relation/${whisper ? `whispers?` : `followings?vmid=${uid}&`}pn=${pn}&ps=${elementsOnPage}`, {
+    function grabFollowing(pn, uid, pageNumberMax, whisper = false, search = false, searchName = '') {
+        console.log(search)
+        return fetch(search?
+            `https://api.bilibili.com/x/relation/followings/search?vmid=${uid}&pn=${pn}&ps=${elementsOnPage}&order=desc&order_type=attention&name=${searchName}`:
+            `https://api.bilibili.com/x/relation/${whisper ? `whispers?` : `followings?vmid=${uid}&`}pn=${pn}&ps=${elementsOnPage}`, {
             method: "GET",
             credentials: "include",
             body: null

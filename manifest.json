@@ -107,8 +107,14 @@
     "matches": ["*://*.bilibili.com/*"],
     "exclude_matches": ["*://message.bilibili.com/*"],
     "run_at": "document_end"
+  },{
+    "all_frames": true,
+    "css": ["css/guild.min.css"],
+    "js": ["js/guild.min.js"],
+    "matches": ["*://space.bilibili.com/*", "*://live.bilibili.com/*"],
+    "run_at": "document_end"
   }],
-  "web_accessible_resources": [{"resources": ["images/*", "css/*", "js/*", "ffmpeg/*"], "matches": ["https://*/*"]}],
+  "web_accessible_resources": [{"resources": ["images/*", "css/*", "js/*", "ffmpeg/*", "guild/*"], "matches": ["https://*/*"]}],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },

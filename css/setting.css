@@ -16,6 +16,28 @@ a{
     text-decoration: none;
 }
 
+input[type='text']{
+    border-bottom: 1px solid var(--bili-brand);
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    width: 100%;
+    transition: .2s;
+    background: var(--background);
+    line-height: 25px;
+    margin-top: 12px;
+    min-width: 165px;
+}
+
+input[type='text']:focus-visible {
+    border-bottom: 3px solid var(--bili-brand);
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    outline: none;
+}
+
+
 #main{
     padding-top: 0;
 }
@@ -378,27 +400,6 @@ a{
 .setting-item-input{
     margin-left: 30px;
     margin-right: 25px;
-}
-
-.setting-item-input input{
-    border-bottom: 1px solid var(--bili-brand);
-    border-left: none;
-    border-right: none;
-    border-top: none;
-    width: 100%;
-    transition: .2s;
-    background: var(--background);
-    line-height: 25px;
-    margin-top: 12px;
-    min-width: 165px;
-}
-
-.setting-item-input input:focus-visible {
-    border-bottom: 3px solid var(--bili-brand);
-    border-left: none;
-    border-right: none;
-    border-top: none;
-    outline: none;
 }
 
 .setting-second-level-group{

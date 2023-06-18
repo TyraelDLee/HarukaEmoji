@@ -1,0 +1,9 @@
+.guild-badge {
+    margin-top: 0 !important;
+    position: absolute;
+}
+
+.guild-badge h4 {
+    line-height: 12px !important;
+    height: 12px !important;
+}

@@ -667,7 +667,7 @@
                 danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('span')[0].innerText = `0/${userInfo['totalLength']}`;
             };
             danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('span')[0].innerText = `0/${userInfo['totalLength']}`;
-
+            let lastUsed = 0;
             //set the emoji.
             fetch("https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id="+liveRoomInfo['room_id'], {
                 method:"GET",
@@ -676,45 +676,113 @@
             }).then(result => result.json())
                 .then(json =>{
                     if(json['code']===0){
-                        let html = `<div style="display: flex; flex-wrap: wrap; margin: 0 7.5%;">`;
-                        for (let j = json['data']['data'].length; j >= 0; j--) {
-                            if(json['data']['data'][j]!==undefined && json['data']['data'][j]!==null && (json['data']['data'][j]['pkg_name'] === '房间专属表情' || json['data']['data'][j]['pkg_name'] === 'UP主大表情')){
-                                html += `<span class="emoji-header">${json['data']['data'][j]['pkg_name']}</span>`;
-                                for (let i = 0; i < json['data']['data'][j]['emoticons'].length; i++) {
-                                    //let able = json['data']['data'][j]['emoticons'][i]['perm']===1;//userInfo['emojiRequiredPrivilege'] <= json['data']['data'][j]['emoticons'][i]['identity'] && json['data']['data'][j]['emoticons'][i]['unlock_need_level'] <= medalInfo['emojiRequiredMedalLevel'];
-                                    html += `<div class="rua-emoji-icon-container"><div class="rua-emoji-icon ${json['data']['data'][j]['emoticons'][i]['perm']===1?'rua-emoji-icon-active':'rua-emoji-icon-inactive'}" title="${json['data']['data'][j]['emoticons'][i]['emoji']}" content="${json['data']['data'][j]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][j]['emoticons'][i]['url'].replace("http://", "https://")}');"></div><div class="rua-emoji-requirement" style="background-color: ${json['data']['data'][j]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][j]['emoticons'][i]['unlock_show_text']}</div></div></div>`;
+                        // let html = `<div style="display: flex; flex-wrap: wrap; margin: 0 7.5%;">`;
+                        let html = danmaku.getElementsByClassName('emoji-sec')[0]
+                        html.classList.add('emoji-tray')
+                        if (json['code'] === 0){
+                            // html = '';
+                            const emojiHeader = document.createElement('div');
+                            const emojiHeaderContent = document.createElement('div');
+                            emojiHeaderContent.classList.add('rua-emoji-header');
+                            emojiHeader.appendChild(emojiHeaderContent);
+                            html.appendChild(emojiHeader);
+                            emojiHeaderContent.addEventListener('wheel', (e)=>{
+                                emojiHeaderContent.scrollLeft += e.deltaY;
+                                emojiHeaderContent.scrollLeft += e.deltaX;
+                                e.preventDefault();
+                            })
+
+                            const data = json['data']['data'];
+                            if (lastUsed > data.length) lastUsed = 0;
+                            for (let i = 0; i < data.length; i++) {
+                                const headerItem = document.createElement('div');
+                                headerItem.classList.add('rua-header-item');
+
+                                const emojiContainer = document.createElement('div');
+                                emojiContainer.classList.add('rua-emoji-container');
+                                if (i === lastUsed) {
+                                    headerItem.classList.add('active');
+                                    emojiContainer.style.display = 'flex';
                                 }
-                            }
-                        }
-                        for (let j = json['data']['data'].length; j >= 0; j--) {
-                            if(json['data']['data'][j]!==undefined && json['data']['data'][j]!==null && !(json['data']['data'][j]['pkg_name'] === '房间专属表情' || json['data']['data'][j]['pkg_name'] === 'UP主大表情')){
-                                html += `<span class="emoji-header">${json['data']['data'][j]['pkg_name']}</span>`;
-                                for (let i = 0; i < json['data']['data'][j]['emoticons'].length; i++) {
-                                    //let able = json['data']['data'][j]['emoticons'][i]['perm']===1;//userInfo['emojiRequiredPrivilege'] <= json['data']['data'][j]['emoticons'][i]['identity'] && json['data']['data'][j]['emoticons'][i]['unlock_need_level'] <= medalInfo['emojiRequiredMedalLevel'];
-                                    html += `<div class="rua-emoji-icon-container"><div class="rua-emoji-icon ${json['data']['data'][j]['emoticons'][i]['perm']===1?'rua-emoji-icon-active':'rua-emoji-icon-inactive'}" title="${json['data']['data'][j]['emoticons'][i]['emoji']}" content="${json['data']['data'][j]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][j]['emoticons'][i]['url'].replace("http://", "https://")}');"></div><div class="rua-emoji-requirement" style="background-color: ${json['data']['data'][j]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][j]['emoticons'][i]['unlock_show_text']}</div></div></div>`;
-                                }
-                            }
-                        }
-                        html += '</div>';
-                        danmaku.getElementsByClassName('emoji-sec')[0].innerHTML = html;
-                        for (let i = 0; i < danmaku.getElementsByClassName('emoji-sec')[0].getElementsByClassName('rua-emoji-icon-container').length; i++) {
-                            danmaku.getElementsByClassName('emoji-sec')[0].getElementsByClassName('rua-emoji-icon')[i].onclick = (e)=>{
-                                let inputArea = danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0];
-                                if (e.target.classList.contains('rua-emoji-icon-active') && !e.target.getAttribute('content').includes('emoji')){
-                                    packaging(e.target.getAttribute('content'), "systemEmoji", liveRoomInfo['room_id'], liveRoomInfo['uid']);
-                                }
-                                if (e.target.classList.contains('rua-emoji-icon-active') && e.target.getAttribute('content').includes('emoji')){
-                                    if (inputArea.selectionStart === inputArea.selectionEnd){
-                                        inputArea.value = inputArea.value.substring(0,inputArea.selectionStart)+e.target.title+inputArea.value.substring(inputArea.selectionEnd, inputArea.value.length);
-                                    }else{
-                                        let p1 = inputArea.value.substring(0,inputArea.selectionStart), p2 = inputArea.value.substring(inputArea.selectionEnd, inputArea.value.length);
-                                        inputArea.value=p1+e.target.title+p2;
+                                headerItem.innerHTML += `<img src="${data[i]['current_cover']}"></div>`
+                                headerItem.onclick = ()=>{
+                                    for (let j = 0; j < emojiHeaderContent.childNodes.length; j++) {
+                                        emojiHeaderContent.childNodes.item(j).classList.remove('active');
+                                        html.getElementsByClassName('rua-emoji-container')[j].style.display = 'none';
+                                        if (emojiHeaderContent.childNodes.item(j) === headerItem) {
+                                            html.getElementsByClassName('rua-emoji-container')[j].style.display = 'flex';
+                                            lastUsed = j;
+                                        }
                                     }
-                                    danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('span')[0].innerText = `${danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].value.length<10?' ':''}${danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].value.length}/${userInfo['totalLength']}`;
+                                    headerItem.classList.add('active');
                                 }
-                                inputArea.focus();
+                                emojiHeaderContent.appendChild(headerItem);
+
+                                for (let j = 0; j < data[i]['emoticons'].length; j++) {
+                                    const emoji = document.createElement('div');
+                                    emoji.classList.add('rua-emoji-icon');
+                                    emoji.classList.add('rua-emoji-item');
+                                    // data[i]['emoticons'][j]['perm']===1?emoji.classList.add('rua-emoji-icon-active'):emoji.classList.add('rua-emoji-icon-inactive-new');
+                                    emoji.title = data[i]['emoticons'][j]['emoji'];
+                                    if (i === 0) emoji.classList.add('rua-emoji-item-xs');
+                                    emoji.innerHTML += `<div class="rua-emoji-requirement" style="background-color: ${data[i]['emoticons'][j]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${data[i]['emoticons'][j]['unlock_show_text']}</div></div><img class="${data[i]['emoticons'][j]['perm']===1?'rua-emoji-icon-active':'rua-emoji-icon-inactive-new'}" src="${data[i]['emoticons'][j]['url']}">`;
+                                    emoji.onclick = ()=>{
+                                        let inputArea = danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0];
+                                        if (!emoji.classList.contains('rua-emoji-icon-inactive-new') && i!==0)
+                                            packaging(data[i]['emoticons'][j]['emoticon_unique'], "systemEmoji", liveRoomInfo['room_id'], liveRoomInfo['uid']);
+                                        if (i===0){
+                                            if (inputArea.selectionStart === inputArea.selectionEnd){
+                                                inputArea.value = inputArea.value.substring(0,inputArea.selectionStart)+emoji.title+inputArea.value.substring(inputArea.selectionEnd, inputArea.value.length);
+                                            }else{
+                                                let p1 = inputArea.value.substring(0,inputArea.selectionStart), p2 = inputArea.value.substring(inputArea.selectionEnd, inputArea.value.length);
+                                                inputArea.value=p1+emoji.title+p2;
+                                            }
+                                            inputArea.focus();
+                                        }
+                                    }
+                                    emojiContainer.append(emoji);
+                                }
+                                html.appendChild(emojiContainer);
                             }
                         }
+                        // for (let j = json['data']['data'].length; j >= 0; j--) {
+                        //     if(json['data']['data'][j]!==undefined && json['data']['data'][j]!==null && (json['data']['data'][j]['pkg_name'] === '房间专属表情' || json['data']['data'][j]['pkg_name'] === 'UP主大表情')){
+                        //         html += `<span class="emoji-header">${json['data']['data'][j]['pkg_name']}</span>`;
+                        //         for (let i = 0; i < json['data']['data'][j]['emoticons'].length; i++) {
+                        //             //let able = json['data']['data'][j]['emoticons'][i]['perm']===1;//userInfo['emojiRequiredPrivilege'] <= json['data']['data'][j]['emoticons'][i]['identity'] && json['data']['data'][j]['emoticons'][i]['unlock_need_level'] <= medalInfo['emojiRequiredMedalLevel'];
+                        //             html += `<div class="rua-emoji-icon-container"><div class="rua-emoji-icon ${json['data']['data'][j]['emoticons'][i]['perm']===1?'rua-emoji-icon-active':'rua-emoji-icon-inactive'}" title="${json['data']['data'][j]['emoticons'][i]['emoji']}" content="${json['data']['data'][j]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][j]['emoticons'][i]['url'].replace("http://", "https://")}');"></div><div class="rua-emoji-requirement" style="background-color: ${json['data']['data'][j]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][j]['emoticons'][i]['unlock_show_text']}</div></div></div>`;
+                        //         }
+                        //     }
+                        // }
+                        // for (let j = json['data']['data'].length; j >= 0; j--) {
+                        //     if(json['data']['data'][j]!==undefined && json['data']['data'][j]!==null && !(json['data']['data'][j]['pkg_name'] === '房间专属表情' || json['data']['data'][j]['pkg_name'] === 'UP主大表情')){
+                        //         html += `<span class="emoji-header">${json['data']['data'][j]['pkg_name']}</span>`;
+                        //         for (let i = 0; i < json['data']['data'][j]['emoticons'].length; i++) {
+                        //             //let able = json['data']['data'][j]['emoticons'][i]['perm']===1;//userInfo['emojiRequiredPrivilege'] <= json['data']['data'][j]['emoticons'][i]['identity'] && json['data']['data'][j]['emoticons'][i]['unlock_need_level'] <= medalInfo['emojiRequiredMedalLevel'];
+                        //             html += `<div class="rua-emoji-icon-container"><div class="rua-emoji-icon ${json['data']['data'][j]['emoticons'][i]['perm']===1?'rua-emoji-icon-active':'rua-emoji-icon-inactive'}" title="${json['data']['data'][j]['emoticons'][i]['emoji']}" content="${json['data']['data'][j]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][j]['emoticons'][i]['url'].replace("http://", "https://")}');"></div><div class="rua-emoji-requirement" style="background-color: ${json['data']['data'][j]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][j]['emoticons'][i]['unlock_show_text']}</div></div></div>`;
+                        //         }
+                        //     }
+                        // }
+                        // html += '</div>';
+                        // danmaku.getElementsByClassName('emoji-sec')[0].append(html);
+                        // for (let i = 0; i < danmaku.getElementsByClassName('emoji-sec')[0].getElementsByClassName('rua-emoji-icon-container').length; i++) {
+                        //     danmaku.getElementsByClassName('emoji-sec')[0].getElementsByClassName('rua-emoji-icon')[i].onclick = (e)=>{
+                        //         let inputArea = danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0];
+                        //         if (e.target.classList.contains('rua-emoji-icon-active') && !e.target.getAttribute('content').includes('emoji')){
+                        //             packaging(e.target.getAttribute('content'), "systemEmoji", liveRoomInfo['room_id'], liveRoomInfo['uid']);
+                        //         }
+                        //         if (e.target.classList.contains('rua-emoji-icon-active') && e.target.getAttribute('content').includes('emoji')){
+                        //             if (inputArea.selectionStart === inputArea.selectionEnd){
+                        //                 inputArea.value = inputArea.value.substring(0,inputArea.selectionStart)+e.target.title+inputArea.value.substring(inputArea.selectionEnd, inputArea.value.length);
+                        //             }else{
+                        //                 let p1 = inputArea.value.substring(0,inputArea.selectionStart), p2 = inputArea.value.substring(inputArea.selectionEnd, inputArea.value.length);
+                        //                 inputArea.value=p1+e.target.title+p2;
+                        //             }
+                        //             danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('span')[0].innerText = `${danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].value.length<10?' ':''}${danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].value.length}/${userInfo['totalLength']}`;
+                        //         }
+                        //         inputArea.focus();
+                        //     }
+                        // }
                     }
                 })
                 .catch(msg =>{
@@ -1138,6 +1206,8 @@
             return message;
         }
     }
-}();
 
-// TODO: add setting (medal, reconnection times). add preview
+    function danmaku(){
+
+    }
+}();

@@ -2,6 +2,7 @@
  * Copyright (c) 2021 Tyrael, Y. LI
  * */
 !function (){
+    console.log('script injected');
     const qn_table = {"原画PRO":10001, "原画":10000, "蓝光PRO":401, "蓝光":400, "超清PRO":251, "超清":250, "高清":150,"流畅":80};
     const wasmPath = chrome.runtime.getURL('../ffmpeg/ffmpeg-core.wasm');
     let qn;
@@ -18,6 +19,13 @@
     let medal_id = -1, medal_name = '';
     let emojiRequiredPrivilege = 0, emojiRequiredMedalLevel = 0, upID = -1, totalLength = 20;
     let enhancedHiddenEntry = false;
+
+    function decodeUTF(liveID){
+        let arr = []
+        const decoder = new TextDecoder('utf-8');
+
+        return decoder.decode(liveID)
+    }
 
     chrome.storage.sync.get(['enhancedHiddenEntry'],function(result){enhancedHiddenEntry = result.enhancedHiddenEntry});
     chrome.storage.sync.get(["qn"], function(result){qn = result.qn});
