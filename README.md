@@ -297,3 +297,6 @@ rua豹器的MV3转移计划可以追随到数个版本前。作为个人开发�
 - [mpegts.js](https://github.com/xqq/mpegts.js)
 - Copyright (c) mpegts.js developers and contributors
 - License: [github.com/xqq/mpegts.js/blob/master/LICENSE](https://github.com/xqq/mpegts.js/blob/master/LICENSE)
+
+### MCN数据来源
+- https://github.com/tiebarandomuser/vtuberguildqueue
