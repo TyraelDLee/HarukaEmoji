@@ -702,15 +702,21 @@
                                 emojiContainer.classList.add('rua-emoji-container');
                                 if (i === lastUsed) {
                                     headerItem.classList.add('active');
-                                    emojiContainer.style.display = 'flex';
+                                    emojiContainer.classList.add('rua-emoji-container-show');
+                                    if (i===0)
+                                        emojiContainer.classList.add('rua-emoji-container-show-xs');
                                 }
                                 headerItem.innerHTML += `<img src="${data[i]['current_cover']}"></div>`
                                 headerItem.onclick = ()=>{
                                     for (let j = 0; j < emojiHeaderContent.childNodes.length; j++) {
                                         emojiHeaderContent.childNodes.item(j).classList.remove('active');
-                                        html.getElementsByClassName('rua-emoji-container')[j].style.display = 'none';
+                                        html.getElementsByClassName('rua-emoji-container')[j].classList.remove('rua-emoji-container-show');
+                                        if (j===0)
+                                            html.getElementsByClassName('rua-emoji-container')[j].classList.remove('rua-emoji-container-show-xs');
                                         if (emojiHeaderContent.childNodes.item(j) === headerItem) {
-                                            html.getElementsByClassName('rua-emoji-container')[j].style.display = 'flex';
+                                            html.getElementsByClassName('rua-emoji-container')[j].classList.add('rua-emoji-container-show');
+                                            if (j===0)
+                                                html.getElementsByClassName('rua-emoji-container')[j].classList.add('rua-emoji-container-show-xs');
                                             lastUsed = j;
                                         }
                                     }
