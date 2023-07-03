@@ -14,15 +14,16 @@
         <item url="file://$PROJECT_DIR$/js/VideoHost.min.js" />
         <item url="file://$PROJECT_DIR$/js/WebHost.min.js" />
         <item url="file://$PROJECT_DIR$/js/akane.min.js" />
+        <item url="file://$PROJECT_DIR$/js/article.min.js" />
         <item url="file://$PROJECT_DIR$/js/audio.min.js" />
         <item url="file://$PROJECT_DIR$/js/background.min.js" />
         <item url="file://$PROJECT_DIR$/js/biliMain.min.js" />
         <item url="file://$PROJECT_DIR$/js/comment.min.js" />
         <item url="file://$PROJECT_DIR$/js/crypto-js.min.js" />
         <item url="file://$PROJECT_DIR$/js/darkMode.min.js" />
+        <item url="file://$PROJECT_DIR$/js/guild.min.js" />
         <item url="file://$PROJECT_DIR$/js/haruka.min.js" />
         <item url="file://$PROJECT_DIR$/js/liveroom.min.js" />
-        <item url="file://$PROJECT_DIR$/js/mcn.min.js" />
         <item url="file://$PROJECT_DIR$/js/mpegts.min.js" />
         <item url="file://$PROJECT_DIR$/js/nana.min.js" />
         <item url="file://$PROJECT_DIR$/js/popup.min.js" />
@@ -49,12 +50,14 @@
       <root url="file://$PROJECT_DIR$/js/VideoHost.min.js" />
       <root url="file://$PROJECT_DIR$/js/WebHost.min.js" />
       <root url="file://$PROJECT_DIR$/js/akane.min.js" />
+      <root url="file://$PROJECT_DIR$/js/article.min.js" />
       <root url="file://$PROJECT_DIR$/js/audio.min.js" />
       <root url="file://$PROJECT_DIR$/js/background.min.js" />
       <root url="file://$PROJECT_DIR$/js/biliMain.min.js" />
       <root url="file://$PROJECT_DIR$/js/comment.min.js" />
       <root url="file://$PROJECT_DIR$/js/crypto-js.min.js" />
       <root url="file://$PROJECT_DIR$/js/darkMode.min.js" />
+      <root url="file://$PROJECT_DIR$/js/guild.min.js" />
       <root url="file://$PROJECT_DIR$/js/haruka.min.js" />
       <root url="file://$PROJECT_DIR$/js/liveroom.min.js" />
       <root url="file://$PROJECT_DIR$/js/mpegts.min.js" />
@@ -68,7 +71,6 @@
       <root url="file://$PROJECT_DIR$/js/sw.min.js" />
       <root url="file://$PROJECT_DIR$/js/webDanmaku.min.js" />
       <root url="file://$PROJECT_DIR$/js/yuka.min.js" />
-      <root url="file://$PROJECT_DIR$/js/guild.min.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

@@ -10,7 +10,7 @@
                 const badgeHost = document.createElement('div');
                 badgeHost.setAttribute('class', 'icon-ctnr live-skin-normal-a-text not-hover');
                 badgeHost.setAttribute('style', 'line-height: 16px; pointer-events: none;');
-                let guildText = `<span class="action-text v-middle watched-icon">所属公会: </span><span title="${guildInfo}" class="action-text v-middle watched-text">${guildInfo}</span>`;
+                let guildText = `<span class="action-text v-middle watched-icon">所属公会: </span><span title="数据没有时效性，仅供参考" class="action-text v-middle watched-text">${guildInfo}</span>`;
                 badgeHost.innerHTML += guildText;
                 guildBadge.prepend(badgeHost);
             }
@@ -63,7 +63,7 @@
     function injectionGuild(guildName){
         try{
             const guildHost = document.getElementById('app').getElementsByClassName('h')[0].getElementsByClassName('h-user')[0].getElementsByClassName('h-basic')[0].getElementsByTagName('div')[0], badgeHost = document.createElement('span');
-            badgeHost.setAttribute('title', `所属公会: ${guildName}`);
+            badgeHost.setAttribute('title', `数据没有时效性，仅供参考`);
             badgeHost.classList.add('guild-badge');
             badgeHost.innerText = `所属公会: ${guildName}`;
             guildHost.append(badgeHost);

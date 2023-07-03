@@ -113,6 +113,11 @@
     "js": ["js/guild.min.js"],
     "matches": ["*://space.bilibili.com/*", "*://live.bilibili.com/*"],
     "run_at": "document_end"
+  },{
+    "all_frames": true,
+    "js": ["js/article.min.js"],
+    "matches": ["*://www.bilibili.com/read/*"],
+    "run_at": "document_end"
   }],
   "web_accessible_resources": [{"resources": ["images/*", "css/*", "js/*", "ffmpeg/*", "guild/*"], "matches": ["https://*/*"]}],
   "content_security_policy": {
