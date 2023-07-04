@@ -24,8 +24,8 @@
 
 
     window.addEventListener("focus", function (){
-        if ((currentMedal>-1 || wearMedalSwitch === -1 )&& globalMedalList!==null && typeof globalMedalList !== 'undefined'){
-            updateMedal(currentMedal, wearMedalSwitch === -1);
+        if ((currentMedal>-1 || wearMedalSwitch !== 0) && globalMedalList!==null && typeof globalMedalList !== 'undefined'){
+            updateMedal(currentMedal, wearMedalSwitch === 1);
         }
         loadRoomFromOutside();
     });
@@ -305,7 +305,7 @@
             }
         }
 
-        let flv = null, preview = null, abortFlag = new AbortController(), abortFetchPreview = new AbortController(), previewRetry = null, hb = null, requestPreview = true;
+        let flv = null, preview = null, abortFlag = new AbortController(), abortFetchPreview = new AbortController(), previewRetry = null, hb = null, requestPreview = true, videoMeta = {'mimeType':'','width':'0','height':'0','fps':'NaN','videoDataRate':'0', 'audioSampleRate':0,'audioChannelCount':'NaN', 'audioDataRate':'0', 'videoCodec':'NaN', 'metadata':{'encoder':'NaN'}, 'streamURL':''}, showStatus = false;
         let video = document.createElement('video');
         video.classList.add('video-player');
         video.setAttribute('style', 'display: none;');
@@ -359,16 +359,20 @@
             videoOwnerInfoContainer.style.display = 'none';
             videoOwnerInfoContainer.classList.add('video-owner-info-container');
             videoOwnerInfoContainer.innerHTML = `
-            <a class="owner-avatar" style="background-image: url(${liveRoomInfo['face']})" href="https://space.bilibili.com/${liveRoomInfo['uid']}" target="_blank"></a>
-            <div class="owner-text-info">
-                <div class="owner-room-title"><a href="https://live.bilibili.com/${liveRoomInfo['room_id']}" target="_blank">${liveRoomInfo['title']}</a></div>
-                <div class="owner-misc">
-                    <div class="owner-name"><a href="https://space.bilibili.com/${liveRoomInfo['uid']}" target="_blank">${liveRoomInfo['uname']}</a></div>
-                    <div style="margin: 0 5px">|</div>
-                    <div class="live-zone">${liveRoomInfo['area_v2_name']}</div>
+            
+                <a class="owner-avatar" href="https://space.bilibili.com/${liveRoomInfo['uid']}" target="_blank"><img src="${liveRoomInfo['face']}"></a>
+                <div class="owner-text-info">
+                    <div class="owner-room-title"><a href="https://live.bilibili.com/${liveRoomInfo['room_id']}" target="_blank">${liveRoomInfo['title']}</a></div>
+                    <div class="owner-misc">
+                        <div class="owner-name"><a href="https://space.bilibili.com/${liveRoomInfo['uid']}" target="_blank">${liveRoomInfo['uname']}</a></div>
+                        <div style="margin: 0 5px">|</div>
+                        <div class="live-zone">${liveRoomInfo['area_v2_name']}</div>
+                        <div style="margin: 0 5px">|</div>
+                        <div class="live-status-btn" style="cursor: pointer" id="live-status-btn-${liveRoomInfo['room_id']}">显示统计信息</div>
+                    </div>
                 </div>
-            </div>`;
-
+            
+            `;
 
             let videoControlBackground = document.createElement('div');
             videoControlBackground.setAttribute('style', `display: block; position: absolute; bottom: 0px; width: 100%; height: 56px; background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.7)); visibility: hidden;z-index:2`);
@@ -378,13 +382,11 @@
             videoControlContainer.innerHTML += `<div style="position: relative; user-select: none; z-index: 5; display: none"><div class="control-area"><div class="left"><div class="volume"><div class="volume-control" style="display: none"><div class="vertical-slider"><div class="number">100</div><div class="slider-rail"><div class="rail-background"></div><div class="slider-handle" style="top: 0px;"></div><div class="slider-track" style="height: 100%;"></div></div></div></div><span class="icon"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 36 36" style="enable-background:new 0 0 36 36; display: none;" xml:space="preserve"><path class="st0" d="M25.8,25.8c0.4,0.4,0.4,1,0,1.4s-1,0.4-1.4,0l-2.3-2.3c-0.2,0.1-0.4,0.2-0.6,0.3c-0.5,0.2-1.1,0-1.3-0.5\tc-0.2-0.5,0-1.1,0.5-1.3l0,0l-2.6-2.6v3.1c0,0.3-0.2,0.5-0.5,0.5c-0.1,0-0.2,0-0.3-0.1l-4.2-3.4h-1c-1.1,0-2-0.9-2-2v-2\tc0-1.1,0.9-2,2-2h0.2l-3.4-3.4c-0.4-0.4-0.4-1,0-1.4s1-0.4,1.4,0L25.8,25.8z"></path><path class="st0" d="M21.4,10.8c4,1.9,5.7,6.7,3.8,10.7c-0.1,0.2-0.2,0.4-0.3,0.6l-1.5-1.5c1.4-3,0.2-6.6-2.8-8l0,0\tc-0.5-0.2-0.7-0.8-0.5-1.3l0,0C20.4,10.7,21,10.5,21.4,10.8z"></path><path class="st0" d="M20,14.5c1.2,0.7,2,2,2,3.5c0,0.3,0,0.7-0.1,1L20,17.1V14.5z"></path><path class="st0" d="M17.9,11.7C18,11.8,18,11.9,18,12v3.1l-2.3-2.3l1.5-1.2C17.4,11.5,17.7,11.5,17.9,11.7z"></path></svg><svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 36 36" style="enable-background:new 0 0 36 36;" xml:space="preserve"><path class="st0" d="M20,14.5c1.9,1.1,2.6,3.6,1.5,5.5c-0.3,0.6-0.9,1.1-1.5,1.5V14.5z"></path><path class="st0" d="M21.4,10.7c4,1.9,5.7,6.7,3.8,10.7c-0.8,1.7-2,3-3.7,3.8c-0.5,0.2-1.1,0-1.3-0.5l0,0c-0.2-0.5,0-1.1,0.5-1.3\tc2.9-1.5,4.1-4.9,2.7-8c-0.6-1.2-1.6-2.3-2.8-2.8c-0.5-0.2-0.7-0.8-0.5-1.3S20.8,10.5,21.4,10.7C21.3,10.7,21.3,10.7,21.4,10.7\tL21.4,10.7z"></path><path class="st0" d="M17.9,11.7c0.1,0.1,0.1,0.1,0.1,0.2l0.1,12c0,0.3-0.2,0.5-0.5,0.5c-0.1,0-0.2,0-0.3-0.1l-4.2-3.4h-1\tc-1.1,0-2-0.9-2-2v-2c0-1.1,0.9-2,2-2h1l4.1-3.3C17.4,11.5,17.7,11.5,17.9,11.7L17.9,11.7z"></path></svg></span></div><div class="refresh-stream"><span class="icon"><svg viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="终稿" stroke="none" stroke-width="1" fill-rule="evenodd" opacity="0.9"><g id="图标切图" transform="translate(-475.000000, -74.000000)" fill-rule="nonzero"><g id="编组-3" transform="translate(421.000000, 56.000000)"><g id="编组-12" transform="translate(54.000000, 18.000000)"><g id="icon_刷新" transform="translate(11.000000, 9.000000)"><path d="M1.1040804,5.51795009 L2.56593636,6.98003284 C2.20442812,7.67167421 2,8.45841034 2,9.29289322 C2,12.054317 4.23857625,14.2928932 7,14.2928932 L7,12.5 C7,12.3673918 7.05267842,12.2402148 7.14644661,12.1464466 C7.34170876,11.9511845 7.65829124,11.9511845 7.85355339,12.1464466 L7.85355339,12.1464466 L10.6464466,14.9393398 C10.8417088,15.134602 10.8417088,15.4511845 10.6464466,15.6464466 L10.6464466,15.6464466 L7.85355339,18.4393398 C7.7597852,18.533108 7.63260824,18.5857864 7.5,18.5857864 C7.22385763,18.5857864 7,18.3619288 7,18.0857864 L7,18.0857864 L7,16.2928932 C3.13400675,16.2928932 0,13.1588865 0,9.29289322 C0,7.90269507 0.405257589,6.6071499 1.1040804,5.51795009 Z M6.85355339,0.146446609 C6.94732158,0.240214799 7,0.367391755 7,0.5 L7,2.29289322 C10.8659932,2.29289322 14,5.42689997 14,9.29289322 C14,10.682663 13.5949921,11.977838 12.8965656,13.0668293 L11.4343158,11.6052711 C11.7956669,10.9137463 12,10.127182 12,9.29289322 C12,6.53146947 9.76142375,4.29289322 7,4.29289322 L7,6.08578644 C7,6.36192881 6.77614237,6.58578644 6.5,6.58578644 C6.36739176,6.58578644 6.2402148,6.53310802 6.14644661,6.43933983 L3.35355339,3.64644661 C3.15829124,3.45118446 3.15829124,3.13460197 3.35355339,2.93933983 L6.14644661,0.146446609 C6.34170876,-0.0488155365 6.65829124,-0.0488155365 6.85355339,0.146446609 Z" id="Combined-Shape"></path></g></g></g></g></g></svg></span></div><div class="frame-chasing"><div><span class="icon"><svg class="squirtle-svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22"><path d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z" style="transform: scale(0.75);transform-origin: center;"></path></svg></span></div></div></div><div class="danmaku"><div class="input-container"><input placeholder="发个弹幕呗～"><span>0/20</span></div><div class="send-danmaku">发送</div><div class="emoji-bg"></div><div class="emoji-sec"></div></div><div class="right"><div class="close"><div><span class="icon"><svg class="rua-cross" viewBox="0 0 100 100"><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="transform: rotate(45deg);"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="transform: rotate(135deg);"/></svg></span></div></div></div></div></div>`;
             let currentVolume = 100, lastVolume = currentVolume, silence = false, hideControl = null, hideFlag = false, inputLock = false;
 
-            let colorPickLock = false;
             function hiddenControl(){
-                if (!hideFlag && !inputLock){
+                if (!hideFlag && !inputLock && !showStatus){
                     videoControlBackground.style.visibility = 'hidden';
                     videoControlContainer.firstElementChild.style.display = 'none';
                     videoOwnerInfoContainer.style.display = 'none';
-                    colorPickLock = false;
                 }
             }
 
@@ -394,34 +396,8 @@
                 videoControlContainer.firstElementChild.style.display = 'block';
                 videoOwnerInfoContainer.style.display = 'flex';
                 hideControl = setTimeout(hiddenControl, 1000);
-                if (!colorPickLock)
-                    calculateColor(videoStream.size === 1);
-                colorPickLock = true;
             };
 
-            function calculateColor(first){
-                const CANVAS = document.createElement('canvas');
-                const C2D = CANVAS.getContext('2d');
-                CANVAS.width = 300;
-                CANVAS.height = 60;
-                C2D.drawImage(video, 0, first?60:0, 300, 60);
-                let data = C2D.getImageData(0,0,300,60).data;
-                let R = 0,G = 0,B = 0;
-                for (let i = 0; i < 300 * 60; i++) {
-                    R+=data[4*i];
-                    G+=data[4*i+1];
-                    B+=data[4*i+2];
-                }
-                R /= 18000;
-                G /= 18000;
-                B /= 18000;
-                let gray = R * 0.299 + G * 0.587 + B * 0.114;
-                if (gray < 192){
-                    videoOwnerInfoContainer.style.color = '#aaa';
-                }else{
-                    videoOwnerInfoContainer.style.color = '#555';
-                }
-            }
 
             videoContainer.onclick = ()=>{
                 hiddenControl();
@@ -583,6 +559,11 @@
 
             videoControlContainer.classList.add('video-player-control');
 
+            const videoStatusInfoContainer = document.createElement('div');
+            videoStatusInfoContainer.style.display = 'none';
+            videoStatusInfoContainer.classList.add('video-status-info-container');
+            videoStatusInfoContainer.id = `video-status-info-container-${liveRoomInfo['room_id']}`;
+            videoContainer.append(videoStatusInfoContainer);
             videoContainer.append(videoOwnerInfoContainer);
             videoContainer.append(videoControlContainer);
             videoColum.append(videoContainer);
@@ -598,6 +579,20 @@
                 hb = new HeartBeat(liveRoomInfo['area_v2_parent_id'], liveRoomInfo['area_v2_id'], liveRoomInfo['room_id'], liveRoomInfo['uid']);
                 hb.E();
             }
+
+
+            let liveStatusBtn = document.getElementById(`live-status-btn-${liveRoomInfo['room_id']}`);
+            liveStatusBtn.onclick = (e)=>{
+                showStatus = !showStatus;
+                if(showStatus){
+                    liveStatusBtn.innerText = '隐藏统计信息';
+                    videoStatusInfoContainer.removeAttribute('style');
+                    updateMetaInfo(videoStatusInfoContainer);
+                }else{
+                    videoStatusInfoContainer.style.display = 'none';
+                    liveStatusBtn.innerText = '显示统计信息';
+                }
+            };
 
             function revokeEventListener(){
                 video.onpause = null;
@@ -622,6 +617,7 @@
                 videoControlContainer.getElementsByClassName('frame-chasing')[0].onclick = null;
                 videoControlContainer.getElementsByClassName('refresh-stream')[0].onclick = null;
                 sourceEvent.disconnect();
+                liveStatusBtn.onclick = null;
             }
 
             //danmaku
@@ -751,44 +747,6 @@
                                 html.appendChild(emojiContainer);
                             }
                         }
-                        // for (let j = json['data']['data'].length; j >= 0; j--) {
-                        //     if(json['data']['data'][j]!==undefined && json['data']['data'][j]!==null && (json['data']['data'][j]['pkg_name'] === '房间专属表情' || json['data']['data'][j]['pkg_name'] === 'UP主大表情')){
-                        //         html += `<span class="emoji-header">${json['data']['data'][j]['pkg_name']}</span>`;
-                        //         for (let i = 0; i < json['data']['data'][j]['emoticons'].length; i++) {
-                        //             //let able = json['data']['data'][j]['emoticons'][i]['perm']===1;//userInfo['emojiRequiredPrivilege'] <= json['data']['data'][j]['emoticons'][i]['identity'] && json['data']['data'][j]['emoticons'][i]['unlock_need_level'] <= medalInfo['emojiRequiredMedalLevel'];
-                        //             html += `<div class="rua-emoji-icon-container"><div class="rua-emoji-icon ${json['data']['data'][j]['emoticons'][i]['perm']===1?'rua-emoji-icon-active':'rua-emoji-icon-inactive'}" title="${json['data']['data'][j]['emoticons'][i]['emoji']}" content="${json['data']['data'][j]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][j]['emoticons'][i]['url'].replace("http://", "https://")}');"></div><div class="rua-emoji-requirement" style="background-color: ${json['data']['data'][j]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][j]['emoticons'][i]['unlock_show_text']}</div></div></div>`;
-                        //         }
-                        //     }
-                        // }
-                        // for (let j = json['data']['data'].length; j >= 0; j--) {
-                        //     if(json['data']['data'][j]!==undefined && json['data']['data'][j]!==null && !(json['data']['data'][j]['pkg_name'] === '房间专属表情' || json['data']['data'][j]['pkg_name'] === 'UP主大表情')){
-                        //         html += `<span class="emoji-header">${json['data']['data'][j]['pkg_name']}</span>`;
-                        //         for (let i = 0; i < json['data']['data'][j]['emoticons'].length; i++) {
-                        //             //let able = json['data']['data'][j]['emoticons'][i]['perm']===1;//userInfo['emojiRequiredPrivilege'] <= json['data']['data'][j]['emoticons'][i]['identity'] && json['data']['data'][j]['emoticons'][i]['unlock_need_level'] <= medalInfo['emojiRequiredMedalLevel'];
-                        //             html += `<div class="rua-emoji-icon-container"><div class="rua-emoji-icon ${json['data']['data'][j]['emoticons'][i]['perm']===1?'rua-emoji-icon-active':'rua-emoji-icon-inactive'}" title="${json['data']['data'][j]['emoticons'][i]['emoji']}" content="${json['data']['data'][j]['emoticons'][i]['emoticon_unique']}" style="background-image:url('${json['data']['data'][j]['emoticons'][i]['url'].replace("http://", "https://")}');"></div><div class="rua-emoji-requirement" style="background-color: ${json['data']['data'][j]['emoticons'][i]['unlock_show_color']};"><div class="rua-emoji-requirement-text">${json['data']['data'][j]['emoticons'][i]['unlock_show_text']}</div></div></div>`;
-                        //         }
-                        //     }
-                        // }
-                        // html += '</div>';
-                        // danmaku.getElementsByClassName('emoji-sec')[0].append(html);
-                        // for (let i = 0; i < danmaku.getElementsByClassName('emoji-sec')[0].getElementsByClassName('rua-emoji-icon-container').length; i++) {
-                        //     danmaku.getElementsByClassName('emoji-sec')[0].getElementsByClassName('rua-emoji-icon')[i].onclick = (e)=>{
-                        //         let inputArea = danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0];
-                        //         if (e.target.classList.contains('rua-emoji-icon-active') && !e.target.getAttribute('content').includes('emoji')){
-                        //             packaging(e.target.getAttribute('content'), "systemEmoji", liveRoomInfo['room_id'], liveRoomInfo['uid']);
-                        //         }
-                        //         if (e.target.classList.contains('rua-emoji-icon-active') && e.target.getAttribute('content').includes('emoji')){
-                        //             if (inputArea.selectionStart === inputArea.selectionEnd){
-                        //                 inputArea.value = inputArea.value.substring(0,inputArea.selectionStart)+e.target.title+inputArea.value.substring(inputArea.selectionEnd, inputArea.value.length);
-                        //             }else{
-                        //                 let p1 = inputArea.value.substring(0,inputArea.selectionStart), p2 = inputArea.value.substring(inputArea.selectionEnd, inputArea.value.length);
-                        //                 inputArea.value=p1+e.target.title+p2;
-                        //             }
-                        //             danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('span')[0].innerText = `${danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].value.length<10?' ':''}${danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].value.length}/${userInfo['totalLength']}`;
-                        //         }
-                        //         inputArea.focus();
-                        //     }
-                        // }
                     }
                 })
                 .catch(msg =>{
@@ -796,6 +754,34 @@
                 });
 
             sourceEvent.observe(video, {attributes:true});
+        }
+
+        function updateMetaInfo(container){
+            container.innerHTML=`
+                    <div class="video-status-info-row">
+                        <div class="video-status-info-title">Mime 类型:</div>
+                        <div class="video-status-info-data">${videoMeta['mimeType']}</div>
+                    </div>
+                    <div class="video-status-info-row">
+                        <div class="video-status-info-title">视频信息:</div>
+                        <div class="video-status-info-data">${videoMeta['width']}x${videoMeta['height']}, ${videoMeta['fps']}FPS, ${videoMeta['videoDataRate']}Kbps</div>
+                    </div>
+                    <div class="video-status-info-row">
+                        <div class="video-status-info-title">音频信息:</div>
+                        <div class="video-status-info-data">${(videoMeta['audioSampleRate']-0)/1000.0}KHz, ${videoMeta['audioChannelCount']===2?'Stereo':videoMeta['audioChannelCount']}, ${videoMeta['audioDataRate']}Kbps</div>
+                    </div>
+                    <div class="video-status-info-row">
+                        <div class="video-status-info-title">编码器:</div>
+                        <div class="video-status-info-data">${videoMeta['metadata']['encoder']}</div>
+                    </div>
+                    <div class="video-status-info-row">
+                        <div class="video-status-info-title">视频编码:</div>
+                        <div class="video-status-info-data">${videoMeta['videoCodec']}</div>
+                    </div>
+                    <div class="video-status-info-row">
+                        <div class="video-status-info-title">视频流源:</div>
+                        <div class="video-status-info-data">${videoMeta['streamURL']}</div>
+                    </div>`;
         }
 
         /**
@@ -824,7 +810,7 @@
                         preview.attachMediaElement(video);
                         preview.load();
                         try {
-                            preview.play();
+                            preview.play().catch(e=>{});
                         }catch (e){}
                         preview.on(mpegts.Events.ERROR, (e) => {
                             if (requestPreview){
@@ -834,6 +820,11 @@
                                     setPreview(roomId, video, host);
                                 }, 1000);
                             }
+                        });
+                        preview.on(mpegts.Events.MEDIA_INFO, (metadata)=>{
+                            videoMeta = metadata;
+                            videoMeta['streamURL'] = previewURL['url_info'][hostIndex]['host'];
+                            updateMetaInfo(document.getElementById(`video-status-info-container-${roomId}`));
                         });
                     }
                 })
@@ -856,7 +847,7 @@
                 flv.attachMediaElement(video);
                 flv.load();
                 try{
-                    flv.play();
+                    flv.play().catch(e=>{});
                     frameChasing = setTimeout(()=>{
                         video.currentTime = video.buffered.end(0) - 1;
                     }, 2000);
@@ -875,6 +866,9 @@
                 });
                 flv.on(mpegts.Events.MEDIA_INFO, (metadata)=>{
                     console.log(metadata)
+                    videoMeta = metadata;
+                    videoMeta['streamURL'] = url['url_info'][index]['host'];
+                    updateMetaInfo(document.getElementById(`video-status-info-container-${roomId}`));
                     abortFetchPreview.abort('no needed');
                     requestPreview = false;
                     if (previewRetry !== null) {
@@ -895,20 +889,28 @@
             }).then(r => r.json())
                 .then(json => {
                     if (json['code'] === 0) {
-                        let flvFormat = json['data']['playurl_info']['playurl']['stream'][0]['format'][0]['codec'][0],
-                            hevc = json['data']['playurl_info']['playurl']['stream'][0]['format'][0]['codec'][1];
-                        //cross swap
-                        if (hevc === null || typeof  hevc ==='undefined') hevc = flvFormat;
-                        if (flvFormat === null || typeof  flvFormat ==='undefined') flvFormat = hevc;
-                        if ((hevc === null || typeof  hevc ==='undefined') && (flvFormat === null || typeof  flvFormat ==='undefined')) setStream(roomId, video);
-                        else setPlayer(flvFormat, video, preferIndex);
+                        if(json['data']['playurl_info'] === null || json['data']['playurl_info']['playurl'] === null){
+                            flv.destroy();
+                        }
+                        else{
+                            let flvFormat = json['data']['playurl_info']['playurl']['stream'][0]['format'][0]['codec'][0],
+                                hevc = json['data']['playurl_info']['playurl']['stream'][0]['format'][0]['codec'][1];
+                            //cross swap
+                            if (hevc === null || typeof  hevc ==='undefined') hevc = flvFormat;
+                            if (flvFormat === null || typeof  flvFormat ==='undefined') flvFormat = hevc;
+                            if ((hevc === null || typeof  hevc ==='undefined') && (flvFormat === null || typeof  flvFormat ==='undefined')) setStream(roomId, video);
+                            else setPlayer(flvFormat, video, preferIndex);
+                        }
+
                     }else throw json['code'];
                 })
                 .catch(e => {
                     console.log(e);
-                    setTimeout(()=>{
-                        setStream(roomId, video);
-                    }, 1000);
+                    if (!abortFlag.signal.aborted) {
+                        setTimeout(() => {
+                            setStream(roomId, video);
+                        }, 1000);
+                    }
             });
         }
     }

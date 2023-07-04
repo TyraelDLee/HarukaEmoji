@@ -4363,7 +4363,10 @@
                 }, e.prototype.attachMediaElement = function (e) {
                     if (this._mediaSource) throw new A.a("MediaSource has been attached to an HTMLMediaElement!");
                     var t = this._mediaSource = new window.MediaSource;
-                    t.addEventListener("sourceopen", this.e.onSourceOpen), t.addEventListener("sourceended", this.e.onSourceEnded), t.addEventListener("sourceclose", this.e.onSourceClose), this._mediaElement = e, this._mediaSourceObjectURL = window.URL.createObjectURL(this._mediaSource), e.src = this._mediaSourceObjectURL
+                    t.addEventListener("sourceopen", this.e.onSourceOpen), t.addEventListener("sourceended", this.e.onSourceEnded), t.addEventListener("sourceclose", this.e.onSourceClose), this._mediaElement = e, this._mediaSourceObjectURL = window.URL.createObjectURL(this._mediaSource);
+                    try{
+                        e.src = this._mediaSourceObjectURL;
+                    }catch (e) {}
                 }, e.prototype.detachMediaElement = function () {
                     if (this._mediaSource) {
                         var e = this._mediaSource;
