@@ -36,5 +36,20 @@
     "condition":{
       "regexFilter": "bilivideo\\.com/live-bvc.*"
     }
+  },
+  {
+    "id": 52,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders":[{
+        "header": "Origin",
+        "operation": "set",
+        "value" : "https://live.bilibili.com"
+      }]
+    },
+    "condition":{
+      "regexFilter": "chat\\.bilibili\\.com/*"
+    }
   }
 ]

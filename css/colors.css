@@ -1284,7 +1284,7 @@ html[theme*="dark"] .send-box{
     border-top: 1px solid var(--Ga2);
 }
 
-html[theme*="dark"] .core-style[data-v-715777d4]{
+html[theme*="dark"] .core-style{
     color: var(--text1);
 }
 
@@ -2396,6 +2396,14 @@ html[theme*="dark"] .bili-opus-view, html[theme*="dark"] .side-toolbar__box, htm
     background-color: var(--bg2);
 }
 
+html[theme*="dark"] .bili-comment.browser-pc{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] #comment .bili-comment.browser-pc{
+    background-color: var(--bg1);
+}
+
 html[theme*="dark"] .reply-box .box-normal .reply-box-warp .reply-box-textarea{
     background-color: var(--bg3);
 }
@@ -2735,4 +2743,9 @@ html[theme*="dark"] .common-popup-wrap{
 html[theme*="dark"] .gift-panel-container-root .gift-panel-background{
     background-color: var(--gift-panel-background-color)!important;
     border-color: var(--gift-panel-container-border-color) !important;
+}
+
+
+html[theme*="dark"] #page-404{
+    background-color: var(--bg2);
 }

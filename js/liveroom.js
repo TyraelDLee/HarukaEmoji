@@ -22,6 +22,45 @@
     setInterval(updateJCT, 3000);
     setTimeout(()=>{getMedal(UID).then(r=>{globalMedalList = r;});}, 100);
 
+    /**
+     * Save and load playlist
+     * */
+    const saveRoomList = document.getElementById('save-current-room-list'), loadRoomList = document.getElementById('load-saved-room-list');
+    chrome.storage.sync.get(['liveRoomList'], (v)=>{
+        if(v.liveRoomList.length > 0){
+            loadRoomList.classList.remove('disabled');
+        }else{
+            saveRoomList.classList.add('disabled');
+        }
+    });
+    // chrome.storage.onChanged.addListener(function (changes, namespace) {
+    //     for (let [key, {oldValue, newValue}] of Object.entries(changes)) {
+    //         switch (key){
+    //             case 'liveRoomList':
+    //                 console.log(newValue)
+    //                 break;
+    //         }
+    //     }
+    // });
+
+    saveRoomList.onclick = ()=>{
+        if (!saveRoomList.classList.contains('disabled')){
+            let savedRoomList = [];
+            for (const key of videoStream.keys()) {
+                savedRoomList.push(videoStream.get(key)['uid']);
+            }
+            chrome.storage.sync.set({'liveRoomList':savedRoomList}, ()=>{
+                loadRoomList.classList.remove('disabled');
+            })
+        }
+    };
+    loadRoomList.onclick = ()=>{
+        if (!loadRoomList.classList.contains('disabled')){
+            chrome.storage.sync.get(['liveRoomList'], (v)=>{
+                getRooms(v.liveRoomList, true);
+            });
+        }
+    };
 
     window.addEventListener("focus", function (){
         if ((currentMedal>-1 || wearMedalSwitch !== 0) && globalMedalList!==null && typeof globalMedalList !== 'undefined'){
@@ -236,7 +275,7 @@
             });
     }
 
-    function getRooms(list){
+    function getRooms(list, allOnce=false){
         let body = '{"uids": [' + list + ']}';
         fetch("https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids?requestFrom=rua5", {
             method: "POST",
@@ -253,21 +292,31 @@
                         bindVideoPlayer(liveroomData);
                         hidePanelContainer();
                     } else{
-                        for (let i = 0; i < list.length; i++) {
-                            if (data[list[i]] !== undefined) {
-                                if (data[list[i]]["live_status"] === 1) {
+                        if (allOnce){
+                            for (let i = 0; i < list.length; i++){
+                                if (data[list[i]]["live_status"] === 1){
                                     let liveroomData = data[list[i]];
-                                    let liver = document.createElement('div');
-                                    liver.classList.add('following-liver');
-                                    liver.innerHTML = `<div class="user-face"><img src="${liveroomData['face']}"></div><div class="following-room-info"><span class="room-title">${liveroomData['title']}</span><span class="user-name">${liveroomData['uname']}</span></div>`;
-                                    followingContainer.append(liver);
-                                    liver.addEventListener('click', () => {
-                                        bindVideoPlayer(liveroomData);
-                                        hidePanelContainer();
-                                    })
+                                    bindVideoPlayer(liveroomData);
+                                }
+                            }
+                        }else{
+                            for (let i = 0; i < list.length; i++) {
+                                if (data[list[i]] !== undefined) {
+                                    if (data[list[i]]["live_status"] === 1) {
+                                        let liveroomData = data[list[i]];
+                                        let liver = document.createElement('div');
+                                        liver.classList.add('following-liver');
+                                        liver.innerHTML = `<div class="user-face"><img src="${liveroomData['face']}"></div><div class="following-room-info"><span class="room-title">${liveroomData['title']}</span><span class="user-name">${liveroomData['uname']}</span></div>`;
+                                        followingContainer.append(liver);
+                                        liver.addEventListener('click', () => {
+                                            bindVideoPlayer(liveroomData);
+                                            hidePanelContainer();
+                                        })
+                                    }
                                 }
                             }
                         }
+
                     }
                 }
             });
@@ -314,6 +363,7 @@
         previewVideo.classList.add('video-player-preview');
         if (videoStream.size < 16 && !videoStream.has(liveRoomInfo['uid'])) {
             videoStream.set(liveRoomInfo['uid'], liveRoomInfo);
+            saveRoomList.classList.remove('disabled');
 
             let videoColum = document.getElementsByClassName('video-container')[0];
             calculateLayout(videoColum, videoStream.size);
@@ -336,6 +386,9 @@
                                 revokeEventListener();
                                 videoContainer.remove();
                                 videoStream.delete(liveRoomInfo['uid']);
+                                if (videoStream.size===0){
+                                    saveRoomList.classList.add('disabled');
+                                }
                                 calculateLayout(videoColum, videoStream.size);
                                 if (hb!==null)
                                     hb.stop();
@@ -538,6 +591,9 @@
                 revokeEventListener();
                 videoContainer.remove();
                 videoStream.delete(liveRoomInfo['uid']);
+                if (videoStream.size===0){
+                    saveRoomList.classList.add('disabled');
+                }
                 calculateLayout(videoColum, videoStream.size);
                 if (hb!==null)
                     hb.stop();
@@ -764,7 +820,7 @@
                     </div>
                     <div class="video-status-info-row">
                         <div class="video-status-info-title">视频信息:</div>
-                        <div class="video-status-info-data">${videoMeta['width']}x${videoMeta['height']}, ${videoMeta['fps']}FPS, ${videoMeta['videoDataRate']}Kbps</div>
+                        <div class="video-status-info-data">${videoMeta['width']}x${videoMeta['height']}, ${videoMeta['metadata']['framerate']}FPS, ${videoMeta['metadata']['videodatarate']}Kbps</div>
                     </div>
                     <div class="video-status-info-row">
                         <div class="video-status-info-title">音频信息:</div>
@@ -846,12 +902,10 @@
                 });
                 flv.attachMediaElement(video);
                 flv.load();
-                try{
-                    flv.play().catch(e=>{});
-                    frameChasing = setTimeout(()=>{
-                        video.currentTime = video.buffered.end(0) - 1;
-                    }, 2000);
-                }catch (e){}
+                flv.play().catch(e=>{});
+                frameChasing = setTimeout(()=>{
+                    try{video.currentTime = video.buffered.end(0) - 1;}catch (e) {}
+                }, 2000);
                 flv.on(mpegts.Events.ERROR, (e) => {
                     console.log(e);
                     index = index + 1;

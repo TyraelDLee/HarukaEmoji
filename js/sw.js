@@ -320,6 +320,7 @@ async function initialize(reload){
     setInitValue('dkWord', '');
     setInitValue('hiddenOnVideoBtn', false);
     setInitValue('notificationMaster', false);
+    setInitValue('liveRoomList', []);
     /**
      * Context menu section.
      *
@@ -525,33 +526,35 @@ function convertMSToS(time){
 }
 
 function getFollowingList(){
-    let flag = new AbortController();
-    setTimeout(()=>{
-        flag.abort('timeout');
-    }, 3000);
-    fetch(`https://api.bilibili.com/x/v2/reply/at`, {
-        method:'GET',
-        credentials: 'include',
-        signal: flag.signal,
-        body:null
-    }).then(r=>r.json())
-        .then(json=>{
-            if (json['code']===0){
-                chrome.storage.sync.get(["blackListLive", "blackListHB"], (result)=>{
-                    let followList = [];
-                    for (let i = 0; i < json['data']['groups'].length; i++) {
-                        for (let j = 0; j < json['data']['groups'][''+i]['items'].length; j++) {
-                            followList.push(json['data']['groups'][''+i]['items'][j+'']['mid']);
+    chrome.storage.local.get(['uuid'], (e)=>{
+        let flag = new AbortController();
+        setTimeout(()=>{
+            flag.abort('timeout');
+        }, 3000);
+        fetch(`https://api.vc.bilibili.com/dynamic_mix/v1/dynamic_mix/at_list?uid=${e.uuid}`, {
+            method:'GET',
+            credentials: 'include',
+            signal: flag.signal,
+            body:null
+        }).then(r=>r.json())
+            .then(json=>{
+                if (json['code']===0){
+                    chrome.storage.sync.get(["blackListLive", "blackListHB"], (result)=>{
+                        let followList = [];
+                        for (let i = 0; i < json['data']['groups'].length; i++) {
+                            for (let j = 0; j < json['data']['groups'][''+i]['items'].length; j++) {
+                                followList.push(json['data']['groups'][''+i]['items'][j+'']['uid']);
+                            }
                         }
-                    }
-                    console.log(`Load following list complete. ${followList.length} followings found, ${result['blackListLive'].length} live notifications are ignored.`);
-                    queryLivingRoom(followList, result['blackListLive'], result['blackListHB']);
-                });
-            }
-        })
-        .catch(e=>{
-            errorHandler('getFollowing', e, 'getFollowingList(); line 500');
-        });
+                        // console.log(`Load following list complete. ${followList.length} followings found, ${result['blackListLive'].length} live notifications are ignored.`);
+                        queryLivingRoom(followList, result['blackListLive'], result['blackListHB']);
+                    });
+                }
+            })
+            .catch(e=>{
+                errorHandler('getFollowing', e, 'getFollowingList(); line 500');
+            });
+    })
 }
 
 /**
