@@ -54,7 +54,7 @@
                     let mid = await getOwnerID();
                     let emojis = await getOwnerEmote(mid);
                     let emojisType = await getUserEmote(mid);
-                    if(pageUrl==='t.bilibili.com' || exp.test(window.location.href) || pageID.toUpperCase().includes('CV')) {
+                    if(exp.test(window.location.href) || pageID.toUpperCase().includes('CV')) {
                         try{
                             boundButtons('comment-emoji');
                         }catch (e){console.error(e)}

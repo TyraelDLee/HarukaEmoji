@@ -813,6 +813,8 @@
         }
 
         function updateMetaInfo(container){
+            let nonMeta = videoMeta['metadata'] === null;
+
             container.innerHTML=`
                     <div class="video-status-info-row">
                         <div class="video-status-info-title">Mime 类型:</div>
@@ -820,7 +822,7 @@
                     </div>
                     <div class="video-status-info-row">
                         <div class="video-status-info-title">视频信息:</div>
-                        <div class="video-status-info-data">${videoMeta['width']}x${videoMeta['height']}, ${videoMeta['metadata']['framerate']}FPS, ${videoMeta['metadata']['videodatarate']}Kbps</div>
+                        <div class="video-status-info-data">${videoMeta['width']}x${videoMeta['height']}, ${nonMeta?'null':videoMeta['metadata']['framerate']}FPS, ${nonMeta?'null':videoMeta['metadata']['videodatarate']}Kbps</div>
                     </div>
                     <div class="video-status-info-row">
                         <div class="video-status-info-title">音频信息:</div>
@@ -828,7 +830,7 @@
                     </div>
                     <div class="video-status-info-row">
                         <div class="video-status-info-title">编码器:</div>
-                        <div class="video-status-info-data">${videoMeta['metadata']['encoder']}</div>
+                        <div class="video-status-info-data">${nonMeta?'undefined':videoMeta['metadata']['encoder']}</div>
                     </div>
                     <div class="video-status-info-row">
                         <div class="video-status-info-title">视频编码:</div>
