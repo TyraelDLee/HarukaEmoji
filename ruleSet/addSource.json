@@ -43,5 +43,44 @@
     "condition":{
       "regexFilter": "api\\.bilibili\\.com/x/web-interface/card.*rua5"
     }
+  },
+  {
+    "id": 33,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders":[{
+        "header": "Origin",
+        "operation": "set",
+        "value" : "https://live.bilibili.com"
+      },{
+        "header": "Refer",
+        "operation": "set",
+        "value" : "https://live.bilibili.com/"
+      }]
+    },
+    "condition":{
+      "regexFilter": "api\\.live\\.bilibili\\.com/xlive/web-room/v1/fansMedal/wear"
+    }
+  }
+,
+  {
+    "id": 34,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders":[{
+        "header": "Origin",
+        "operation": "set",
+        "value" : "https://live.bilibili.com"
+      },{
+        "header": "Refer",
+        "operation": "set",
+        "value" : "https://live.bilibili.com/"
+      }]
+    },
+    "condition":{
+      "regexFilter": "live-trace\\.bilibili\\.com/xlive/data-interface/v1/x25Kn/*"
+    }
   }
 ]

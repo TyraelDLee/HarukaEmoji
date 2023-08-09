@@ -1122,6 +1122,7 @@
             madelForm.append("medal_id", medal);
             madelForm.append("csrf", JCT);
             madelForm.append("csrf_token", JCT);
+            madelForm.append("visit_id", '');
             fetch(wearMedalSwitch===-1?'https://api.live.bilibili.com/xlive/app-ucenter/v1/fansMedal/take_off':`https://api.live.bilibili.com/xlive/web-room/v1/fansMedal/wear`,{
                 method:"POST",
                 credentials: 'include',
@@ -1149,59 +1150,63 @@
         this.timer = null;
 
         HeartBeat.prototype.E = async function(){
-            await fetch('https://live-trace.bilibili.com/xlive/data-interface/v1/x25Kn/E', {
-                method:"POST",
-                credentials:"include",
-                headers: {
-                    "content-type": "application/x-www-form-urlencoded"
-                },
-                body:`${objToStr(this.packagePayload)}&csrf_token=${JCT}&csrf=${JCT}&visit_id:`
-            }).then(r=>r.json())
-                .then(json=>{
-                    if (json['code'] === 0){
-                        this.packageNumber++;
-                        this.timer = setInterval(()=>{this.X()}, (json['data']['heartbeat_interval']-0)*1000);
-                        this.replayPayload = {
-                            id: [parentId, areaId, this.packageNumber, roomID],
-                            device: this.packagePayload["device"],
-                            ruid: this.packagePayload['ruid'],
-                            ets: json['data']['timestamp'],
-                            benchmark: json['data']['secret_key'],
-                            time: json['data']['heartbeat_interval'],
-                            ts: Date.now(),
-                            ua: UserAgent
-                        };
-                        this.replayPayload = Object.assign({s:encrypt(this.replayPayload, json['data']['secret_rule'])}, this.replayPayload);
-                    }
-                })
-                .catch(e=>{
-                    this.stop();
-                    this.E();
-                })
+            if (heartBeatSwitch){
+                await fetch('https://live-trace.bilibili.com/xlive/data-interface/v1/x25Kn/E', {
+                    method:"POST",
+                    credentials:"include",
+                    headers: {
+                        "content-type": "application/x-www-form-urlencoded"
+                    },
+                    body:`${objToStr(this.packagePayload)}&csrf_token=${JCT}&csrf=${JCT}&visit_id:`
+                }).then(r=>r.json())
+                    .then(json=>{
+                        if (json['code'] === 0){
+                            this.packageNumber++;
+                            this.timer = setInterval(()=>{this.X()}, (json['data']['heartbeat_interval']-0)*1000);
+                            this.replayPayload = {
+                                id: [parentId, areaId, this.packageNumber, roomID],
+                                device: this.packagePayload["device"],
+                                ruid: this.packagePayload['ruid'],
+                                ets: json['data']['timestamp'],
+                                benchmark: json['data']['secret_key'],
+                                time: json['data']['heartbeat_interval'],
+                                ts: Date.now(),
+                                ua: UserAgent
+                            };
+                            this.replayPayload = Object.assign({s:encrypt(this.replayPayload, json['data']['secret_rule'])}, this.replayPayload);
+                        }
+                    })
+                    .catch(e=>{
+                        this.stop();
+                        this.E();
+                    });
+            }
         }
 
         HeartBeat.prototype.X = async function(){
-            await fetch('https://live-trace.bilibili.com/xlive/data-interface/v1/x25Kn/X', {
-                method:"POST",
-                credentials:"include",
-                headers: {
-                    "content-type": "application/x-www-form-urlencoded"
-                },
-                body:`${objToStr(this.replayPayload)}&csrf_token=${JCT}&csrf=${JCT}&visit_id:`
-            }).then(r=>r.json())
-                .then(json=>{
-                    if (json['code'] === 0){
-                        this.packageNumber++;
-                        this.replayPayload['id'] = [this.replayPayload['id'][0], this.replayPayload['id'][1], this.packageNumber, this.replayPayload['id'][3]];
-                        this.replayPayload['benchmark'] = json['data']['secret_key'];
-                        this.replayPayload['time'] = json['data']['heartbeat_interval'];
-                        this.replayPayload['ets'] = json['data']['timestamp'];
-                        this.replayPayload['s'] = encrypt(this.replayPayload, json['data']['secret_rule']);
-                    }else{
-                        this.stop();
-                        this.E();
-                    }
-                })
+            if (heartBeatSwitch){
+                await fetch('https://live-trace.bilibili.com/xlive/data-interface/v1/x25Kn/X', {
+                    method:"POST",
+                    credentials:"include",
+                    headers: {
+                        "content-type": "application/x-www-form-urlencoded"
+                    },
+                    body:`${objToStr(this.replayPayload)}&csrf_token=${JCT}&csrf=${JCT}&visit_id:`
+                }).then(r=>r.json())
+                    .then(json=>{
+                        if (json['code'] === 0){
+                            this.packageNumber++;
+                            this.replayPayload['id'] = [this.replayPayload['id'][0], this.replayPayload['id'][1], this.packageNumber, this.replayPayload['id'][3]];
+                            this.replayPayload['benchmark'] = json['data']['secret_key'];
+                            this.replayPayload['time'] = json['data']['heartbeat_interval'];
+                            this.replayPayload['ets'] = json['data']['timestamp'];
+                            this.replayPayload['s'] = encrypt(this.replayPayload, json['data']['secret_rule']);
+                        }else{
+                            this.stop();
+                            this.E();
+                        }
+                    });
+            }
         }
 
         HeartBeat.prototype.stop = function(){
