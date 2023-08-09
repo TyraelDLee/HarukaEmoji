@@ -142,7 +142,7 @@
                         e.initEvent("click", false, true);
 
                         setTimeout(function (){
-                            let vps = vp.getElementsByClassName("panel")[0].getElementsByClassName("quality-it");
+                            let vps = vp.getElementsByClassName("panel")[0].getElementsByClassName("list-it");
                             if(vps.length>1){
                                 let obj=[];
                                 for (let i = 0; i < vps.length; i++)
@@ -1208,7 +1208,7 @@
         // }()
 
         const chaseButtonDiv = document.createElement('div');
-        const button = `<div class="frame-chasing"><div><span class="icon"><svg class="squirtle-svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22"><path d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z" style="transform: scale(0.75);transform-origin: center;"></path></svg></span></div></div></div>`;
+        const button = `<div class="frame-chasing"><div><span class="icon"><svg class="squirtle-svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22"><path d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z" style="fill:#fff;transform-origin: center;"></path></svg></span></div></div></div>`;
         chaseButtonDiv.innerHTML += button;
         function findPlayer(){
             try {

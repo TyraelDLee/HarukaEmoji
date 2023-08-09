@@ -1177,7 +1177,7 @@ html[theme*="dark"] .ep-list-wrapper .ep-item.cursor, html[theme*="dark"] .secti
     background: var(--bg1_float);
 }
 
-html[theme*="dark"] .space-right .space-right-top .title[data-v-1c9150a9]{
+html[theme*="dark"] .space-right .space-right-top .title{
     background-color: var(--bg1);
     box-shadow: 0 2px 4px 0 rgb(50 50 50 / 54%);
 }
@@ -1198,11 +1198,11 @@ html[theme*="dark"] .line-2[data-v-657577a0]{
     color: var(--text1);
 }
 
-html[theme*="dark"] .space-left[data-v-1c9150a9] {
+html[theme*="dark"] .space-left {
     background-color: rgba(36, 38, 40,0.8);
 }
 
-html[theme*="dark"] .space-right[data-v-1c9150a9]{
+html[theme*="dark"] .space-right{
     background-color: rgba(36, 38, 40,0.5);
 }
 
@@ -1331,8 +1331,9 @@ html[theme*="dark"] .list[data-v-4664fbbe]{
     border: 1px solid var(--Ga2);
 }
 
-html[theme*="dark"] #link-message-container .active{
-    background-color: var(--bg1_float);
+html[theme*="dark"] #link-message-container .side-bar .title{
+    border-bottom: 1px solid var(--Ga2);
+    color: var(--text1);
 }
 
 html[theme*="dark"] .list-item .name[data-v-130e22a0]{
@@ -2748,4 +2749,8 @@ html[theme*="dark"] .gift-panel-container-root .gift-panel-background{
 
 html[theme*="dark"] #page-404{
     background-color: var(--bg2);
+}
+
+html[theme*="dark"] .bili-header__channel{
+    background: var(--bg1);
 }
