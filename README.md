@@ -5,9 +5,10 @@
 # HarukaEmoji
 rua豹使人快乐，rua了又rua！<br>
 
-rua豹器5.18来啦 <br>
+rua豹器5.19来啦 <br>
 兼容绝大多数chromium内核浏览器，例如：Opera浏览器，360浏览器，新MS Edge，yandex....。<br>
 现已支持火狐浏览器，见：<a href="https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/">火狐扩展商店</a><br>
+<b>近期b站对直播间心跳和换牌子API添加了新的安全策略，现已对新安全策略做了适配，如有需要请直接下载源代码更新。</b>
 <b>忙炸了，暂时停更；；</b>
 会时不时push代码，有需要的直接下载源码更新吧；；
 
