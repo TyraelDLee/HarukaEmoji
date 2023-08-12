@@ -7,6 +7,7 @@
         <item url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.worker.min.js" />
         <item url="file://$PROJECT_DIR$/js/ADT.min.js" />
         <item url="file://$PROJECT_DIR$/js/DanmakuToAss.min.js" />
+        <item url="file://$PROJECT_DIR$/js/DarkButton.min.js" />
         <item url="file://$PROJECT_DIR$/js/Lott.min.js" />
         <item url="file://$PROJECT_DIR$/js/SVGA.min.js" />
         <item url="file://$PROJECT_DIR$/js/Tetris.min.js" />
@@ -18,9 +19,11 @@
         <item url="file://$PROJECT_DIR$/js/audio.min.js" />
         <item url="file://$PROJECT_DIR$/js/background.min.js" />
         <item url="file://$PROJECT_DIR$/js/biliMain.min.js" />
+        <item url="file://$PROJECT_DIR$/js/button.min.js" />
         <item url="file://$PROJECT_DIR$/js/comment.min.js" />
         <item url="file://$PROJECT_DIR$/js/crypto-js.min.js" />
         <item url="file://$PROJECT_DIR$/js/danmaku.min.js" />
+        <item url="file://$PROJECT_DIR$/js/darkEngine.min.js" />
         <item url="file://$PROJECT_DIR$/js/darkMode.min.js" />
         <item url="file://$PROJECT_DIR$/js/guild.min.js" />
         <item url="file://$PROJECT_DIR$/js/haruka.min.js" />
@@ -44,6 +47,7 @@
       <root url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.worker.min.js" />
       <root url="file://$PROJECT_DIR$/js/ADT.min.js" />
       <root url="file://$PROJECT_DIR$/js/DanmakuToAss.min.js" />
+      <root url="file://$PROJECT_DIR$/js/DarkButton.min.js" />
       <root url="file://$PROJECT_DIR$/js/Lott.min.js" />
       <root url="file://$PROJECT_DIR$/js/SVGA.min.js" />
       <root url="file://$PROJECT_DIR$/js/Tetris.min.js" />
@@ -55,9 +59,11 @@
       <root url="file://$PROJECT_DIR$/js/audio.min.js" />
       <root url="file://$PROJECT_DIR$/js/background.min.js" />
       <root url="file://$PROJECT_DIR$/js/biliMain.min.js" />
+      <root url="file://$PROJECT_DIR$/js/button.min.js" />
       <root url="file://$PROJECT_DIR$/js/comment.min.js" />
       <root url="file://$PROJECT_DIR$/js/crypto-js.min.js" />
       <root url="file://$PROJECT_DIR$/js/danmaku.min.js" />
+      <root url="file://$PROJECT_DIR$/js/darkEngine.min.js" />
       <root url="file://$PROJECT_DIR$/js/darkMode.min.js" />
       <root url="file://$PROJECT_DIR$/js/guild.min.js" />
       <root url="file://$PROJECT_DIR$/js/haruka.min.js" />
