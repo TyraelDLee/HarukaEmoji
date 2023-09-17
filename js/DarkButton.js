@@ -19,6 +19,7 @@ class DarkButton{
 
     clouds
     stars
+    absLoaction
     constructor(buttonElement, check=false, width=null, height=null, togglePadding=null) {
         this.buttonElement = buttonElement;
         this.buttonBackground = document.createElement('div');
@@ -47,13 +48,9 @@ class DarkButton{
         this.buttonWidth = buttonElement.clientWidth;
         this.togglePadding = 10;
         this.togglePos = 0;
-        if(width !== null && height !== null && togglePadding !== null){
-            this.setSize(width, height, togglePadding);
-        }
-        if (check) {
-            this.buttonToggle.classList.add("activate");
-            this.togglePos = this.buttonWidth - this.buttonHeight;
-        }
+        this.setSize(width===null?125:width, height===null?50:height, togglePadding===null?10:togglePadding);
+
+        this.check(check);
 
         this.toggleMoon = []
         this.toggleHolo = []
@@ -137,14 +134,44 @@ class DarkButton{
         this.stars[8].setAttribute('style', '--starRadius: 90%; width: calc(var(--toggle-size) * .2); height: calc(var(--toggle-size) * .2); top: 28%; left: 47%;');
         this.stars[9].setAttribute('style', '--starRadius: 90%; width: calc(var(--toggle-size) * .3); height: calc(var(--toggle-size) * .3); top: 10%; left: 53%;');
         this.stars[10].setAttribute('style', '--starRadius: 90%; width: calc(var(--toggle-size) * .12); height: calc(var(--toggle-size) * .12); top: 23%; left: 54%;');
+
+        this.absLoaction = this.getAbsLocation()[0];
+    }
+
+    check(check){
+        if (check){
+            this.toggleHost.classList.add('activate');
+            this.buttonBackground.classList.add('activate');
+            this.togglePos = this.buttonWidth - this.buttonHeight/2;
+        }else{
+            this.toggleHost.classList.remove('activate');
+            this.buttonBackground.classList.remove('activate');
+            this.togglePos = 0;
+        }
+
     }
 
     setSize(width, height, togglePadding){
         this.buttonWidth = width;
         this.buttonHeight = height;
         this.togglePadding = togglePadding;
-        this.buttonElement.setAttribute('style', `--toggle-padding: ${togglePadding}px; --button-height: ${height}px; --button-width: ${width}px;`)
+        const preStyle = this.buttonElement.getAttribute('style');
+        this.buttonElement.setAttribute('style', `${preStyle}; --toggle-padding: ${togglePadding}px; --button-height: ${height}px; --button-width: ${width}px;`)
     }
+
+    getAbsLocation(){
+        let e = this.buttonElement;
+        let abs = [e.offsetLeft, e.offsetTop];
+        let cur = e.offsetParent;
+        while (cur!==null){
+            abs[0] += cur.offsetLeft;abs[1] += (cur.offsetTop+cur.clientTop);
+            cur = cur.offsetParent;
+        }
+        abs[0] += (e.clientWidth - 60);
+        abs[1] += (e.clientHeight - 60);
+        return abs;
+    }
+
     event(){
         let toggleSize = this.buttonHeight - this.togglePadding,
             holo1Dis = toggleSize*-1.6+this.togglePadding-this.togglePadding*-1,
@@ -153,18 +180,19 @@ class DarkButton{
         this.buttonElement.onmousedown = (e)=>{
             this.clickLock=true;
             this.toggleHost.setAttribute('style', ``);
-            this.mouseStartX=e.offsetX;
+            this.mouseStartX=e.clientX;
             this.mousePreX = e.offsetX;
         }
 
         this.buttonElement.onmousemove = (e)=>{
+            e.stopPropagation()
             // this.clickLock=true;
             if (this.clickLock) {
-                let mouseMovement = (e.clientX-this.mouseStartX) - this.buttonHeight/2;
+                let mouseMovement = e.clientX - this.absLoaction+(this.buttonHeight-this.togglePadding)/2;
                 if(Math.abs(mouseMovement)>2){
                     this.toggleHost.classList.remove("activate")
 
-                    this.moveLock = Math.abs(e.offsetX-this.mouseStartX)>0;
+                    this.moveLock = Math.abs(e.offsetX-this.mousePreX)>0;
                     let rotationPrentage =  mouseMovement/(this.buttonWidth - this.buttonHeight);
                     if (rotationPrentage > 1)rotationPrentage = 1;
                     if (rotationPrentage < 0)rotationPrentage = 0;
@@ -187,24 +215,20 @@ class DarkButton{
             this.toggleHolo[1].removeAttribute('style');
             if(this.moveLock){
                 if (this.togglePos <= this.buttonWidth / 2){
-                    this.toggleHost.classList.remove('activate');
-                    this.buttonBackground.classList.remove('activate');
-                    this.togglePos=0;
+                    this.check(false);
                 }else{
                     this.toggleHost.classList.add('activate');
                     this.buttonBackground.classList.add('activate');
-                    this.togglePos=this.buttonWidth-this.buttonHeight/2;
+                    this.togglePos=this.buttonWidth-this.buttonHeight;
                 }
             }else{
-                let actiavte = this.toggleHost.classList.contains("activate");
-                if (actiavte){
-                    this.toggleHost.classList.remove('activate');
-                    this.buttonBackground.classList.remove('activate');
-                    this.togglePos=0;
+                let activate = this.toggleHost.classList.contains("activate");
+                if (activate){
+                    this.check(false);
                 }else{
                     this.toggleHost.classList.add('activate');
                     this.buttonBackground.classList.add('activate');
-                    this.togglePos=this.buttonWidth-this.buttonHeight/2;
+                    this.togglePos=this.buttonWidth-this.buttonHeight;
                 }
             }
             this.clickLock=false;
@@ -217,13 +241,11 @@ class DarkButton{
             this.toggleHolo[0].removeAttribute('style');
             this.toggleHolo[1].removeAttribute('style');
             if (this.togglePos <= this.buttonWidth / 2){
-                this.toggleHost.classList.remove('activate');
-                this.buttonBackground.classList.remove('activate');
-                this.togglePos=0;
+                this.check(false);
             }else{
                 this.toggleHost.classList.add('activate');
                 this.buttonBackground.classList.add('activate');
-                this.togglePos=this.buttonWidth-this.buttonHeight/2;
+                this.togglePos=this.buttonWidth-this.buttonHeight;
             }
             this.clickLock = false;
             this.moveLock=false;
