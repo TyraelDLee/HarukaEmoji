@@ -1267,7 +1267,7 @@ html[theme*="dark"] .action-menu .menu-list a[data-v-d43989d2]:hover {
     background: var(--bg1_float);
 }
 
-html[theme*="dark"] .active {
+html[theme*="dark"] #link-message-container .active {
     background-color: var(--bg1_float);
 }
 

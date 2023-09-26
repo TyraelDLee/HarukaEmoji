@@ -3,9 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title>弹幕机</title>
-    <script src="./js/danmaku.min.js"></script>
+    <link href="./css/colors.min.css" type="text/css" rel="stylesheet">
+    <link href="./css/danmaku.min.css" type="text/css" rel="stylesheet">
+    <script src="./js/brotli.min.js"></script>
 </head>
 <body>
+    <div id="danmaku-list">
 
+    </div>
+    <div id="control-panel">
+        <div id="room-id" class="control-panel-block">
+            <div class="control-panel-block-input">
+                <div class="control-panel-block-title">添加房间</div>
+                <div class="room-input"><input type="text" placeholder="支持长短号" id="room-id-value">
+                    <div id="add-room" style="color: #fff">添加</div>
+                </div>
+            </div>
+        </div>
+        <div id="" class="control-panel-block">
+            <div class="control-panel-block-title">弹幕机设置</div>
+
+        </div>
+        <div id="background" class="control-panel-block">
+            <div class="control-panel-block-title">背景设置</div>
+        </div>
+    </div>
+    <script src="./js/danmaku.js"></script>
 </body>
 </html>

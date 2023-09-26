@@ -354,7 +354,7 @@
             }
         }
 
-        let flv = null, preview = null, abortFlag = new AbortController(), abortFetchPreview = new AbortController(), previewRetry = null, hb = null, requestPreview = true, videoMeta = {'mimeType':'','width':'0','height':'0','fps':'NaN','videoDataRate':'0', 'audioSampleRate':0,'audioChannelCount':'NaN', 'audioDataRate':'0', 'videoCodec':'NaN', 'metadata':{'encoder':'NaN'}, 'streamURL':''}, showStatus = false;
+        let flv = null, preview = null, abortFlag = new AbortController(), abortFetchPreview = new AbortController(), previewRetry = null, hb = null, requestPreview = true, videoMeta = {'mimeType':'','width':'0','height':'0','fps':'NaN','videoDataRate':'0', 'audioSampleRate':0,'audioChannelCount':'NaN', 'audioDataRate':'0', 'videoCodec':'NaN', 'metadata':{'encoder':'NaN'}, 'streamURL':'', 'trueID': liveRoomInfo['room_id'], 'shortID': liveRoomInfo['short_id']===0?liveRoomInfo['room_id']:liveRoomInfo['short_id']}, showStatus = false;
         let video = document.createElement('video');
         video.classList.add('video-player');
         video.setAttribute('style', 'display: none;');
@@ -839,6 +839,14 @@
                     <div class="video-status-info-row">
                         <div class="video-status-info-title">视频流源:</div>
                         <div class="video-status-info-data">${videoMeta['streamURL']}</div>
+                    </div>
+                    <div class="video-status-info-row">
+                        <div class="video-status-info-title">房间号:</div>
+                        <div class="video-status-info-data">${videoMeta['trueID']}</div>
+                    </div>
+                    <div class="video-status-info-row">
+                        <div class="video-status-info-title">短房间号:</div>
+                        <div class="video-status-info-data">${videoMeta['shortID']}</div>
                     </div>`;
         }
 
@@ -882,6 +890,8 @@
                         preview.on(mpegts.Events.MEDIA_INFO, (metadata)=>{
                             videoMeta = metadata;
                             videoMeta['streamURL'] = previewURL['url_info'][hostIndex]['host'];
+                            videoMeta['trueID'] = liveRoomInfo['room_id']
+                            videoMeta['shortID'] = liveRoomInfo['short_id']===0?liveRoomInfo['room_id']:liveRoomInfo['short_id'];
                             updateMetaInfo(document.getElementById(`video-status-info-container-${roomId}`));
                         });
                     }
@@ -924,6 +934,8 @@
                     console.log(metadata)
                     videoMeta = metadata;
                     videoMeta['streamURL'] = url['url_info'][index]['host'];
+                    videoMeta['trueID'] = liveRoomInfo['room_id']
+                    videoMeta['shortID'] = liveRoomInfo['short_id']===0?liveRoomInfo['room_id']:liveRoomInfo['shortID'];
                     updateMetaInfo(document.getElementById(`video-status-info-container-${roomId}`));
                     abortFetchPreview.abort('no needed');
                     requestPreview = false;
