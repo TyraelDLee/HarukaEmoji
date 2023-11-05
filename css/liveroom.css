@@ -64,6 +64,7 @@ a:hover{
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    overflow: hidden;
 }
 
 
@@ -109,7 +110,7 @@ a:hover{
 }
 
 .setting-panel .following-room {
-    margin: 10px 30px;
+    margin: 10px 30px 35px;
 }
 
 .panel-title {
@@ -174,16 +175,27 @@ a:hover{
     margin: 5px 10px;
     display: flex;
     cursor: pointer;
+    transition: 0.3s;
 }
 
 .following-liver:hover span {
     color: var(--bili-blue);
 }
 
+.following-liver:hover .user-add-num {
+    opacity: 1;
+}
+
+.following-liver:hover .user-face, .following-liver:hover .following-room-info{
+    transform: none;
+}
+
 .user-face {
     width: 60px;
     height: 60px;
     border-radius: 50%;
+    transition: 0.3s;
+    transform: translateX(-30px);
 }
 
 .user-face img {
@@ -196,17 +208,19 @@ a:hover{
     display: flex;
     flex-direction: column;
     justify-content: center;
+    transition: 0.3s;
+    transform: translateX(-30px);
+    margin-left: 10px;
 }
 
 .following-room-info span {
-    margin: 5px 20px;
+    margin: 5px 5px;
     transition: 0.2s;
 }
 
 .room-title {
     font-size: 16px;
     line-height: 16px;
-    text-align: center;
 }
 
 .panel-container {
@@ -916,4 +930,66 @@ input[type=radio]:checked {
     font-size: 12px;
     display: block;
     color: #fff;
+}
+
+.user-add-num{
+    display: flex;
+    width: 30px;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.user-add-num span{
+    border-radius: 50%;
+    border: 2px solid var(--bili-brand);
+    color: #fff!important;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    background: #fff;
+    transition: 0.3s;
+    font-size: 14px;
+    line-height: 16px;
+}
+
+.following-liver.selected .user-face, .following-liver.selected .following-room-info{
+    transform: none;
+}
+
+.following-liver.selected .user-add-num{
+    opacity: 1;
+}
+
+.following-liver.selected .user-add-num span{
+    background: var(--bili-brand);
+}
+
+.add-btn-area{
+    display: flex;
+    margin-bottom: 5px;
+    margin-right: 40px;
+    justify-content: right;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+.add-btn-area div{
+    font-size: 18px;
+    color: #fff;
+    margin: 0 10px;
+    padding: 4px 15px;
+    height: 30px;
+    line-height: 22px;
+    border-radius: 15px;
+    background: var(--bili-brand);
+    cursor: pointer;
+    user-select: none;
+}
+
+.add-btn-area div:hover{
+    opacity: 0.8;
 }

@@ -72,14 +72,18 @@
         <div class="add-room-panel" style="display: none;">
             <div class="panel-title">添加直播</div>
             <div class="room-id-input">
-                <div class="room-input-title">房间号</div>
-                <div class="room-input"><input type="text" placeholder="支持长短号，一次添加一个，按回车键添加">
+                <div class="room-input-title">搜索</div>
+                <div class="room-input"><input type="text" placeholder="支持长号，短号，用户名，只有开播的主播会显示在下方结果中。">
                     <div style="overflow: hidden"><span class="error-msg"></span></div>
                 </div>
             </div>
             <div class="following-room">
                 <div class="following-block-title">上工中的主包：</div>
                 <div class="following-block"></div>
+            </div>
+            <div class="add-btn-area">
+<!--                <div id="clear-selection">清空选择</div>-->
+                <div id="start-all">添加到放映室</div>
             </div>
         </div>
         <div class="setting-panel" style="display: none;">
@@ -134,6 +138,6 @@
         </div>
     </div>
 </main>
-<script src="./js/liveroom.min.js"></script>
+<script src="./js/liveroom.js"></script>
 </body>
 </html>

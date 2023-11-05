@@ -2909,3 +2909,15 @@ html[theme*="dark"] .sidebar-canvas, html[theme*="dark"] .sidebar-canvas:hover{
 html[theme*="dark"] .search-bar-ctnr .search-bar[data-v-7b69c0de]:hover {
     background-color: var(--bg3);
 }
+
+html[theme*="dark"] .auto-reply-push{
+    background: var(--bg2);
+}
+
+html[theme*="dark"] .auto-reply-push__desc{
+    color: var(--text1);
+}
+
+html[theme*="dark"] .feed-button-root .content-box{
+    color: var(--text1);
+}

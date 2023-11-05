@@ -1,4 +1,5 @@
-function DanmakuWSS(config, ver = 1, frontEndHost) {
+function DanmakuWSS(frontEndHost, config=null, ver = 1) {
+    this.ownerUID = -1;
     this.firstPackageReveiced = false;
     this.retry = 3;
     this.retried = 0;
@@ -7,18 +8,23 @@ function DanmakuWSS(config, ver = 1, frontEndHost) {
     this.wss = null;
     this.frontEndHost = frontEndHost;
     this.onUserBehave = false;
-    this.roomID = config['room_id'];
-    this.biggest_list = config['biggest_list']===null?100:config['biggest_list'];
-    this.AUTH_PAYLOAD = {
-        'uid': config['uid'],
-        'roomid': this.roomID,
-        'protover': 3,
-        'buvid': config['buvid'],
-        'platform': 'web',
-        'clientver': '1.8.5',
-        'type': 2,
-        'key': config['token']
-    };
+    this.roomID = -1;
+    this.biggest_list = 100;
+    this.AUTH_PAYLOAD = null;
+    if (config !== null){
+        this.roomID = config['room_id'];
+        this.biggest_list = config['biggest_list']===null?100:config['biggest_list'];
+        this.AUTH_PAYLOAD = {
+            'uid': config['uid'],
+            'roomid': this.roomID,
+            'protover': 3,
+            'buvid': config['buvid'],
+            'platform': 'web',
+            'clientver': '1.8.5',
+            'type': 2,
+            'key': config['token']
+        };
+    }
     const WSS_HOST = `wss://broadcastlv.chat.bilibili.com:2245/sub`;
     const HEARTBEAT_PAYLOAD = '[object Object]'
     const EMOJI_KEY = {
@@ -194,9 +200,7 @@ function DanmakuWSS(config, ver = 1, frontEndHost) {
     const LOTT = '喜欢主播加关注，点点红包抽礼物'
 
     DanmakuWSS.prototype.unPackage = function (dmPackage) {
-        let offset = 0, subPackageLength = 0;
         let subPackages = new TextDecoder().decode(dmPackage).split(/}.{16}{/);
-        // console.log(new TextDecoder().decode(dmPackage).split(/}.{16}{/))
         for (let i = 0; i < subPackages.length; i++) {
             let stringSubPackage = subPackages[i]
             if (i===0){
@@ -209,20 +213,29 @@ function DanmakuWSS(config, ver = 1, frontEndHost) {
                     stringSubPackage = stringSubPackage.substring(0, stringSubPackage.length-1);
             }
             let danmaku = JSON.parse(stringSubPackage)
+            switch (danmaku['cmd']){
+                case 'DANMU_MSG':
+                    let danmakuPayload = {
+                        'type': 'DANMU_MSG',
+                        'danmaku_content': danmaku['info'][1],
+                        'user': danmaku['info'][2][2]===1?4:(danmaku['info'][2][7]===''?0:(danmaku['info'][2][7]==='#00D1F1'?1:(danmaku['info'][2][7]==='#E17AFF'?2:3))),
+                        'userName': danmaku['info'][2][1],
+                        'userID': danmaku['info'][2][0],
+                        'madel': danmaku['info'][3],
+                        'content_emoji': danmaku['info'][0][13]
+                    }
+                    this.renderFrontEnd(danmakuPayload)
+                    break;
+                case 'SEND_GIFT':
+                    break;
+                default:
+                    break;
+            }
             if (danmaku['cmd'] === 'DANMU_MSG'){
                 console.log(danmaku);
-                let danmakuPayload = {
-                    'type': 'DANMU_MSG',
-                    'danmaku_content': danmaku['info'][1],
-                    'user': danmaku['info'][2][2]===1?4:(danmaku['info'][2][7]===''?0:(danmaku['info'][2][7]==='#00D1F1'?1:(danmaku['info'][2][7]==='#E17AFF'?2:3))),
-                    'userName': danmaku['info'][2][1],
-                    'userID': danmaku['info'][2][0],
-                    'madel': danmaku['info'][3],
-                    'content_emoji': danmaku['info'][0][13]
-                }
-                this.renderFrontEnd(danmakuPayload)
+
             }else{
-                // console.log(danmaku)
+                console.log(danmaku)
             }
         }
     }
@@ -256,7 +269,7 @@ function DanmakuWSS(config, ver = 1, frontEndHost) {
                     * 0: uid
                     * 1: uname
                     * 2: admin
-                    * 7: fleet - "#00D1F1" Tier 1, - "#E17AFF" Tier 2
+                    * 7: fleet - "#00D1F1" Tier 1, - "#E17AFF" Tier 2 - "FF7C28" Tier 3
                     * }*/
                     this.renderFrontEnd(danmakuPayload)
                 }else{
@@ -299,45 +312,62 @@ function DanmakuWSS(config, ver = 1, frontEndHost) {
         return new TextDecoder().decode(payload);
     }
 
-    DanmakuWSS.prototype.connect = function () {
+    DanmakuWSS.prototype.connect = function (config=null) {
         try{
             this.wss = new WebSocket(WSS_HOST);
         }catch (e) {
             console.log("Failed to establish the wss connection: \r\n" + e);
         }
-        if (this.wss !== null){
-            const hbPackage = this.packageDm(HEARTBEAT_PAYLOAD, 2);
-            const authPackage = this.packageDm(JSON.stringify(this.AUTH_PAYLOAD), 7);
-            this.wss.onopen = ()=>{
-                this.onUserBehave=false;
-                this.wss.send(authPackage);
-                this.wss.send(hbPackage);
-                this.__sent_system_package('正在连接至'+this.roomID)
-                this.timer = setInterval(()=>{
-                    this.wss.send(hbPackage)
-                }, 30000);
-            }
-
-            this.wss.onmessage = (payload)=>{
-                if (!this.firstPackageReveiced){
-                    this.__sent_system_package('已连接至'+this.roomID)
-                    this.firstPackageReveiced = true;
+        if (config!== null){
+            this.roomID = config['room_id'];
+            this.AUTH_PAYLOAD = {
+                'uid': config['uid'],
+                'roomid': config['room_id'],
+                'protover': 3,
+                'buvid': config['buvid'],
+                'platform': 'web',
+                'clientver': '1.8.5',
+                'type': 2,
+                'key': config['token']
+            };
+        }
+        if (this.AUTH_PAYLOAD === null){
+            this.__sent_system_package('房间信息配置不正确！');
+        }else{
+            if (this.wss !== null){
+                const hbPackage = this.packageDm(HEARTBEAT_PAYLOAD, 2);
+                const authPackage = this.packageDm(JSON.stringify(this.AUTH_PAYLOAD), 7);
+                this.wss.onopen = ()=>{
+                    this.onUserBehave=false;
+                    this.wss.send(authPackage);
+                    this.wss.send(hbPackage);
+                    this.__sent_system_package('正在连接至'+this.roomID)
+                    this.timer = setInterval(()=>{
+                        this.wss.send(hbPackage)
+                    }, 30000);
                 }
-                let reader = new FileReader();
-                reader.readAsArrayBuffer(payload.data);
-                reader.onload = ()=>{
-                    this.nonPackage(reader.result);
+
+                this.wss.onmessage = (payload)=>{
+                    if (!this.firstPackageReveiced){
+                        this.__sent_system_package('已连接至'+this.roomID)
+                        this.firstPackageReveiced = true;
+                    }
+                    let reader = new FileReader();
+                    reader.readAsArrayBuffer(payload.data);
+                    reader.onload = ()=>{
+                        this.nonPackage(reader.result);
+                    }
                 }
-            }
 
-            this.wss.onclose = ()=>{
-                if (!this.onUserBehave)
-                    this.__handel_reconnection(0);
-            }
+                this.wss.onclose = ()=>{
+                    if (!this.onUserBehave)
+                        this.__handel_reconnection(0);
+                }
 
-            this.wss.onerror = ()=>{
-                if (!this.onUserBehave)
-                    this.__handel_reconnection(1);
+                this.wss.onerror = ()=>{
+                    if (!this.onUserBehave)
+                        this.__handel_reconnection(1);
+                }
             }
         }
     }
@@ -402,7 +432,7 @@ function DanmakuWSS(config, ver = 1, frontEndHost) {
                 </div>
                 </div>
                 <div class="rua-dm-content">
-                    <div class="rua-dm-danmaku-content normal-dm privilege-${payload['user']}">${danmakuEnoji!==''?danmakuEnoji:payload['danmaku_content']}</div>
+                    <div class="rua-dm-danmaku-content normal-dm privilege-${payload['user']} ${payload['userID']-0 === this.ownerUID?"privilege-owner":''}">${danmakuEnoji!==''?danmakuEnoji:payload['danmaku_content']}</div>
                 </div>
                 `;
                 }
@@ -439,33 +469,28 @@ function DanmakuWSS(config, ver = 1, frontEndHost) {
         setTimeout(()=>{
             this.roomID = linkData['room_id'];
             this.biggest_list = linkData['biggest_list']===null?100:linkData['biggest_list'];
-            this.AUTH_PAYLOAD = {
-                'uid': linkData['uid'],
-                'roomid': this.roomID,
-                'protover': 3,
-                'buvid': linkData['buvid'],
-                'platform': 'web',
-                'clientver': '1.8.5',
-                'type': 2,
-                'key': linkData['token']
-            };
-            this.connect();
+            this.connect(linkData);
         }, 2000);
+    }
 
+    DanmakuWSS.prototype.setOwnerUID = function (uid){
+        this.ownerUID = uid;
     }
 }
 
 !function () {
-    let host = null, currentRoomID=-1;
+    let host = new DanmakuWSS(document.getElementById('danmaku-list')), currentRoomID=-1, firstRoom=true;
     let inputRoomId = document.getElementById('add-room');
     inputRoomId.onclick = async ()=>{
         let roomId = document.getElementById('room-id-value').value;
         if (currentRoomID!==roomId-0) {
+            host.__sent_system_package(`正在获取${roomId}的房间信息`);
             currentRoomID = roomId;
             let data = await getRealRoomID(roomId - 0);
             console.log("Grab room info:");
             console.log(data)
             grabDanmaku(data);
+
         }
     }
 
@@ -477,7 +502,10 @@ function DanmakuWSS(config, ver = 1, frontEndHost) {
         }).then(result => result.json())
             .then(json =>{
                 if (json['code'] === 0){
-                    return getRoomKey(json['data']['room_id']);
+                    let roomInfo = {};
+                    roomInfo['room_id'] = json['data']['room_id'];
+                    roomInfo['uid'] = json['data']['uid'];
+                    return getRoomKey(roomInfo);
                 }
                 else{
                     throw json;
@@ -486,7 +514,7 @@ function DanmakuWSS(config, ver = 1, frontEndHost) {
     }
 
     function getRoomKey(room_id) {
-        return fetch(`http://api.live.bilibili.com/xlive/web-room/v1/index/getDanmuInfo?id=${room_id}`, {
+        return fetch(`http://api.live.bilibili.com/xlive/web-room/v1/index/getDanmuInfo?id=${room_id['room_id']}`, {
             method: 'GET',
             credentials: 'include',
             body: null
@@ -494,7 +522,8 @@ function DanmakuWSS(config, ver = 1, frontEndHost) {
             .then(json => {
                 if (json['code'] === 0) {
                     let out = json['data'];
-                    out['room_id'] = room_id;
+                    out['room_id'] = room_id['room_id'];
+                    out['uid'] = room_id['uid'];
                     return out;
                 }
                 else
@@ -508,15 +537,15 @@ function DanmakuWSS(config, ver = 1, frontEndHost) {
     function grabDanmaku(hostData) {
         chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'DedeUserID'}, (c1)=>{
             chrome.cookies.get({url: 'https://www.bilibili.com/', name: 'buvid3'}, (c2)=>{
-                if (host === null) {
-                    host = new DanmakuWSS({
+                if (firstRoom) {
+                    firstRoom=false;
+                    host.connect({
                         'uid': c1.value - 0,
                         'room_id': hostData['room_id'],
                         'token': hostData['token'],
                         'biggest_list': 100,
                         'buvid': c2.value
-                    }, 1, document.getElementById('danmaku-list'));
-                    host.connect();
+                    });
                 }else{
                     host.setNewRoom({
                         'uid': c1.value - 0,
@@ -526,6 +555,7 @@ function DanmakuWSS(config, ver = 1, frontEndHost) {
                         'buvid': c2.value
                     });
                 }
+                host.setOwnerUID(hostData['uid']);
             });
         });
     }

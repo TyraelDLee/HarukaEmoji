@@ -80,7 +80,7 @@
                     if (r['liveStatus']!==1)
                         throw r;
                     else
-                        getRooms([r['up']]);
+                        getRooms([r['up']], true);
                 }).catch(e=>{
                     console.log(e);
                 });
@@ -174,29 +174,46 @@
             document.getElementsByClassName('add-room-panel')[0].addEventListener('click', (e) => {
                 e.stopPropagation();
             });
+            let searchTime = null, pValue = '';
             document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('input')[0].onkeyup = (e)=>{
-                if (document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('input')[0].classList.contains('error-input')){
-                    document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('input')[0].classList.remove('error-input');
-                    document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('span')[0].innerHTML = '';
-                    document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('span')[0].removeAttribute('style');
-                }
-                if (e.code === 'Enter'){
-                    getRealRoomID(e.target.value).then(r=>{
-                        if (r['liveStatus']!==1)
-                            throw r;
-                        else
-                            getRooms([r['up']]);
-                    }).catch(e=>{
-                        console.log(e);
-                        document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('input')[0].classList.add('error-input');
-                        document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('span')[0].setAttribute('style', `transform: translateY(0px);`);
-                        if (e['liveStatus'] !== 1){
-                            document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('span')[0].innerHTML = '主播未开播';
-                        }else if (e['msg'] === '直播间不存在'){
-                            document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('span')[0].innerHTML = '直播间不存在';
+                // if (document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('input')[0].classList.contains('error-input')){
+                //     document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('input')[0].classList.remove('error-input');
+                //     document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('span')[0].innerHTML = '';
+                //     document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('span')[0].removeAttribute('style');
+                // }
+                // if (e.code === 'Enter'){
+                //     getRealRoomID(e.target.value).then(r=>{
+                //         if (r['liveStatus']!==1)
+                //             throw r;
+                //         else
+                //             getRooms([r['up']]);
+                //     }).catch(e=>{
+                //         console.log(e);
+                //         document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('input')[0].classList.add('error-input');
+                //         document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('span')[0].setAttribute('style', `transform: translateY(0px);`);
+                //         if (e['liveStatus'] !== 1){
+                //             document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('span')[0].innerHTML = '主播未开播';
+                //         }else if (e['msg'] === '直播间不存在'){
+                //             document.getElementsByClassName('add-room-panel')[0].getElementsByClassName('room-input')[0].getElementsByTagName('span')[0].innerHTML = '直播间不存在';
+                //         }
+                //     });
+                // }
+                searchTime = setTimeout(()=>{
+                    if (pValue!== e.target.value){
+                        console.log(e.target.value);
+                        pValue = e.target.value;
+                        let followingContainer = document.getElementsByClassName('following-block')[0];
+                        followingContainer.innerHTML='';
+                        if (e.target.value==='') {
+                            document.getElementsByClassName('following-room')[0].getElementsByClassName('following-block-title')[0].innerText = '上工中的主包：';
+                            getFollowingRoom();
+                        }else{
+                            document.getElementsByClassName('following-room')[0].getElementsByClassName('following-block-title')[0].innerText = '搜索结果：';
+                            searchKeywords(e.target.value);
                         }
-                    });
-                }
+                    }
+                }, 1000);
+                searchTime = null;
 
             };
             getFollowingRoom();
@@ -275,6 +292,34 @@
             });
     }
 
+    let selectedList = [];
+    document.getElementById('start-all').onclick = ()=>{
+        getRooms(selectedList, true);
+        hidePanelContainer();
+    };
+
+    function searchKeywords(keyword){
+        fetch(`https://api.live.bilibili.com/av/v1/VideoConnection/onlineSearch?page=1&pagesize=20&search=${keyword}&type=1&platform=h5&build=1`, {
+            method: 'GET',
+            credentials: 'include',
+            body: null
+        }).then(res => res.json())
+            .then(json=>{
+                if (json['code']===0){
+                    let data = json['data']['list'];
+                    console.log(data);
+                    let uidList = [];
+                    for (let i = 0; i < data.length; i++) {
+                        uidList.push(data[i]['uid']);
+                    }
+                    console.log(uidList);
+                    getRooms(uidList, false)
+                }
+            }).catch(e=>{
+
+        });
+    }
+
     function getRooms(list, allOnce=false){
         let body = '{"uids": [' + list + ']}';
         fetch("https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids?requestFrom=rua5", {
@@ -287,7 +332,7 @@
                 if (json["code"] === 0) {
                     let data = json["data"];
                     let followingContainer = document.getElementsByClassName('following-block')[0];
-                    if (list.length===1){
+                    if (list.length===1 && allOnce){
                         let liveroomData = data[list[0]];
                         bindVideoPlayer(liveroomData);
                         hidePanelContainer();
@@ -304,14 +349,7 @@
                                 if (data[list[i]] !== undefined) {
                                     if (data[list[i]]["live_status"] === 1) {
                                         let liveroomData = data[list[i]];
-                                        let liver = document.createElement('div');
-                                        liver.classList.add('following-liver');
-                                        liver.innerHTML = `<div class="user-face"><img src="${liveroomData['face']}"></div><div class="following-room-info"><span class="room-title">${liveroomData['title']}</span><span class="user-name">${liveroomData['uname']}</span></div>`;
-                                        followingContainer.append(liver);
-                                        liver.addEventListener('click', () => {
-                                            bindVideoPlayer(liveroomData);
-                                            hidePanelContainer();
-                                        })
+                                        renderLiver(liveroomData, followingContainer)
                                     }
                                 }
                             }
@@ -320,6 +358,40 @@
                     }
                 }
             });
+    }
+    function renderLiver(liveroomData, host){
+        let liver = document.createElement('div');
+        liver.classList.add('following-liver');
+        liver.innerHTML = `<div class="user-add-num"><span class=""></span></div><div class="user-face"><img src="${liveroomData['face']}"></div><div class="following-room-info"><span class="room-title">${liveroomData['title']}</span><div style="display: flex"><span class="user-name">${liveroomData['uname']}</span><span> | </span><span>${liveroomData['area_v2_name']}</span></div></div>`;
+        host.append(liver);
+        if (selectedList.indexOf(liveroomData['uid'])!==-1){
+            liver.classList.add('selected');
+            liver.classList.add('unchange');
+            liver.getElementsByClassName('user-add-num')[0].getElementsByTagName('span')[0].innerText= selectedList.indexOf(liveroomData['uid'])+1+"";
+        }
+        if (!liver.classList.contains('unchange')){
+            liver.addEventListener('click', () => {
+                // bindVideoPlayer(liveroomData);
+                // hidePanelContainer();
+                if (!liver.classList.contains('selected') && (selectedList.length)<16){
+                    liver.classList.add('selected');
+                    selectedList.push(liveroomData['uid']);
+                    liver.getElementsByClassName('user-add-num')[0].getElementsByTagName('span')[0].innerText= selectedList.length+"";
+                }else{
+                    liver.classList.remove('selected');
+                    let i = selectedList.indexOf(liveroomData['uid']);
+                    selectedList.splice(i, 1);
+                    let sameLevelList = liver.parentElement.getElementsByClassName('following-liver');
+                    for (const sameLevelListElement of sameLevelList) {
+                        if (sameLevelListElement.classList.contains('selected')) {
+                            if (sameLevelListElement.getElementsByClassName('user-add-num')[0].getElementsByTagName('span')[0].innerText-0 > i)
+                                sameLevelListElement.getElementsByClassName('user-add-num')[0].getElementsByTagName('span')[0].innerText = sameLevelListElement.getElementsByClassName('user-add-num')[0].getElementsByTagName('span')[0].innerText-1;
+                        }
+                    }
+                }
+
+            });
+        }
     }
 
     function getAbsLocation(e){
@@ -935,7 +1007,7 @@
                     videoMeta = metadata;
                     videoMeta['streamURL'] = url['url_info'][index]['host'];
                     videoMeta['trueID'] = liveRoomInfo['room_id']
-                    videoMeta['shortID'] = liveRoomInfo['short_id']===0?liveRoomInfo['room_id']:liveRoomInfo['shortID'];
+                    videoMeta['shortID'] = liveRoomInfo['short_id']===0?liveRoomInfo['room_id']:liveRoomInfo['short_id'];
                     updateMetaInfo(document.getElementById(`video-status-info-container-${roomId}`));
                     abortFetchPreview.abort('no needed');
                     requestPreview = false;
@@ -1292,3 +1364,6 @@
 
     }
 }();
+
+// Recent watched: https://api.live.bilibili.com/xlive/web-ucenter/v1/history/get_for_wechat
+// Search keyword: https://api.live.bilibili.com/av/v1/VideoConnection/onlineSearch?page=1&pagesize=20&search=${KEYWORD}&type=1&platform=h5&build=1
