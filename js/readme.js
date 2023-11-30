@@ -103,6 +103,6 @@
         svga(icon.getElementsByTagName('img')[0],0);
     });
 
-    const darkButton = new DarkButton(document.getElementsByClassName('dark-button')[0],true, 100, 40);
-    darkButton.event();
+    // const darkButton = new DarkButton(document.getElementsByClassName('dark-button')[0],true, 100, 40);
+    // darkButton.event();
 }();

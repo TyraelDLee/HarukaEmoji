@@ -5,6 +5,10 @@
         <item url="file://$PROJECT_DIR$/docs/js/readme.min.js" />
         <item url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.min.js" />
         <item url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.worker.min.js" />
+        <item url="file://$PROJECT_DIR$/hls/hls-demo.min.js" />
+        <item url="file://$PROJECT_DIR$/hls/hls.light.min.js" />
+        <item url="file://$PROJECT_DIR$/hls/hls.min.js" />
+        <item url="file://$PROJECT_DIR$/hls/hls.worker.min.js" />
         <item url="file://$PROJECT_DIR$/js/ADT.min.js" />
         <item url="file://$PROJECT_DIR$/js/DanmakuToAss.min.js" />
         <item url="file://$PROJECT_DIR$/js/DarkButton.min.js" />
@@ -47,6 +51,10 @@
       <root url="file://$PROJECT_DIR$/docs/js/readme.min.js" />
       <root url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.min.js" />
       <root url="file://$PROJECT_DIR$/ffmpeg/ffmpeg-core.worker.min.js" />
+      <root url="file://$PROJECT_DIR$/hls/hls-demo.min.js" />
+      <root url="file://$PROJECT_DIR$/hls/hls.light.min.js" />
+      <root url="file://$PROJECT_DIR$/hls/hls.min.js" />
+      <root url="file://$PROJECT_DIR$/hls/hls.worker.min.js" />
       <root url="file://$PROJECT_DIR$/js/ADT.min.js" />
       <root url="file://$PROJECT_DIR$/js/DanmakuToAss.min.js" />
       <root url="file://$PROJECT_DIR$/js/DarkButton.min.js" />

@@ -342,6 +342,7 @@
                                 if (data[list[i]]["live_status"] === 1){
                                     let liveroomData = data[list[i]];
                                     bindVideoPlayer(liveroomData);
+                                    hidePanelContainer();
                                 }
                             }
                         }else{
@@ -408,6 +409,8 @@
 
     async function bindVideoPlayer(liveRoomInfo) {
         console.log(liveRoomInfo)
+        if(selectedList.indexOf(liveRoomInfo['uid'])===-1)
+            selectedList.push(liveRoomInfo['uid']);
         function calculateLayout(element, numberOfVideo){
             if (numberOfVideo === 1){
                 element.setAttribute('style', `--number-of-row:1; --number-of-column:1;`);
@@ -426,7 +429,7 @@
             }
         }
 
-        let flv = null, preview = null, abortFlag = new AbortController(), abortFetchPreview = new AbortController(), previewRetry = null, hb = null, requestPreview = true, videoMeta = {'mimeType':'','width':'0','height':'0','fps':'NaN','videoDataRate':'0', 'audioSampleRate':0,'audioChannelCount':'NaN', 'audioDataRate':'0', 'videoCodec':'NaN', 'metadata':{'encoder':'NaN'}, 'streamURL':'', 'trueID': liveRoomInfo['room_id'], 'shortID': liveRoomInfo['short_id']===0?liveRoomInfo['room_id']:liveRoomInfo['short_id']}, showStatus = false;
+        let flv = null, hlsStream = false, preview = null, abortFlag = new AbortController(), abortFetchPreview = new AbortController(), previewRetry = null, hb = null, requestPreview = true, videoMeta = {'mimeType':'','width':'0','height':'0','fps':'NaN','videoDataRate':'0', 'audioSampleRate':0,'audioChannelCount':'NaN', 'audioDataRate':'0', 'videoCodec':'NaN', 'metadata':{'encoder':'NaN'}, 'streamURL':'', 'trueID': liveRoomInfo['room_id'], 'shortID': liveRoomInfo['short_id']===0?liveRoomInfo['room_id']:liveRoomInfo['short_id']}, showStatus = false;
         let video = document.createElement('video');
         video.classList.add('video-player');
         video.setAttribute('style', 'display: none;');
@@ -451,13 +454,16 @@
                             if (roominfo['liveStatus']===1){
                                 setStream(liveRoomInfo['room_id'], video, 1);
                             }else{
-                                if (flv!==null)
-                                    flv.destroy();
+                                if (flv!==null) {
+                                    hlsStream?flv.detachMedia():flv.destroy();
+                                }
                                 abortFlag.abort('user cancel');
                                 console.log(`Stream ${liveRoomInfo['uid']} closed.`);
                                 revokeEventListener();
                                 videoContainer.remove();
                                 videoStream.delete(liveRoomInfo['uid']);
+                                let i = selectedList.indexOf(liveRoomInfo['uid']);
+                                selectedList.splice(i, 1);
                                 if (videoStream.size===0){
                                     saveRoomList.classList.add('disabled');
                                 }
@@ -655,13 +661,15 @@
             videoControlContainer.getElementsByClassName('close')[0].onclick = ()=>{
                 if (flv!==null){
                     //disconnect from stream, destroy player
-                    flv.destroy();
+                    hlsStream?flv.detachMedia():flv.destroy();
                 }
                 abortFlag.abort('user cancel');
                 abortFetchPreview.abort('user cancel');
                 console.log('close '+ liveRoomInfo['uid']);
                 revokeEventListener();
                 videoContainer.remove();
+                let i = selectedList.indexOf(liveRoomInfo['uid']);
+                selectedList.splice(i, 1);
                 videoStream.delete(liveRoomInfo['uid']);
                 if (videoStream.size===0){
                     saveRoomList.classList.add('disabled');
@@ -674,7 +682,7 @@
             // refresh event
             videoControlContainer.getElementsByClassName('refresh-stream')[0].onclick = ()=>{
                 if (flv!==null){
-                    flv.destroy();
+                    hlsStream?flv.detachMedia():flv.destroy();
                 }
             };
 
@@ -939,33 +947,46 @@
                         if (typeof json['data']['playurl_info']['playurl']['stream']['0']['format']['0']['codec']['1'] === 'undefined')
                             previewURL = json['data']['playurl_info']['playurl']['stream']['0']['format']['0']['codec']['0'];
                         else previewURL = json['data']['playurl_info']['playurl']['stream']['0']['format']['0']['codec']['1'];
-
-                        preview = mpegts.createPlayer({
-                            type: "flv",
-                            isLive: true,
-                            url: previewURL['url_info'][hostIndex]['host']+previewURL['base_url']+previewURL['url_info'][hostIndex]['extra'],
-                        });
-                        preview.attachMediaElement(video);
-                        preview.load();
-                        try {
-                            preview.play().catch(e=>{});
-                        }catch (e){}
-                        preview.on(mpegts.Events.ERROR, (e) => {
-                            if (requestPreview){
-                                preview.unload();
-                                previewRetry = setTimeout(()=>{
-                                    let host = hostIndex===0?1:0;
-                                    setPreview(roomId, video, host);
-                                }, 1000);
+                        hlsStream = json['data']['playurl_info']['playurl']['stream']['0']['protocol_name'] === 'http_hls';
+                        if(hlsStream){
+                            if(Hls.isSupported()){
+                                preview = new Hls();
+                                preview.loadSource(previewURL['url_info'][hostIndex]['host']+previewURL['base_url']+previewURL['url_info'][hostIndex]['extra']);
+                                preview.attachMedia(video);
+                                preview.on(Hls.Events.MANIFEST_PARSED,function() {
+                                    video.play();
+                                });
+                            }else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                                video.src = previewURL['url_info'][hostIndex]['host']+previewURL['base_url']+previewURL['url_info'][hostIndex]['extra'];
                             }
-                        });
-                        preview.on(mpegts.Events.MEDIA_INFO, (metadata)=>{
-                            videoMeta = metadata;
-                            videoMeta['streamURL'] = previewURL['url_info'][hostIndex]['host'];
-                            videoMeta['trueID'] = liveRoomInfo['room_id']
-                            videoMeta['shortID'] = liveRoomInfo['short_id']===0?liveRoomInfo['room_id']:liveRoomInfo['short_id'];
-                            updateMetaInfo(document.getElementById(`video-status-info-container-${roomId}`));
-                        });
+                        }else{
+                            preview = mpegts.createPlayer({
+                                type: "flv",
+                                isLive: true,
+                                url: previewURL['url_info'][hostIndex]['host']+previewURL['base_url']+previewURL['url_info'][hostIndex]['extra'],
+                            });
+                            preview.attachMediaElement(video);
+                            preview.load();
+                            try {
+                                preview.play().catch(e=>{});
+                            }catch (e){}
+                            preview.on(mpegts.Events.ERROR, (e) => {
+                                if (requestPreview){
+                                    preview.unload();
+                                    previewRetry = setTimeout(()=>{
+                                        let host = hostIndex===0?1:0;
+                                        setPreview(roomId, video, host);
+                                    }, 1000);
+                                }
+                            });
+                            preview.on(mpegts.Events.MEDIA_INFO, (metadata)=>{
+                                videoMeta = metadata;
+                                videoMeta['streamURL'] = previewURL['url_info'][hostIndex]['host'];
+                                videoMeta['trueID'] = liveRoomInfo['room_id']
+                                videoMeta['shortID'] = liveRoomInfo['short_id']===0?liveRoomInfo['room_id']:liveRoomInfo['short_id'];
+                                updateMetaInfo(document.getElementById(`video-status-info-container-${roomId}`));
+                            });
+                        }
                     }
                 })
         }
@@ -978,48 +999,64 @@
              * Bind the media to the video player.
              * */
             function setPlayer(url, video, index) {
-                let frameChasing = null;
-                flv = mpegts.createPlayer({
-                    type: "flv",
-                    isLive: true,
-                    url: url['url_info'][index]['host']+url['base_url']+url['url_info'][index]['extra']
-                });
-                flv.attachMediaElement(video);
-                flv.load();
-                flv.play().catch(e=>{});
-                frameChasing = setTimeout(()=>{
-                    try{video.currentTime = video.buffered.end(0) - 1;}catch (e) {}
-                }, 2000);
-                flv.on(mpegts.Events.ERROR, (e) => {
-                    console.log(e);
-                    index = index + 1;
-                    flv.unload();
-                    clearTimeout(frameChasing);
-                    if (index === url['url_info'].length) {
-                        setTimeout(()=>{
-                            setStream(roomId, video);
-                        }, 1000);
+                console.log(url)
+                let frameChasing = null, streamSrc = url['url_info'][index]['host']+url['base_url']+url['url_info'][index]['extra'];
+                if (hlsStream){
+                    if(Hls.isSupported()){
+                        flv = new Hls();
+                        flv.loadSource(streamSrc);
+                        flv.attachMedia(video);
+                        flv.on(Hls.Events.MANIFEST_PARSED,function() {
+                            video.play();
+                        });
+                        preview.detachMedia();
+                        previewVideo.remove();
+                        video.removeAttribute('style');
+                    }else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                        video.src = streamSrc;
                     }
-                    else setPlayer(url, video, index);
-                });
-                flv.on(mpegts.Events.MEDIA_INFO, (metadata)=>{
-                    console.log(metadata)
-                    videoMeta = metadata;
-                    videoMeta['streamURL'] = url['url_info'][index]['host'];
-                    videoMeta['trueID'] = liveRoomInfo['room_id']
-                    videoMeta['shortID'] = liveRoomInfo['short_id']===0?liveRoomInfo['room_id']:liveRoomInfo['short_id'];
-                    updateMetaInfo(document.getElementById(`video-status-info-container-${roomId}`));
-                    abortFetchPreview.abort('no needed');
-                    requestPreview = false;
-                    if (previewRetry !== null) {
-                        clearTimeout(previewRetry);
-                        previewRetry = null;
-                    }
-                    preview.destroy();
-                    previewVideo.remove();
-                    video.removeAttribute('style');
-                });
-
+                }else{
+                    flv = mpegts.createPlayer({
+                        type: "flv",
+                        isLive: true,
+                        url: streamSrc
+                    });
+                    flv.attachMediaElement(video);
+                    flv.load();
+                    flv.play().catch(e=>{});
+                    frameChasing = setTimeout(()=>{
+                        try{video.currentTime = video.buffered.end(0) - 1;}catch (e) {}
+                    }, 2000);
+                    flv.on(mpegts.Events.ERROR, (e) => {
+                        console.log(e);
+                        index = index + 1;
+                        flv.unload();
+                        clearTimeout(frameChasing);
+                        if (index === url['url_info'].length) {
+                            setTimeout(()=>{
+                                setStream(roomId, video);
+                            }, 1000);
+                        }
+                        else setPlayer(url, video, index);
+                    });
+                    flv.on(mpegts.Events.MEDIA_INFO, (metadata)=>{
+                        console.log(metadata)
+                        videoMeta = metadata;
+                        videoMeta['streamURL'] = url['url_info'][index]['host'];
+                        videoMeta['trueID'] = liveRoomInfo['room_id']
+                        videoMeta['shortID'] = liveRoomInfo['short_id']===0?liveRoomInfo['room_id']:liveRoomInfo['short_id'];
+                        updateMetaInfo(document.getElementById(`video-status-info-container-${roomId}`));
+                        abortFetchPreview.abort('no needed');
+                        requestPreview = false;
+                        if (previewRetry !== null) {
+                            clearTimeout(previewRetry);
+                            previewRetry = null;
+                        }
+                        preview.destroy();
+                        previewVideo.remove();
+                        video.removeAttribute('style');
+                    });
+                }
             }
             fetch(`https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=${roomId}&protocol=0&format=0,1,2&codec=0,1&platform=web&ptype=8&dolby=5&panorama=1&qn=${quality}`, {
                 method: "GET",
@@ -1030,7 +1067,7 @@
                 .then(json => {
                     if (json['code'] === 0) {
                         if(json['data']['playurl_info'] === null || json['data']['playurl_info']['playurl'] === null){
-                            flv.destroy();
+                            hlsStream?flv.detachMedia():flv.destroy();
                         }
                         else{
                             let flvFormat = json['data']['playurl_info']['playurl']['stream'][0]['format'][0]['codec'][0],

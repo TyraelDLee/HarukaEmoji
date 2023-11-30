@@ -319,7 +319,7 @@ async function initialize(reload){
     setInitValue('liveroom-quality', 10000);
     setInitValue('dkWord', '');
     setInitValue('hiddenOnVideoBtn', false);
-    setInitValue('notificationMaster', false);
+    setInitValue('notificationMaster', true);
     setInitValue('liveRoomList', []);
     /**
      * Context menu section.
@@ -1474,6 +1474,30 @@ function refreshHeartBeatList(){
         });
     });
 }
+//
+// const proxyServer ={
+//     mode: "fixed_servers",
+//     rules:{
+//         proxyForHttp:{
+//             scheme: "http",
+//             host: "203.19.38.114",
+//             port: 1080
+//         },
+//         bypassList: ["^(api.live.bilibili.com/room/v1/Room/playUrl*)", "^(api.live.bilibili.com/xlive/web-room/v1/index/getIpInfo)"]
+//     }
+// }
+//
+// chrome.proxy.settings.set(
+//     {value: proxyServer, scope: 'regular'},
+//     function() {}
+// );
+//
+// chrome.proxy.settings.get(
+//     {'incognito': false},
+//     function (c){
+//         console.log(c);
+//     }
+// )
 
 //todo: add unfollowed user but got madel to hb and setting list.
 //https://api.bilibili.com/x/relation/same/followings?vmid=254726274&pn=1 //same following

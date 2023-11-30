@@ -2921,3 +2921,11 @@ html[theme*="dark"] .auto-reply-push__desc{
 html[theme*="dark"] .feed-button-root .content-box{
     color: var(--text1);
 }
+
+html[theme*="dark"] #page-dynamic .bili-dyn-item{
+    border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .bili-dyn-card-link-common__wrap, html[theme*="dark"] .reference .bili-dyn-card-link-common__wrap{
+    background-color: var(--bg2_float);
+}
