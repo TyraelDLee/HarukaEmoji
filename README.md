@@ -288,13 +288,18 @@ rua豹器的MV3转移计划可以追随到数个版本前。作为个人开发�
 - Copyright (c) video-dev and contributors
 - License: [https://github.com/video-dev/hls.js/blob/master/LICENSE](https://github.com/video-dev/hls.js/blob/master/LICENSE)
 
+### brotli
+- [GitHub](https://github.com/google/brotli)
+- Copyright (c) 2009, 2010, 2013-2016 by the Brotli Authors.
+- License: [https://github.com/google/brotli/blob/master/LICENSE](https://github.com/google/brotli/blob/master/LICENSE)
+
 ### FFmpeg.wasm
-- Offical site: [ffmpegwasm.netlify.app](https://ffmpegwasm.netlify.app/)
+- Official site: [ffmpegwasm.netlify.app](https://ffmpegwasm.netlify.app/)
 - Copyright (c) FFmpeg.wasm developers and contributors
 - License: [github.com/ffmpegwasm/ffmpeg.wasm-core/blob/n4.3.1-wasm/LICENSE.md](https://github.com/ffmpegwasm/ffmpeg.wasm-core/blob/n4.3.1-wasm/LICENSE.md)
 
 ### Protocol Buffers
-- Offical site: [developers.google.com/protocol-buffers](https://developers.google.com/protocol-buffers/)
+- Official site: [developers.google.com/protocol-buffers](https://developers.google.com/protocol-buffers/)
 - Copyright (c) 2008 Google Inc.
 - License: [github.com/protocolbuffers/protobuf/blob/master/LICENSE](https://github.com/protocolbuffers/protobuf/blob/master/LICENSE)
 
