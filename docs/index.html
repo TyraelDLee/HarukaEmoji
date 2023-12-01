@@ -10,7 +10,7 @@
     <link href="./css/readme.min.css" type="text/css" rel="stylesheet">
 </head>
 <body style="font-size: 100%;">
-<div id="rua-icon-host" style="height: 350px; width: 100%;">
+<div id="rua-icon-host" style="height: 350px; width: 100%;user-select: none">
     <div id="rua-icon" style="width: 350px; height: 350px;">
         <img src="./images/svga/13.svg" frame="13" height="100%" width="100%">
     </div>
@@ -27,20 +27,16 @@
     <h1>b站助手rua豹器 使用说明</h1>
     <p>
         rua豹使人快乐，rua了又rua！<br><br>
-        rua豹器5.18来啦 <br>
+        rua豹器5.19来啦 <br>
         兼容绝大多数chromium内核浏览器，例如：Opera浏览器，360浏览器，新MS Edge，yandex....。<br>
         现已支持火狐浏览器，见：<a href="https://addons.mozilla.org/zh-CN/firefox/addon/rua%E8%B1%B9%E5%99%A8/">火狐扩展商店</a>
     </p>
-    <h3 style="font-size: 28px" id="new-features">ver 5.18 特性：</h3>
+    <h3 style="font-size: 28px" id="new-features">ver 5.19 特性：</h3>
     <ul>
-        <li>现在可以隐藏视频中的"关注"、"投票"等功能。</li>
-        <li>直播间加入了追帧的功能。</li>
-        <li>直播间悬浮窗改版了，适配了新版的弹幕表情。</li>
-        <li>Hi-Res现以m4a格式保存。</li>
-        <li>改进了设置页。</li>
-        <li>加入了虚拟主播所属公会显示（数据来源见下方）。</li>
-        <li>放映室改版了，加入了视频流统计信息显示。</li>
-        <li>现在主播直接断推流后放映室也可以自动回收直播间了。</li>
+        <li>放映室界面改进，现在可以一次添加多个直播间了，也可以通过搜索用户名来寻找直播间。</li>
+        <li>添加了放映室对HLS流的支持。</li>
+        <li>适配了新的直播间外观。</li>
+        <li>添加了对API新版安全策略的支持。</li>
     </ul>
     <h2 id="functions">已有的功能</h2>
     <ul>
@@ -208,7 +204,7 @@
     <h2 id="version">版本记录</h2>
     <h3>ver 5.18</h3>
     <ul>
-        <li>现在可以隐藏视频中的"关注"、"投票"等功能</li>
+        <li>现在可以隐藏视频中的"关注"、"投票"等功能。</li>
         <li>直播间加入了追帧的功能。</li>
         <li>直播间悬浮窗改版了，适配了新版的弹幕表情。</li>
         <li>Hi-Res现以m4a格式保存。</li>
@@ -403,15 +399,27 @@
     </ul>
 
     <h2>开源组件许可</h2>
+    <h3>Hls.js</h3>
+    <ul>
+        <li>Hls.js <a href="https://github.com/video-dev/hls.js" target="_blank">https://github.com/video-dev/hls.js</a></li>
+        <li>Copyright (c) video-dev and contributors</li>
+        <li>License: <a href="https://github.com/video-dev/hls.js/blob/master/LICENSE" target="_blank">https://github.com/video-dev/hls.js/blob/master/LICENSE</a></li>
+    </ul>
+    <h3>brotli</h3>
+    <ul>
+        <li><a href="https://github.com/google/brotli" target="_blank">GitHub</a></li>
+        <li>Copyright (c) 2009, 2010, 2013-2016 by the Brotli Authors.</li>
+        <li>License: <a href="https://github.com/google/brotli/blob/master/LICENSE" target="_blank">https://github.com/google/brotli/blob/master/LICENSE</a></li>
+    </ul>
     <h3>FFmpeg.wasm</h3>
     <ul>
-        <li>Offical site: <a href="https://ffmpegwasm.netlify.app/" target="_blank">ffmpegwasm.netlify.app</a></li>
+        <li>Official site: <a href="https://ffmpegwasm.netlify.app/" target="_blank">ffmpegwasm.netlify.app</a></li>
         <li>Copyright (c) FFmpeg.wasm developers and contributors</li>
         <li>License: <a href="https://github.com/ffmpegwasm/ffmpeg.wasm-core/blob/n4.3.1-wasm/LICENSE.md" target="_blank">github.com/ffmpegwasm/ffmpeg.wasm-core/blob/n4.3.1-wasm/LICENSE.md</a></li>
     </ul>
     <h3>Protocol Buffers</h3>
     <ul>
-        <li>Offical site: <a href="https://developers.google.com/protocol-buffers/" target="_blank">developers.google.com/protocol-buffers</a></li>
+        <li>Official site: <a href="https://developers.google.com/protocol-buffers/" target="_blank">developers.google.com/protocol-buffers</a></li>
         <li>Copyright (c) 2008 Google Inc.</li>
         <li>License: <a href="https://github.com/protocolbuffers/protobuf/blob/master/LICENSE" target="_blank">github.com/protocolbuffers/protobuf/blob/master/LICENSE</a></li>
     </ul>
@@ -441,6 +449,7 @@
     <div id="bug-reporter"><a href="https://github.com/TyraelDLee/HarukaEmoji/issues">问题反馈</a></div>
 </div>
 <script src="./js/SVGA.min.js"></script>
+<!--<script src="./js/DarkButton.min.js"></script>-->
 <script src="./js/readme.min.js"></script>
 <!---->
 </body>
