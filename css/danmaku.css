@@ -145,6 +145,11 @@ body{
     background: var(--fleet3-dm-background);
 }
 
+.rua-dm-danmaku-content.privilege-4{
+    background: var(--admin-dm-background);
+    color: #fff;
+}
+
 .rua-dm-danmaku-content.system-dm{
     background: var(--system-dm-background);
     color: #fff;
