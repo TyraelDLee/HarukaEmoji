@@ -103,7 +103,7 @@
   },{
     "all_frames": true,
     "css": ["css/comment.min.css"],
-    "js": ["js/comment.min.js"],
+    "js": ["js/comment.js"],
     "matches": ["*://*.bilibili.com/*"],
     "exclude_matches": ["*://message.bilibili.com/*"],
     "run_at": "document_end"

@@ -91,26 +91,82 @@
                                 emojisType = await getUserEmote(mid);
                             }
                         }).observe(document, {subtree: true, childList: true});
-                        new MutationObserver((m) => {
-                            m.forEach(function (mutation) {
-                                if (mutation.type === "childList" && mutation.target.classList.contains("box-active") && mutation.addedNodes.length > 0) {
-                                    textArea = mutation.target.childNodes[0].childNodes[1].childNodes[0];
-                                    let block = mutation.addedNodes[0].childNodes[0].childNodes[0];
-                                    block.addEventListener('click', () => {
-                                        if (mutation.target.classList.contains("fixed-box"))
-                                            mutation.addedNodes[0].childNodes[0].appendChild(drawUI(emojisType, emojis, [-371.5, 0]));
-                                        else {
-                                            console.log(window.innerHeight+document.documentElement.scrollTop-getAbsLocation()[1])
-                                            if (window.innerHeight+document.documentElement.scrollTop-getAbsLocation()[1] > 325)
-                                                mutation.addedNodes[0].childNodes[0].appendChild(drawUI(emojisType, emojis, [30, 0]));
-                                            else
-                                                mutation.addedNodes[0].childNodes[0].appendChild(drawUI(emojisType, emojis, [-350, 0]));
+                        let timer = null;
+                        let findEmoji = function (){
+                            const emojiPanel = drawUI(emojisType, emojis, [], false, true);
+                            if (typeof document.getElementsByClassName('comment-container')[0] !== 'undefined'){
+                                const commentContainer = document.getElementsByClassName('comment-container')[0];
+                                // The first comment block
+                                new MutationObserver((m)=>{
+                                    m.forEach(function (mutation){
+                                        if(mutation.type === "attributes" && mutation.target.classList.contains("box-active")){
+                                            const textAreaParent = mutation.target.childNodes[0].childNodes[1].childNodes[0].childNodes;
+                                            let textareaIndex = 0;
+                                            for (; textareaIndex < textAreaParent.length; textareaIndex++) {
+                                                if (textAreaParent.item(textareaIndex).nodeName.toUpperCase() === 'TEXTAREA')
+                                                    break;
+                                            }
+                                            textArea = mutation.target.childNodes[0].childNodes[1].childNodes[0].childNodes[textareaIndex];
+                                            const initialCommentEmojiContainer = mutation.target.childNodes[1].childNodes[0].childNodes[0].childNodes[1];
+                                            initialCommentEmojiContainer.innerHTML = '';
+                                            initialCommentEmojiContainer.appendChild(emojiPanel[0]);
+                                            initialCommentEmojiContainer.appendChild(emojiPanel[1]);
+                                            initialCommentEmojiContainer.appendChild(emojiPanel[2]);
+                                            const initialCommentEmojiElement = initialCommentEmojiContainer.childNodes[0].parentElement;
+                                            let initHeight = initialCommentEmojiElement.getAttribute('style');
+                                            if (initHeight.indexOf('110px')!==-1){
+                                                initialCommentEmojiElement.getElementsByClassName('rua-emoji-content')[0].setAttribute('style', '--rua-emoji-panel-height:110px');
+                                            }else{
+                                                initialCommentEmojiElement.getElementsByClassName('rua-emoji-content')[0].setAttribute('style', '--rua-emoji-panel-height:196px');
+                                            }
                                         }
                                     });
-
-                                }
-                            });
-                        }).observe(document, {subtree: true, childList: true, attributes: true});
+                                }).observe(commentContainer, {subtree: true, childList:true, attributes:true});
+                                // The reply block
+                                // new MutationObserver((m)=>{
+                                //     m.forEach(function (mutation){
+                                //         if (mutation.type === "childList" && mutation.target.classList.contains("reply-box-container") && mutation.addedNodes.length > 0){
+                                //             console.log('injected')
+                                //             // textArea = mutation.target.childNodes[0].childNodes[1].childNodes[0].childNodes[0];
+                                //             const initialCommentEmojiContainer = mutation.target.childNodes[1].childNodes[0].childNodes[0].childNodes[1];
+                                //             initialCommentEmojiContainer.innerHTML = '';
+                                //             initialCommentEmojiContainer.appendChild(emojiPanel[0]);
+                                //             initialCommentEmojiContainer.appendChild(emojiPanel[1]);
+                                //             initialCommentEmojiContainer.appendChild(emojiPanel[2]);
+                                //             const initialCommentEmojiElement = initialCommentEmojiContainer.childNodes[0].parentElement;
+                                //             let initHeight = initialCommentEmojiElement.getAttribute('style');
+                                //             if (initHeight.indexOf('110px')!==-1){
+                                //                 initialCommentEmojiElement.getElementsByClassName('rua-emoji-content')[0].setAttribute('style', '--rua-emoji-panel-height:110px');
+                                //             }else{
+                                //                 initialCommentEmojiElement.getElementsByClassName('rua-emoji-content')[0].setAttribute('style', '--rua-emoji-panel-height:196px');
+                                //             }
+                                //         }
+                                //     });
+                                // }).observe(commentContainer, {subtree: true, childList:true, attributes:true});
+                                clearInterval(timer);
+                            }
+                        };
+                        timer = setInterval(findEmoji, 100);
+                        // new MutationObserver((m) => {
+                        //     m.forEach(function (mutation) {
+                        //         if (mutation.type === "childList" && mutation.target.classList.contains("box-active") && mutation.addedNodes.length > 0) {
+                        //             textArea = mutation.target.childNodes[0].childNodes[1].childNodes[0];
+                        //             let block = mutation.addedNodes[0].childNodes[0].childNodes[0];
+                        //             block.addEventListener('click', () => {
+                        //                 if (mutation.target.classList.contains("fixed-box"))
+                        //                     mutation.addedNodes[0].childNodes[0].appendChild(drawUI(emojisType, emojis, [-371.5, 0]));
+                        //                 else {
+                        //                     console.log(window.innerHeight+document.documentElement.scrollTop-getAbsLocation()[1])
+                        //                     if (window.innerHeight+document.documentElement.scrollTop-getAbsLocation()[1] > 325)
+                        //                         mutation.addedNodes[0].childNodes[0].appendChild(drawUI(emojisType, emojis, [30, 0]));
+                        //                     else
+                        //                         mutation.addedNodes[0].childNodes[0].appendChild(drawUI(emojisType, emojis, [-350, 0]));
+                        //                 }
+                        //             });
+                        //
+                        //         }
+                        //     });
+                        // }).observe(document, {subtree: true, childList: true, attributes: true});
                     }
                 }
             }
@@ -217,14 +273,15 @@
             });
     }
 
-    function drawUI(emojiCat, emoji, pos, bottom = false) {
+    function drawUI(emojiCat, emoji, pos, bottom = false, newVersion = false) {
         let i = 1;
         div.innerHTML="";
         emojiTab.innerHTML="";
         emojiTitle.innerHTML = "";
         emojiSlider.innerHTML = "";
         emojiContent.innerHTML = "";
-        div.setAttribute('style', `--rua-panel-top: ${pos[0]}px; --rua-panel-left: ${pos[1]}px`);
+        if (!newVersion)
+            div.setAttribute('style', `--rua-panel-top: ${pos[0]}px; --rua-panel-left: ${pos[1]}px`);
         div.classList.add("rua-emoji-panel");
         if (bottom)
             div.classList.add("rua-emoji-panel-bottom");
@@ -306,7 +363,10 @@
         div.appendChild(emojiTitle);
         div.appendChild(emojiContent);
         div.appendChild(emojiTab);
-        return div;
+        if (!newVersion)
+            return div;
+        else
+            return [emojiTitle, emojiContent, emojiTab]
     }
 
     function drawBlock(url, content, type, size, unlocked, reason){

@@ -17,7 +17,7 @@
     let addRoom = null, exit = null, setting = null, controlPanel = document.getElementsByClassName('control-bar')[0], controlPanelBG = document.getElementsByClassName('control-bar-bg')[0],
         mouseEvent = null, isFullScreen = false, globalMedalList = null;
     let videoStream = new Map();
-    let UID, JCT, BUVID, volumeLock = false, currentMedal = -1, wearMedalSwitch = 1, reconnectionTime = 10, quality = 10000, heartBeatSwitch = true;
+    let UID, JCT, BUVID, volumeLock = false, currentMedal = -1, wearMedalSwitch = 1, reconnectionTime = 10, quality = 10000, heartBeatSwitch = true, autoChase = 0, autoChaseTimer = null;
     updateJCT();
     setInterval(updateJCT, 3000);
     setTimeout(()=>{getMedal(UID).then(r=>{globalMedalList = r;});}, 100);
@@ -92,6 +92,12 @@
         chrome.storage.local.set({'liveroomOn':[-1,-1]}, ()=>{});
     });
 
+    let masterAudioVolumeFactor = 1.0;
+
+    function masterAudioVolume(){
+
+    }
+
 
     !function bindElements() {
         addRoom = document.getElementsByClassName('add-room')[0].getElementsByTagName('svg')[0];
@@ -100,7 +106,8 @@
 
         let settingHeartBeat = document.getElementById('setting-heart-beat'), /*settingReconnection = document.getElementById('setting-re-try'), */
         settingQuality = document.getElementById('setting-quality'), settingMedalOn = document.getElementById('setting-medal-switch-on'),
-            settingMedalOff = document.getElementById('setting-medal-switch-off'), settingMedalNone = document.getElementById('setting-medal-switch-none');
+            settingMedalOff = document.getElementById('setting-medal-switch-off'), settingMedalNone = document.getElementById('setting-medal-switch-none'),
+        settingAutoChasing = document.getElementById('setting-auto-frame-chasing');
 
         document.body.addEventListener('mousemove', (event) => {
             clearTimeout(mouseEvent);
@@ -114,7 +121,7 @@
             }
         });
 
-        chrome.storage.sync.get(['liveroom-medal-switch', 'liveroom-reconnection-time', 'liveroom-quality', 'liveroom-heart-beat'], function (data){
+        chrome.storage.sync.get(['liveroom-medal-switch', 'liveroom-reconnection-time', 'liveroom-quality', 'liveroom-heart-beat', 'liveroom-auto-frame-chasing'], function (data){
             wearMedalSwitch = data['liveroom-medal-switch'];
             switch (wearMedalSwitch) {
                 case -1:
@@ -133,6 +140,13 @@
             //settingReconnection.value = reconnectionTime;
             quality = data['liveroom-quality'];
             settingQuality.value = quality;
+
+            autoChase = data['liveroom-auto-frame-chasing'];
+            settingAutoChasing.value = autoChase;
+
+            if (autoChase-0 !== 0){
+                autoChaseTimer = setInterval(autoChasingFunc, (autoChase-0) * 1000 * 60);
+            }
         });
 
         settingMedalOn.addEventListener('change', (e)=>{
@@ -164,6 +178,26 @@
             quality = settingQuality.value;
             chrome.storage.sync.set({"liveroom-quality":quality}, function (){});
         });
+
+        settingAutoChasing.addEventListener('change', ()=>{
+            autoChase = settingAutoChasing.value;
+            chrome.storage.sync.set({'liveroom-auto-frame-chasing':autoChase}, function (){});
+            clearInterval(autoChaseTimer);
+            autoChaseTimer = null;
+            if (autoChase-0 !== 0){
+                autoChaseTimer = setInterval(autoChasingFunc, (autoChase-0) * 1000 * 60);
+            }
+        });
+
+        function autoChasingFunc() {
+            const videos = document.querySelectorAll('video');
+            for (const video of videos) {
+                try{
+                    video.currentTime = video.buffered.end(0) - 1;
+                    console.log(`video frame chased.`);
+                }catch (e){}//silence handling here which you should not, but doesn't matter here.
+            }
+        }
 
         addRoom.addEventListener('click', () => {
             document.getElementsByClassName('panel-container')[0].removeEventListener('click', hidePanelContainer);
@@ -271,6 +305,7 @@
     }
 
     function getFollowingRoom() {
+        // update API: https://api.vc.bilibili.com/dynamic_mix/v1/dynamic_mix/at_list?uid=${uid}
         fetch('https://api.bilibili.com/x/v2/reply/at', {
             method: "GET",
             credentials: "include",
@@ -561,8 +596,8 @@
                     currentVolume = Math.round((1 - (e.y - elementY)/53.0)*100);
                     videoControlContainer.getElementsByClassName('number')[0].innerText = currentVolume;
                     volumeControl.getElementsByClassName('slider-track')[0].style.height = currentVolume + '%';
-                    video.volume = currentVolume /100.0;
-                    previewVideo.volume = currentVolume / 100.0;
+                    video.volume = currentVolume /100.0 * masterAudioVolumeFactor;
+                    previewVideo.volume = currentVolume / 100.0 * masterAudioVolumeFactor;
                     if (currentVolume === 0){
                         silence = !silence;
                         lastVolume = currentVolume;

@@ -139,6 +139,55 @@ class DanmakuArr{
     }
 }
 
+class NotificationList{
+    constructor() {
+        this.map = new Map();
+        // this.onAir= [];
+        // this.offline = [];
+    }
+    
+    add(userInfo){
+        if (!this.map.has(userInfo+'')) {
+            this.map.set(userInfo+'', 0);
+        }
+    }
+
+    update(userInfo, liveInfo){
+        this.map.set(userInfo+'', liveInfo);
+    }
+
+    getState(userInfo){
+        return this.map.get(userInfo+'');
+    }
+
+
+    loadFromStorage(mapFromStorage){
+        const jsonObject = JSON.parse(mapFromStorage);
+        this.map = new Map(Object.entries(jsonObject));
+    }
+
+    stringify(){
+        const jsonObject = Object.fromEntries(this.map);
+        return JSON.stringify(jsonObject);
+    }
+    //
+    // getOnAir(){
+    //     return this.onAir;
+    // }
+    //
+    // getOnAirUser(userInfo){
+    //     return this.onAir.indexOf(userInfo);
+    // }
+    //
+    // getOffLine(){
+    //     return this.offline;
+    // }
+    //
+    // getOffLineUser(userInfo){
+    //     return this.offline.indexOf(userInfo)
+    // }
+}
+
 /* This Source Code Form is subject to the terms of the Mozilla Public
      * License, v. 2.0. If a copy of the MPL was not distributed with this
      * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -317,6 +366,7 @@ async function initialize(reload){
     setInitValue('liveroom-reconnection-time', 10);
     setInitValue('liveroom-heart-beat', true);
     setInitValue('liveroom-quality', 10000);
+    setInitValue('liveroom-auto-frame-chasing', 0);
     setInitValue('dkWord', '');
     setInitValue('hiddenOnVideoBtn', false);
     setInitValue('notificationMaster', true);
@@ -331,7 +381,7 @@ async function initialize(reload){
 
     // local states
     chrome.alarms.create('checkUpd', {'when':Date.now(), periodInMinutes:60*12});
-    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "video_id_list": [],"pgc_id_list": [],"article_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0/*'{"biz_msg_follow_unread":0,"biz_msg_unfollow_unread":0,"dustbin_push_msg":0,"dustbin_unread":0,"follow_unread":0,"unfollow_push_msg":0,"unfollow_unread":0}'*/, 'dynamicList':[], 'notificationList':[], 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[], 'watchingList': {}, 'heartRhythm':[], 'medalList':[], 'liveroomOn': [-1, -1], 'tempRoomNumber':-1, 'windowSize':[0,0]}, ()=>{});
+    await chrome.storage.local.set({'uuid':-1, 'jct':-1, 'p_uuid':-1, 'updateAvailable':false, 'availableBranch':"https://gitee.com/tyrael-lee/HarukaEmoji/releases", 'downloadFileName':'', "video_id_list": [],"pgc_id_list": [],"article_id_list": [], 'unreadData':'{"at":0,"chat":0,"like":0,"reply":0,"sys_msg":0,"up":0}', 'unreadMessage':0/*'{"biz_msg_follow_unread":0,"biz_msg_unfollow_unread":0,"dustbin_push_msg":0,"dustbin_unread":0,"follow_unread":0,"unfollow_push_msg":0,"unfollow_unread":0}'*/, 'dynamicList':[], 'notificationList':'', 'videoInit':true, 'dynamicInit':true, 'unreadInit':true, 'dakaUid':[], 'watchingList': {}, 'heartRhythm':[], 'medalList':[], 'liveroomOn': [-1, -1], 'tempRoomNumber':-1, 'windowSize':[0,0]}, ()=>{});
     chrome.alarms.create('getUID_CSRF', {'when': Date.now(), periodInMinutes:0.3});
     chrome.alarms.create('heartRate', {'when': Date.now()+60*1e3, periodInMinutes: 1});
     chrome.alarms.create('refreshHB', {'when': Date.now()+3600*1e3, periodInMinutes:60});
@@ -577,6 +627,12 @@ function queryLivingRoom(uids, blackListNT, blackListHB) {
         let notificationList = info.notificationList;
         let watchingList = info.watchingList;
         let liveInfo = info['heartRhythm'];
+        let newNotificationList = new NotificationList();
+        if (info.notificationList !== '') 
+            newNotificationList.loadFromStorage(info.notificationList);
+        for(const user of uids)
+            newNotificationList.add(user);
+
         let body = '{"uids": [' + uids +']}';
         fetch("https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids?requestFrom=rua5",{
             method:"POST",
@@ -588,55 +644,99 @@ function queryLivingRoom(uids, blackListNT, blackListHB) {
             .then(json => {
                 if (json["code"] === 0) {
                     let data = json["data"];
-                    chrome.notifications.getAll((n)=>{
-                        for (let k in n){
-                            if (uids.indexOf(k.split(':')[0]-0)===-1 && k.split(':')[2]==='live.bilibili.com/'){
-                                chrome.notifications.clear(k);
-                                if (notificationList.indexOf(k.split(':')[1]-0)!==-1)
-                                    notificationList.splice(notificationList.indexOf(k.split(':')[1]-0),1);
-                            }
-                        }
-                        for (let i = 0; i < uids.length; i++) {
-                            if (data[uids[i]] !== undefined) {
-                                if(data[uids[i]]["live_status"] !== 1 && notificationList.indexOf(data[uids[i]]["room_id"]) !== -1){
-                                    chrome.notifications.clear(`${uids[i]}:${data[uids[i]]["room_id"]}:live.bilibili.com/`);
-                                    notificationList.splice(notificationList.indexOf(data[uids[i]]["room_id"]),1);
-                                    watchingList[data[uids[i]]["room_id"]+""] = -2;
-                                    liveInfo.splice(liveInfo.findIndex(e => e.ruid === data[uids[i]]['uid']), 1);
-                                }
-                                if (data[uids[i]]["live_status"] === 1 && liveInfo.findIndex(e=>e.ruid === data[uids[i]]['uid'])===-1 && !blackListHB.includes(data[uids[i]]['uid'])){
-                                    liveInfo.push({
-                                        id: [data[uids[i]]['area_v2_parent_id'], data[uids[i]]['area_v2_id'], 0, data[uids[i]]['room_id']],
-                                        device: [info['buvid'], getUUID()],
-                                        ruid: data[uids[i]]['uid']
-                                    });
-                                }
-                                let rhythmTemp = [];
-                                for (const medalItem of info.medalList){
-                                    for (let i = 0; i < liveInfo.length; i++) {
-                                        if (medalItem['medal_info']['level']<20 && medalItem['medal_info']['target_id'] === liveInfo[i]['ruid'] && medalItem['medal_info']['today_feed'] < medalItem['medal_info']['day_limit'])
-                                            rhythmTemp.push(liveInfo[i]);
-                                    }
-                                }
-                                liveInfo = [];
-                                liveInfo = rhythmTemp;
-                                if (data[uids[i]]["live_status"] === 1 && notificationList.indexOf(data[uids[i]]["room_id"]) === -1) {
-                                    if(!blackListNT.includes(data[uids[i]]['uid'])){
-                                        notificationList.push(data[uids[i]]["room_id"]);
-                                        watchingList[data[uids[i]]["room_id"]+""] = 0;
-                                        chrome.storage.sync.get(["notification"], (result)=>{
-                                            if(result.notification) {
-                                                console.log(data[uids[i]]["title"] + " " + data[uids[i]]["uname"] + " " + new Date());
-                                                pushNotificationChrome(data[uids[i]]["title"], data[uids[i]]["uname"], data[uids[i]]["room_id"], data[uids[i]]["cover_from_user"], data[uids[i]]["broadcast_type"] === 1 ? 1 : 0, data[uids[i]]["face"], uids[i]);
+                    if (typeof data !== 'undefined'){
+                        chrome.notifications.getAll((n)=>{
+                            for(const userInfo of uids){
+                                if (typeof data[userInfo]!=='undefined'){
+                                    if (newNotificationList.getState(data[userInfo]['uid']) === 1 && data[userInfo]['live_status'] !== 1){
+                                        for(const key in n){
+                                            // check the uid in key in the if below.
+                                            if (key.split(':')[2]==='live.bilibili.com/' && key.split(':')[0]===data[userInfo]['uid']+'') {
+                                                chrome.notifications.clear(key);
                                             }
+                                        }
+                                    }
+                                    if (newNotificationList.getState(data[userInfo]['uid']) !== 1 && data[userInfo]['live_status'] === 1){
+                                        // push notification
+                                        if(!blackListNT.includes(data[userInfo]['uid'])){
+                                            chrome.storage.sync.get(["notification"], (result)=>{
+                                                if(result.notification) {
+                                                    console.log(data[userInfo]["title"] + " " + data[userInfo]["uname"] + " " + new Date());
+                                                    pushNotificationChrome(data[userInfo]["title"], data[userInfo]["uname"], data[userInfo]["room_id"], data[userInfo]["cover_from_user"], data[userInfo]["broadcast_type"] === 1 ? 1 : 0, data[userInfo]["face"], userInfo);
+                                                }
+                                            });
+                                        }
+                                    }
+                                    newNotificationList.update(data[userInfo]['uid'], data[userInfo]['live_status']);
+
+                                    if (data[userInfo]["live_status"] === 1 && liveInfo.findIndex(e=>e.ruid === data[userInfo]['uid'])===-1 && !blackListHB.includes(data[userInfo]['uid'])){
+                                        liveInfo.push({
+                                            id: [data[userInfo]['area_v2_parent_id'], data[userInfo]['area_v2_id'], 0, data[userInfo]['room_id']],
+                                            device: [info['buvid'], getUUID()],
+                                            ruid: data[userInfo]['uid']
                                         });
                                     }
+                                    let rhythmTemp = [];
+                                    for (const medalItem of info.medalList){
+                                        for (let i = 0; i < liveInfo.length; i++) {
+                                            if (medalItem['medal_info']['level']<20 && medalItem['medal_info']['target_id'] === liveInfo[i]['ruid'] && medalItem['medal_info']['today_feed'] < medalItem['medal_info']['day_limit'])
+                                                rhythmTemp.push(liveInfo[i]);
+                                        }
+                                    }
+                                    liveInfo = [];
+                                    liveInfo = rhythmTemp;
                                 }
                             }
-                        }
-                        chrome.storage.local.set({'notificationList': notificationList, 'watchingList': watchingList, 'heartRhythm': liveInfo}, ()=>{});
-                    });
-
+                            // // get offline update
+                            // for (let k in n){
+                            //     if (uids.indexOf(k.split(':')[0]-0)===-1 && k.split(':')[2]==='live.bilibili.com/'){
+                            //         chrome.notifications.clear(k);
+                            //         if (notificationList.indexOf(k.split(':')[1]-0)!==-1)
+                            //             notificationList.splice(notificationList.indexOf(k.split(':')[1]-0),1);
+                            //     }
+                            // }
+                            // // get all live info
+                            // for (let i = 0; i < uids.length; i++) {
+                            //     if (data[uids[i]] !== undefined) {
+                            //         if(data[uids[i]]["live_status"] !== 1 && notificationList.indexOf(data[uids[i]]["room_id"]) !== -1){
+                            //             chrome.notifications.clear(`${uids[i]}:${data[uids[i]]["room_id"]}:live.bilibili.com/`);
+                            //             notificationList.splice(notificationList.indexOf(data[uids[i]]["room_id"]),1);
+                            //             watchingList[data[uids[i]]["room_id"]+""] = -2;
+                            //             liveInfo.splice(liveInfo.findIndex(e => e.ruid === data[uids[i]]['uid']), 1);
+                            //         }
+                            //         if (data[uids[i]]["live_status"] === 1 && liveInfo.findIndex(e=>e.ruid === data[uids[i]]['uid'])===-1 && !blackListHB.includes(data[uids[i]]['uid'])){
+                            //             liveInfo.push({
+                            //                 id: [data[uids[i]]['area_v2_parent_id'], data[uids[i]]['area_v2_id'], 0, data[uids[i]]['room_id']],
+                            //                 device: [info['buvid'], getUUID()],
+                            //                 ruid: data[uids[i]]['uid']
+                            //             });
+                            //         }
+                            //         let rhythmTemp = [];
+                            //         for (const medalItem of info.medalList){
+                            //             for (let i = 0; i < liveInfo.length; i++) {
+                            //                 if (medalItem['medal_info']['level']<20 && medalItem['medal_info']['target_id'] === liveInfo[i]['ruid'] && medalItem['medal_info']['today_feed'] < medalItem['medal_info']['day_limit'])
+                            //                     rhythmTemp.push(liveInfo[i]);
+                            //             }
+                            //         }
+                            //         liveInfo = [];
+                            //         liveInfo = rhythmTemp;
+                            //         if (data[uids[i]]["live_status"] === 1 && notificationList.indexOf(data[uids[i]]["room_id"]) === -1) {
+                            //             if(!blackListNT.includes(data[uids[i]]['uid'])){
+                            //                 notificationList.push(data[uids[i]]["room_id"]);
+                            //                 watchingList[data[uids[i]]["room_id"]+""] = 0;
+                            //                 chrome.storage.sync.get(["notification"], (result)=>{
+                            //                     if(result.notification) {
+                            //                         console.log(data[uids[i]]["title"] + " " + data[uids[i]]["uname"] + " " + new Date());
+                            //                         pushNotificationChrome(data[uids[i]]["title"], data[uids[i]]["uname"], data[uids[i]]["room_id"], data[uids[i]]["cover_from_user"], data[uids[i]]["broadcast_type"] === 1 ? 1 : 0, data[uids[i]]["face"], uids[i]);
+                            //                     }
+                            //                 });
+                            //             }
+                            //         }
+                            //     }
+                            // }
+                            chrome.storage.local.set({'notificationList': newNotificationList.stringify()/*, 'watchingList': watchingList*/, 'heartRhythm': liveInfo}, ()=>{});
+                        });
+                    }
                 }
             })
             .catch(msg =>{errorHandler('getFollowing', msg, 'queryLivingRoom(); line 500');});

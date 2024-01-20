@@ -4,6 +4,7 @@
     /*--text2: #61666D;*/
     /*--graph_bg_thick:#E3E5E7;*/
     /*--line_regular: #E3E5E7;*/
+    --rua-emoji-panel-height: 196px;
 }
 
 .rua-emoji-panel{
@@ -31,7 +32,7 @@
 }
 
 .rua-emoji-content{
-    height: 196px;
+    height: var(--rua-emoji-panel-height);
     padding: 0 11px;
     background-color: var(--bg1);
     overflow: auto;

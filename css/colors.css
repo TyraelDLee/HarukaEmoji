@@ -2929,3 +2929,16 @@ html[theme*="dark"] #page-dynamic .bili-dyn-item{
 html[theme*="dark"] .bili-dyn-card-link-common__wrap, html[theme*="dark"] .reference .bili-dyn-card-link-common__wrap{
     background-color: var(--bg2_float);
 }
+
+html[theme*="dark"] #app .content .card{
+    background-color: var(--bg2);
+}
+
+html[theme*="dark"] .reply-box .box-normal .reply-box-warp.focus-within, html[theme*="dark"] .reply-box .box-normal .reply-box-warp:hover{
+    border-color: var(--Ga2);
+    background-color: var(--bg3);
+}
+
+html[theme*="dark"] .reply-box .box-expand .image-btn, html[theme*="dark"] .reply-box .box-expand .at-btn, html[theme*="dark"] .reply-box .box-expand .reply-box-emoji .emoji-btn, html[theme*="dark"] .reply-box .box-normal .reply-box-warp{
+    border: 1px solid var(--Ga2);
+}

@@ -365,6 +365,10 @@
             });
     }
 
+    function grabNoneFollowMedal(){
+
+    }
+
     /**
      * Fulfill data to draw the page.
      *
