@@ -17,7 +17,7 @@
     let addRoom = null, exit = null, setting = null, controlPanel = document.getElementsByClassName('control-bar')[0], controlPanelBG = document.getElementsByClassName('control-bar-bg')[0],
         mouseEvent = null, isFullScreen = false, globalMedalList = null;
     let videoStream = new Map();
-    let UID, JCT, BUVID, volumeLock = false, currentMedal = -1, wearMedalSwitch = 1, reconnectionTime = 10, quality = 10000, heartBeatSwitch = true, autoChase = 0, autoChaseTimer = null;
+    let UID, JCT, BUVID, volumeLock = false, currentMedal = -1, wearMedalSwitch = 1, reconnectionTime = 10, quality = 10000, heartBeatSwitch = true, autoChase = 0, autoChaseTimer = null, nameAlwaysOn = false;
     updateJCT();
     setInterval(updateJCT, 3000);
     setTimeout(()=>{getMedal(UID).then(r=>{globalMedalList = r;});}, 100);
@@ -107,7 +107,7 @@
         let settingHeartBeat = document.getElementById('setting-heart-beat'), /*settingReconnection = document.getElementById('setting-re-try'), */
         settingQuality = document.getElementById('setting-quality'), settingMedalOn = document.getElementById('setting-medal-switch-on'),
             settingMedalOff = document.getElementById('setting-medal-switch-off'), settingMedalNone = document.getElementById('setting-medal-switch-none'),
-        settingAutoChasing = document.getElementById('setting-auto-frame-chasing');
+        settingAutoChasing = document.getElementById('setting-auto-frame-chasing'), settingNameAlwaysOn = document.getElementById('setting-name-always-on');
 
         document.body.addEventListener('mousemove', (event) => {
             clearTimeout(mouseEvent);
@@ -121,7 +121,7 @@
             }
         });
 
-        chrome.storage.sync.get(['liveroom-medal-switch', 'liveroom-reconnection-time', 'liveroom-quality', 'liveroom-heart-beat', 'liveroom-auto-frame-chasing'], function (data){
+        chrome.storage.sync.get(['liveroom-medal-switch', 'liveroom-reconnection-time', 'liveroom-quality', 'liveroom-heart-beat', 'liveroom-auto-frame-chasing', 'liveroom-name-always-on'], function (data){
             wearMedalSwitch = data['liveroom-medal-switch'];
             switch (wearMedalSwitch) {
                 case -1:
@@ -143,6 +143,9 @@
 
             autoChase = data['liveroom-auto-frame-chasing'];
             settingAutoChasing.value = autoChase;
+
+            nameAlwaysOn = data['liveroom-name-always-on'];
+            settingNameAlwaysOn.checked = nameAlwaysOn;
 
             if (autoChase-0 !== 0){
                 autoChaseTimer = setInterval(autoChasingFunc, (autoChase-0) * 1000 * 60);
@@ -187,6 +190,12 @@
             if (autoChase-0 !== 0){
                 autoChaseTimer = setInterval(autoChasingFunc, (autoChase-0) * 1000 * 60);
             }
+        });
+
+        settingNameAlwaysOn.addEventListener('change', ()=>{
+            nameAlwaysOn = settingNameAlwaysOn.checked;
+
+            chrome.storage.sync.set({"liveroom-name-always-on":nameAlwaysOn}, function (){});
         });
 
         function autoChasingFunc() {
@@ -522,7 +531,7 @@
             };// pause auto play.
 
             let videoOwnerInfoContainer = document.createElement('div');
-            videoOwnerInfoContainer.style.display = 'none';
+            nameAlwaysOn?videoOwnerInfoContainer.style.display = 'flex':videoOwnerInfoContainer.style.display = 'none';
             videoOwnerInfoContainer.classList.add('video-owner-info-container');
             videoOwnerInfoContainer.innerHTML = `
             
@@ -552,7 +561,12 @@
                 if (!hideFlag && !inputLock && !showStatus){
                     videoControlBackground.style.visibility = 'hidden';
                     videoControlContainer.firstElementChild.style.display = 'none';
-                    videoOwnerInfoContainer.style.display = 'none';
+                    if (!nameAlwaysOn) {
+                        videoOwnerInfoContainer.style.display = 'none';
+                        videoOwnerInfoContainer.classList.remove('video-owner-info-always-on');
+                    }
+                    else
+                        videoOwnerInfoContainer.classList.add('video-owner-info-always-on');
                 }
             }
 
@@ -561,6 +575,8 @@
                 videoControlBackground.style.visibility = 'visible';
                 videoControlContainer.firstElementChild.style.display = 'block';
                 videoOwnerInfoContainer.style.display = 'flex';
+                if (nameAlwaysOn)
+                    videoOwnerInfoContainer.classList.remove('video-owner-info-always-on');
                 hideControl = setTimeout(hiddenControl, 1000);
             };
 

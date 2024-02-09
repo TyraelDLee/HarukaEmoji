@@ -1,7 +1,7 @@
 {
   "name": "rua豹器",
   "manifest_version": 3,
-  "version": "5.19",
+  "version": "5.20",
   "description": "rua!",
   "declarative_net_request": {
     "rule_resources": [{
@@ -103,7 +103,7 @@
   },{
     "all_frames": true,
     "css": ["css/comment.min.css"],
-    "js": ["js/comment.js"],
+    "js": ["js/comment.min.js"],
     "matches": ["*://*.bilibili.com/*"],
     "exclude_matches": ["*://message.bilibili.com/*"],
     "run_at": "document_end"

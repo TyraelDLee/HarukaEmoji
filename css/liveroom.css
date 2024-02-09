@@ -728,6 +728,7 @@ input[type=radio]:checked {
     z-index: 10;
     user-select: none;
     color: #fff;
+    transition: 0.3s;
 }
 
 .video-owner-info-container a:hover{
@@ -769,6 +770,21 @@ input[type=radio]:checked {
 
 .video-owner-info-container .owner-misc:first-child{
     margin-right: 5px;
+}
+
+.video-owner-info-container.video-owner-info-always-on{
+    transform: scale(0.6);
+    transform-origin: 0 0;
+}
+
+.video-owner-info-container.video-owner-info-always-on .owner-room-title, .video-owner-info-container.video-owner-info-always-on .owner-misc div{
+    display: none;
+}
+
+.video-owner-info-container.video-owner-info-always-on .owner-misc .owner-name{
+    display: block!important;
+    font-size: 25px;
+    font-weight: bold;
 }
 
 .owner-room-title{

@@ -367,6 +367,7 @@ async function initialize(reload){
     setInitValue('liveroom-heart-beat', true);
     setInitValue('liveroom-quality', 10000);
     setInitValue('liveroom-auto-frame-chasing', 0);
+    setInitValue('liveroom-name-always-on', false)
     setInitValue('dkWord', '');
     setInitValue('hiddenOnVideoBtn', false);
     setInitValue('notificationMaster', true);
