@@ -113,6 +113,7 @@
             clearTimeout(mouseEvent);
             controlPanel.style.opacity = '1';
             controlPanelBG.style.visibility = 'unset';
+            document.querySelectorAll('.video-owner-info-container')[0].classList.add('video-owner-info-always-on-first-child');
             mouseEvent = setTimeout(hideControl, 1000);
         });
         document.body.addEventListener('mouseup', ()=>{
@@ -194,7 +195,11 @@
 
         settingNameAlwaysOn.addEventListener('change', ()=>{
             nameAlwaysOn = settingNameAlwaysOn.checked;
-
+            const containers = document.querySelectorAll('.video-owner-info-container');
+            for (const videoOwnerInfoContainer of containers) {
+                nameAlwaysOn?videoOwnerInfoContainer.style.display = 'flex':videoOwnerInfoContainer.style.display = 'none';
+                nameAlwaysOn?videoOwnerInfoContainer.classList.add('video-owner-info-always-on'):videoOwnerInfoContainer.classList.remove('video-owner-info-always-on');;
+            }
             chrome.storage.sync.set({"liveroom-name-always-on":nameAlwaysOn}, function (){});
         });
 
@@ -311,6 +316,7 @@
     function hideControl() {
         controlPanel.style.opacity = '0';
         controlPanelBG.style.visibility = 'hidden';
+        document.querySelectorAll('.video-owner-info-container')[0].classList.remove('video-owner-info-always-on-first-child');
     }
 
     function getFollowingRoom() {
