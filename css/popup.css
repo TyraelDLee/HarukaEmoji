@@ -214,7 +214,7 @@ option {
     width: 175px;
     height: 175px;
     cursor: pointer;
-    margin: -30px;
+    margin: 0 -30px -30px;
 }
 
 #version {

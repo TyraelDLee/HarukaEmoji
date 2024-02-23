@@ -1603,3 +1603,9 @@ function refreshHeartBeatList(){
 //todo: add unfollowed user but got madel to hb and setting list.
 //https://api.bilibili.com/x/relation/same/followings?vmid=254726274&pn=1 //same following
 // https://api.bilibili.com/x/v2/reply/main?type=17&oid=791100497614340117 IP
+
+// account cookie
+// SESSDATA
+// bili_jct
+// buvid3/buvid4
+// DedeUserID/DedeUserIDMd5

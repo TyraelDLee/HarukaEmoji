@@ -1727,7 +1727,9 @@ html[theme*="dark"] .bpx-player-contextmenu.bpx-player-white>li:hover{
 html[theme*="dark"] .bpx-player-sending-bar{
     background: var(--bg1);
 }
-
+html[theme*="dark"]  .bpx-player-sending-bar .bpx-player-video-inputbar .bpx-player-dm-input{
+    background-color: inherit;
+}
 html[theme*="dark"] .bpx-player-sending-bar .bpx-player-video-inputbar .bpx-player-dm-input{
     background-color: var(--bg2_float);
     color: var(--text1);
@@ -2941,4 +2943,8 @@ html[theme*="dark"] .reply-box .box-normal .reply-box-warp.focus-within, html[th
 
 html[theme*="dark"] .reply-box .box-expand .image-btn, html[theme*="dark"] .reply-box .box-expand .at-btn, html[theme*="dark"] .reply-box .box-expand .reply-box-emoji .emoji-btn, html[theme*="dark"] .reply-box .box-normal .reply-box-warp{
     border: 1px solid var(--Ga2);
+}
+
+html[theme*="dark"] .recharge-success-box{
+    color: #fff;
 }

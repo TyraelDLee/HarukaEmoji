@@ -3,6 +3,8 @@
     let elementsOnPage = 50, liveList = [], videoList = [], dynamicList = [], dkList = [], hbList = [], uid,
         whisperRequest = false, medals, scrollLock = true;
 
+    let followedUID = [];
+
     !function () {
         const settingItemSwitchNotification = document.getElementById('setting-item-switch-notification');
         const settingItemSwitchImgNotice = document.getElementById('setting-item-switch-img-notice');
@@ -366,7 +368,15 @@
     }
 
     function grabNoneFollowMedal(){
+        fetch(`https://api.live.bilibili.com/xlive/web-ucenter/user/MedalWall?target_id=${uid}`,{
+            method:"GET",
+            credentials: 'include',
+            body: null
+        }).then(res => res.json())
+            .then(json=>{
 
+            })
+            .catch(e=>{})
     }
 
     /**

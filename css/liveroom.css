@@ -742,9 +742,9 @@ input[type=radio]:checked {
     background-size: cover;
     border-radius: 50% 0 0 50%;
     background-color: rgb(35 173 229 / 85%);
-    border-bottom: 1px solid rgb(255 255 255 / 85%);
-    border-top: 1px solid rgb(255 255 255 / 85%);
-    border-left: 1px solid rgb(255 255 255 / 85%);
+    border-bottom: 2px solid rgb(255 255 255 / 85%);
+    border-top: 2px solid rgb(255 255 255 / 85%);
+    border-left: 2px solid rgb(255 255 255 / 85%);
 }
 
 .video-owner-info-container .owner-avatar img{
@@ -760,9 +760,9 @@ input[type=radio]:checked {
     background-color: rgb(35 173 229 / 85%);
     padding: 0 15px 0 10px;
     border-radius: 0 60px 60px 0;
-    border-bottom: 1px solid rgb(255 255 255 / 85%);
-    border-top: 1px solid rgb(255 255 255 / 85%);
-    border-right: 1px solid rgb(255 255 255 / 85%);
+    border-bottom: 2px solid rgb(255 255 255 / 85%);
+    border-top: 2px solid rgb(255 255 255 / 85%);
+    border-right: 2px solid rgb(255 255 255 / 85%);
 }
 
 .video-owner-info-container .owner-misc{
@@ -777,9 +777,19 @@ input[type=radio]:checked {
     transform: scale(0.6);
 
 }
+.video-owner-info-container.video-owner-info-always-on .owner-room-title{
+    font-size: 0;
+    margin: 0;
+}
 
-.video-owner-info-container.video-owner-info-always-on .owner-room-title, .video-owner-info-container.video-owner-info-always-on .owner-misc div{
+.video-owner-info-container.video-owner-info-always-on .owner-misc div{
     display: none;
+}
+
+.video-owner-info-container .owner-misc .owner-name{
+    display: block!important;
+    font-size: 12px;
+    font-weight: unset;
 }
 
 .video-owner-info-container.video-owner-info-always-on .owner-misc .owner-name{
