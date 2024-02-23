@@ -331,7 +331,11 @@ async function initialize(reload){
         if (info.rua_lastDK === null || info.rua_lastDK === undefined)
             chrome.storage.local.set({'rua_lastDK':"1970-01-01"}, ()=>{});
     });
-    await chrome.storage.local.set({"imageNotice": false}, function(){});
+    await chrome.storage.sync.get(['imageNotice'], function (value){
+        if (value['imageNotice']===null || value['imageNotice']===undefined)
+            chrome.storage.sync.set({['imageNotice']:false},function (){});
+    });
+    // await chrome.storage.local.set({"imageNotice": false}, function(){});
     // await chrome.storage.sync.set({"notification": true, "medal": true, "checkIn": true, "bcoin": true, "qn": true, "qnvalue": "原画",
     //     "dynamicPush":true, "hiddenEntry":false, "daka":true, "record":false, "prerecord":300,
     //     "enhancedHiddenEntry":false, "unreadSwitch":true, "dynamicSwitch":true}, function(){});
