@@ -322,27 +322,29 @@
     }
 
     function getFollowingRoom() {
-        fetch(`https://api.vc.bilibili.com/dynamic_mix/v1/dynamic_mix/at_list?uid=${UID}`, {
-            method: "GET",
-            credentials: "include",
-            body: null
-        }).then(r => r.json())
-            .then(json => {
-                let followList = [];
-                if (json['code'] === 0) {
-                    for (let i = 0; i < json['data']['groups'].length; i++) {
-                        for (let j = 0; j < json['data']['groups']['' + i]['items'].length; j++) {
-                            followList.push(json['data']['groups']['' + i]['items'][j + '']['uid']);
+        if (UID-0!==-1){
+            fetch(`https://api.vc.bilibili.com/dynamic_mix/v1/dynamic_mix/at_list?uid=${UID}`, {
+                method: "GET",
+                credentials: "include",
+                body: null
+            }).then(r => r.json())
+                .then(json => {
+                    let followList = [];
+                    if (json['code'] === 0) {
+                        for (let i = 0; i < json['data']['groups'].length; i++) {
+                            for (let j = 0; j < json['data']['groups']['' + i]['items'].length; j++) {
+                                followList.push(json['data']['groups']['' + i]['items'][j + '']['uid']);
+                            }
                         }
+                        return followList;
                     }
-                    return followList;
-                }
-                else
-                    getFollowingRoom();
-            })
-            .then(list => {
-                getRooms(list);
-            });
+                    else
+                        getFollowingRoom();
+                })
+                .then(list => {
+                    getRooms(list);
+                });
+        }
     }
 
     let selectedList = [];
