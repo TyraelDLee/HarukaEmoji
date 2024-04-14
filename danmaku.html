@@ -11,24 +11,45 @@
     <div id="danmaku-list">
 
     </div>
-    <div id="control-panel">
-        <div id="room-id" class="control-panel-block">
-            <div class="control-panel-block-input">
-                <div class="control-panel-block-title">添加房间</div>
-                <div class="room-input"><input type="text" placeholder="支持长短号" id="room-id-value">
-                    <div id="add-room" style="color: #fff">添加</div>
+    <div id="right-panel">
+        <div id="danmaku-sender">
+            <div class="control-panel-block" style="flex-direction: column">
+                <div class="control-panel-block-input">
+                    <div class="control-panel-block-title">弹幕发送</div>
+                    <div class="room-input">
+                        <input type="text" placeholder="先在右边添加直播间" id="danmaku-value">
+                        <div id="danmaku-send" class="small-button" style="background: var(--bili-pink)">发送</div>
+                    </div>
+                    <div id="danmaku-length"> 0/20</div>
+                </div>
+                <div class="control-panel-block-input" style="margin: 0">
+                    <div id="danmaku-emoji-panel">
+
+                    </div>
                 </div>
             </div>
         </div>
-        <div id="" class="control-panel-block">
-            <div class="control-panel-block-title">弹幕机设置</div>
+        <div id="control-panel">
+            <div id="room-id" class="control-panel-block">
+                <div class="control-panel-block-input">
+                    <div class="control-panel-block-title">添加房间</div>
+                    <div class="room-input">
+                        <input type="text" placeholder="支持长短号" id="room-id-value">
+                        <div id="add-room" class="small-button">添加</div>
+                    </div>
+                </div>
+            </div>
+            <div id="" class="control-panel-block">
+                <div class="control-panel-block-title">弹幕机设置</div>
 
-        </div>
-        <div id="background" class="control-panel-block">
-            <div class="control-panel-block-title">背景设置</div>
+            </div>
+            <div id="background" class="control-panel-block">
+                <div class="control-panel-block-title">背景设置</div>
+            </div>
         </div>
     </div>
-    <script src="./js/danmaku_service.min.js"></script>
+
+    <script src="./js/danmaku_service.js"></script>
     <script src="./js/danmaku.min.js"></script>
 </body>
 </html>

@@ -5,11 +5,23 @@
     --fleet3-dm-background: #FF7C28;
     --admin-dm-background: #f22c3d;
     --system-dm-background: #2AC864;
+
+    --madel-border-colour: #fff;
+    --madel-start-colour: #fff;
+    --madel-end-colour: #fff;
+    --madel-level-font-colour: #fff;
 }
 
 body{
     display: flex;
     height: 100%;
+    justify-content: space-between;
+}
+
+#right-panel{
+    display: flex;
+    transition: 0.3s;
+    opacity: 1;
 }
 
 #control-panel{
@@ -17,11 +29,10 @@ body{
     right: 5px;
     position: fixed;
     flex-direction: column;
-    transition: 0.3s;
-    opacity: 0;
+    width: 330px;
 }
 
-#control-panel:hover{
+#right-panel:hover{
     opacity: 1;
 }
 
@@ -39,6 +50,22 @@ body{
     display: flex;
     flex-direction: column;
     width: 500px;
+}
+
+#danmaku-sender{
+    display: flex;
+    position: fixed;
+    right: 380px;
+    width: 330px;
+}
+
+#danmaku-length{
+    margin: 5px 0 0 30px;
+}
+
+#danmaku-emoji-panel{
+    overflow: hidden;
+    width: 300px;
 }
 
 .control-panel-block{
@@ -89,7 +116,7 @@ body{
     outline: none;
 }
 
-.room-input #add-room {
+.room-input .small-button {
     border-radius: 15px;
     height: 30px;
     background: var(--bili-blue);
@@ -101,6 +128,7 @@ body{
     transition: 0.3s;
     user-select: none;
     cursor: pointer;
+    color: #fff;
 }
 
 .room-input #add-room:hover {
@@ -167,4 +195,149 @@ body{
 
 .rua-dm-content{
     display: flex;
+}
+
+.rua-dm-name-tag div{
+    margin: 0 5px;
+}
+
+.rua-dm-name-tag-username{
+    font-weight: bold;
+}
+
+.rua-dm-name-tag-madel{
+    border: var(--madel-border-colour) 1px solid;
+    display: flex;
+    font-family: "Microsoft YaHei", "Microsoft Sans Serif", "Microsoft SanSerf", "\5FAE\8F6F\96C5\9ED1";
+    font-size: 12px;
+    height: 14px;
+    line-height: 14px;
+    border-radius: 2px;
+}
+
+.rua-dm-name-tag-madel-name{
+    color: #fff;
+    background: linear-gradient(45deg, var(--madel-start-colour), var(--madel-end-colour));
+    margin: 0!important;
+    display: flex;
+    justify-content: center;
+    min-width: 36px;
+    align-items: center;
+    padding: 0 4px;
+    border-top-left-radius: 1px;
+    border-bottom-left-radius: 1px;
+}
+
+.rua-dm-name-tag-madel-level{
+    color: var(--madel-level-font-colour);
+    background: #fff;
+    margin: 0!important;
+    text-align: center;
+    width: 16px;
+    border-top-left-radius: 1px;
+    border-bottom-right-radius: 1px;
+}
+
+
+.rua-emoji-header{
+    line-height: 46px;
+    height: 40px;
+    font-size: 12px;
+    display: flex;
+    justify-content: flex-start;
+    white-space: nowrap;
+    position: relative;
+    overflow: scroll!important;
+    scrollbar-width: none;
+    border-radius: 10px;
+}
+
+.rua-emoji-header::-webkit-scrollbar {
+    display: none;
+}
+
+.rua-header-item{
+    color: var(--text3);
+    cursor: pointer;
+    width: 50px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.rua-header-item img{
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+}
+
+.rua-emoji-header .active{
+    background-color: var(--bg1);
+}
+
+.rua-emoji-item{
+    position: relative;
+    width: 65px;
+    height: 65px;
+    display: flex;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.rua-emoji-item-xs{
+    width: 30px;
+    height: 30px;
+}
+
+.rua-emoji-item img{
+    max-width: 100%;
+    max-height: 100%;
+    margin: auto;
+    display: block;
+}
+
+.rua-emoji-container{
+    display: none;
+    flex-wrap: wrap;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-left: 5px;
+    max-height: 500px;
+}
+
+.rua-emoji-icon-inactive-new{
+    opacity: 0.3;
+}
+
+.rua-emoji-requirement {
+    top: 0;
+    right: 0;
+    position: absolute;
+    color: #fff;
+    background-color: #FF6699;
+    border-radius: 2px;
+    font-size: 10px;
+    height: 12px;
+    line-height: 12px;
+    text-align: center;
+    white-space: nowrap;
+    max-width: 80%;
+    user-select: none;
+    z-index: 99;
+}
+
+.rua-emoji-icon-active{
+    transition: 0.2s;
+}
+
+.rua-emoji-icon-active:hover{
+    transform: scale(1.1);
+}
+
+.rua-emoji-icon-active:active{
+    transform: scale(0.9);
 }

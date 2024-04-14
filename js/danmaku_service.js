@@ -11,6 +11,12 @@ function DanmakuWSS(frontEndHost, config=null, ver = 1) {
     this.roomID = -1;
     this.biggest_list = 100;
     this.AUTH_PAYLOAD = null;
+
+    this.auto_buttom = true;
+
+    this.show_inactive_madel = true;
+    this.show_gift_in_stream = true;
+
     if (config !== null){
         this.roomID = config['room_id'];
         this.biggest_list = config['biggest_list']===null?100:config['biggest_list'];
@@ -199,6 +205,18 @@ function DanmakuWSS(frontEndHost, config=null, ver = 1) {
     const EMOJI_DIR = '../images/huangdou/'
     const LOTT = '喜欢主播加关注，点点红包抽礼物'
 
+    DanmakuWSS.prototype.__DEC_TO_HEX = function (decValue){
+        let hexValue;
+        if (typeof decValue === 'undefined')
+            hexValue = 'fff';
+        else{
+            hexValue = decValue.toString(16);
+            if (hexValue.length % 2 !== 0)
+                hexValue = '0' + hexValue;
+        }
+        return hexValue
+    }
+
     DanmakuWSS.prototype.unPackage = function (dmPackage) {
         let subPackages = new TextDecoder().decode(dmPackage).split(/}.{16}{/);
         for (let i = 0; i < subPackages.length; i++) {
@@ -215,6 +233,10 @@ function DanmakuWSS(frontEndHost, config=null, ver = 1) {
             let danmaku = JSON.parse(stringSubPackage)
             switch (danmaku['cmd']){
                 case 'DANMU_MSG':
+                    danmaku['info'][3][4] = this.__DEC_TO_HEX(danmaku['info'][3][4]);
+                    danmaku['info'][3][7] = this.__DEC_TO_HEX(danmaku['info'][3][7]);
+                    danmaku['info'][3][8] = this.__DEC_TO_HEX(danmaku['info'][3][8]);
+                    danmaku['info'][3][9] = this.__DEC_TO_HEX(danmaku['info'][3][9]);
                     let danmakuPayload = {
                         'type': 'DANMU_MSG',
                         'danmaku_content': danmaku['info'][1],
@@ -227,14 +249,42 @@ function DanmakuWSS(frontEndHost, config=null, ver = 1) {
                     this.renderFrontEnd(danmakuPayload)
                     break;
                 case 'SEND_GIFT':
+                    /**
+                     * danmaku[data]: gift information
+                     * [data][action]
+                     * [data][coin_type]: 'sliver' | 'gold' (free | paid)
+                     * [data][face]: gift sender user avatar
+                     * [data][giftName]
+                     * [data][uname]: gift sender user name
+                     * [data][uid]: gift sender user id*/
+                    break;
+                case 'SUPER_CHAT_MESSAGE':
+                    /**
+                     * SUPER_CHAT_MESSAGE_JPN for japanese sc trans, all other values are same
+                     * danmaku[data]: sc information
+                     * [data][background_bottom_color]: background for sc content
+                     * [data][background_color]: background for uname, price info
+                     * [data][background_color_end]: background colour for small version sc display
+                     * [data][background_color_start]: background colour for small version sc display
+                     * [data][background_price_color]
+                     * [data][color_point]
+                     * [data][message]: sc content
+                     * [data][message_jpn]: sc content in japanese, SUPER_CHAT_MESSAGE_JPN type only
+                     * [data][message_font_color]
+                     * [data][price]
+                     * [data][time]: in seconds
+                     * [data][user_info][uname]: sender user name
+                     * [data][user_info][face]: sender user avatar
+                     * */
                     break;
                 default:
                     break;
             }
             if (danmaku['cmd'] === 'DANMU_MSG'){
-                console.log(danmaku);
+                // console.log(danmaku);
 
             }else{
+                if (danmaku['cmd'] !== 'ONLINE_RANK_V2' && danmaku['cmd'] !== "WATCHED_CHANGE" && danmaku['cmd'] !== "INTERACT_WORD" && danmaku['cmd'] !== 'ONLINE_RANK_COUNT')
                 console.log(danmaku)
             }
         }
@@ -423,12 +473,22 @@ function DanmakuWSS(frontEndHost, config=null, ver = 1) {
                     const dmMSG = document.createElement('div');
                     dmMSG.classList.add('rua-dm-item');
                     this.frontEndHost.appendChild(dmMSG);
+                    /**
+                     * payload['madel'][0] - madel level
+                     * payload['madel'][1] - madel name
+                     * payload['madel'][2] - madel owner name
+                     * payload['madel'][3] - madel id
+                     * payload['madel'][4] - madel original main colour (can be used for madel inactive)
+                     * payload['madel'][7] - madel border colour
+                     * payload['madel'][8] - madel start colour
+                     * payload['madel'][9] - madel end colour
+                     * */
                     dmMSG.innerHTML = `<div class="rua-dm-name-tag">
                 <div class="rua-dm-name-tag-avatar" style="display: none"><img src="${''}"></div>
                 <div class="rua-dm-name-tag-username">${payload['userName']}</div>
-                <div class="rua-dm-name-tag-madel" style="${payload['madel'].length===0?'none':'block'}">
-                    <span class="rua-dm-name-tag-madel-name">${payload['madel'].length>0?payload['madel'][1]:''}</span>
-                    <span class="rua-dm-name-tag-madel-level">${payload['madel'].length>0?payload['madel'][0]:''}</span>
+                <div class="rua-dm-name-tag-madel" style="${payload['madel'].length===0?'none':'block'}; --madel-border-colour: #${payload['madel'][7]};">
+                    <div class="rua-dm-name-tag-madel-name" style="--madel-start-colour: #${payload['madel'][8]}; --madel-end-colour: #${payload['madel'][9]};"><span>${payload['madel'].length>0?payload['madel'][1]:''}</span></div>
+                    <div class="rua-dm-name-tag-madel-level" style="--madel-level-font-colour: #${payload['madel'][8]};">${payload['madel'].length>0?payload['madel'][0]:''}</div>
                 </div>
                 </div>
                 <div class="rua-dm-content">
@@ -457,7 +517,8 @@ function DanmakuWSS(frontEndHost, config=null, ver = 1) {
             default:
                 break;
         }
-        window.scrollTo(0, document.body.scrollHeight);
+        if(this.auto_buttom)
+            window.scrollTo(0, document.body.scrollHeight);
     }
 
     DanmakuWSS.prototype.setRetryTime = function (retryTime){
@@ -475,5 +536,15 @@ function DanmakuWSS(frontEndHost, config=null, ver = 1) {
 
     DanmakuWSS.prototype.setOwnerUID = function (uid){
         this.ownerUID = uid;
+    }
+
+    DanmakuWSS.prototype.eventHandler = function (eventType, value){
+        switch (eventType){
+            case 'scroll':
+
+                break;
+            default:
+                break;
+        }
     }
 }

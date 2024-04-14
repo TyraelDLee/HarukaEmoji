@@ -1289,7 +1289,7 @@
         chrome.runtime.sendMessage({msg:'requestCrackUID', mid:mid}, r=>{
             for (let i = 0; i < r.response.length; i++) {
                 chrome.runtime.sendMessage({msg:"requestUserInfo", mid:r.response[i]}, (callback)=>{
-                    if(callback.response['fans']!==0 || callback.response['friend']!==0 || typeof r.response !=='undefined'){
+                    if(callback.response['fans']!==0 || callback.response['friend']!==0 || callback.response['level_info']['current_level']>=2 || r.response.length === 1 || typeof r.response !=='undefined'){
                         const user = document.createElement("div");
                         user.setAttribute("class", "rua-user");
                         const face = document.createElement("a");

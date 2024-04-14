@@ -334,7 +334,6 @@
      * @param{string} searchName request serach username
      * */
     function grabFollowing(pn, uid, pageNumberMax, whisper = false, search = false, searchName = '') {
-        console.log(search)
         return fetch(search?
             `https://api.bilibili.com/x/relation/followings/search?vmid=${uid}&pn=${pn}&ps=${elementsOnPage}&order=desc&order_type=attention&name=${searchName}`:
             `https://api.bilibili.com/x/relation/${whisper ? `whispers?` : `followings?vmid=${uid}&`}pn=${pn}&ps=${elementsOnPage}`, {
@@ -346,16 +345,19 @@
             .then(json => {
                 if (json['code'] === 0) {
                     for (let i = 0; i < json['data']['list'].length; i++) {
-                        drawUsers(json['data']['list'][i]['face'], json['data']['list'][i]['uname'], json['data']['list'][i]['mid'], json['data']['list'][i]['official_verify']['type'], json['data']['list'][i]['official_verify']['desc'], medals.get(json['data']['list'][i]['mid']))
+                        followedUID.push(json['data']['list'][i]['mid']);
+                        drawUsers(json['data']['list'][i]['face'], json['data']['list'][i]['uname'], json['data']['list'][i]['mid'], json['data']['list'][i]['official_verify']['type'], json['data']['list'][i]['official_verify']['desc'], medals.get(json['data']['list'][i]['mid']));
                     }
                     if (pn === pageNumberMax) {
                         if (!whisper) {
-                            grabFollowing(1, uid, 3, true).then(r => {
+                            grabFollowing(1, uid, 1, true).then(r => {
                                 if (r <= elementsOnPage) document.getElementById('loading').style.display = 'none';
                             });
                         } else {
                             document.getElementById('loading').style.display = 'none';
+                            grabNoneFollowMedal()
                         }
+
                     }
                     scrollLock = true;
                     if (typeof json['data']['total'] === 'undefined')
@@ -374,9 +376,14 @@
             body: null
         }).then(res => res.json())
             .then(json=>{
-
+                if (json['code']===0){
+                    for (const item of json['data']['list']) {
+                        if (followedUID.indexOf(item['medal_info']['target_id'])===-1)
+                            drawUsers(item['target_icon'], item['target_name'], item['medal_info']['target_id'], item['official']-1, '', [item['medal_info']['level'], item['medal_info']['medal_color_border'], item['medal_info']['medal_color_start'], item['medal_info']['medal_color_end'], item['medal_info']['medal_name']], true);
+                    }
+                }
             })
-            .catch(e=>{})
+            .catch(e=>{});
     }
 
     /**
@@ -388,8 +395,9 @@
      * @param {number} verify the verify type. (organization|personal)
      * @param {string} verifyText the verify text.
      * @param {array} medalInfo the medal information. [medal_level, medal_colour_border, medal_colour_start, medal_colour_end, medal_label]
+     * @param {boolean} unfollowed the user which has madel only.
      * */
-    function drawUsers(face, name, id, verify, verifyText, medalInfo = [0, 0, 0, 0, 0]) {
+    function drawUsers(face, name, id, verify, verifyText, medalInfo = [0, 0, 0, 0, 0], unfollowed=false) {
         id = id - 0;
         let verIcon = verify === 0 ? 'background-position: var(--personal-verify);' : verify === 1 ? 'background-position: var(--organization-verify);' : 'display: none;';
         let block = document.createElement('div');
@@ -418,24 +426,24 @@
             <div class="button-host">
                 <section class="button">
                     <div class="checkbox">
-                        <input id="rua-input-live-${id}" type="checkbox" ${liveList.indexOf(id) === -1 ? 'checked' : ''}>
-                        <label></label>
+                        <input id="rua-input-live-${id}" type="checkbox" ${liveList.indexOf(id) === -1 && !unfollowed ? 'checked' : ''} ${unfollowed?'disabled':''}>
+                        <label ${unfollowed ? `class="btn-disabled"` : ''}></label>
                     </div>
                 </section>
             </div>
             <div class="button-host">
                 <section class="button">
                     <div class="checkbox">
-                        <input id="rua-input-video-${id}" type="checkbox" ${videoList.indexOf(id) === -1 ? 'checked' : ''}>
-                        <label></label>
+                        <input id="rua-input-video-${id}" type="checkbox" ${videoList.indexOf(id) === -1 && !unfollowed ? 'checked' : ''} ${unfollowed?'disabled':''}>
+                        <label ${unfollowed ? `class="btn-disabled"` : ''}></label>
                     </div>
                 </section>
             </div>
             <div class="button-host">
                 <section class="button">
                     <div class="checkbox">
-                        <input id="rua-input-dynamic-${id}" type="checkbox" ${dynamicList.indexOf(id) === -1 ? 'checked' : ''}>
-                        <label></label>
+                        <input id="rua-input-dynamic-${id}" type="checkbox" ${dynamicList.indexOf(id) === -1 && !unfollowed ? 'checked' : ''} ${unfollowed?'disabled':''}>
+                        <label ${unfollowed ? `class="btn-disabled"` : ''}></label>
                     </div>
                 </section>
             </div>
