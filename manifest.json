@@ -26,7 +26,7 @@
       "path": "ruleSet/liveroom.json"
     }]
   },
-  "permissions": ["alarms", "cookies", "contextMenus", "storage", "notifications", "declarativeNetRequest"],
+  "permissions": ["alarms", "cookies", "contextMenus", "storage", "notifications", "declarativeNetRequest", "downloads"],
   "action": {
     "default_popup": "popup.html"
   },
@@ -85,7 +85,7 @@
   },{
     "all_frames": true,
     "css": ["css/host.min.css", "css/button.min.css", "css/videos.min.css"],
-    "js": ["ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/protobuf.min.js","js/ADT.min.js", "js/DanmakuToAss.min.js", "js/VideoHost.min.js"],
+    "js": ["ffmpeg/ffmpeg.min.js","ffmpeg/ffmpeg-core.js","js/protobuf.min.js","js/ADT.min.js", "js/DanmakuToAss.min.js", "js/VideoHost.js"],
     "matches": ["*://www.bilibili.com/video/*", "*://www.bilibili.com/bangumi/play/*" ,"*://www.bilibili.com/festival*"],
     "run_at": "document_end"
   },{
@@ -119,7 +119,7 @@
     "matches": ["*://www.bilibili.com/read/*"],
     "run_at": "document_end"
   }],
-  "web_accessible_resources": [{"resources": ["images/*", "css/*", "js/*", "ffmpeg/*", "guild/*"], "matches": ["https://*/*"]}],
+  "web_accessible_resources": [{"resources": ["images/*", "css/*", "js/*", "ffmpeg/*", "guild/*", "downloader.html"], "matches": ["https://*/*"]}],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },

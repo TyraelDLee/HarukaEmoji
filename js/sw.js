@@ -633,6 +633,26 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 }
             });
         }
+        if (request.msg === 'requestDownloader') {
+            // downloadBlob(request.blob, request.name, true);
+            console.log(request.fileName)
+
+            chrome.downloads.download({
+                url: request.url,
+                filename: request.fileName.replaceAll('/', '-')
+            }, r=>{
+                sendResponse({res:'download finished'});
+            });
+            // chrome.windows.create({url: 'downloader.html', state: 'minimized'}).then(r=>{
+            //     console.log(r)
+            //     sendResponse({'res': "downloader is ready"});
+            // }).catch(e=>{
+            //     sendResponse({'res':'downloader not exists'})
+            // });
+        }
+        if (request.msg === 'downloaderReady'){
+
+        }
         return true;
     }
 );

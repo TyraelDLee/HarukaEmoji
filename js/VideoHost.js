@@ -802,9 +802,9 @@
             hostObj.removeAttribute("style");
             hostObj.classList.remove('rua-downloading');
             hostObj.getElementsByClassName("rua-quality-des")[0].innerText = hostItem;
-            window.URL.revokeObjectURL(blobURL[0]);
-            if (requestType === 'hdrRecord' || requestType==='8kRecord')
-                window.URL.revokeObjectURL(blobURL[1]);
+            // window.URL.revokeObjectURL(blobURL[0]);
+            // if (requestType === 'hdrRecord' || requestType==='8kRecord')
+            //     window.URL.revokeObjectURL(blobURL[1]);
         }
         await fetch(url[0], {
             method:"GET",
@@ -830,16 +830,16 @@
                         releaseDownload();
                     });
             }else{
-                blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'||requestType==='dashRecord'?'视频':'', false, controller);
+                blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType==='hdrRecord'||requestType==='8kRecord'||requestType==='dashRecord'?'视频':'', false, controller, 'mp4');
                 aDownload(blobURL[0], fileName+".mp4");
                 if((requestType==='hdrRecord' || requestType==='8kRecord'||requestType==='dashRecord')&&!controller.signal.aborted){
-                    blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频', false, controller);
+                    blobURL[1] = await dash(url[1], hostObj, cid, hostItem, '音频', false, controller, 'm4a');
                     aDownload(blobURL[1], fileName+".m4a");
                 }
                 releaseDownload();
             }
         }else{
-            blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType.includes(':')?'分段'+requestType.split(':')[1]:'视频', false, controller);
+            blobURL[0] = await dash(url[0], hostObj, cid, hostItem, requestType.includes(':')?'分段'+requestType.split(':')[1]:'视频', false, controller, 'flv');
             aDownload(blobURL[0], fileName+".flv");
             releaseDownload();
         }
@@ -854,14 +854,40 @@
      * */
     function aDownload(blobURL, fileName){
         if(typeof blobURL !== 'undefined' && !blobURL.includes('undefined')){
-            const a = document.createElement("a");
-            a.href = blobURL;
-            a.target = '_blank';
-            a.style.display = 'none';
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            chrome.runtime.sendMessage({msg:"requestDownloader", url: blobURL, fileName:fileName}, r=>{
+                console.log(r['res']);
+                if (r['res'] === 'download finished')
+                    window.URL.revokeObjectURL(blobURL);
+            });
+            // console.log(blobURL)
+            // const a = document.createElement("a");
+            // a.setAttribute('id', 'rua-dl-a');
+            // a.style.display = 'none';
+            // a.href = blobURL;
+            // a.target = '_blank';
+            // a.download = fileName;
+            // document.body.appendChild(a);
+            // a.addEventListener('click', e=>{
+            //     e.preventDefault();
+            //     e.target.href = blobURL;
+            //     e.target.click();
+            // });
+            // a.click();
+            //
+            //
+            // document.body.removeChild(a);
+
+
+            // addEventListener('click', e=>{
+            //     if(e.target.id === 'rua-dl-a'){
+            //         e.preventDefault();
+            //         e.target.href = blobURL;
+            //         e.target.target = '_blank';
+            //         e.target.download = fileName;
+            //         // e.target.click();
+            //
+            //     }
+            // });
         }
     }
 
@@ -916,7 +942,7 @@
             }
             out = ffmpeg.FS('readFile', 'final.m4a');
             downloadName = filename + ".m4a";
-            dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/mp4'}));
+            dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/m4a'}));
         }
         if(requestType === 'dolbyRecord'){
             ffmpeg.FS('writeFile', 'audio.m4s', await fetchFile(blob[0]));
@@ -935,7 +961,7 @@
             }
             out = ffmpeg.FS('readFile', 'final.m4a');
             downloadName = filename + ".m4a";
-            dl = URL.createObjectURL(new Blob([out.buffer]));
+            dl = URL.createObjectURL(new Blob([out.buffer], {type: 'audio/m4a'}));
         }
         if(requestType === 'hdrRecord'  || requestType==='8kRecord' || requestType==='dashRecord'){
             ffmpeg.FS('writeFile', 'video.m4s', await fetchFile(blob[0]));
@@ -943,10 +969,10 @@
             await ffmpeg.run('-i', 'video.m4s', '-i', 'audio.m4s', '-map', '0:v', '-map', '1:a','-c', 'copy', 'final.mkv');
             out = ffmpeg.FS('readFile', 'final.mkv');
             downloadName = filename + ".mkv";
-            dl = URL.createObjectURL(new Blob([out.buffer]));
+            dl = URL.createObjectURL(new Blob([out.buffer], {type: 'video/mkv'}));
         }
         aDownload(dl, downloadName);
-        window.URL.revokeObjectURL(dl);
+        // window.URL.revokeObjectURL(dl);
     }
 
     function utf8Encode(str){
@@ -997,10 +1023,10 @@
      * @param {string} dispTag the status text.
      * @param {boolean} encode indicate the media require encode or not.
      * @param {AbortController} controller the controller for user cancel download.
-     *
+     * @param {string} type the mime type for download
      * @return {Promise} the blob url.
      * */
-    async function dash(url, hostObj, cid, hostItem, dispTag, encode, controller){
+    async function dash(url, hostObj, cid, hostItem, dispTag, encode, controller, type=''){
         let size=0, get=0;
         return fetch(url,{
             method:"GET",
@@ -1035,7 +1061,13 @@
                     })
                 ).blob();
             })
-            .then(blob => window.URL.createObjectURL(blob))
+            .then(blob => {
+                if (type === '')
+                    return window.URL.createObjectURL(blob)
+                else{
+                    return window.URL.createObjectURL(new Blob([blob], {type: `${type==='m4a' || type==='flac'?'audio':'video'}/${type}`}))
+                }
+            })
             .catch(e =>{
                 if(!controller.signal.aborted)
                     downloadError(hostObj, cid, e.toString(), false, hostItem);

@@ -31,6 +31,7 @@
         <item url="file://$PROJECT_DIR$/js/danmaku_service.min.js" />
         <item url="file://$PROJECT_DIR$/js/darkEngine.min.js" />
         <item url="file://$PROJECT_DIR$/js/darkMode.min.js" />
+        <item url="file://$PROJECT_DIR$/js/downloader.min.js" />
         <item url="file://$PROJECT_DIR$/js/guild.min.js" />
         <item url="file://$PROJECT_DIR$/js/haruka.min.js" />
         <item url="file://$PROJECT_DIR$/js/liveroom.min.js" />
@@ -77,6 +78,7 @@
       <root url="file://$PROJECT_DIR$/js/danmaku_service.min.js" />
       <root url="file://$PROJECT_DIR$/js/darkEngine.min.js" />
       <root url="file://$PROJECT_DIR$/js/darkMode.min.js" />
+      <root url="file://$PROJECT_DIR$/js/downloader.min.js" />
       <root url="file://$PROJECT_DIR$/js/guild.min.js" />
       <root url="file://$PROJECT_DIR$/js/haruka.min.js" />
       <root url="file://$PROJECT_DIR$/js/liveroom.min.js" />
