@@ -321,29 +321,52 @@
             document.querySelectorAll('.video-owner-info-container')[0].classList.remove('video-owner-info-always-on-first-child');
     }
 
-    function getFollowingRoom() {
+    async function getFollowingRoom() {
         if (UID-0!==-1){
-            fetch(`https://api.vc.bilibili.com/dynamic_mix/v1/dynamic_mix/at_list?uid=${UID}`, {
-                method: "GET",
-                credentials: "include",
-                body: null
-            }).then(r => r.json())
-                .then(json => {
-                    let followList = [];
-                    if (json['code'] === 0) {
-                        for (let i = 0; i < json['data']['groups'].length; i++) {
-                            for (let j = 0; j < json['data']['groups']['' + i]['items'].length; j++) {
-                                followList.push(json['data']['groups']['' + i]['items'][j + '']['uid']);
+            let followList = []
+            getFollowingLegacy(1)
+            function getFollowingLegacy(pn){
+                fetch(`https://api.bilibili.com/x/relation/followings?vmid=${UID}&pn=${pn}&ps=50&order=desc`, {
+                    method:'GET',
+                    credentials:'include',
+                    body:null
+                }).then(r=>r.json())
+                    .then(json=>{
+                        if (json['code']===0){
+                            const list = json['data']['list'];
+                            for (const item of list){
+                                followList.push(item['mid']);
+                            }
+                            if (list.length===50)
+                                getFollowingLegacy(pn+1)
+                            else {
+                                getRooms(followList)
                             }
                         }
-                        return followList;
-                    }
-                    else
-                        getFollowingRoom();
-                })
-                .then(list => {
-                    getRooms(list);
-                });
+
+                    })
+            }
+            // fetch(`https://api.vc.bilibili.com/dynamic_mix/v1/dynamic_mix/at_list?uid=${UID}`, {
+            //     method: "GET",
+            //     credentials: "include",
+            //     body: null
+            // }).then(r => r.json())
+            //     .then(json => {
+            //         let followList = [];
+            //         if (json['code'] === 0) {
+            //             for (let i = 0; i < json['data']['groups'].length; i++) {
+            //                 for (let j = 0; j < json['data']['groups']['' + i]['items'].length; j++) {
+            //                     followList.push(json['data']['groups']['' + i]['items'][j + '']['uid']);
+            //                 }
+            //             }
+            //             return followList;
+            //         }
+            //         // else
+            //         //     getFollowingRoom();
+            //     })
+            //     .then(list => {
+            //         getRooms(list);
+            //     });
         }
     }
 

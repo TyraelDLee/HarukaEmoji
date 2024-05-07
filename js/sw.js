@@ -681,14 +681,12 @@ function getFollowingListLegacy(obj) {
     }).then(r => r.json())
         .then(json => {
             if (json['code']-0 === 0){
-                const list = json['data']['list'];
-                for (const item of list){
+                const flist = json['data']['list'];
+                for (const item of flist){
                     list.push(item['mid']);
                 }
-                return {'uid': uid, 'pn': pn, 'list': list, 'isLast': list.length < 1};
+                return {'uid': uid, 'pn': pn, 'list': list, 'isLast': flist.length < 50};
             }else{
-                console.log(list)
-
                 throw 'error';
             }
         }).catch(e=>{
@@ -699,42 +697,45 @@ function getFollowingListLegacy(obj) {
 
 function getFollowingList() {
     chrome.storage.local.get(['uuid'],  async (e) => {
-        // let followed = []
-        // // for (let i = 1; i < 41; i++) {
-        // //     let obj = await getFollowingListLegacy({'uid': e.uuid, 'pn': i, 'list': followed});
-        // //     followed = obj['list'];
-        // //     if (obj['isLast']) break;
-        // // }
+        let followed = []
+        for (let i = 1; i < 41; i++) {
+            let obj = await getFollowingListLegacy({'uid': e.uuid, 'pn': i, 'list': followed});
+            followed = obj['list'];
+            if (obj['isLast']) break;
+        }
         // let obj = await getFollowingListLegacy({'uid': e.uuid, 'pn': 1, 'list': followed});
         // followed = obj['list'];
-        // console.log(followed)
-        let flag = new AbortController();
-        setTimeout(() => {
-            flag.abort('timeout');
-        }, 3000);
-        fetch(`https://api.vc.bilibili.com/dynamic_mix/v1/dynamic_mix/at_list?uid=${e.uuid}`, {
-            method: 'GET',
-            credentials: 'include',
-            signal: flag.signal,
-            body: null
-        }).then(r => r.json())
-            .then(json => {
-                if (json['code'] === 0) {
-                    chrome.storage.sync.get(["blackListLive", "blackListHB"], (result) => {
-                        let followList = [];
-                        for (let i = 0; i < json['data']['groups'].length; i++) {
-                            for (let j = 0; j < json['data']['groups']['' + i]['items'].length; j++) {
-                                followList.push(json['data']['groups']['' + i]['items'][j + '']['uid']);
-                            }
-                        }
-                        // console.log(`Load following list complete. ${followList.length} followings found, ${result['blackListLive'].length} live notifications are ignored.`);
-                        queryLivingRoom(followList, result['blackListLive'], result['blackListHB']);
-                    });
-                }
-            })
-            .catch(e => {
-                errorHandler('getFollowing', e, 'getFollowingList()');
-            });
+        chrome.storage.sync.get(["blackListLive", "blackListHB"], (result) => {
+            // console.log(`Load following list complete. ${followList.length} followings found, ${result['blackListLive'].length} live notifications are ignored.`);
+            queryLivingRoom(followed, result['blackListLive'], result['blackListHB']);
+        });
+        // let flag = new AbortController();
+        // setTimeout(() => {
+        //     flag.abort('timeout');
+        // }, 3000);
+        // fetch(`https://api.vc.bilibili.com/dynamic_mix/v1/dynamic_mix/at_list?uid=${e.uuid}`, {
+        //     method: 'GET',
+        //     credentials: 'include',
+        //     signal: flag.signal,
+        //     body: null
+        // }).then(r => r.json())
+        //     .then(json => {
+        //         if (json['code'] === 0) {
+        //             chrome.storage.sync.get(["blackListLive", "blackListHB"], (result) => {
+        //                 let followList = [];
+        //                 for (let i = 0; i < json['data']['groups'].length; i++) {
+        //                     for (let j = 0; j < json['data']['groups']['' + i]['items'].length; j++) {
+        //                         followList.push(json['data']['groups']['' + i]['items'][j + '']['uid']);
+        //                     }
+        //                 }
+        //                 // console.log(`Load following list complete. ${followList.length} followings found, ${result['blackListLive'].length} live notifications are ignored.`);
+        //                 queryLivingRoom(followList, result['blackListLive'], result['blackListHB']);
+        //             });
+        //         }
+        //     })
+        //     .catch(e => {
+        //         errorHandler('getFollowing', e, 'getFollowingList()');
+        //     });
     })
 }
 
@@ -1057,7 +1058,7 @@ function reloadCookies() {
                     console.log("Session info got.");
                     refreshHeartBeatList();
                     chrome.alarms.create('getNewVideos', {'when': Date.now(), periodInMinutes: 0.5});
-                    chrome.alarms.create('getFollowing', {'when': Date.now(), periodInMinutes: 0.2});
+                    chrome.alarms.create('getFollowing', {'when': Date.now(), periodInMinutes: 0.3});
                     chrome.alarms.create('getNewUnreads', {'when': Date.now() + 5000, periodInMinutes: 0.2});
                     chrome.alarms.create('getNewDynamics', {'when': Date.now() + 11000, periodInMinutes: 0.33});
                     scheduleCheckIn(3000);
