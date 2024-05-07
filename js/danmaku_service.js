@@ -277,7 +277,10 @@ function DanmakuWSS(frontEndHost, config=null, ver = 1) {
                      * [data][user_info][face]: sender user avatar
                      * */
                     break;
+                case 'INTERACT_WORD':
+                    break;
                 default:
+
                     break;
             }
             if (danmaku['cmd'] === 'DANMU_MSG'){

@@ -3,6 +3,7 @@
 </p>
 
 # HarukaEmoji
+## bilibili近日修改了api导致开播通知与直播挂机功能暂不可用，正在想办法修复。其他功能目前不受影响。
 rua豹使人快乐，rua了又rua！<br>
 
 rua豹器5.21来啦 <br>

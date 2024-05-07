@@ -400,13 +400,16 @@ async function initialize(reload) {
      *
      * no need change for mv3 update.
      * */
-    if (!reload || typeof reload !== "boolean")
-        chrome.contextMenus.create({
-            contexts: ["selection", "link"],
-            title: "用bilibili搜索",
-            type: "normal",
-            id: "rua-contextMenu-v3"
-        });
+    if (!reload || typeof reload !== "boolean") {
+        try{
+            chrome.contextMenus.create({
+                contexts: ["selection", "link"],
+                title: "用bilibili搜索",
+                type: "normal",
+                id: "rua-contextMenu-v3"
+            });
+        }catch (e) {}
+    }
 
     // local states
     chrome.alarms.create('checkUpd', {'when': Date.now(), periodInMinutes: 60 * 12});
@@ -668,8 +671,43 @@ function convertMSToS(time) {
     return hour + mint + ":" + secs;
 }
 
+function getFollowingListLegacy(obj) {
+    const uid = obj['uid'], pn = obj['pn'];
+    let list = obj['list'];
+    return fetch(`https://api.bilibili.com/x/relation/followings?vmid=${uid}&pn=${pn}&ps=50&order=desc`, {
+        method:'GET',
+        credentials:'include',
+        body:null
+    }).then(r => r.json())
+        .then(json => {
+            if (json['code']-0 === 0){
+                const list = json['data']['list'];
+                for (const item of list){
+                    list.push(item['mid']);
+                }
+                return {'uid': uid, 'pn': pn, 'list': list, 'isLast': list.length < 1};
+            }else{
+                console.log(list)
+
+                throw 'error';
+            }
+        }).catch(e=>{
+            return {'uid': uid, 'pn': -1, 'list': list, 'isLast': true}
+        })
+}
+
+
 function getFollowingList() {
-    chrome.storage.local.get(['uuid'], (e) => {
+    chrome.storage.local.get(['uuid'],  async (e) => {
+        // let followed = []
+        // // for (let i = 1; i < 41; i++) {
+        // //     let obj = await getFollowingListLegacy({'uid': e.uuid, 'pn': i, 'list': followed});
+        // //     followed = obj['list'];
+        // //     if (obj['isLast']) break;
+        // // }
+        // let obj = await getFollowingListLegacy({'uid': e.uuid, 'pn': 1, 'list': followed});
+        // followed = obj['list'];
+        // console.log(followed)
         let flag = new AbortController();
         setTimeout(() => {
             flag.abort('timeout');
@@ -772,22 +810,26 @@ function queryLivingRoom(uids, blackListNT, blackListHB) {
                                     let rhythmTemp = [];
                                     for (const medalItem of info.medalList) {
                                         for (let i = 0; i < liveInfo.length; i++) {
-                                            if (medalItem['medal_info']['level'] < 20 && medalItem['medal_info']['target_id'] === liveInfo[i]['ruid'] && medalItem['medal_info']['today_feed'] < medalItem['medal_info']['day_limit'])
+                                            if (liveInfo[i] !== null && typeof liveInfo[i] !== 'undefined' && medalItem['medal_info']['level'] < 20 && medalItem['medal_info']['target_id'] === liveInfo[i]['ruid'] && medalItem['medal_info']['today_feed'] < medalItem['medal_info']['day_limit'])
                                                 rhythmTemp.push(liveInfo[i]);
+                                            if (liveInfo[i] !== null && typeof liveInfo[i] !== 'undefined' && data[userInfo]["live_status"] !== 1 && liveInfo[i]['ruid'] === data[userInfo]['uid']) {
+                                                let index = rhythmTemp.indexOf(liveInfo[i]);
+                                                rhythmTemp.splice(index, 1);
+                                            }
                                         }
                                     } // remove unnecessary element
-                                    liveInfo = [];
-                                    liveInfo = rhythmTemp;
+                                    // liveInfo = [];
+                                    // liveInfo = rhythmTemp;
 
-                                    for (let i = 0; i < liveInfo.length; i++) {
-                                        if (data[userInfo]["live_status"] !== 1 && liveInfo[i]['ruid'] === data[userInfo]['uid']) {
-                                            let index = rhythmTemp.indexOf(liveInfo[i]);
-                                            rhythmTemp.splice(index, 1);
-                                        }
-                                    } // remove offline element
+                                    // for (let i = 0; i < liveInfo.length; i++) {
+                                    //     if (data[userInfo]["live_status"] !== 1 && liveInfo[i]['ruid'] === data[userInfo]['uid']) {
+                                    //         let index = rhythmTemp.indexOf(liveInfo[i]);
+                                    //         rhythmTemp.splice(index, 1);
+                                    //     }
+                                    // }
+                                    // remove offline element
                                     liveInfo = [];
                                     liveInfo = rhythmTemp;
-                                    rhythmTemp = null; // GC
                                 }
                             }
                             // console.log(newNotificationList.stringify());
@@ -845,7 +887,6 @@ function queryLivingRoom(uids, blackListNT, blackListHB) {
                             }, () => {
                             });
                             newNotificationList = null;
-                            liveInfo = null;// GC
                         });
                     }
                 }
@@ -1622,17 +1663,22 @@ function setBadge(title, text) {
 
 function heartBeat() {
     chrome.storage.local.get(['jct', 'uuid', 'heartRhythm'], async (info) => {
+        console.log(info['heartRhythm'])
         if (info.uuid === -1 || info.jct === -1) {
             chrome.storage.local.set({'heartRhythm': []}, () => {
             });
         }
-        let rhythm = info['heartRhythm'];
+        let rhythm = info['heartRhythm'], newRhythm = [];
         if (rhythm.length > 0) {
             for (let i = 0; i < rhythm.length; i++) {
-                rhythm[i] = await QRSComplex(rhythm[i], info.jct);
+                if(rhythm[i] !== null && typeof rhythm[i] !== 'undefined'){
+                    const newRhythmPackage = await QRSComplex(rhythm[i], info.jct);
+                    rhythm[i] = newRhythmPackage;
+                    newRhythm.push(newRhythmPackage)
+                }
             }
         }
-        chrome.storage.local.set({'heartRhythm': rhythm}, () => {
+        chrome.storage.local.set({'heartRhythm': newRhythm}, () => {
         });
     });
 }

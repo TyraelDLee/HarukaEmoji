@@ -410,7 +410,13 @@
     function downloadCover(dlURL){
         coverButton.onclick = null;
         coverButton.onclick = e=>{
-            aDownload(dlURL, '');
+            const a = document.createElement("a");
+            a.href = dlURL;
+            a.target = '_blank';
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
     }
 
@@ -1062,11 +1068,15 @@
                 ).blob();
             })
             .then(blob => {
-                if (type === '')
-                    return window.URL.createObjectURL(blob)
-                else{
-                    return window.URL.createObjectURL(new Blob([blob], {type: `${type==='m4a' || type==='flac'?'audio':'video'}/${type}`}))
-                }
+                // let b = blob;
+                if (type !== '')
+                    blob = new Blob([blob], {type: `${type==='m4a' || type==='flac'?'audio':'video'}/${type}`});
+                // if (type === '')
+                //     return window.URL.createObjectURL(blob)
+                // else{
+                //     return window.URL.createObjectURL(new Blob([blob], {type: `${type==='m4a' || type==='flac'?'audio':'video'}/${type}`}))
+                // }
+                return window.URL.createObjectURL(blob);
             })
             .catch(e =>{
                 if(!controller.signal.aborted)
