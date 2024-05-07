@@ -300,14 +300,15 @@
 
         emojiSlider.appendChild(emojiLeftArrow);
         emojiSlider.appendChild(emojiRightArrow);
-        if (emojiCat['packages'].length>5) {
-            for (; i < 6; i++) {
-                if (emojiCat['packages'][i]['type'] === 9) {
-                    emojiTab.appendChild(drawSlider(emojiCat['packages'][i]['url'], i, emoji['panel_desc'], emoji['emote']));
-                } else
-                    emojiTab.appendChild(drawSlider(emojiCat['packages'][i]['url'], i, emojiCat['packages'][i]['text'], emojiCat['packages'][i]['emote']));
-            }
+        let sliderSize = emojiCat['packages'].length>5?6:emojiCat['packages'].length
+
+        for (; i < sliderSize; i++) {
+            if (emojiCat['packages'][i]['type'] === 9) {
+                emojiTab.appendChild(drawSlider(emojiCat['packages'][i]['url'], i, emoji['panel_desc'], emoji['emote']));
+            } else
+                emojiTab.appendChild(drawSlider(emojiCat['packages'][i]['url'], i, emojiCat['packages'][i]['text'], emojiCat['packages'][i]['emote']));
         }
+
         for (let j = 0; j < emojiCat['packages'][1]['emote'].length; j++) {
             emojiContent.appendChild(drawBlock(emojiCat['packages'][1]['emote'][j]['url'], emojiCat['packages'][1]['emote'][j]['text'], 'img', 'rua-normal-small-emoji', false, null));
         }
