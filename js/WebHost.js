@@ -90,6 +90,45 @@
 //         const fullScreenInput = document.createElement("input");
         const danmakuSendEErr = document.createElement('div');
 
+        chrome.storage.sync.get(['popupDisable', 'popupAlwaysOnTop'], (e)=>{
+            if (e.popupDisable) {
+                popup.style.display = 'none';
+                selec.style.display = 'none';
+            }else{
+                popup.style.display = 'block';
+                selec.style.display = 'block';
+            }
+            if (e.popupAlwaysOnTop) {
+                popup.classList.add('rua-always-on-top');
+                selec.classList.add('rua-always-on-top');
+            }else{
+                popup.classList.remove('rua-always-on-top');
+                selec.classList.remove('rua-always-on-top');
+            }
+        });
+
+        chrome.storage.onChanged.addListener( (changes, namespace) =>{
+            for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+                if(key === "popupDisable") {
+                    if (newValue) {
+                        popup.style.display = 'none';
+                        selec.style.display = 'none';
+                    }else{
+                        popup.style.display = 'block';
+                        selec.style.display = 'block';
+                    }
+                }
+                if (key === 'popupAlwaysOnTop'){
+                    if (newValue) {
+                        popup.classList.add('rua-always-on-top');
+                        selec.classList.add('rua-always-on-top');
+                    }else{
+                        popup.classList.remove('rua-always-on-top');
+                        selec.classList.remove('rua-always-on-top');
+                    }
+                }
+            }
+        });
 
         setTimeout(function (){
             if(qn && document.getElementsByTagName("article").length === 0)q(qnv);
@@ -380,7 +419,10 @@
                     let popupLocHor;
                     let popupLocVac;
                     document.body.style.userSelect = "none";
-                    popup.className = "popup-click-in";
+                    popup.classList.remove('popup-click-hoverout');
+                    popup.classList.remove('popup-click-hoverin');
+                    popup.classList.remove('popup-click-out');
+                    popup.classList.add('popup-click-in');
                     const oevent = ev || event;
                     const distanceX = oevent.clientX - popup.offsetLeft;
                     const distanceY = oevent.clientY - popup.offsetTop;
@@ -404,7 +446,10 @@
                     };
                     document.onmouseup = function () {
                         document.body.style.userSelect = "auto";
-                        popup.className = "popup-click-out";
+                        popup.classList.remove('popup-click-hoverout');
+                        popup.classList.remove('popup-click-hoverin');
+                        popup.classList.remove('popup-click-in');
+                        popup.classList.add('popup-click-out');
                         if(isMoved(oLoc[0], oLoc[1], cLoc[0], cLoc[1])){
                             if (selec.style.display === "none") {
                                 constructSystemEmoji(4, document.getElementById('emoji-tray'), DanMuInput);
@@ -430,8 +475,14 @@
                         document.onmouseup = null;
                     };
                 };
-                popup.onmouseenter = function (){popup.className = "popup-click-hoverin";};
-                popup.onmouseleave = function (){popup.className = "popup-click-hoverout";};
+                popup.onmouseenter = function (){
+                    popup.classList.remove('popup-click-hoverout');
+                    popup.classList.add('popup-click-hoverin');
+                };
+                popup.onmouseleave = function (){
+                    popup.classList.remove('popup-click-hoverin');
+                    popup.classList.add('popup-click-hoverout');
+                };
             }
 
             /***

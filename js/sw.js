@@ -354,6 +354,7 @@ async function initialize(reload) {
             chrome.storage.sync.set({['imageNotice']: false}, function () {
             });
     });
+
     // await chrome.storage.local.set({"imageNotice": false}, function(){});
     // await chrome.storage.sync.set({"notification": true, "medal": true, "checkIn": true, "bcoin": true, "qn": true, "qnvalue": "原画",
     //     "dynamicPush":true, "hiddenEntry":false, "daka":true, "record":false, "prerecord":300,
@@ -395,6 +396,9 @@ async function initialize(reload) {
     setInitValue('hiddenOnVideoBtn', false);
     setInitValue('notificationMaster', true);
     setInitValue('liveRoomList', []);
+    setInitValue('popupDisable', false);
+    setInitValue('popupAlwaysOnTop', true)
+    chrome.storage.local.set({'followingIDs': []}, ()=>{});
     /**
      * Context menu section.
      *
@@ -694,21 +698,60 @@ function getFollowingListLegacy(obj) {
         })
 }
 
+function grabFollowingIDs(){
+    /**
+     * Update the following user id every 30 mins.
+     * */
+    chrome.storage.local.get(['uuid'], e=>{
+        fetch(`https://api.vc.bilibili.com/dynamic_mix/v1/dynamic_mix/at_list?uid=${e.uuid}`, {
+            method: 'GET',
+            credentials: 'include',
+            body: null
+        }).then(r => r.json())
+            .then(json => {
+                if (json['code'] === 0) {
+                    chrome.storage.sync.get(["blackListLive", "blackListHB"], (result) => {
+                        let followList = [];
+                        for (let i = 0; i < json['data']['groups'].length; i++) {
+                            for (let j = 0; j < json['data']['groups']['' + i]['items'].length; j++) {
+                                followList.push(json['data']['groups']['' + i]['items'][j + '']['uid']);
+                            }
+                        }
+                        // console.log(`Load following list complete. ${followList.length} followings found, ${result['blackListLive'].length} live notifications are ignored.`);
+                        chrome.storage.local.set({'followingIDs': followList}, ()=>{});
+                    });
+                }
+            })
+            .catch(e => {
+                errorHandler('grabFollowingIDs', e, 'grabFollowingIDs()');
+            });
+    });
+}
+
 
 function getFollowingList() {
-    chrome.storage.local.get(['uuid'],  async (e) => {
-        let followed = []
-        for (let i = 1; i < 41; i++) {
-            let obj = await getFollowingListLegacy({'uid': e.uuid, 'pn': i, 'list': followed});
-            followed = obj['list'];
-            if (obj['isLast']) break;
+    chrome.storage.local.get(['uuid', 'followingIDs'],  async (e) => {
+        let Ids = e.followingIDs;
+        /**
+         * Get the saved following uids locally, if not exists then grab from the legacy method.
+         * */
+        if (Ids != null && typeof Ids != 'undefined' && Ids.length > 0){
+            chrome.storage.sync.get(["blackListLive", "blackListHB"], (result) => {
+                queryLivingRoom(Ids, result['blackListLive'], result['blackListHB']);
+            });
+        }else{
+            let followed = []
+            for (let i = 1; i < 41; i++) {
+                let obj = await getFollowingListLegacy({'uid': e.uuid, 'pn': i, 'list': followed});
+                followed = obj['list'];
+                if (obj['isLast']) break;
+            }
+            chrome.storage.sync.get(["blackListLive", "blackListHB"], (result) => {
+                // console.log(`Load following list complete. ${followList.length} followings found, ${result['blackListLive'].length} live notifications are ignored.`);
+                queryLivingRoom(followed, result['blackListLive'], result['blackListHB']);
+            });
         }
-        // let obj = await getFollowingListLegacy({'uid': e.uuid, 'pn': 1, 'list': followed});
-        // followed = obj['list'];
-        chrome.storage.sync.get(["blackListLive", "blackListHB"], (result) => {
-            // console.log(`Load following list complete. ${followList.length} followings found, ${result['blackListLive'].length} live notifications are ignored.`);
-            queryLivingRoom(followed, result['blackListLive'], result['blackListHB']);
-        });
+
         // let flag = new AbortController();
         // setTimeout(() => {
         //     flag.abort('timeout');
@@ -1057,8 +1100,10 @@ function reloadCookies() {
                     // log in info changed then load following list and start update liver stream info every 3 min.
                     console.log("Session info got.");
                     refreshHeartBeatList();
+                    chrome.storage.local.set({'followingIDs': []}, ()=>{});
                     chrome.alarms.create('getNewVideos', {'when': Date.now(), periodInMinutes: 0.5});
-                    chrome.alarms.create('getFollowing', {'when': Date.now(), periodInMinutes: 0.3});
+                    chrome.alarms.create('getFollowing', {'when': Date.now(), periodInMinutes: 0.2});
+                    chrome.alarms.create('grabFollowingIDs', {'when': Date.now(), periodInMinutes: 30})
                     chrome.alarms.create('getNewUnreads', {'when': Date.now() + 5000, periodInMinutes: 0.2});
                     chrome.alarms.create('getNewDynamics', {'when': Date.now() + 11000, periodInMinutes: 0.33});
                     scheduleCheckIn(3000);
@@ -1092,6 +1137,9 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     }
     chrome.storage.local.get(['uuid', 'jct', "dakaUid"], (info) => {
         switch (alarm.name) {
+            case 'grabFollowingIDs':
+                grabFollowingIDs();
+                break;
             case 'getFollowing':
                 getFollowingList();
                 break;

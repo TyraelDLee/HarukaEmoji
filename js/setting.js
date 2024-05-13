@@ -30,6 +30,9 @@
         const settingItemSwitchArticleNotification = document.getElementById('setting-item-switch-article-notification');
         const settingItemSwitchHiddenVideoBtn = document.getElementById('setting-item-switch-hidden-video-btn');
         const settingItemSwitchNotificationMaster = document.getElementById('setting-item-switch-notification-master');
+        const settingItemSwitchPopupDisable = document.getElementById('setting-item-popup-disable');
+        const settingItemSwitchPopupAlwaysOnTop = document.getElementById('setting-item-popup-always-on-top');
+
 
         settingItemSwitchHiddenVideoBtn.addEventListener('change', ()=>{
            chrome.storage.sync.set({'hiddenOnVideoBtn': settingItemSwitchHiddenVideoBtn.checked}, ()=>{})
@@ -167,6 +170,14 @@
             chrome.storage.sync.set({"videoPush":settingItemSwitchArticleNotification.checked}, function (){});
         });
 
+        settingItemSwitchPopupDisable.addEventListener('change', ()=>{
+            chrome.storage.sync.set({"popupDisable":settingItemSwitchPopupDisable.checked}, function (){});
+        });
+
+        settingItemSwitchPopupAlwaysOnTop.addEventListener('change', ()=>{
+            chrome.storage.sync.set({"popupAlwaysOnTop":settingItemSwitchPopupAlwaysOnTop.checked}, function (){});
+        });
+
         initialState();
 
         function initialState() {
@@ -175,7 +186,7 @@
                     buttonDisabled(false, settingItemSwitchImgNotice);
             });
 
-            chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem", "commentEmoji", "videoPush", "pgcPush", "articlePush", "heartBeatSwitch", "squareCover", "dkWord", 'hiddenOnVideoBtn', 'notificationMaster'], (info) => {
+            chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem", "commentEmoji", "videoPush", "pgcPush", "articlePush", "heartBeatSwitch", "squareCover", "dkWord", 'hiddenOnVideoBtn', 'notificationMaster', 'popupDisable', 'popupAlwaysOnTop'], (info) => {
                 settingItemSwitchNotification.checked = info['notification'];
                 settingItemSwitchHiddenEntry.checked = info['hiddenEntry'];
                 settingItemSwitchEnhancedHiddenEntry.checked = info['enhancedHiddenEntry'];
@@ -216,6 +227,9 @@
 
 
                 settingItemSwitchHiddenVideoBtn.checked = info['hiddenOnVideoBtn'];
+
+                settingItemSwitchPopupDisable.checked = info['popupDisable'];
+                settingItemSwitchPopupAlwaysOnTop.checked = info['popupAlwaysOnTop'];
             });
 
             chrome.storage.local.get(["imageNotice"], (result) => {

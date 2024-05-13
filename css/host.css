@@ -204,7 +204,7 @@
     background-position: center;
     background-size: 100% 100%;
     position: fixed;
-    z-index: 999999;
+    z-index: 999;
 }
 
 #emoji-selection {
@@ -212,7 +212,7 @@
     height: 350px;
     background-color: var(--bg1);
     position: fixed;
-    z-index: 999999;
+    z-index: 999;
     border-radius: 12px;
     margin: 0 auto;
     overflow: hidden;
@@ -481,4 +481,9 @@ html[theme*="dark"] #emoji-tray, #input-button{
 
 .rua-emoji-icon-inactive-new{
     opacity: 0.3;
+}
+
+
+.rua-always-on-top{
+    z-index: 100001;
 }

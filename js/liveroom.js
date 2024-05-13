@@ -326,7 +326,7 @@
             let followList = []
             getFollowingLegacy(1)
             function getFollowingLegacy(pn){
-                fetch(`https://api.bilibili.com/x/relation/followings?vmid=${UID}&pn=${pn}&ps=50&order=desc`, {
+                fetch(`https://api.bilibili.com/x/relation/followings?vmid=${UID}&pn=${pn}&ps=50&order=desc&order_type=attention`, {
                     method:'GET',
                     credentials:'include',
                     body:null
