@@ -2948,3 +2948,8 @@ html[theme*="dark"] .reply-box .box-expand .image-btn, html[theme*="dark"] .repl
 html[theme*="dark"] .recharge-success-box{
     color: #fff;
 }
+
+html[theme*="dark"] .ql-container{
+    background: unset;
+    color: var(--text2);
+}

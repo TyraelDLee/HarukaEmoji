@@ -11,6 +11,7 @@ function DanmakuWSS(frontEndHost, config=null, ver = 1) {
     this.roomID = -1;
     this.biggest_list = 100;
     this.AUTH_PAYLOAD = null;
+    this.banword = []
 
     this.auto_buttom = true;
 
@@ -465,7 +466,7 @@ function DanmakuWSS(frontEndHost, config=null, ver = 1) {
     DanmakuWSS.prototype.renderFrontEnd = function (payload){
         switch (payload['type']) {
             case 'DANMU_MSG':
-                if (payload['danmaku_content']!==LOTT){
+                if (payload['danmaku_content']!==LOTT || this.banword.indexOf(payload['danmaku_content']) === -1){
                     let danmakuEnoji = payload['danmaku_content'];
                     if (payload['content_emoji']!==null&& typeof payload['content_emoji'] !== 'string'){
                         danmakuEnoji = `<img src="${payload['content_emoji']['url']}" title="${payload['danmaku_content']}" alt="" class="emoji">`
@@ -549,5 +550,13 @@ function DanmakuWSS(frontEndHost, config=null, ver = 1) {
             default:
                 break;
         }
+    }
+
+    DanmakuWSS.prototype.setBanWord = function (banList){
+        this.banword = banList;
+    }
+    
+    DanmakuWSS.prototype.updateBanWord = function (banList){
+        this.banword.push(banList)
     }
 }

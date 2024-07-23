@@ -485,5 +485,5 @@ html[theme*="dark"] #emoji-tray, #input-button{
 
 
 .rua-always-on-top{
-    z-index: 100001;
+    z-index: 100001!important;
 }

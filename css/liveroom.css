@@ -278,6 +278,10 @@ a:hover{
     height: 100px;
 }
 
+.control-area .volume-control.asmr{
+    height: 147px;
+}
+
 .control-area .volume-control .vertical-slider {
     height: 100%;
     display: flex;
@@ -706,6 +710,7 @@ input[type=radio]:checked {
     bottom: 0;
     position: absolute;
     width: 100%;
+    z-index: 99;
 }
 
 .control-bar-bg {
@@ -1028,4 +1033,52 @@ input[type=radio]:checked {
 
 .add-btn-area div:hover{
     opacity: 0.8;
+}
+
+.asmr-button{
+    color: #fff;
+    line-height: 36px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: block;
+}
+
+.asmr-button.checked{
+    color: #23ADE5;
+}
+
+#setting-asmr-volume {
+    -webkit-appearance: none;
+    width: 200px;
+    height: 5px;
+    background: var(--bili-brand);
+    outline: none;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+    border-radius:3px;
+    margin: 25.5px 10px 0 0;
+}
+
+
+#setting-asmr-volume::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--bili-brand);
+    cursor: pointer;
+    border-radius:10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, .2);
+}
+
+#setting-asmr-volume::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--bili-brand);
+    cursor: pointer;
+    border-radius:10px
+}
+
+#setting-name-asmr-volume-label{
+    min-width: 25px;
 }

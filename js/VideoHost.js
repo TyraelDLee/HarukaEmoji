@@ -123,16 +123,10 @@
         if (e.popupDisable) {
             popup.style.display = 'none';
             selec.style.display = 'none';
-        }else{
-            popup.style.display = 'block';
-            selec.style.display = 'block';
         }
         if (e.popupAlwaysOnTop) {
             popup.classList.add('rua-always-on-top');
             selec.classList.add('rua-always-on-top');
-        }else{
-            popup.classList.remove('rua-always-on-top');
-            selec.classList.remove('rua-always-on-top');
         }
     });
 
@@ -144,7 +138,6 @@
                     selec.style.display = 'none';
                 }else{
                     popup.style.display = 'block';
-                    selec.style.display = 'block';
                 }
             }
             if (key === 'popupAlwaysOnTop'){

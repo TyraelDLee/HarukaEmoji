@@ -397,7 +397,10 @@ async function initialize(reload) {
     setInitValue('notificationMaster', true);
     setInitValue('liveRoomList', []);
     setInitValue('popupDisable', false);
-    setInitValue('popupAlwaysOnTop', true)
+    setInitValue('popupAlwaysOnTop', true);
+    setInitValue('dm-ban-word', []);
+    setInitValue('liveroom-asmr-volume', 10);
+    setInitValue('liveroom-asmr-volume-restore', false);
     chrome.storage.local.set({'followingIDs': []}, ()=>{});
     /**
      * Context menu section.

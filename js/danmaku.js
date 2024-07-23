@@ -231,6 +231,20 @@
         });
     }
 
+    let banWordList = [];
+    chrome.storage.sync.get(['dm-ban-word'], (info)=>{
+        banWordList = info['dm-ban-word'];
+    });
+    const dmbaniput = document.getElementById('ban-word-value');
+    const dmbanadd = document.getElementById('add-ban-word');
+
+    function addBanWord(word){
+        if (banWordList.indexOf(word)===-1) {
+            banWordList.push(word);
+            chrome.storage.sync.set({'dm-ban-word': banWordList}, ()=>{})
+        }
+    }
+
     // document.body.onscroll = (event)=>{
     //     console.log(event)
     // };

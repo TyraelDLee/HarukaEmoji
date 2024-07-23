@@ -17,7 +17,7 @@
     let addRoom = null, exit = null, setting = null, controlPanel = document.getElementsByClassName('control-bar')[0], controlPanelBG = document.getElementsByClassName('control-bar-bg')[0],
         mouseEvent = null, isFullScreen = false, globalMedalList = null;
     let videoStream = new Map();
-    let UID, JCT, BUVID, volumeLock = false, currentMedal = -1, wearMedalSwitch = 1, reconnectionTime = 10, quality = 10000, heartBeatSwitch = true, autoChase = 0, autoChaseTimer = null, nameAlwaysOn = false;
+    let UID, JCT, BUVID, volumeLock = false, currentMedal = -1, wearMedalSwitch = 1, reconnectionTime = 10, quality = 10000, heartBeatSwitch = true, autoChase = 0, autoChaseTimer = null, nameAlwaysOn = false, asmrMode = false, asmrVolume = 10, asmrVolumeRestore = false;
     updateJCT();
     setInterval(updateJCT, 3000);
     setTimeout(()=>{getMedal(UID).then(r=>{globalMedalList = r;});}, 100);
@@ -26,7 +26,7 @@
      * Save and load playlist
      * */
     const saveRoomList = document.getElementById('save-current-room-list'), loadRoomList = document.getElementById('load-saved-room-list');
-    chrome.storage.sync.get(['liveRoomList'], (v)=>{
+    chrome.storage.sync.get(['liveRoomList', 'liveroom-asmr-volume'], (v)=>{
         if(v.liveRoomList.length > 0){
             loadRoomList.classList.remove('disabled');
         }else{
@@ -107,7 +107,9 @@
         let settingHeartBeat = document.getElementById('setting-heart-beat'), /*settingReconnection = document.getElementById('setting-re-try'), */
         settingQuality = document.getElementById('setting-quality'), settingMedalOn = document.getElementById('setting-medal-switch-on'),
             settingMedalOff = document.getElementById('setting-medal-switch-off'), settingMedalNone = document.getElementById('setting-medal-switch-none'),
-        settingAutoChasing = document.getElementById('setting-auto-frame-chasing'), settingNameAlwaysOn = document.getElementById('setting-name-always-on');
+        settingAutoChasing = document.getElementById('setting-auto-frame-chasing'), settingNameAlwaysOn = document.getElementById('setting-name-always-on'),
+        settingASMRMode = document.getElementById('setting-asmr'), settingASMRVolume = document.getElementById('setting-asmr-volume'),
+        settingASMRVolumeRestore = document.getElementById('setting-asmr-restore');
 
         document.body.addEventListener('mousemove', (event) => {
             clearTimeout(mouseEvent);
@@ -123,7 +125,7 @@
             }
         });
 
-        chrome.storage.sync.get(['liveroom-medal-switch', 'liveroom-reconnection-time', 'liveroom-quality', 'liveroom-heart-beat', 'liveroom-auto-frame-chasing', 'liveroom-name-always-on'], function (data){
+        chrome.storage.sync.get(['liveroom-medal-switch', 'liveroom-reconnection-time', 'liveroom-quality', 'liveroom-heart-beat', 'liveroom-auto-frame-chasing', 'liveroom-name-always-on', 'liveroom-asmr-volume', 'liveroom-asmr-volume-restore'], function (data){
             wearMedalSwitch = data['liveroom-medal-switch'];
             switch (wearMedalSwitch) {
                 case -1:
@@ -152,6 +154,14 @@
             if (autoChase-0 !== 0){
                 autoChaseTimer = setInterval(autoChasingFunc, (autoChase-0) * 1000 * 60);
             }
+
+            if (data['liveroom-asmr-volume'] !== null && typeof data['liveroom-asmr-volume'] !== 'undefined')
+                asmrVolume = data['liveroom-asmr-volume'] - 0;
+            settingASMRVolume.value = asmrVolume;
+            document.getElementById('setting-name-asmr-volume-label').innerText = asmrVolume;
+
+            asmrVolumeRestore = data['liveroom-asmr-volume-restore']
+            settingASMRVolumeRestore.checked = asmrVolumeRestore
         });
 
         settingMedalOn.addEventListener('change', (e)=>{
@@ -202,6 +212,86 @@
                 nameAlwaysOn?videoOwnerInfoContainer.classList.add('video-owner-info-always-on'):videoOwnerInfoContainer.classList.remove('video-owner-info-always-on');
             }
             chrome.storage.sync.set({"liveroom-name-always-on":nameAlwaysOn}, function (){});
+        });
+
+        settingASMRMode.addEventListener('change', ()=>{
+            asmrMode = settingASMRMode.checked;
+
+            const volumeContainers = document.querySelectorAll('.volume-control');
+            for (const volume of volumeContainers){
+                asmrMode?volume.classList.add('asmr'):volume.classList.remove('asmr');
+            }
+
+            const asmrButton = document.querySelectorAll('.asmr-button');
+            for (const button of asmrButton){
+                asmrMode?button.style.display='block':button.style.display='none';
+            }
+
+            const volumeHandle = document.querySelectorAll('.slider-handle');
+            for (const handle of volumeHandle){
+                let vol = handle.getAttribute('vol')-0;
+                if (!asmrMode){
+                    handle.style.top = ((53 * vol - 5300) / -100.0) + 'px';
+                }
+            }
+
+            const videoElements = document.querySelectorAll('video');
+            for (const video of videoElements){
+                if (asmrMode && !video.classList.contains('asmr')){
+                    if (video.volume>0)
+                        video.volume = asmrVolume / 100.0;
+                }
+            }
+
+            const volumeController = document.querySelectorAll('.volume-control');
+            for (const host of volumeController){
+                if (host.classList.contains('asmr')){
+                    if (host.getElementsByClassName('slider-handle')[0].getAttribute('vol')>0){
+                        host.getElementsByClassName('number')[0].innerText = asmrVolume+"";
+                        host.getElementsByClassName('slider-handle')[0].setAttribute('vol', asmrVolume);
+                        host.getElementsByClassName('slider-handle')[0].style.top = (100-asmrVolume) + 'px';
+                        host.getElementsByClassName('slider-track')[0].style.height = asmrVolume + '%';
+                    }
+                    if (host.getElementsByClassName('slider-handle')[0].getAttribute('vol')-0===0){
+                        host.getElementsByClassName('slider-handle')[0].style.top = 100 + 'px';
+                    }
+                }
+            }
+        });
+
+        settingASMRVolume.addEventListener('mousedown', ()=>{
+            settingASMRVolume.addEventListener('mousemove', ()=>{
+                document.getElementById('setting-name-asmr-volume-label').innerText = settingASMRVolume.value;
+                asmrVolume = settingASMRVolume.value;
+                const videoElements = document.querySelectorAll('video');
+                for (const video of videoElements){
+                    if (asmrMode && !video.classList.contains('asmr')){
+                        if (video.volume>=0)
+                            video.volume = asmrVolume / 100.0;
+                    }
+                }
+
+                const volumeController = document.querySelectorAll('.volume-control');
+                for (const host of volumeController){
+                    if (host.classList.contains('asmr') && !host.classList.contains('asmr-picked')){
+                        host.getElementsByClassName('number')[0].innerText = asmrVolume+"";
+                        host.getElementsByClassName('slider-handle')[0].setAttribute('vol', asmrVolume);
+                        host.getElementsByClassName('slider-handle')[0].style.top = (100-asmrVolume) + 'px';
+                        host.getElementsByClassName('slider-track')[0].style.height = asmrVolume + '%';
+                    }
+                }
+            })
+        });
+
+        settingASMRVolumeRestore.addEventListener('change', ()=>{
+            asmrVolumeRestore = settingASMRVolumeRestore.value;
+            chrome.storage.sync.set({"liveroom-asmr-volume-restore":asmrVolumeRestore}, function (){});
+        });
+
+        settingASMRVolume.addEventListener('change', (e)=>{
+            chrome.storage.sync.set({"liveroom-asmr-volume":settingASMRVolume.value}, function (){});
+            asmrVolume = settingASMRVolume.value;
+            document.getElementById('setting-name-asmr-volume-label').innerText = settingASMRVolume.value;
         });
 
         function autoChasingFunc() {
@@ -513,10 +603,16 @@
         let flv = null, hlsStream = false, preview = null, abortFlag = new AbortController(), abortFetchPreview = new AbortController(), previewRetry = null, hb = null, requestPreview = true, videoMeta = {'mimeType':'','width':'0','height':'0','fps':'NaN','videoDataRate':'0', 'audioSampleRate':0,'audioChannelCount':'NaN', 'audioDataRate':'0', 'videoCodec':'NaN', 'metadata':{'encoder':'NaN'}, 'streamURL':'', 'trueID': liveRoomInfo['room_id'], 'shortID': liveRoomInfo['short_id']===0?liveRoomInfo['room_id']:liveRoomInfo['short_id']}, showStatus = false;
         let video = document.createElement('video');
         video.classList.add('video-player');
+        if (asmrMode){
+            video.volume = asmrVolume / 100.0;
+        }
         video.setAttribute('style', 'display: none;');
         let previewVideo = document.createElement('video');
         previewVideo.classList.add('video-player');
         previewVideo.classList.add('video-player-preview');
+        if (asmrMode){
+            previewVideo.volume = asmrVolume / 100.0;
+        }
         if (videoStream.size < 16 && !videoStream.has(liveRoomInfo['uid'])) {
             videoStream.set(liveRoomInfo['uid'], liveRoomInfo);
             saveRoomList.classList.remove('disabled');
@@ -591,7 +687,7 @@
             videoContainer.append(videoControlBackground);
 
             let videoControlContainer = document.createElement('div');
-            videoControlContainer.innerHTML += `<div style="position: relative; user-select: none; z-index: 5; display: none"><div class="control-area"><div class="left"><div class="volume"><div class="volume-control" style="display: none"><div class="vertical-slider"><div class="number">100</div><div class="slider-rail"><div class="rail-background"></div><div class="slider-handle" style="top: 0px;"></div><div class="slider-track" style="height: 100%;"></div></div></div></div><span class="icon"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 36 36" style="enable-background:new 0 0 36 36; display: none;" xml:space="preserve"><path class="st0" d="M25.8,25.8c0.4,0.4,0.4,1,0,1.4s-1,0.4-1.4,0l-2.3-2.3c-0.2,0.1-0.4,0.2-0.6,0.3c-0.5,0.2-1.1,0-1.3-0.5\tc-0.2-0.5,0-1.1,0.5-1.3l0,0l-2.6-2.6v3.1c0,0.3-0.2,0.5-0.5,0.5c-0.1,0-0.2,0-0.3-0.1l-4.2-3.4h-1c-1.1,0-2-0.9-2-2v-2\tc0-1.1,0.9-2,2-2h0.2l-3.4-3.4c-0.4-0.4-0.4-1,0-1.4s1-0.4,1.4,0L25.8,25.8z"></path><path class="st0" d="M21.4,10.8c4,1.9,5.7,6.7,3.8,10.7c-0.1,0.2-0.2,0.4-0.3,0.6l-1.5-1.5c1.4-3,0.2-6.6-2.8-8l0,0\tc-0.5-0.2-0.7-0.8-0.5-1.3l0,0C20.4,10.7,21,10.5,21.4,10.8z"></path><path class="st0" d="M20,14.5c1.2,0.7,2,2,2,3.5c0,0.3,0,0.7-0.1,1L20,17.1V14.5z"></path><path class="st0" d="M17.9,11.7C18,11.8,18,11.9,18,12v3.1l-2.3-2.3l1.5-1.2C17.4,11.5,17.7,11.5,17.9,11.7z"></path></svg><svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 36 36" style="enable-background:new 0 0 36 36;" xml:space="preserve"><path class="st0" d="M20,14.5c1.9,1.1,2.6,3.6,1.5,5.5c-0.3,0.6-0.9,1.1-1.5,1.5V14.5z"></path><path class="st0" d="M21.4,10.7c4,1.9,5.7,6.7,3.8,10.7c-0.8,1.7-2,3-3.7,3.8c-0.5,0.2-1.1,0-1.3-0.5l0,0c-0.2-0.5,0-1.1,0.5-1.3\tc2.9-1.5,4.1-4.9,2.7-8c-0.6-1.2-1.6-2.3-2.8-2.8c-0.5-0.2-0.7-0.8-0.5-1.3S20.8,10.5,21.4,10.7C21.3,10.7,21.3,10.7,21.4,10.7\tL21.4,10.7z"></path><path class="st0" d="M17.9,11.7c0.1,0.1,0.1,0.1,0.1,0.2l0.1,12c0,0.3-0.2,0.5-0.5,0.5c-0.1,0-0.2,0-0.3-0.1l-4.2-3.4h-1\tc-1.1,0-2-0.9-2-2v-2c0-1.1,0.9-2,2-2h1l4.1-3.3C17.4,11.5,17.7,11.5,17.9,11.7L17.9,11.7z"></path></svg></span></div><div class="refresh-stream"><span class="icon"><svg viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="终稿" stroke="none" stroke-width="1" fill-rule="evenodd" opacity="0.9"><g id="图标切图" transform="translate(-475.000000, -74.000000)" fill-rule="nonzero"><g id="编组-3" transform="translate(421.000000, 56.000000)"><g id="编组-12" transform="translate(54.000000, 18.000000)"><g id="icon_刷新" transform="translate(11.000000, 9.000000)"><path d="M1.1040804,5.51795009 L2.56593636,6.98003284 C2.20442812,7.67167421 2,8.45841034 2,9.29289322 C2,12.054317 4.23857625,14.2928932 7,14.2928932 L7,12.5 C7,12.3673918 7.05267842,12.2402148 7.14644661,12.1464466 C7.34170876,11.9511845 7.65829124,11.9511845 7.85355339,12.1464466 L7.85355339,12.1464466 L10.6464466,14.9393398 C10.8417088,15.134602 10.8417088,15.4511845 10.6464466,15.6464466 L10.6464466,15.6464466 L7.85355339,18.4393398 C7.7597852,18.533108 7.63260824,18.5857864 7.5,18.5857864 C7.22385763,18.5857864 7,18.3619288 7,18.0857864 L7,18.0857864 L7,16.2928932 C3.13400675,16.2928932 0,13.1588865 0,9.29289322 C0,7.90269507 0.405257589,6.6071499 1.1040804,5.51795009 Z M6.85355339,0.146446609 C6.94732158,0.240214799 7,0.367391755 7,0.5 L7,2.29289322 C10.8659932,2.29289322 14,5.42689997 14,9.29289322 C14,10.682663 13.5949921,11.977838 12.8965656,13.0668293 L11.4343158,11.6052711 C11.7956669,10.9137463 12,10.127182 12,9.29289322 C12,6.53146947 9.76142375,4.29289322 7,4.29289322 L7,6.08578644 C7,6.36192881 6.77614237,6.58578644 6.5,6.58578644 C6.36739176,6.58578644 6.2402148,6.53310802 6.14644661,6.43933983 L3.35355339,3.64644661 C3.15829124,3.45118446 3.15829124,3.13460197 3.35355339,2.93933983 L6.14644661,0.146446609 C6.34170876,-0.0488155365 6.65829124,-0.0488155365 6.85355339,0.146446609 Z" id="Combined-Shape"></path></g></g></g></g></g></svg></span></div><div class="frame-chasing"><div><span class="icon"><svg class="squirtle-svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22"><path d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z" style="transform: scale(0.75);transform-origin: center;"></path></svg></span></div></div></div><div class="danmaku"><div class="input-container"><input placeholder="发个弹幕呗～"><span>0/20</span></div><div class="send-danmaku">发送</div><div class="emoji-bg"></div><div class="emoji-sec"></div></div><div class="right"><div class="close"><div><span class="icon"><svg class="rua-cross" viewBox="0 0 100 100"><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="transform: rotate(45deg);"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="transform: rotate(135deg);"/></svg></span></div></div></div></div></div>`;
+            videoControlContainer.innerHTML += `<div style="position: relative; user-select: none; z-index: 5; display: none"><div class="control-area"><div class="left"><div class="volume"><div class="volume-control ${asmrMode?'asmr':''}" style="display: none"><div class="vertical-slider"><div class="number">${asmrMode?asmrVolume:100}</div><div class="slider-rail"><div class="rail-background"></div><div class="slider-handle" style="top: ${asmrMode?100-asmrVolume:0}px;" vol="${asmrMode?asmrVolume:100}" ovol="100"></div><div class="slider-track" style="height: ${asmrMode?asmrVolume:100}%;"></div></div></div></div><span class="icon"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 36 36" style="enable-background:new 0 0 36 36; display: none;" xml:space="preserve"><path class="st0" d="M25.8,25.8c0.4,0.4,0.4,1,0,1.4s-1,0.4-1.4,0l-2.3-2.3c-0.2,0.1-0.4,0.2-0.6,0.3c-0.5,0.2-1.1,0-1.3-0.5\tc-0.2-0.5,0-1.1,0.5-1.3l0,0l-2.6-2.6v3.1c0,0.3-0.2,0.5-0.5,0.5c-0.1,0-0.2,0-0.3-0.1l-4.2-3.4h-1c-1.1,0-2-0.9-2-2v-2\tc0-1.1,0.9-2,2-2h0.2l-3.4-3.4c-0.4-0.4-0.4-1,0-1.4s1-0.4,1.4,0L25.8,25.8z"></path><path class="st0" d="M21.4,10.8c4,1.9,5.7,6.7,3.8,10.7c-0.1,0.2-0.2,0.4-0.3,0.6l-1.5-1.5c1.4-3,0.2-6.6-2.8-8l0,0\tc-0.5-0.2-0.7-0.8-0.5-1.3l0,0C20.4,10.7,21,10.5,21.4,10.8z"></path><path class="st0" d="M20,14.5c1.2,0.7,2,2,2,3.5c0,0.3,0,0.7-0.1,1L20,17.1V14.5z"></path><path class="st0" d="M17.9,11.7C18,11.8,18,11.9,18,12v3.1l-2.3-2.3l1.5-1.2C17.4,11.5,17.7,11.5,17.9,11.7z"></path></svg><svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 36 36" style="enable-background:new 0 0 36 36;" xml:space="preserve"><path class="st0" d="M20,14.5c1.9,1.1,2.6,3.6,1.5,5.5c-0.3,0.6-0.9,1.1-1.5,1.5V14.5z"></path><path class="st0" d="M21.4,10.7c4,1.9,5.7,6.7,3.8,10.7c-0.8,1.7-2,3-3.7,3.8c-0.5,0.2-1.1,0-1.3-0.5l0,0c-0.2-0.5,0-1.1,0.5-1.3\tc2.9-1.5,4.1-4.9,2.7-8c-0.6-1.2-1.6-2.3-2.8-2.8c-0.5-0.2-0.7-0.8-0.5-1.3S20.8,10.5,21.4,10.7C21.3,10.7,21.3,10.7,21.4,10.7\tL21.4,10.7z"></path><path class="st0" d="M17.9,11.7c0.1,0.1,0.1,0.1,0.1,0.2l0.1,12c0,0.3-0.2,0.5-0.5,0.5c-0.1,0-0.2,0-0.3-0.1l-4.2-3.4h-1\tc-1.1,0-2-0.9-2-2v-2c0-1.1,0.9-2,2-2h1l4.1-3.3C17.4,11.5,17.7,11.5,17.9,11.7L17.9,11.7z"></path></svg></span></div><div class="refresh-stream"><span class="icon"><svg viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="终稿" stroke="none" stroke-width="1" fill-rule="evenodd" opacity="0.9"><g id="图标切图" transform="translate(-475.000000, -74.000000)" fill-rule="nonzero"><g id="编组-3" transform="translate(421.000000, 56.000000)"><g id="编组-12" transform="translate(54.000000, 18.000000)"><g id="icon_刷新" transform="translate(11.000000, 9.000000)"><path d="M1.1040804,5.51795009 L2.56593636,6.98003284 C2.20442812,7.67167421 2,8.45841034 2,9.29289322 C2,12.054317 4.23857625,14.2928932 7,14.2928932 L7,12.5 C7,12.3673918 7.05267842,12.2402148 7.14644661,12.1464466 C7.34170876,11.9511845 7.65829124,11.9511845 7.85355339,12.1464466 L7.85355339,12.1464466 L10.6464466,14.9393398 C10.8417088,15.134602 10.8417088,15.4511845 10.6464466,15.6464466 L10.6464466,15.6464466 L7.85355339,18.4393398 C7.7597852,18.533108 7.63260824,18.5857864 7.5,18.5857864 C7.22385763,18.5857864 7,18.3619288 7,18.0857864 L7,18.0857864 L7,16.2928932 C3.13400675,16.2928932 0,13.1588865 0,9.29289322 C0,7.90269507 0.405257589,6.6071499 1.1040804,5.51795009 Z M6.85355339,0.146446609 C6.94732158,0.240214799 7,0.367391755 7,0.5 L7,2.29289322 C10.8659932,2.29289322 14,5.42689997 14,9.29289322 C14,10.682663 13.5949921,11.977838 12.8965656,13.0668293 L11.4343158,11.6052711 C11.7956669,10.9137463 12,10.127182 12,9.29289322 C12,6.53146947 9.76142375,4.29289322 7,4.29289322 L7,6.08578644 C7,6.36192881 6.77614237,6.58578644 6.5,6.58578644 C6.36739176,6.58578644 6.2402148,6.53310802 6.14644661,6.43933983 L3.35355339,3.64644661 C3.15829124,3.45118446 3.15829124,3.13460197 3.35355339,2.93933983 L6.14644661,0.146446609 C6.34170876,-0.0488155365 6.65829124,-0.0488155365 6.85355339,0.146446609 Z" id="Combined-Shape"></path></g></g></g></g></g></svg></span></div><div class="frame-chasing"><div><span class="icon"><svg class="squirtle-svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22"><path d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z" style="transform: scale(0.75);transform-origin: center;"></path></svg></span></div></div></div><div class="danmaku"><div class="input-container"><input placeholder="发个弹幕呗～"><span>0/20</span></div><div class="send-danmaku">发送</div><div class="emoji-bg"></div><div class="emoji-sec"></div></div><div class="right"><div class="close"><div><span class="icon"><svg class="rua-cross" viewBox="0 0 100 100"><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="transform: rotate(45deg);"/><rect x="25" y="45" rx="5" ry="5" width="50" height="10" style="transform: rotate(135deg);"/></svg></span></div></div><div class="asmr-button" style="display: ${asmrMode?'block':'none'}">奥数</div></div></div></div>`;
             let currentVolume = 100, lastVolume = currentVolume, silence = false, hideControl = null, hideFlag = false, inputLock = false;
             nameAlwaysOn?videoOwnerInfoContainer.classList.add('video-owner-info-always-on'):videoOwnerInfoContainer.classList.remove('video-owner-info-always-on');
             function hiddenControl(){
@@ -643,10 +739,18 @@
             volumeControl.onmousedown = (e)=>{
                 e.stopPropagation();
                 volumeLock = true;
-                let elementY = getAbsLocation(volumeControl)[1] - 100;
-                if (e.y - elementY >=0 && e.y - elementY <= 53){
+                let absOffset = asmrMode?194:100;
+                let elementY = getAbsLocation(volumeControl)[1] - absOffset;
+                let upperLimit = asmrMode?100:53
+                let lowerLimit = 0;
+                if (asmrMode && !video.classList.contains('asmr'))
+                    lowerLimit = 100 - asmrVolume;
+                if (e.y - elementY >= lowerLimit && e.y - elementY <= upperLimit) {
                     volumeControl.getElementsByClassName('slider-handle')[0].style.top = (e.y - elementY) + 'px';
-                    currentVolume = Math.round((1 - (e.y - elementY)/53.0)*100);
+                    currentVolume = asmrMode?100-(e.y - elementY):Math.round((1 - (e.y - elementY)/53.0)*100);
+                    volumeControl.getElementsByClassName('slider-handle')[0].setAttribute('vol',currentVolume);
+                    if(!asmrMode)
+                        volumeControl.getElementsByClassName('slider-handle')[0].setAttribute('ovol',currentVolume);
                     videoControlContainer.getElementsByClassName('number')[0].innerText = currentVolume;
                     volumeControl.getElementsByClassName('slider-track')[0].style.height = currentVolume + '%';
                     video.volume = currentVolume /100.0 * masterAudioVolumeFactor;
@@ -665,11 +769,18 @@
 
                 volumeControl.onmousemove = (e)=>{
                     e.stopPropagation();
-                    if (e.y - elementY >=0 && e.y - elementY <= 53) {
+                    let upperLimit = asmrMode?100:53
+                    let lowerLimit = 0;
+                    if (asmrMode && !video.classList.contains('asmr'))
+                        lowerLimit = 100 - asmrVolume;
+                    if (e.y - elementY >= lowerLimit && e.y - elementY <= upperLimit) {
                         volumeControl.getElementsByClassName('slider-handle')[0].style.transition = 'none';
                         volumeControl.getElementsByClassName('slider-track')[0].style.transition = 'none';
                         volumeControl.getElementsByClassName('slider-handle')[0].style.top = (e.y - elementY) + 'px';
-                        currentVolume = Math.round((1 - (e.y - elementY)/53.0)*100);
+                        currentVolume = asmrMode?100-(e.y - elementY):Math.round((1 - (e.y - elementY)/53.0)*100);
+                        volumeControl.getElementsByClassName('slider-handle')[0].setAttribute('vol',currentVolume);
+                        if(!asmrMode)
+                            volumeControl.getElementsByClassName('slider-handle')[0].setAttribute('ovol',currentVolume);
                         videoControlContainer.getElementsByClassName('number')[0].innerText = currentVolume;
                         volumeControl.getElementsByClassName('slider-track')[0].style.height = currentVolume + '%';
                         video.volume = currentVolume /100.0;
@@ -704,8 +815,11 @@
             };
             //volume wheel event
             videoControlContainer.getElementsByClassName('volume')[0].onwheel = (e)=>{
-                currentVolume-=(e.deltaY/10.0);
+                let volumeInterval = asmrMode?(e.deltaY>0?1:-1):e.deltaY;
+                currentVolume-=(volumeInterval/10.0);
                 if (currentVolume > 100) currentVolume = 100;
+                if (asmrMode && !video.classList.contains('asmr'))
+                    currentVolume = asmrVolume;
                 if (currentVolume < 0) currentVolume = 0;
                 if (currentVolume === 0) {
                     silence = true;
@@ -722,27 +836,32 @@
                 video.volume = currentVolume / 100.0;
                 previewVideo.volume = currentVolume / 100.0;
                 videoControlContainer.getElementsByClassName('number')[0].innerText = currentVolume;
-                volumeControl.getElementsByClassName('slider-handle')[0].style.top = (53 - currentVolume / 100.0 * 53) + 'px';
+                volumeControl.getElementsByClassName('slider-handle')[0].style.top = asmrMode?(100-currentVolume):(53 - currentVolume / 100.0 * 53) + 'px';
                 volumeControl.getElementsByClassName('slider-track')[0].style.height = currentVolume + '%';
             };
-            //volume icon event
+            //volume icon event & mute
             videoControlContainer.getElementsByClassName('icon')[0].onmouseup = (e)=>{
                 e.stopPropagation();
                 if (silence){
                     videoControlContainer.getElementsByClassName('icon')[0].getElementsByTagName('svg')[0].style.display = 'none';
                     videoControlContainer.getElementsByClassName('icon')[0].getElementsByTagName('svg')[1].style.display = 'block';
-                    currentVolume = lastVolume;
+                    if (asmrMode && lastVolume > asmrVolume)
+                        currentVolume = asmrVolume;
+                    else
+                        currentVolume = lastVolume;
+                    volumeControl.getElementsByClassName('slider-handle')[0].setAttribute('vol', currentVolume+'');
                 }else{
                     videoControlContainer.getElementsByClassName('icon')[0].getElementsByTagName('svg')[1].style.display = 'none';
                     videoControlContainer.getElementsByClassName('icon')[0].getElementsByTagName('svg')[0].style.display = 'block';
                     lastVolume = currentVolume;
                     currentVolume = 0;
+                    volumeControl.getElementsByClassName('slider-handle')[0].setAttribute('vol', '0')
                 }
                 silence = !silence;
                 video.volume = currentVolume / 100.0;
                 previewVideo.volume = currentVolume / 100.0;
                 videoControlContainer.getElementsByClassName('number')[0].innerText = currentVolume;
-                volumeControl.getElementsByClassName('slider-handle')[0].style.top = (53 - currentVolume / 100.0 * 53) + 'px';
+                volumeControl.getElementsByClassName('slider-handle')[0].style.top = asmrMode?(100-currentVolume) + 'px':(53 - currentVolume / 100.0 * 53) + 'px';
                 volumeControl.getElementsByClassName('slider-track')[0].style.height = currentVolume + '%';
             };
             //close video player
@@ -779,6 +898,24 @@
                 try{
                     video.currentTime = video.buffered.end(0) - 1;
                 }catch (e){}//silence handling here which you should not, but doesn't matter here.
+            };
+
+            // asmr stream marker
+            videoControlContainer.getElementsByClassName('asmr-button')[0].onclick = ()=>{
+                if (!videoControlContainer.getElementsByClassName('asmr-button')[0].classList.contains('checked')){
+                    videoControlContainer.getElementsByClassName('asmr-button')[0].classList.add('checked');
+                    videoControlContainer.getElementsByClassName('volume-control')[0].classList.add('asmr-picked');
+                    video.classList.add('asmr');
+                }else{
+                    videoControlContainer.getElementsByClassName('asmr-button')[0].classList.remove('checked');
+                    video.classList.remove('asmr');
+                    video.volume = asmrVolume / 100.0;
+                    volumeControl.getElementsByClassName('slider-handle')[0].setAttribute('vol',asmrVolume);
+                    videoControlContainer.getElementsByClassName('number')[0].innerText = asmrVolume;
+                    volumeControl.getElementsByClassName('slider-handle')[0].style.top = (100-asmrVolume) + 'px';
+                    volumeControl.getElementsByClassName('slider-track')[0].style.height = asmrVolume + '%';
+                    videoControlContainer.getElementsByClassName('volume-control')[0].classList.remove('asmr-picked');
+                }
             }
 
             videoControlContainer.classList.add('video-player-control');
@@ -834,6 +971,7 @@
                 videoControlContainer.getElementsByClassName('volume')[0].onwheel = null;
                 videoControlContainer.getElementsByClassName('icon')[0].onmouseup = null;
                 videoControlContainer.getElementsByClassName('close')[0].onclick = null;
+                videoControlContainer.getElementsByClassName('asmr-button')[0].onclick = null;
                 danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].onkeyup;
                 danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].onkeydown;
                 danmaku.getElementsByClassName('input-container')[0].getElementsByTagName('input')[0].onselect = null;

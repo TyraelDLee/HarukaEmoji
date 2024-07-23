@@ -341,3 +341,14 @@ body{
 .rua-emoji-icon-active:active{
     transform: scale(0.9);
 }
+
+.ban-work-display{
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.ban-word-item{
+    display: flex;
+    justify-content: space-between;
+}
