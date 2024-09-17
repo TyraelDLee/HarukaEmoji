@@ -82,5 +82,24 @@
     "condition":{
       "regexFilter": "live-trace\\.bilibili\\.com/xlive/data-interface/v1/x25Kn/*"
     }
+  },
+  {
+    "id": 35,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders":[{
+        "header": "Origin",
+        "operation": "set",
+        "value" : "https://live.bilibili.com"
+      },{
+        "header": "Refer",
+        "operation": "set",
+        "value" : "https://live.bilibili.com/"
+      }]
+    },
+    "condition":{
+      "regexFilter": "https://api.live.bilibili.com/xlive/app-ucenter/v1/like_info_v3/like/likeReportV3"
+    }
   }
 ]

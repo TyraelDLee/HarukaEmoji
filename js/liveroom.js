@@ -306,10 +306,11 @@
 
         addRoom.addEventListener('click', () => {
             document.getElementsByClassName('panel-container')[0].removeEventListener('click', hidePanelContainer);
-            document.getElementsByClassName('panel-container')[0].style.zIndex = '10';
+            document.getElementsByClassName('panel-container')[0].style.zIndex = '100';
             document.getElementsByClassName('panel-container')[0].style.display = 'block';
             document.getElementsByClassName('panel-container')[0].addEventListener('click', hidePanelContainer);
             document.getElementsByClassName('add-room-panel')[0].style.display = 'flex';
+            document.getElementsByClassName('setting-panel')[0].style.display = 'none';
             document.getElementsByClassName('add-room-panel')[0].addEventListener('click', (e) => {
                 e.stopPropagation();
             });
@@ -360,14 +361,14 @@
 
         setting.addEventListener('click', ()=>{
             document.getElementsByClassName('panel-container')[0].removeEventListener('click', hidePanelContainer);
-            document.getElementsByClassName('panel-container')[0].style.zIndex = '10';
+            document.getElementsByClassName('panel-container')[0].style.zIndex = '100';
             document.getElementsByClassName('panel-container')[0].style.display = 'block';
             document.getElementsByClassName('panel-container')[0].addEventListener('click', hidePanelContainer);
             document.getElementsByClassName('setting-panel')[0].style.display = 'flex';
+            document.getElementsByClassName('add-room-panel')[0].style.display='none';
             document.getElementsByClassName('setting-panel')[0].addEventListener('click', (e) => {
                 e.stopPropagation();
             });
-
         });
 
         exit.addEventListener('click', () => {
@@ -414,7 +415,7 @@
     async function getFollowingRoom() {
         if (UID-0!==-1){
             let followList = []
-            getFollowingLegacy(1)
+            // getFollowingLegacy(1)
             function getFollowingLegacy(pn){
                 fetch(`https://api.bilibili.com/x/relation/followings?vmid=${UID}&pn=${pn}&ps=50&order=desc&order_type=attention`, {
                     method:'GET',
@@ -436,6 +437,24 @@
 
                     })
             }
+            fetch(`https://api.bilibili.com/x/polymer/web-dynamic/v1/mention/search`, {
+                method:"GET",
+                credentials:"include",
+                body:null
+            }).then(r=>r.json())
+                .then(json=>{
+                    if(json['code'] === 0){
+                        for (const item of json['data']['groups'][0]['items']){
+                            followList.push(item['uid']);
+                        }
+                        for (const item of json['data']['groups'][1]['items']){
+                            followList.push(item['uid']);
+                        }
+                        getRooms(followList)
+                    }
+                }).catch(e=>{
+
+            });
             // fetch(`https://api.vc.bilibili.com/dynamic_mix/v1/dynamic_mix/at_list?uid=${UID}`, {
             //     method: "GET",
             //     credentials: "include",

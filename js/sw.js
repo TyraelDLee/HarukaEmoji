@@ -701,6 +701,31 @@ function getFollowingListLegacy(obj) {
         })
 }
 
+function getFollowingNewerAPI(){
+    let list = [];
+    return fetch(`https://api.bilibili.com/x/polymer/web-dynamic/v1/mention/search`, {
+        method:"GET",
+        credentials:"include",
+        body:null
+    }).then(r=>r.json())
+        .then(json=>{
+            if(json['code']-0 === 0){
+                const flist = json['data']['groups'];
+                for (const item of flist[0]['items']){
+                    list.push(item['uid']);
+                }
+                for (const item of flist[1]['items']){
+                    list.push(item['uid']);
+                }
+                return list;
+            }else{
+                throw 'error';
+            }
+        }).catch(e=>{
+            return list;
+        })
+}
+
 function grabFollowingIDs(){
     /**
      * Update the following user id every 30 mins.
@@ -744,11 +769,12 @@ function getFollowingList() {
             });
         }else{
             let followed = []
-            for (let i = 1; i < 41; i++) {
-                let obj = await getFollowingListLegacy({'uid': e.uuid, 'pn': i, 'list': followed});
-                followed = obj['list'];
-                if (obj['isLast']) break;
-            }
+            // for (let i = 1; i < 41; i++) {
+            //     let obj = await getFollowingListLegacy({'uid': e.uuid, 'pn': i, 'list': followed});
+            //     followed = obj['list'];
+            //     if (obj['isLast']) break;
+            // }
+            followed = await getFollowingNewerAPI();
             chrome.storage.sync.get(["blackListLive", "blackListHB"], (result) => {
                 // console.log(`Load following list complete. ${followList.length} followings found, ${result['blackListLive'].length} live notifications are ignored.`);
                 queryLivingRoom(followed, result['blackListLive'], result['blackListHB']);
@@ -801,7 +827,7 @@ function queryLivingRoom(uids, blackListNT, blackListHB) {
     setTimeout(() => {
         flag.abort('timeout');
     }, 3000);
-    chrome.storage.local.get(['uuid', 'notificationList', 'watchingList', 'heartRhythm', 'buvid', 'medalList'], (info) => {
+    chrome.storage.local.get(['uuid', 'notificationList', 'watchingList', 'heartRhythm', 'buvid', 'medalList', 'jct'], (info) => {
         let notificationList = info.notificationList;
         let watchingList = info.watchingList;
         let liveInfo = info['heartRhythm'];
@@ -840,6 +866,7 @@ function queryLivingRoom(uids, blackListNT, blackListHB) {
                                             chrome.storage.sync.get(["notification"], (result) => {
                                                 if (result.notification) {
                                                     console.log(data[userInfo]["title"] + " " + data[userInfo]["uname"] + " " + new Date());
+                                                    zan(info.uuid, info.jct, userInfo, data[userInfo]["room_id"]);
                                                     pushNotificationChrome(data[userInfo]["title"], data[userInfo]["uname"], data[userInfo]["room_id"], data[userInfo]["cover_from_user"], data[userInfo]["broadcast_type"] === 1 ? 1 : 0, data[userInfo]["face"], userInfo);
                                                 }
                                             });
@@ -1715,7 +1742,6 @@ function setBadge(title, text) {
 
 function heartBeat() {
     chrome.storage.local.get(['jct', 'uuid', 'heartRhythm'], async (info) => {
-        console.log(info['heartRhythm'])
         if (info.uuid === -1 || info.jct === -1) {
             chrome.storage.local.set({'heartRhythm': []}, () => {
             });
@@ -1855,6 +1881,22 @@ function refreshHeartBeatList() {
             chrome.alarms.create('refreshHBRetry', {delayInMinutes: 1});
         });
     });
+}
+
+function zan(uuid, jct, liverId, roomId){
+    let form = new FormData();
+    form.append('click_time', '50');
+    form.append('room_id', roomId);
+    form.append('uid', uuid);
+    form.append('anchor_id', liverId);
+    form.append('csrf_token', jct);
+    form.append('csrf', jct);
+
+    fetch('https://api.live.bilibili.com/xlive/app-ucenter/v1/like_info_v3/like/likeReportV3', {
+        method:"POST",
+        credentials:'include',
+        body:form
+    }).then(e=>{});
 }
 
 //

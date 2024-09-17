@@ -118,6 +118,12 @@
     "js": ["js/article.min.js"],
     "matches": ["*://www.bilibili.com/read/*"],
     "run_at": "document_end"
+  },{
+    "all_frames": true,
+    "css": ["css/button.min.css"],
+    "js": ["js/personalSettings.min.js"],
+    "matches": ["*://space.bilibili.com/*"],
+    "run_at": "document_end"
   }],
   "web_accessible_resources": [{"resources": ["images/*", "css/*", "js/*", "ffmpeg/*", "guild/*", "downloader.html"], "matches": ["https://*/*"]}],
   "content_security_policy": {

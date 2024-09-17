@@ -2953,3 +2953,10 @@ html[theme*="dark"] .ql-container{
     background: unset;
     color: var(--text2);
 }
+
+html[theme*="dark"]  .tag{
+    --bili-comment-tag-bg-light: #1E1E1E!important;
+    --bili-comment-tag-bg-dark: #1E1E1E!important;
+    --bili-comment-tag-bg: var(--bili-comment-tag-bg-dark) !important;
+    background-color: var(--bili-comment-tag-bg, ----brand_pink_thin) !important;
+}
