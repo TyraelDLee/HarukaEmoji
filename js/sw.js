@@ -714,8 +714,10 @@ function getFollowingNewerAPI(){
                 for (const item of flist[0]['items']){
                     list.push(item['uid']);
                 }
-                for (const item of flist[1]['items']){
-                    list.push(item['uid']);
+                if(typeof flist[1] !== 'undefined'){
+                    for (const item of flist[1]['items']){
+                        list.push(item['uid']);
+                    }
                 }
                 return list;
             }else{

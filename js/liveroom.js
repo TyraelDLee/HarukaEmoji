@@ -443,12 +443,14 @@
                 body:null
             }).then(r=>r.json())
                 .then(json=>{
-                    if(json['code'] === 0){
+                    if(json['code']-0 === 0){
                         for (const item of json['data']['groups'][0]['items']){
                             followList.push(item['uid']);
                         }
-                        for (const item of json['data']['groups'][1]['items']){
-                            followList.push(item['uid']);
+                        if (typeof json['data']['groups'][1] !== 'undefined'){
+                            for (const item of json['data']['groups'][1]['items']){
+                                followList.push(item['uid']);
+                            }
                         }
                         getRooms(followList)
                     }
