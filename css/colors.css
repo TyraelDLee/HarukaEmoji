@@ -2965,7 +2965,7 @@ html[theme*="dark"] .header-toutu .formal-toutu{
     opacity: 0.7;
 }
 
-html[theme*="dark"] .header .header-toutu, .header .header-upinfo-bg-shadow{
+html[theme*="dark"] .header .header-toutu, html[theme*="dark"] .header .header-upinfo-bg-shadow{
     z-index: 1!important;
 }
 
