@@ -370,7 +370,7 @@ async function initialize(reload) {
     setInitValue('pgcPush', true);
     setInitValue('articlePush', true);
     setInitValue('hiddenEntry', false);
-    setInitValue('daka', true);
+    setInitValue('daka', false);
     setInitValue('record', false);
     setInitValue('prerecord', 300);
     setInitValue('enhancedHiddenEntry', false);
@@ -401,6 +401,7 @@ async function initialize(reload) {
     setInitValue('dm-ban-word', []);
     setInitValue('liveroom-asmr-volume', 10);
     setInitValue('liveroom-asmr-volume-restore', false);
+    setInitValue('liveroomZan', true);
     chrome.storage.local.set({'followingIDs': []}, ()=>{});
     /**
      * Context menu section.
@@ -649,7 +650,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
             chrome.downloads.download({
                 url: request.url,
-                filename: request.fileName.replaceAll('/', '-')
+                filename: request.fileName.replaceAll('/', '-').replaceAll('|', '-')
             }, r=>{
                 sendResponse({res:'download finished'});
             });
@@ -868,8 +869,16 @@ function queryLivingRoom(uids, blackListNT, blackListHB) {
                                             chrome.storage.sync.get(["notification"], (result) => {
                                                 if (result.notification) {
                                                     console.log(data[userInfo]["title"] + " " + data[userInfo]["uname"] + " " + new Date());
-                                                    zan(info.uuid, info.jct, userInfo, data[userInfo]["room_id"]);
+
                                                     pushNotificationChrome(data[userInfo]["title"], data[userInfo]["uname"], data[userInfo]["room_id"], data[userInfo]["cover_from_user"], data[userInfo]["broadcast_type"] === 1 ? 1 : 0, data[userInfo]["face"], userInfo);
+                                                }
+                                            });
+                                        }
+                                        for (const medalItem of info.medalList){
+                                            chrome.storage.sync.get(["liveroomZan"], (res)=>{
+                                                if(res.liveroomZan && medalItem['medal_info']['target_id'] === data[userInfo]['uid']){
+                                                    zan(info.uuid, info.jct, userInfo, data[userInfo]["room_id"]);
+                                                    console.log(`在${medalItem['target_name']}的直播间点了赞`)
                                                 }
                                             });
                                         }
@@ -1210,6 +1219,9 @@ chrome.alarms.onAlarm.addListener((alarm) => {
                 break;
             case 'refreshHBRetry':
                 refreshHeartBeatList();
+                break;
+            case 'missyou':
+                kaoru();
                 break;
         }
     });
@@ -1585,6 +1597,7 @@ function checkMedalDaka() {
                         chrome.storage.local.set({'dakaUid': medals}, () => {
                             chrome.alarms.create('dakaRoom', {'when': Date.now(), periodInMinutes: 0.1});
                         });
+                        kaoru();
                     })
                     .catch(msg => {
                         chrome.storage.local.set({'rua_lastDK': "1970-01-01"}, () => {
@@ -1887,7 +1900,7 @@ function refreshHeartBeatList() {
 
 function zan(uuid, jct, liverId, roomId){
     let form = new FormData();
-    form.append('click_time', '50');
+    form.append('click_time', '30');
     form.append('room_id', roomId);
     form.append('uid', uuid);
     form.append('anchor_id', liverId);
@@ -1901,6 +1914,45 @@ function zan(uuid, jct, liverId, roomId){
     }).then(e=>{});
 }
 
+function kaoru(init=true){
+    chrome.storage.local.get(['medalList', 'jct'], (info)=>{
+        for(const medal of info.medalList){
+            if (medal['medal_info']['target_id'] === 1687766935){
+                let DanMuForm = new FormData();
+                DanMuForm.append("bubble", "0");
+                DanMuForm.append("msg", "；；");
+                DanMuForm.append("color", "16777215");
+                DanMuForm.append("mode", "1");
+                DanMuForm.append("fontsize", "25");
+                DanMuForm.append("rnd", Math.round(Date.now() / 1000) + "");
+                DanMuForm.append("roomid", "23015128");
+                DanMuForm.append("csrf", info.jct);
+                DanMuForm.append("csrf_token", info.jct);
+
+                fetch("https://api.live.bilibili.com/msg/send?requestFrom=rua5", {
+                    method: "POST",
+                    credentials: 'include',
+                    body: DanMuForm
+                }).then(result => {
+                    console.log('；；');
+                }).catch(error => {
+                    console.log(`Error occurs @function daka(), failed to fetch (dest: api.live.bilibili.com/msg/send); ${error}`);
+                });
+                if (init){
+                    chrome.storage.local.set({'missyouTime': 10}, ()=>{});
+                }else{
+                    chrome.storage.local.get(['missyouTime'], (time)=>{
+                        chrome.storage.local.set({'missyouTime': time.missyouTime-1}, ()=>{});
+                        if (time.missyouTime === 0)
+                            chrome.alarms.clear('missyou').then();
+                    });
+                }
+                chrome.alarms.create('missyou', {delayInMinutes:1})
+            }
+        }
+
+    });
+}
 //
 // const proxyServer ={
 //     mode: "fixed_servers",

@@ -143,7 +143,17 @@
                                 //         }
                                 //     });
                                 // }).observe(commentContainer, {subtree: true, childList:true, attributes:true});
-                                clearInterval(timer);
+
+                                // clearInterval(timer);
+                            }
+                            try{
+                                let emoji_popup = document.getElementById('emoji-popover');
+                                if (typeof emoji_popup !== 'undefined'){
+                                    console.log('bound popup');
+                                    clearInterval(timer);
+                                }
+                            }catch (e) {
+                                console.log('not bound yet')
                             }
                         };
                         timer = setInterval(findEmoji, 100);

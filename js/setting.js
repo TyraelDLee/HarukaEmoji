@@ -32,6 +32,7 @@
         const settingItemSwitchNotificationMaster = document.getElementById('setting-item-switch-notification-master');
         const settingItemSwitchPopupDisable = document.getElementById('setting-item-popup-disable');
         const settingItemSwitchPopupAlwaysOnTop = document.getElementById('setting-item-popup-always-on-top');
+        const settingItemSwitchZan = document.getElementById('setting-item-switch-zan')
 
 
         settingItemSwitchHiddenVideoBtn.addEventListener('change', ()=>{
@@ -178,6 +179,10 @@
             chrome.storage.sync.set({"popupAlwaysOnTop":settingItemSwitchPopupAlwaysOnTop.checked}, function (){});
         });
 
+        settingItemSwitchZan.addEventListener('change', ()=>{
+            chrome.storage.sync.set({"liveroomZan":settingItemSwitchZan.checked}, function (){});
+        });
+
         initialState();
 
         function initialState() {
@@ -186,7 +191,7 @@
                     buttonDisabled(false, settingItemSwitchImgNotice);
             });
 
-            chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem", "commentEmoji", "videoPush", "pgcPush", "articlePush", "heartBeatSwitch", "squareCover", "dkWord", 'hiddenOnVideoBtn', 'notificationMaster', 'popupDisable', 'popupAlwaysOnTop'], (info) => {
+            chrome.storage.sync.get(["notification", "medal", "checkIn", "bcoin", "dynamicPush", "unreadSwitch", "hiddenEntry", "daka", "qn", "qnvalue", "enhancedHiddenEntry", "record", "prerecord", "dynamicSwitch", "darkMode", "darkModeSystem", "commentEmoji", "videoPush", "pgcPush", "articlePush", "heartBeatSwitch", "squareCover", "dkWord", 'hiddenOnVideoBtn', 'notificationMaster', 'popupDisable', 'popupAlwaysOnTop', 'liveroomZan'], (info) => {
                 settingItemSwitchNotification.checked = info['notification'];
                 settingItemSwitchHiddenEntry.checked = info['hiddenEntry'];
                 settingItemSwitchEnhancedHiddenEntry.checked = info['enhancedHiddenEntry'];
@@ -230,6 +235,8 @@
 
                 settingItemSwitchPopupDisable.checked = info['popupDisable'];
                 settingItemSwitchPopupAlwaysOnTop.checked = info['popupAlwaysOnTop'];
+
+                settingItemSwitchZan.checked = info['liveroomZan'];
             });
 
             chrome.storage.local.get(["imageNotice"], (result) => {
@@ -307,9 +314,10 @@
         });
 
         let delta = document.documentElement.scrollTop;
+        let absPos = getAbsLocation(document.getElementById('rua-head'));
 
         document.body.onscroll = (e) => {
-            if (document.documentElement.scrollTop > 2110) {
+            if (document.documentElement.scrollTop > absPos[1] - 90) {
                 document.getElementById('rua-head').setAttribute('style', `top: 90px; position: fixed; padding: 20px 75px;border-bottom:none;`);
                 document.getElementById('rua-head').classList.add('rua-head-border');
                 document.getElementById('rua-head-space').setAttribute('style', `display:block; padding: 0; border: none;`);
@@ -336,6 +344,17 @@
             }
         } // reconstruct here!
     }();
+
+    function getAbsLocation(e){
+        let abs = [e.offsetLeft, e.offsetTop];
+        let cur = e.offsetParent;
+        while (cur!==null){
+            abs[0] += cur.offsetLeft;abs[1] += (cur.offsetTop+cur.clientTop);
+            cur = cur.offsetParent;
+        }
+        // abs[0] += (e.clientWidth - 60);
+        return abs;
+    }
 
     /**
      * Get the user's following. 50 elements per request.

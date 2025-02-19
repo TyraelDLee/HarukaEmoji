@@ -10,4 +10,9 @@
     padding: 3px 10px;
     transform: scale(0.8);
     border: 0.5px solid #fff;
+    user-select: none;
+}
+
+.guild-badge.guild-new{
+    margin-left: -12px;
 }

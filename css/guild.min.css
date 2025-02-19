@@ -1,1 +1,1 @@
-.guild-badge{display:inline-block;margin-right:5px;line-height:12px;font-size:12px;vertical-align:middle;color:#fff;background:#23ade5;border-radius:12px;padding:3px 10px;transform:scale(.8);border:.5px solid #fff}
+.guild-badge{display:inline-block;margin-right:5px;line-height:12px;font-size:12px;vertical-align:middle;color:#fff;background:#23ade5;border-radius:12px;padding:3px 10px;transform:scale(.8);border:.5px solid #fff;user-select:none}.guild-badge.guild-new{margin-left:-12px}

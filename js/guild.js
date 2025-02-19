@@ -1,10 +1,12 @@
 !async function (){
+    let old_version_retry = 0, new_version_retry = 0;
     const exp =new RegExp("^\\d*$");
     if (exp.test(window.location['pathname'].split("/")[1])){
         const queryID = await getMID(), guildInfo = await queryGuild(queryID['uid']);
         if (queryID['uid']!==0 && guildInfo !== ''){
             if (queryID['type'] === 'space'){
-                injectionGuild(guildInfo);
+                injectionGuildOld(guildInfo);
+                injectionGuildNew(guildInfo);
             }else if(queryID['type'] === 'live'){
                 const guildBadge = document.getElementsByClassName('upper-row')[0].getElementsByClassName('right-ctnr')[0];
                 const badgeHost = document.createElement('div');
@@ -60,15 +62,34 @@
         }
     }
 
-    function injectionGuild(guildName){
+
+    function injectionGuildOld(guildName){
         try{
-            const guildHost = document.getElementById('app').getElementsByClassName('h')[0].getElementsByClassName('h-user')[0].getElementsByClassName('h-basic')[0].getElementsByTagName('div')[0], badgeHost = document.createElement('span');
+            const guildHostOld = document.getElementById('app').getElementsByClassName('h')[0].getElementsByClassName('h-user')[0].getElementsByClassName('h-basic')[0].getElementsByTagName('div')[0], badgeHost = document.createElement('span');
             badgeHost.setAttribute('title', `数据没有时效性，仅供参考`);
             badgeHost.classList.add('guild-badge');
             badgeHost.innerText = `所属公会: ${guildName}`;
-            guildHost.append(badgeHost);
+            guildHostOld.append(badgeHost);
+            old_version_retry++;
+            console.log('retried')
         }catch (e) {
-            setTimeout(()=>{injectionGuild(guildName)}, 200);
+            if (old_version_retry<50)
+                setTimeout(()=>{injectionGuildOld(guildName)}, 200);
+        }
+    }
+
+    function injectionGuildNew(guildName){
+        try{
+            const guildHost = document.getElementsByClassName('upinfo-detail__top')[0], badgeHost = document.createElement('span');
+            badgeHost.setAttribute('title', `数据没有时效性，仅供参考`);
+            badgeHost.classList.add('guild-badge');
+            badgeHost.classList.add('guild-new');
+            badgeHost.innerText = `所属公会: ${guildName}`;
+            guildHost.append(badgeHost);
+            new_version_retry++;
+        }catch (e) {
+            if (new_version_retry<50)
+                setTimeout(()=>{injectionGuildNew(guildName)}, 200);
         }
     }
 }();
