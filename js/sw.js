@@ -1221,7 +1221,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
                 refreshHeartBeatList();
                 break;
             case 'missyou':
-                kaoru();
+                kaoru(false);
                 break;
         }
     });
@@ -1597,7 +1597,7 @@ function checkMedalDaka() {
                         chrome.storage.local.set({'dakaUid': medals}, () => {
                             chrome.alarms.create('dakaRoom', {'when': Date.now(), periodInMinutes: 0.1});
                         });
-                        kaoru();
+                        kaoru(true);
                     })
                     .catch(msg => {
                         chrome.storage.local.set({'rua_lastDK': "1970-01-01"}, () => {

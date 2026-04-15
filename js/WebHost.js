@@ -3,6 +3,21 @@
  * */
 !function (){
     console.log('script injected');
+
+
+
+
+    function disableVisibilityChange(eventType){
+        document.addEventListener(eventType, (event)=>{
+            event.stopImmediatePropagation();
+            event.stopPropagation();
+            event.preventDefault();
+            console.log("Visibility cropped");
+        }, true);
+    }
+    disableVisibilityChange('visibilitychange')
+    disableVisibilityChange('webkitvisibilitychange');
+
     const qn_table = {"原画PRO":10001, "原画":10000, "蓝光PRO":401, "蓝光":400, "超清PRO":251, "超清":250, "高清":150,"流畅":80};
     const wasmPath = chrome.runtime.getURL('../ffmpeg/ffmpeg-core.wasm');
     let qn;

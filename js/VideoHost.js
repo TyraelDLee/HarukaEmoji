@@ -3,6 +3,18 @@
  * */
 
 !function (){
+    function disableVisibilityChange(eventType){
+        document.addEventListener(eventType, (event)=>{
+            event.stopImmediatePropagation();
+            event.stopPropagation();
+            event.preventDefault();
+            console.log("Visibility cropped");
+        }, true);
+    }
+    disableVisibilityChange('visibilitychange')
+    disableVisibilityChange('webkitvisibilitychange');
+
+
     const link = chrome.runtime.getURL("../images/haruka/abaaba.svg");
     const wasmPath = chrome.runtime.getURL('../ffmpeg/ffmpeg-core.wasm');
     const assConvert = new AssConvert(1280, 720);

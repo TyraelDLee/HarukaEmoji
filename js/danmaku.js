@@ -18,8 +18,30 @@
             currentRoomID = roomId;
             let data = await getRealRoomID(roomId - 0);
             console.log("Grab room info:");
-            console.log(data)
-            grabDanmaku(data);
+            console.log(data);
+            if (typeof data['room_id'] === 'undefined'){
+                host.__sent_system_package(`${data}`);
+            }else {
+                grabDanmaku(data);
+
+                const dmlike = document.getElementById('like-send');
+
+                dmlike.onclick = ()=>{
+                    let form = new FormData();
+                    form.append('click_time', '30');
+                    form.append('room_id', data['room_id']);
+                    form.append('uid', '3831650');
+                    form.append('anchor_id', data['uid']);
+                    form.append('csrf_token', JCT);
+                    form.append('csrf', JCT);
+
+                    fetch(`https://api.live.bilibili.com/xlive/app-ucenter/v1/like_info_v3/like/likeReportV3?click_time=30&room_id=${data['room_id']}&uid=3831650&anchor_id=${data['uid']}&web_location=444.8&csrf=${JCT}&wts=${Math.round(Date.now() / 1000)}`, {
+                        method:"POST",
+                        credentials:'include',
+                        body:form
+                    }).then(e=>{});
+                };
+            }
         }
     }
 
@@ -39,7 +61,8 @@
                     return getRoomKey(roomInfo);
                 }
                 else{
-                    throw json;
+                    // throw json;
+                    return json['msg'];
                 }
             });
     }
@@ -244,6 +267,7 @@
             chrome.storage.sync.set({'dm-ban-word': banWordList}, ()=>{})
         }
     }
+
 
     // document.body.onscroll = (event)=>{
     //     console.log(event)
