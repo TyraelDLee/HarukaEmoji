@@ -26,7 +26,7 @@
       "path": "ruleSet/liveroom.json"
     }]
   },
-  "permissions": ["alarms", "cookies", "contextMenus", "storage", "notifications", "declarativeNetRequest", "downloads"],
+  "permissions": ["alarms", "cookies", "contextMenus", "storage", "notifications", "declarativeNetRequest", "downloads", "background"],
   "action": {
     "default_popup": "popup.html"
   },

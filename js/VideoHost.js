@@ -11,8 +11,11 @@
             console.log("Visibility cropped");
         }, true);
     }
-    disableVisibilityChange('visibilitychange')
-    disableVisibilityChange('webkitvisibilitychange');
+    try {
+        disableVisibilityChange('visibilitychange')
+        disableVisibilityChange('webkitvisibilitychange');
+    }catch (e) {}
+
 
 
     const link = chrome.runtime.getURL("../images/haruka/abaaba.svg");

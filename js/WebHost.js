@@ -15,8 +15,10 @@
             console.log("Visibility cropped");
         }, true);
     }
-    disableVisibilityChange('visibilitychange')
+    try{
+    disableVisibilityChange('visibilitychange');
     disableVisibilityChange('webkitvisibilitychange');
+    }catch(e) {}
 
     const qn_table = {"原画PRO":10001, "原画":10000, "蓝光PRO":401, "蓝光":400, "超清PRO":251, "超清":250, "高清":150,"流畅":80};
     const wasmPath = chrome.runtime.getURL('../ffmpeg/ffmpeg-core.wasm');
@@ -347,7 +349,8 @@
         // }
 
 
-        if(document.getElementsByTagName("article").length === 0) renderExtension();
+        if(document.getElementsByTagName("article").length === 0)
+            renderExtension();
         function renderExtension(){
             loadPopPos();
             popup.setAttribute("id", "emoji-popup");
